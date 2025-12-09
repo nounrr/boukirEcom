@@ -2,19 +2,53 @@ import { z } from 'zod';
 
 // Auth validations
 export const loginSchema = z.object({
-  email: z.string().email({ message: 'Email invalide' }),
-  password: z.string().min(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' }),
+  email: z
+    .string({ message: 'البريد الإلكتروني مطلوب' })
+    .min(1, { message: 'البريد الإلكتروني مطلوب' })
+    .email({ message: 'عنوان البريد الإلكتروني غير صالح' })
+    .toLowerCase()
+    .trim(),
+  password: z
+    .string({ message: 'كلمة المرور مطلوبة' })
+    .min(1, { message: 'كلمة المرور مطلوبة' })
+    .min(8, { message: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل' })
+    .max(100, { message: 'كلمة المرور طويلة جداً' }),
 });
 
 export const registerSchema = z.object({
-  email: z.string().email({ message: 'Email invalide' }),
-  password: z.string().min(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' }),
-  confirmPassword: z.string(),
-  firstName: z.string().min(2, { message: 'Le prénom est requis' }),
-  lastName: z.string().min(2, { message: 'Le nom est requis' }),
-  phone: z.string().regex(/^(\+212|0)[5-7]\d{8}$/, { message: 'Numéro de téléphone invalide' }).optional(),
+  name: z
+    .string({ message: 'الاسم الكامل مطلوب' })
+    .min(1, { message: 'الاسم الكامل مطلوب' })
+    .min(3, { message: 'يجب أن يحتوي الاسم على 3 أحرف على الأقل' })
+    .max(100, { message: 'الاسم طويل جداً' })
+    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: 'الاسم يمكن أن يحتوي على أحرف فقط' })
+    .trim(),
+  email: z
+    .string({ message: 'البريد الإلكتروني مطلوب' })
+    .min(1, { message: 'البريد الإلكتروني مطلوب' })
+    .email({ message: 'عنوان البريد الإلكتروني غير صالح' })
+    .toLowerCase()
+    .trim(),
+  phone: z
+    .string({ message: 'رقم الهاتف مطلوب' })
+    .min(1, { message: 'رقم الهاتف مطلوب' })
+    .regex(/^(\+212|0)[5-7]\d{8}$/, {
+      message: 'صيغة غير صحيحة. مثال: 0612345678 أو +212612345678'
+    })
+    .trim(),
+  password: z
+    .string({ message: 'كلمة المرور مطلوبة' })
+    .min(1, { message: 'كلمة المرور مطلوبة' })
+    .min(8, { message: 'على الأقل 8 أحرف' })
+    .max(100, { message: 'كلمة المرور طويلة جداً' })
+    .regex(/[A-Z]/, { message: 'يجب أن تحتوي على حرف كبير واحد على الأقل' })
+    .regex(/[a-z]/, { message: 'يجب أن تحتوي على حرف صغير واحد على الأقل' })
+    .regex(/[0-9]/, { message: 'يجب أن تحتوي على رقم واحد على الأقل' }),
+  confirmPassword: z
+    .string({ message: 'التأكيد مطلوب' })
+    .min(1, { message: 'يرجى تأكيد كلمة المرور' }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Les mots de passe ne correspondent pas',
+  message: 'كلمات المرور غير متطابقة',
   path: ['confirmPassword'],
 });
 
