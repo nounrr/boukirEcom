@@ -1,54 +1,113 @@
 import { z } from 'zod';
 
-// Auth validations
-export const loginSchema = z.object({
+// Helper type for translation function
+type TranslateFn = (key: string, values?: Record<string, any>) => string;
+
+// Dynamic Auth validations
+export const createLoginSchema = (t: TranslateFn) => z.object({
   email: z
-    .string({ message: 'البريد الإلكتروني مطلوب' })
-    .min(1, { message: 'البريد الإلكتروني مطلوب' })
-    .email({ message: 'عنوان البريد الإلكتروني غير صالح' })
+    .string({ message: t('validation.emailRequired') })
+    .min(1, { message: t('validation.emailRequired') })
+    .email({ message: t('validation.invalidEmail') })
     .toLowerCase()
     .trim(),
   password: z
-    .string({ message: 'كلمة المرور مطلوبة' })
-    .min(1, { message: 'كلمة المرور مطلوبة' })
-    .min(8, { message: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل' })
-    .max(100, { message: 'كلمة المرور طويلة جداً' }),
+    .string({ message: t('validation.passwordRequired') })
+    .min(1, { message: t('validation.passwordRequired') })
+    .min(8, { message: t('validation.passwordMinLength') })
+    .max(100, { message: t('validation.passwordTooLong') }),
+});
+
+export const createRegisterSchema = (t: TranslateFn) => z.object({
+  name: z
+    .string({ message: t('validation.required') })
+    .min(1, { message: t('validation.required') })
+    .min(3, { message: t('validation.minLength', { min: 3 }) })
+    .max(100, { message: t('validation.maxLength', { max: 100 }) })
+    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: t('validation.nameLettersOnly') })
+    .trim(),
+  email: z
+    .string({ message: t('validation.emailRequired') })
+    .min(1, { message: t('validation.emailRequired') })
+    .email({ message: t('validation.invalidEmail') })
+    .toLowerCase()
+    .trim(),
+  phone: z
+    .string({ message: t('validation.phoneRequired') })
+    .min(1, { message: t('validation.phoneRequired') })
+    .regex(/^(\+212|0)[5-7]\d{8}$/, {
+      message: t('validation.phoneFormat')
+    })
+    .trim(),
+  password: z
+    .string({ message: t('validation.passwordRequired') })
+    .min(1, { message: t('validation.passwordRequired') })
+    .min(8, { message: t('validation.minLength', { min: 8 }) })
+    .max(100, { message: t('validation.passwordTooLong') })
+    .regex(/[A-Z]/, { message: t('validation.passwordUppercase') })
+    .regex(/[a-z]/, { message: t('validation.passwordLowercase') })
+    .regex(/[0-9]/, { message: t('validation.passwordNumber') }),
+  confirmPassword: z
+    .string({ message: t('validation.confirmPasswordRequired') })
+    .min(1, { message: t('validation.confirmPasswordRequired') }),
+  role: z
+    .enum(['client', 'artisan-promoter'], {
+      message: t('validation.roleRequired')
+    }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: t('validation.passwordsNotMatch'),
+  path: ['confirmPassword'],
+});
+
+// Static schemas (legacy - for backward compatibility)
+export const loginSchema = z.object({
+  email: z
+    .string({ message: 'L\'email est requis' })
+    .min(1, { message: 'L\'email est requis' })
+    .email({ message: 'Adresse email invalide' })
+    .toLowerCase()
+    .trim(),
+  password: z
+    .string({ message: 'Le mot de passe est requis' })
+    .min(1, { message: 'Le mot de passe est requis' })
+    .min(8, { message: 'Le mot de passe doit contenir au moins 8 caractères' })
+    .max(100, { message: 'Le mot de passe est trop long' }),
 });
 
 export const registerSchema = z.object({
   name: z
-    .string({ message: 'الاسم الكامل مطلوب' })
-    .min(1, { message: 'الاسم الكامل مطلوب' })
-    .min(3, { message: 'يجب أن يحتوي الاسم على 3 أحرف على الأقل' })
-    .max(100, { message: 'الاسم طويل جداً' })
-    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: 'الاسم يمكن أن يحتوي على أحرف فقط' })
+    .string({ message: 'Le nom complet est requis' })
+    .min(1, { message: 'Le nom complet est requis' })
+    .min(3, { message: 'Le nom doit contenir au moins 3 caractères' })
+    .max(100, { message: 'Le nom est trop long' })
+    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: 'Le nom ne peut contenir que des lettres' })
     .trim(),
   email: z
-    .string({ message: 'البريد الإلكتروني مطلوب' })
-    .min(1, { message: 'البريد الإلكتروني مطلوب' })
-    .email({ message: 'عنوان البريد الإلكتروني غير صالح' })
+    .string({ message: 'L\'email est requis' })
+    .min(1, { message: 'L\'email est requis' })
+    .email({ message: 'Adresse email invalide' })
     .toLowerCase()
     .trim(),
   phone: z
-    .string({ message: 'رقم الهاتف مطلوب' })
-    .min(1, { message: 'رقم الهاتف مطلوب' })
+    .string({ message: 'Le numéro de téléphone est requis' })
+    .min(1, { message: 'Le numéro de téléphone est requis' })
     .regex(/^(\+212|0)[5-7]\d{8}$/, {
-      message: 'صيغة غير صحيحة. مثال: 0612345678 أو +212612345678'
+      message: 'Format invalide. Ex: 0612345678 ou +212612345678'
     })
     .trim(),
   password: z
-    .string({ message: 'كلمة المرور مطلوبة' })
-    .min(1, { message: 'كلمة المرور مطلوبة' })
-    .min(8, { message: 'على الأقل 8 أحرف' })
-    .max(100, { message: 'كلمة المرور طويلة جداً' })
-    .regex(/[A-Z]/, { message: 'يجب أن تحتوي على حرف كبير واحد على الأقل' })
-    .regex(/[a-z]/, { message: 'يجب أن تحتوي على حرف صغير واحد على الأقل' })
-    .regex(/[0-9]/, { message: 'يجب أن تحتوي على رقم واحد على الأقل' }),
+    .string({ message: 'Le mot de passe est requis' })
+    .min(1, { message: 'Le mot de passe est requis' })
+    .min(8, { message: 'Minimum 8 caractères' })
+    .max(100, { message: 'Le mot de passe est trop long' })
+    .regex(/[A-Z]/, { message: 'Doit contenir au moins une majuscule' })
+    .regex(/[a-z]/, { message: 'Doit contenir au moins une minuscule' })
+    .regex(/[0-9]/, { message: 'Doit contenir au moins un chiffre' }),
   confirmPassword: z
-    .string({ message: 'التأكيد مطلوب' })
-    .min(1, { message: 'يرجى تأكيد كلمة المرور' }),
+    .string({ message: 'La confirmation est requise' })
+    .min(1, { message: 'Veuillez confirmer votre mot de passe' }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'كلمات المرور غير متطابقة',
+  message: 'Les mots de passe ne correspondent pas',
   path: ['confirmPassword'],
 });
 

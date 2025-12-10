@@ -67,7 +67,40 @@
     "support": "Support",
     "fastDelivery": "Livraison rapide partout",
     "loyaltyProgram": "Programme de fidélité et points",
-    "securePayment": "Paiement sécurisé garanti"
+    "securePayment": "Paiement sécurisé garanti",
+    "role": "Type de compte",
+    "client": "Client",
+    "artisanPromoter": "Artisan/Promoteur"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "invalidEmail": "Adresse email invalide",
+    "invalidPhone": "Numéro de téléphone invalide",
+    "phoneFormat": "Format invalide. Ex: 0612345678 ou +212612345678",
+    "minLength": "Minimum {{min}} caractères",
+    "maxLength": "Maximum {{max}} caractères",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordTooLong": "Le mot de passe est trop long",
+    "passwordUppercase": "Doit contenir au moins une majuscule",
+    "passwordLowercase": "Doit contenir au moins une minuscule",
+    "passwordNumber": "Doit contenir au moins un chiffre",
+    "passwordsNotMatch": "Les mots de passe ne correspondent pas",
+    "nameLettersOnly": "Le nom ne peut contenir que des lettres",
+    "firstNameRequired": "Le prénom est requis",
+    "lastNameRequired": "Le nom est requis",
+    "emailRequired": "L'email est requis",
+    "phoneRequired": "Le téléphone est requis",
+    "passwordRequired": "Le mot de passe est requis",
+    "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+    "roleRequired": "Veuillez sélectionner un type de compte"
+  },
+  "placeholders": {
+    "email": "exemple@email.com",
+    "password": "Min. 8 caractères",
+    "confirmPassword": "Répétez le mot de passe",
+    "firstName": "Ahmed",
+    "lastName": "Benali",
+    "phone": "0612345678"
   },
   "product": {
     "addToCart": "Ajouter au panier",
