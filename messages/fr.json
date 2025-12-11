@@ -86,6 +86,8 @@
     "passwordNumber": "Doit contenir au moins un chiffre",
     "passwordsNotMatch": "Les mots de passe ne correspondent pas",
     "nameLettersOnly": "Le nom ne peut contenir que des lettres",
+    "nameMinLength": "Le nom doit contenir au moins 2 caractères",
+    "nameMaxLength": "Le nom ne peut pas dépasser 50 caractères",
     "firstNameRequired": "Le prénom est requis",
     "lastNameRequired": "Le nom est requis",
     "emailRequired": "L'email est requis",
@@ -174,7 +176,7 @@
     "orderTotal": "Total"
   },
   "footer": {
-    "about": "À propos de nous",
+    "about": "À propos",
     "contact": "Contactez-nous",
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
@@ -184,5 +186,39 @@
     "subscribeNewsletter": "Abonnez-vous à notre newsletter",
     "emailPlaceholder": "Votre email",
     "subscribe": "S'abonner"
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "Connexion réussie",
+      "loginSuccessDesc": "Bienvenue, {{name}}",
+      "registerSuccess": "Compte créé avec succès",
+      "registerSuccessDesc": "Bienvenue sur Boukir, {{name}}",
+      "logoutSuccess": "Déconnexion réussie",
+      "loginError": "Erreur de connexion",
+      "registerError": "Erreur d'inscription",
+      "networkError": "Erreur de connexion au serveur",
+      "networkErrorDesc": "Vérifiez votre connexion internet",
+      "accountLocked": "Compte verrouillé",
+      "accountBlocked": "Compte bloqué",
+      "accountInactive": "Compte désactivé",
+      "ssoAccountOnly": "Compte SSO uniquement",
+      "ssoAccountOnlyDesc": "Veuillez utiliser {{provider}} pour vous connecter",
+      "emailExists": "Cet email existe déjà",
+      "emailExistsDesc": "Connectez-vous ou utilisez un autre email",
+      "emailExistsLocal": "Un compte existe avec cet email",
+      "emailExistsLocalDesc": "Connectez-vous avec votre email et mot de passe",
+      "emailExistsGoogle": "Cet email est lié à Google",
+      "emailExistsGoogleDesc": "Connectez-vous avec Google pour continuer",
+      "emailExistsFacebook": "Cet email est lié à Facebook",
+      "emailExistsFacebookDesc": "Connectez-vous avec Facebook pour continuer",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "attemptsLeft": "{{count}} tentatives restantes",
+      "googleError": "Erreur Google OAuth",
+      "googleLoadError": "Impossible de charger Google Sign-In",
+      "googleLoadErrorDesc": "Veuillez vérifier votre connexion internet",
+      "facebookError": "Erreur Facebook OAuth",
+      "facebookLoadError": "Impossible de charger Facebook SDK",
+      "facebookLoadErrorDesc": "Veuillez vérifier votre connexion internet"
+    }
   }
 }

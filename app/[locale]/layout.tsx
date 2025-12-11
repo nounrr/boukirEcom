@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Inter, Tajawal } from 'next/font/google';
 import { notFound } from 'next/navigation';
+import { Toaster } from 'sonner';
 import '../globals.css';
 
 const inter = Inter({
@@ -53,6 +54,30 @@ export default async function LocaleLayout({
             {children}
           </StoreProvider>
         </NextIntlClientProvider>
+        <Toaster
+          position="top-center"
+          theme="system"
+          richColors={false}
+          closeButton={false}
+          expand={true}
+          duration={4000}
+          gap={12}
+          visibleToasts={5}
+          toastOptions={{
+            style: {
+              background: 'hsl(var(--background))',
+              color: 'hsl(var(--foreground))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'var(--radius)',
+              fontSize: '14px',
+              fontFamily: 'var(--font-sans)',
+              padding: '16px 20px',
+              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)',
+            },
+            className: 'toast-custom',
+            unstyled: false,
+          }}
+        />
       </body>
     </html>
   );

@@ -6,56 +6,63 @@ type TranslateFn = (key: string, values?: Record<string, any>) => string;
 // Dynamic Auth validations
 export const createLoginSchema = (t: TranslateFn) => z.object({
   email: z
-    .string({ message: t('validation.emailRequired') })
-    .min(1, { message: t('validation.emailRequired') })
-    .email({ message: t('validation.invalidEmail') })
+    .string({ message: t('emailRequired') })
+    .min(1, { message: t('emailRequired') })
+    .email({ message: t('invalidEmail') })
     .toLowerCase()
     .trim(),
   password: z
-    .string({ message: t('validation.passwordRequired') })
-    .min(1, { message: t('validation.passwordRequired') })
-    .min(8, { message: t('validation.passwordMinLength') })
-    .max(100, { message: t('validation.passwordTooLong') }),
+    .string({ message: t('passwordRequired') })
+    .min(1, { message: t('passwordRequired') })
+    .min(8, { message: t('passwordMinLength') })
+    .max(100, { message: t('passwordTooLong') }),
 });
 
 export const createRegisterSchema = (t: TranslateFn) => z.object({
-  name: z
-    .string({ message: t('validation.required') })
-    .min(1, { message: t('validation.required') })
-    .min(3, { message: t('validation.minLength', { min: 3 }) })
-    .max(100, { message: t('validation.maxLength', { max: 100 }) })
-    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: t('validation.nameLettersOnly') })
+  firstName: z
+    .string({ message: t('firstNameRequired') })
+    .min(1, { message: t('firstNameRequired') })
+    .min(2, { message: t('nameMinLength') })
+    .max(50, { message: t('nameMaxLength') })
+    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: t('nameLettersOnly') })
+    .trim(),
+  lastName: z
+    .string({ message: t('lastNameRequired') })
+    .min(1, { message: t('lastNameRequired') })
+    .min(2, { message: t('nameMinLength') })
+    .max(50, { message: t('nameMaxLength') })
+    .regex(/^[a-zA-ZÀ-ÿ\s\u0600-\u06FF]+$/, { message: t('nameLettersOnly') })
     .trim(),
   email: z
-    .string({ message: t('validation.emailRequired') })
-    .min(1, { message: t('validation.emailRequired') })
-    .email({ message: t('validation.invalidEmail') })
+    .string({ message: t('emailRequired') })
+    .min(1, { message: t('emailRequired') })
+    .email({ message: t('invalidEmail') })
     .toLowerCase()
     .trim(),
   phone: z
-    .string({ message: t('validation.phoneRequired') })
-    .min(1, { message: t('validation.phoneRequired') })
+    .string({ message: t('phoneRequired') })
+    .min(1, { message: t('phoneRequired') })
     .regex(/^(\+212|0)[5-7]\d{8}$/, {
-      message: t('validation.phoneFormat')
+      message: t('phoneFormat')
     })
     .trim(),
   password: z
-    .string({ message: t('validation.passwordRequired') })
-    .min(1, { message: t('validation.passwordRequired') })
-    .min(8, { message: t('validation.minLength', { min: 8 }) })
-    .max(100, { message: t('validation.passwordTooLong') })
-    .regex(/[A-Z]/, { message: t('validation.passwordUppercase') })
-    .regex(/[a-z]/, { message: t('validation.passwordLowercase') })
-    .regex(/[0-9]/, { message: t('validation.passwordNumber') }),
+    .string({ message: t('passwordRequired') })
+    .min(1, { message: t('passwordRequired') })
+    .min(8, { message: t('passwordMinLength') })
+    .max(100, { message: t('passwordTooLong') })
+    .regex(/[A-Z]/, { message: t('passwordUppercase') })
+    .regex(/[a-z]/, { message: t('passwordLowercase') })
+    .regex(/[0-9]/, { message: t('passwordNumber') }),
   confirmPassword: z
-    .string({ message: t('validation.confirmPasswordRequired') })
-    .min(1, { message: t('validation.confirmPasswordRequired') }),
+    .string({ message: t('confirmPasswordRequired') })
+    .min(1, { message: t('confirmPasswordRequired') }),
   role: z
     .enum(['client', 'artisan-promoter'], {
-      message: t('validation.roleRequired')
+      message: t('roleRequired')
     }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: t('validation.passwordsNotMatch'),
+  message: t('passwordsNotMatch'),
   path: ['confirmPassword'],
 });
 

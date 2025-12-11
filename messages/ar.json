@@ -86,6 +86,8 @@
     "passwordNumber": "يجب أن تحتوي على رقم واحد على الأقل",
     "passwordsNotMatch": "كلمات المرور غير متطابقة",
     "nameLettersOnly": "الاسم يمكن أن يحتوي على أحرف فقط",
+    "nameMinLength": "يجب أن يحتوي الاسم على حرفين على الأقل",
+    "nameMaxLength": "لا يمكن أن يتجاوز الاسم 50 حرفاً",
     "firstNameRequired": "الاسم الأول مطلوب",
     "lastNameRequired": "اسم العائلة مطلوب",
     "emailRequired": "البريد الإلكتروني مطلوب",
@@ -184,5 +186,39 @@
     "subscribeNewsletter": "اشترك في نشرتنا الإخبارية",
     "emailPlaceholder": "بريدك الإلكتروني",
     "subscribe": "اشترك"
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "تم تسجيل الدخول بنجاح",
+      "loginSuccessDesc": "مرحباً، {{name}}",
+      "registerSuccess": "تم إنشاء الحساب بنجاح",
+      "registerSuccessDesc": "مرحباً بك في بوكير، {{name}}",
+      "logoutSuccess": "تم تسجيل الخروج بنجاح",
+      "loginError": "خطأ في تسجيل الدخول",
+      "registerError": "خطأ في التسجيل",
+      "networkError": "خطأ في الاتصال بالخادم",
+      "networkErrorDesc": "تحقق من اتصالك بالإنترنت",
+      "accountLocked": "الحساب مقفل",
+      "accountBlocked": "الحساب محظور",
+      "accountInactive": "الحساب غير نشط",
+      "ssoAccountOnly": "حساب SSO فقط",
+      "ssoAccountOnlyDesc": "يرجى استخدام {{provider}} لتسجيل الدخول",
+      "emailExists": "هذا البريد الإلكتروني موجود بالفعل",
+      "emailExistsDesc": "قم بتسجيل الدخول أو استخدم بريد إلكتروني آخر",
+      "emailExistsLocal": "يوجد حساب بهذا البريد الإلكتروني",
+      "emailExistsLocalDesc": "قم بتسجيل الدخول باستخدام بريدك الإلكتروني وكلمة المرور",
+      "emailExistsGoogle": "هذا البريد الإلكتروني مرتبط بحساب Google",
+      "emailExistsGoogleDesc": "قم بتسجيل الدخول باستخدام Google للمتابعة",
+      "emailExistsFacebook": "هذا البريد الإلكتروني مرتبط بحساب Facebook",
+      "emailExistsFacebookDesc": "قم بتسجيل الدخول باستخدام Facebook للمتابعة",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      "attemptsLeft": "{{count}} محاولات متبقية",
+      "googleError": "خطأ في Google OAuth",
+      "googleLoadError": "فشل تحميل Google Sign-In",
+      "googleLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت",
+      "facebookError": "خطأ في Facebook OAuth",
+      "facebookLoadError": "فشل تحميل Facebook SDK",
+      "facebookLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت"
+    }
   }
 }
