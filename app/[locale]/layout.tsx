@@ -5,6 +5,9 @@ import { getMessages } from 'next-intl/server';
 import { Inter, Tajawal } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'sonner';
+import { getAuthCookies } from '@/lib/cookies';
+import { UserSessionInitializer } from '@/components/auth/user-session-initializer';
+import { CurrentUserInitializer } from '@/components/auth/current-user-initializer';
 import '../globals.css';
 
 const inter = Inter({
@@ -46,11 +49,16 @@ export default async function LocaleLayout({
   // side is the easiest way to get started
   const messages = await getMessages({ locale });
 
+  // Get auth session from cookies for Redux initialization
+  const session = await getAuthCookies();
+
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body className={`${inter.variable} ${tajawal.variable} antialiased ${locale === 'ar' ? 'font-arabic' : 'font-inter'}`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <StoreProvider>
+            <UserSessionInitializer session={session} />
+            <CurrentUserInitializer />
             {children}
           </StoreProvider>
         </NextIntlClientProvider>

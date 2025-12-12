@@ -9,8 +9,14 @@ export interface User {
   email: string;
   telephone: string | null;
   type_compte: string;  // "Client" | "Artisan/Promoteur"
+  auth_provider?: string;
+  email_verified?: boolean;
   avatar_url: string | null;
   locale: string;
+  last_login_at?: string;
+  created_at?: string;
+  demande_artisan?: boolean;
+  artisan_approuve?: boolean;
 }
 
 // Full auth state including tokens
@@ -36,14 +42,14 @@ const userSlice = createSlice({
   reducers: {
     // Set user with tokens (after login/register)
     setAuth: (state, action: PayloadAction<{
-      user: User;
+      user: User | null;
       accessToken: string;
       refreshToken: string | null;
     }>) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
-      state.isAuthenticated = true;
+      state.isAuthenticated = !!action.payload.accessToken;
       state.isLoading = false;
     },
 
