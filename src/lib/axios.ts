@@ -2,7 +2,8 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 import { cookies } from 'next/headers'
 
 // API base URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL}/api`
 
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({

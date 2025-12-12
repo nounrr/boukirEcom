@@ -98,7 +98,10 @@ export async function logout(): Promise<{ success: boolean }> {
     const token = cookieStore.get("accessToken")?.value
 
     if (token) {
-      await fetch(`${apiUrl}/api/users/auth/logout`, {
+      // NOTE: NEXT_PUBLIC_API_URL may already include "/api".
+      // Avoid duplicating "/api" in the path.
+      const base = apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`
+      await fetch(`${base}/users/auth/logout`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

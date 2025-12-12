@@ -190,9 +190,9 @@
   "toast": {
     "auth": {
       "loginSuccess": "Connexion réussie",
-      "loginSuccessDesc": "Bienvenue, {{name}}",
+      "loginSuccessDesc": "Bienvenue, {name}",
       "registerSuccess": "Compte créé avec succès",
-      "registerSuccessDesc": "Bienvenue sur Boukir, {{name}}",
+      "registerSuccessDesc": "Bienvenue sur Boukir, {name}",
       "logoutSuccess": "Déconnexion réussie",
       "loginError": "Erreur de connexion",
       "registerError": "Erreur d'inscription",
@@ -202,7 +202,7 @@
       "accountBlocked": "Compte bloqué",
       "accountInactive": "Compte désactivé",
       "ssoAccountOnly": "Compte SSO uniquement",
-      "ssoAccountOnlyDesc": "Veuillez utiliser {{provider}} pour vous connecter",
+      "ssoAccountOnlyDesc": "Veuillez utiliser {provider} pour vous connecter",
       "emailExists": "Cet email existe déjà",
       "emailExistsDesc": "Connectez-vous ou utilisez un autre email",
       "emailExistsLocal": "Un compte existe avec cet email",

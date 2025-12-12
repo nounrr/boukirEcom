@@ -190,9 +190,9 @@
   "toast": {
     "auth": {
       "loginSuccess": "تم تسجيل الدخول بنجاح",
-      "loginSuccessDesc": "مرحباً، {{name}}",
+      "loginSuccessDesc": "مرحباً، {name}",
       "registerSuccess": "تم إنشاء الحساب بنجاح",
-      "registerSuccessDesc": "مرحباً بك في بوكير، {{name}}",
+      "registerSuccessDesc": "مرحباً بك في بوكير، {name}",
       "logoutSuccess": "تم تسجيل الخروج بنجاح",
       "loginError": "خطأ في تسجيل الدخول",
       "registerError": "خطأ في التسجيل",
@@ -202,7 +202,7 @@
       "accountBlocked": "الحساب محظور",
       "accountInactive": "الحساب غير نشط",
       "ssoAccountOnly": "حساب SSO فقط",
-      "ssoAccountOnlyDesc": "يرجى استخدام {{provider}} لتسجيل الدخول",
+      "ssoAccountOnlyDesc": "يرجى استخدام {provider} لتسجيل الدخول",
       "emailExists": "هذا البريد الإلكتروني موجود بالفعل",
       "emailExistsDesc": "قم بتسجيل الدخول أو استخدم بريد إلكتروني آخر",
       "emailExistsLocal": "يوجد حساب بهذا البريد الإلكتروني",

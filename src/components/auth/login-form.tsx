@@ -56,7 +56,8 @@ export function LoginForm({ onSubmit: customOnSubmit }: LoginFormProps) {
       toast.error(loginStatus?.error)
     } else if (loginStatus && loginStatus?.success) {
       console.log('[LOGIN FORM] Showing success toast')
-      toast.success(tt('loginSuccess'))
+      const name = loginStatus.user?.prenom || loginStatus.user?.nom || loginStatus.user?.email || 'Utilisateur'
+      toast.success(tt('loginSuccess'), { description: tt('loginSuccessDesc', { name }) })
       console.log('[LOGIN FORM] Login successful, accessToken:', loginStatus.accessToken)
       
       // Dispatch to Redux store

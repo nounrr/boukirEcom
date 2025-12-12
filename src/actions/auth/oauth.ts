@@ -49,9 +49,9 @@ export async function googleAuth(
     // Map frontend role to backend type_compte
     const typeCompte = role === "artisan-promoter" ? "Artisan/Promoteur" : "Client"
     
-    // Backend expects 'token' field based on the error message
+    // Backend expects 'credential' field (the JWT from Google)
     const requestBody = {
-      token: credential,
+      credential: credential,
       type_compte: typeCompte,
     }
     

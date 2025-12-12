@@ -67,7 +67,8 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
       toast.error(registerStatus?.error)
     } else if (registerStatus && registerStatus?.success) {
       console.log('[REGISTER FORM] Showing success toast')
-      toast.success(tt('registerSuccess'))
+      const name = registerStatus.user?.prenom || registerStatus.user?.nom || registerStatus.user?.email || 'Utilisateur'
+      toast.success(tt('registerSuccess'), { description: tt('registerSuccessDesc', { name }) })
       console.log('[REGISTER FORM] Registration successful, accessToken:', registerStatus.accessToken)
       
       // Dispatch to Redux store

@@ -152,10 +152,11 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           }
           
           // Show success toast
+          const firstName = result.user?.prenom || result.user?.nom || result.user?.email || "Utilisateur"
           if (result.isNewUser) {
-            toast.success(t("registerSuccess"), { description: t("registerSuccessDesc") })
+            toast.success(t("registerSuccess"), { description: t("registerSuccessDesc", { name: firstName }) })
           } else {
-            toast.success(t("loginSuccess"), { description: t("loginSuccessDesc") })
+            toast.success(t("loginSuccess"), { description: t("loginSuccessDesc", { name: firstName }) })
           }
 
           // Call success callback
@@ -170,10 +171,18 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           }, 500)
         } else {
           console.error("[Google Auth] Authentication failed:", result.error)
-          toast.error(t("googleError"), { description: result.error })
+
+          // Friendlier guidance for common backend responses
+          const msg = (result.error || '').toLowerCase()
+          const needsOriginHelp = msg.includes('token manquant') || msg.includes('token google invalide')
+          const description = needsOriginHelp
+            ? "Impossible de vérifier le jeton Google. Vérifiez que l'origine http://localhost:3002 est autorisée dans Google Cloud Console et réessayez après 5–10 minutes."
+            : result.error
+
+          toast.error(t("googleError"), { description })
           
           if (onError) {
-            onError(result.error)
+            onError(description)
           }
         }
       } catch (error) {
