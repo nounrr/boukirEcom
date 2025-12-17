@@ -1,0 +1,1 @@
+Excellent work right now still working on the #file:page.tsx first we want to implement an advanced filter sidebar professional UI element professional color and icons rendering but first we want to manage the #file:products-api-slice.ts let's me give you the endpoints of that please.

@@ -179,10 +179,20 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="hidden lg:flex items-center gap-1.5 h-9 px-2 hover:bg-muted/50 border border-transparent hover:border-border/40 rounded-full transition-all duration-200 group">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center flex-shrink-0 border border-primary/20 group-hover:border-primary/30 transition-all duration-200 shadow-sm">
-                      <span className="text-[11px] font-bold text-primary">
-                        {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                      </span>
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center flex-shrink-0 border border-primary/20 group-hover:border-primary/30 transition-all duration-200 shadow-sm overflow-hidden">
+                      {user.avatar_url ? (
+                        <Image
+                          src={user.avatar_url}
+                          alt={`${user.prenom} ${user.nom}`}
+                          width={28}
+                          height={28}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <span className="text-[11px] font-bold text-primary">
+                          {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <ChevronDown className="w-3 h-3 text-muted-foreground/70 group-hover:text-muted-foreground transition-colors duration-200" />
                   </Button>
@@ -192,10 +202,20 @@ export function Header() {
                     <div className="relative overflow-hidden rounded-t-lg bg-gradient-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
                       <div className="flex items-center gap-2.5">
                         <div className="relative">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center flex-shrink-0 shadow-md shadow-primary/15 ring-1 ring-primary/20">
-                            <span className="text-sm font-bold text-primary-foreground">
-                              {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                            </span>
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center flex-shrink-0 shadow-md shadow-primary/15 ring-1 ring-primary/20 overflow-hidden">
+                            {user.avatar_url ? (
+                              <Image
+                                src={user.avatar_url}
+                                alt={`${user.prenom} ${user.nom}`}
+                                width={40}
+                                height={40}
+                                className="object-cover w-full h-full"
+                              />
+                            ) : (
+                              <span className="text-sm font-bold text-primary-foreground">
+                                {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                              </span>
+                            )}
                           </div>
                           <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-[1.5px] border-background shadow-sm" />
                         </div>

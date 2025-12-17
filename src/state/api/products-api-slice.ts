@@ -1,12 +1,19 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Product, ProductsResponse, ProductFilters } from '@/types/product';
+import { API_CONFIG } from '@/lib/api-config';
+import type {
+  ProductFiltersRequest,
+  ProductsListResponse,
+  ProductDetail,
+  ProductListItem,
+} from '@/types/api/products';
 
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+    baseUrl: API_CONFIG.BASE_URL,
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
+      // Token handling is optional for public endpoints
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
@@ -15,30 +22,84 @@ export const productsApi = createApi({
   }),
   tagTypes: ['Products'],
   endpoints: (builder) => ({
-    getProducts: builder.query<ProductsResponse, ProductFilters>({
-      query: (filters) => ({
-        url: '/products',
-        params: filters,
-      }),
-      providesTags: ['Products'],
+    // GET All Products with comprehensive filters and pagination
+    getProducts: builder.query<ProductsListResponse, ProductFiltersRequest | void>({
+      query: (filters) => {
+        const params: Record<string, any> = {};
+
+        // Handle void case
+        if (!filters) {
+          return { url: API_CONFIG.ENDPOINTS.PRODUCTS };
+        }
+
+        // Pagination
+        if (filters.page) params.page = filters.page;
+        if (filters.per_page) params.per_page = filters.per_page;
+        if (filters.limit) params.limit = filters.limit;
+
+        // Filters
+        if (filters.category_id) {
+          params.category_id = Array.isArray(filters.category_id)
+            ? filters.category_id.join(',')
+            : filters.category_id;
+        }
+        if (filters.brand_id) {
+          params.brand_id = Array.isArray(filters.brand_id)
+            ? filters.brand_id.join(',')
+            : filters.brand_id;
+        }
+        if (filters.color) {
+          params.color = Array.isArray(filters.color)
+            ? filters.color.join(',')
+            : filters.color;
+        }
+        if (filters.unit) {
+          params.unit = Array.isArray(filters.unit)
+            ? filters.unit.join(',')
+            : filters.unit;
+        }
+        if (filters.search) params.search = filters.search;
+        if (filters.min_price !== undefined) params.min_price = filters.min_price;
+        if (filters.max_price !== undefined) params.max_price = filters.max_price;
+        if (filters.in_stock_only !== undefined) params.in_stock_only = filters.in_stock_only;
+        if (filters.sort) params.sort = filters.sort;
+
+        return {
+          url: API_CONFIG.ENDPOINTS.PRODUCTS,
+          params,
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+            ...result.products.map(({ id }) => ({ type: 'Products' as const, id })),
+            { type: 'Products', id: 'LIST' },
+          ]
+          : [{ type: 'Products', id: 'LIST' }],
     }),
-    getProduct: builder.query<Product, string>({
-      query: (id) => `/products/${id}`,
+
+    // GET Single Product with full details
+    getProduct: builder.query<ProductDetail, string | number>({
+      query: (id) => `${API_CONFIG.ENDPOINTS.PRODUCTS}/${id}`,
       providesTags: (result, error, id) => [{ type: 'Products', id }],
     }),
-    searchProducts: builder.query<ProductsResponse, string>({
-      query: (searchTerm) => ({
-        url: '/products/search',
-        params: { q: searchTerm },
+
+    // GET Featured Promo Products
+    getFeaturedPromo: builder.query<ProductListItem[], number | void>({
+      query: (limit = 12) => ({
+        url: API_CONFIG.ENDPOINTS.FEATURED_PROMO,
+        params: { limit },
       }),
+      providesTags: [{ type: 'Products', id: 'FEATURED_PROMO' }],
     }),
-    getProductsByCategory: builder.query<ProductsResponse, string>({
-      query: (categoryId) => `/products/category/${categoryId}`,
-      providesTags: ['Products'],
-    }),
-    getFeaturedProducts: builder.query<Product[], void>({
-      query: () => '/products/featured',
-      providesTags: ['Products'],
+
+    // GET New Arrivals
+    getNewArrivals: builder.query<ProductListItem[], number | void>({
+      query: (limit = 12) => ({
+        url: API_CONFIG.ENDPOINTS.NEW_ARRIVALS,
+        params: { limit },
+      }),
+      providesTags: [{ type: 'Products', id: 'NEW_ARRIVALS' }],
     }),
   }),
 });
@@ -46,7 +107,6 @@ export const productsApi = createApi({
 export const {
   useGetProductsQuery,
   useGetProductQuery,
-  useSearchProductsQuery,
-  useGetProductsByCategoryQuery,
-  useGetFeaturedProductsQuery,
+  useGetFeaturedPromoQuery,
+  useGetNewArrivalsQuery,
 } = productsApi;

@@ -519,7 +519,13 @@
   opacity: 0.8;
   transform: scale(0.98) translateY(-4px);
 }
-
+/* Grid pattern for backgrounds */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, hsl(var(--border) / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 [data-sonner-toaster] [data-sonner-toast]:nth-child(n+6) {
   opacity: 0.6;
   transform: scale(0.96) translateY(-8px);
