@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import { getAuthCookies } from '@/lib/cookies';
 import { UserSessionInitializer } from '@/components/auth/user-session-initializer';
 import { CurrentUserInitializer } from '@/components/auth/current-user-initializer';
+import '../arabic-fonts.css';
 import '../globals.css';
 
 const inter = Inter({
@@ -23,7 +24,7 @@ const inter = Inter({
 const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["200", "300", "400", "500", "700", "800", "900"],
-  variable: "--font-arabic",
+  variable: "--font-tajawal",
   display: 'swap',
   fallback: ['Tahoma', 'Arial', 'sans-serif'],
   preload: true,
@@ -54,7 +55,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
-      <body className={`${inter.variable} ${tajawal.variable} antialiased ${locale === 'ar' ? 'font-arabic' : 'font-inter'}`}>
+      <body className={`${inter.variable} ${tajawal.variable} ${inter.className} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <StoreProvider>
             <UserSessionInitializer session={session} />

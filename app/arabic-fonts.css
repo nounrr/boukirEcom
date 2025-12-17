@@ -1,0 +1,187 @@
+/* Arabic Font Support */
+.font-arabic {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+}
+
+/* Auto-detect Arabic text and apply Arabic font */
+*[lang="ar"], .arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* For mixed content - Arabic text within Latin context */
+.arabic-inline {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  unicode-bidi: embed;
+}
+
+/* Labels should use Inter font - Enhanced specificity */
+label, .label, [role="label"],
+.form-label, .field-label,
+.input-label, .checkbox-label,
+.radio-label, .switch-label,
+/* Target specific Tailwind classes used in forms */
+.text-gray-800.font-medium,
+.text-gray-700.font-medium,
+.text-gray-600.font-medium,
+.text-gray-900.font-medium,
+.text-slate-800.font-medium,
+.text-slate-700.font-medium,
+.text-slate-600.font-medium,
+/* Form context selectors */
+form label, form .label,
+.dialog label, .dialog .label,
+.modal label, .modal .label,
+.form-container label,
+.form-group label,
+.field-wrapper label,
+/* Dialog specific selectors */
+[role="dialog"] label,
+[role="dialog"] .label,
+.dialog-content label,
+.dialog-content .label,
+/* Generic UI component labels */
+.ui-label, .component-label {
+  font-family: var(--font-sans), "Inter", sans-serif !important;
+}
+
+/* Arabic content in labels should use Arabic font */
+label[lang="ar"], label.arabic-text,
+.label[lang="ar"], .label.arabic-text,
+[role="label"][lang="ar"], [role="label"].arabic-text,
+.form-label[lang="ar"], .form-label.arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif !important;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Input fields with Arabic support */
+input[dir="rtl"], textarea[dir="rtl"],
+input[lang="ar"], textarea[lang="ar"],
+input.arabic-text, textarea.arabic-text {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+}
+
+/* Arabic placeholder text */
+input[dir="rtl"]::placeholder, textarea[dir="rtl"]::placeholder,
+input[lang="ar"]::placeholder, textarea[lang="ar"]::placeholder,
+input.arabic-text::placeholder, textarea.arabic-text::placeholder {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+}
+
+/* Select options with Arabic content */
+select[lang="ar"], select.arabic-text,
+option[lang="ar"], option.arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Buttons and interactive elements with Arabic */
+button[lang="ar"], button.arabic-text,
+.button[lang="ar"], .button.arabic-text,
+a[lang="ar"], a.arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Toast notifications with Arabic content */
+[data-sonner-toast][lang="ar"],
+[data-sonner-toast] .arabic-text,
+[data-sonner-toast] *[lang="ar"] {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif !important;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Dialog and modal content with Arabic */
+[role="dialog"][lang="ar"], [role="dialog"] .arabic-text,
+.dialog[lang="ar"], .dialog .arabic-text,
+.modal[lang="ar"], .modal .arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Table content with Arabic */
+table[lang="ar"], table .arabic-text,
+th[lang="ar"], th.arabic-text,
+td[lang="ar"], td.arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Card and content containers with Arabic */
+.card[lang="ar"], .card .arabic-text,
+.content[lang="ar"], .content .arabic-text,
+.description[lang="ar"], .description.arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL layout support */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Utility classes for Arabic typography */
+.text-arabic {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+.text-arabic-inline {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  unicode-bidi: embed;
+}
+
+/* Utility class to force Inter font */
+.text-inter, .font-inter {
+  font-family: var(--font-sans), "Inter", sans-serif !important;
+}
+
+/* Auto-detection for Arabic script using CSS lang attribute */
+*:lang(ar) {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* IMPORTANT: Final override to ensure labels use Inter font */
+/* This should be at the end to have highest specificity */
+html body label,
+html body .label,
+html body [role="label"],
+html body .text-gray-800.font-medium,
+html body .text-gray-700.font-medium,
+html body .text-gray-600.font-medium,
+html body .text-gray-900.font-medium,
+html body form label,
+html body .dialog label,
+html body .modal label,
+html body [role="dialog"] label {
+  font-family: var(--font-sans), "Inter", sans-serif !important;
+}
+
+/* Override Arabic labels with higher specificity */
+html body label[lang="ar"],
+html body label.arabic-text,
+html body .label[lang="ar"],
+html body .label.arabic-text,
+html body [role="label"][lang="ar"],
+html body [role="label"].arabic-text {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif !important;
+  direction: rtl;
+  text-align: right;
+}

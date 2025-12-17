@@ -17,3 +17,13 @@ export async function getAuthCookies(): Promise<AuthCookies> {
     refreshToken: cookieStore.get('refreshToken')?.value || null,
   }
 }
+
+/**
+ * Server-side function to clear auth cookies
+ * Used when authentication fails (401/403)
+ */
+export async function clearAuthCookies(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.delete('accessToken')
+  cookieStore.delete('refreshToken')
+}

@@ -42,7 +42,7 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
       }
     }
 
-    const response = await apiClient.get('/users/me')
+    const response = await apiClient.get('/users/auth/me')
 
     const data = response.data
 
@@ -57,8 +57,22 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
       success: true,
       user: data.user,
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('[GET CURRENT USER] Error:', error)
+
+    // If 401 or 403, clear invalid cookies
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.log('[GET CURRENT USER] Authentication failed, clearing cookies')
+      const cookieStore = await cookies()
+      cookieStore.delete('accessToken')
+      cookieStore.delete('refreshToken')
+
+      return {
+        success: false,
+        error: "Session expirée - veuillez vous reconnecter",
+      }
+    }
+
     return {
       success: false,
       error: getErrorMessage(error),

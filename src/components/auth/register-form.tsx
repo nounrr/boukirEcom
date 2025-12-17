@@ -1,23 +1,22 @@
 "use client"
 
+import { register as registerAction } from "@/actions/auth/register"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Toggle } from "@/components/ui/toggle"
-import { Eye, EyeOff, Lock, Mail, Phone, User, Loader2 } from "lucide-react"
-import { useLocale, useTranslations } from "next-intl"
-import Link from "next/link"
-import type React from "react"
-import { useCallback, useEffect, useState, useTransition } from "react"
-import { useForm, FieldValues, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { register as registerAction } from "@/actions/auth/register"
+import { useGoogleAuth } from "@/hooks/use-google-auth"
 import { toast } from "@/hooks/use-toast"
 import { createRegisterSchema } from "@/lib/validations"
-import { useGoogleAuth } from "@/hooks/use-google-auth"
 import { useAppDispatch } from "@/state/hooks"
 import { setAuth } from "@/state/slices/user-slice"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff, Loader2, Lock, Mail, Phone, User } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useState, useTransition } from "react"
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
 
 interface RegisterFormProps {
   onSubmit?: (data: any) => Promise<void>
@@ -207,7 +206,7 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
                 {t('client')}
               </span>
               {role === 'client' && (
-                <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 ltr:ml-auto rtl:mr-auto" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}
@@ -230,7 +229,7 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
                 {t('artisanPromoter')}
               </span>
               {role === 'artisan-promoter' && (
-                <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 ltr:ml-auto rtl:mr-auto" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}
@@ -336,7 +335,7 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
           ) : (
             <>
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-              <span className={isArabic ? 'mr-2' : 'ml-2'}>Google</span>
+                <span className="ltr:ml-2 rtl:mr-2">Google</span>
             </>
           )}
         </Button>
@@ -351,7 +350,7 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
           <svg className="w-5 h-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
           </svg>
-          <span className={isArabic ? 'mr-2' : 'ml-2'}>Facebook</span>
+          <span className="ltr:ml-2 rtl:mr-2">Facebook</span>
         </Button>
       </div>
 

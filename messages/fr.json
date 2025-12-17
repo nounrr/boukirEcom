@@ -35,6 +35,32 @@
     "myAccount": "Mon compte",
     "subscription": "Abonnement"
   },
+  "header": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "products": "Produits",
+    "searchPlaceholder": "Rechercher des produits...",
+    "profile": "Mon profil",
+    "orders": "Mes commandes",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  },
+  "breadcrumb": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "products": "Produits",
+    "cart": "Panier",
+    "wishlist": "Liste de souhaits",
+    "checkout": "Commander",
+    "profile": "Profil",
+    "orders": "Commandes",
+    "settings": "Paramètres",
+    "category": "Catégorie",
+    "login": "Connexion",
+    "register": "Inscription"
+  },
   "auth": {
     "login": "Connexion",
     "register": "Inscription",

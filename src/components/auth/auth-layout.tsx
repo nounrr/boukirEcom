@@ -15,7 +15,7 @@ export function AuthLayout({ children, title }: AuthLayoutProps) {
   return (
     <div className="max-h-screen min-h-screen flex items-center justify-center lg:justify-start bg-background p-4 lg:p-8 overflow-hidden">
       {/* Left side - Gradient card centered */}
-      <div className="hidden lg:flex items-center justify-center w-full lg:w-[45%] xl:w-[40%] h-[85vh] bg-gradient-to-br from-[#E8A626] via-[#D99323] to-[#D68820] rounded-[40px] shadow-2xl p-8 lg:ml-12 xl:ml-16 overflow-hidden relative">
+      <div className="hidden lg:flex items-center justify-center w-full lg:w-[45%] xl:w-[40%] h-[85vh] bg-gradient-to-br from-[#E8A626] via-[#D99323] to-[#D68820] rounded-[40px] shadow-2xl p-8 ltr:lg:ml-12 ltr:xl:ml-16 rtl:lg:mr-12 rtl:xl:mr-16 overflow-hidden relative">
         {/* Pattern Image Background */}
         <div className="absolute inset-0 z-0 overflow-hidden rounded-[40px]">
           <Image

@@ -35,6 +35,32 @@
     "myAccount": "حسابي",
     "subscription": "الاشتراك"
   },
+  "header": {
+    "home": "الرئيسية",
+    "shop": "المتجر",
+    "products": "المنتجات",
+    "searchPlaceholder": "البحث عن منتجات...",
+    "profile": "ملفي الشخصي",
+    "orders": "طلباتي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "register": "التسجيل"
+  },
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "shop": "المتجر",
+    "products": "المنتجات",
+    "cart": "السلة",
+    "wishlist": "المفضلة",
+    "checkout": "الدفع",
+    "profile": "الملف الشخصي",
+    "orders": "الطلبات",
+    "settings": "الإعدادات",
+    "category": "الفئة",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب"
+  },
   "auth": {
     "login": "تسجيل الدخول",
     "register": "إنشاء حساب",

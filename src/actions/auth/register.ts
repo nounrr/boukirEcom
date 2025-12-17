@@ -30,6 +30,7 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
     const phone = formData.get('phone') as string
     const password = formData.get('password') as string
     const confirmPassword = formData.get('confirmPassword') as string
+
     const role = formData.get('role') as string
     
     console.log('[REGISTER] Action called')
