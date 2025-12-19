@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import { getAuthCookies } from '@/lib/cookies';
 import { UserSessionInitializer } from '@/components/auth/user-session-initializer';
 import { CurrentUserInitializer } from '@/components/auth/current-user-initializer';
+import { GoogleOneTapWrapper } from '@/components/auth/google-one-tap-wrapper';
 import '../arabic-fonts.css';
 import '../globals.css';
 
@@ -60,6 +61,7 @@ export default async function LocaleLayout({
           <StoreProvider>
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
+            <GoogleOneTapWrapper />
             {children}
           </StoreProvider>
         </NextIntlClientProvider>

@@ -137,6 +137,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         }
 
         const result = await googleAuth(response.credential, role)
+        console.log("[Google Auth] Backend response:", result)
 
         if (result.success) {
           console.log("[Google Auth] Authentication successful")
@@ -218,10 +219,11 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         client_id: clientId,
         callback: handleCredentialResponse,
         auto_select: autoSelect,
-        cancel_on_tap_outside: true,
+        cancel_on_tap_outside: false,
         context: context,
         ux_mode: "popup",
         itp_support: true,
+        use_fedcm_for_prompt: false, // Disable FedCM to avoid CORS issues
       })
 
       console.log("[Google Auth] Initialized successfully")
