@@ -20,9 +20,11 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
 
 interface RegisterFormProps {
   onSubmit?: (data: any) => Promise<void>
+  onSuccess?: () => void
+  skipRedirect?: boolean
 }
 
-export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
+export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = false }: RegisterFormProps) {
   const t = useTranslations('auth')
   const tv = useTranslations('validation')
   const tp = useTranslations('placeholders')
@@ -57,6 +59,8 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
     context: "signup",
     role: role,
     redirectTo: `/${locale}`,
+    skipRedirect,
+    onSuccess: skipRedirect ? onSuccess : undefined,
   })
 
   useEffect(() => {
@@ -80,10 +84,14 @@ export function RegisterForm({ onSubmit: customOnSubmit }: RegisterFormProps) {
         console.log('[REGISTER FORM] User data dispatched to Redux store')
       }
       
-      setTimeout(() => {
-        console.log('[REGISTER FORM] Redirecting to:', `/${locale}`)
-        router.push(`/${locale}`)
-      }, 200)
+      if (!skipRedirect) {
+        setTimeout(() => {
+          console.log('[REGISTER FORM] Redirecting to:', `/${locale}`)
+          router.push(`/${locale}`)
+        }, 200)
+      } else {
+        onSuccess?.()
+      }
     }
   }, [registerStatus, router, locale, tt, dispatch])
 

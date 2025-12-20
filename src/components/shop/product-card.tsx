@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Heart, ShoppingCart, Eye, Package, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,13 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { ProductImageMask } from './product-image-mask'
 import { useAppSelector } from '@/state/hooks'
-import { useCart } from '@/components/layout/header'
+import { useCart } from '@/components/layout/cart-context-provider'
+import { useToast } from '@/hooks/use-toast'
+import { useAuthDialog } from '@/components/providers/auth-dialog-provider'
+import {
+  useAddToWishlistMutation,
+  useRemoveFromWishlistByProductMutation
+} from '@/state/api/wishlist-api-slice'
 
 interface ProductVariant {
   id: number
@@ -33,6 +39,7 @@ interface Product {
   rating?: number
   reviews?: number
   variants?: ProductVariant[]
+  is_wishlisted?: boolean | null
   sale?: {
     discount: number
     label?: string
@@ -61,20 +68,52 @@ export function ProductCard({
   const [selectedVariant, setSelectedVariant] = useState<number | null>(
     product.variants?.[0]?.id || null
   )
-  const [isInWishlist, setIsInWishlist] = useState(false)
   const [currentImage, setCurrentImage] = useState(product.image)
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
   const { cartRef } = useCart()
+  const { isAuthenticated } = useAppSelector((state) => state.user)
+  const toast = useToast()
+  const { openAuthDialog } = useAuthDialog()
 
-  const handleToggleWishlist = (e: React.MouseEvent) => {
+  // Wishlist mutations only - no query needed as product.is_wishlisted is provided by backend
+  const [addToWishlistApi, { isLoading: isAddingToWishlist }] = useAddToWishlistMutation()
+  const [removeFromWishlistApi, { isLoading: isRemovingFromWishlist }] = useRemoveFromWishlistByProductMutation()
+
+  // Use backend-provided wishlist state
+  const isInWishlist = product.is_wishlisted === true
+  const isWishlistLoading = isAddingToWishlist || isRemovingFromWishlist
+
+  const handleToggleWishlist = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsInWishlist(!isInWishlist)
-    onToggleWishlist?.(product.id)
-  }
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      openAuthDialog('login')
+      return
+    }
+
+    try {
+      if (isInWishlist) {
+        await removeFromWishlistApi({
+          productId: product.id,
+          variantId: selectedVariant || undefined,
+        }).unwrap()
+        toast.success('Retiré des favoris', { description: product.name })
+      } else {
+        await addToWishlistApi({
+          productId: product.id,
+          variantId: selectedVariant || undefined,
+        }).unwrap()
+        toast.success('Ajouté aux favoris', { description: product.name })
+      }
+      onToggleWishlist?.(product.id)
+    } catch (error) {
+      toast.error('Une erreur est survenue', { description: 'Impossible de mettre à jour les favoris' })
+    }
+  }, [isAuthenticated, isInWishlist, product.id, selectedVariant, addToWishlistApi, removeFromWishlistApi, onToggleWishlist])
+
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -105,27 +144,31 @@ export function ProductCard({
 
     // Also call the optional callback
     onAddToCart?.(product.id, selectedVariant || undefined)
-  }
+  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, selectedVariant, currentImage, onAddToCart])
 
-  const handleQuickView = (e: React.MouseEvent) => {
+  const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     onQuickView?.(product.id)
-  }
+  }, [product.id, onQuickView])
 
-  const handleVariantClick = (variant: ProductVariant) => {
+  const handleVariantClick = useCallback((variant: ProductVariant) => {
     setSelectedVariant(variant.id)
     if (variant.image) {
       setCurrentImage(variant.image)
       setImageError(false)
     }
-  }
+  }, [])
 
-  const discountPercentage = product.sale?.discount || 
-    (product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0)
+  // Memoize computed values
+  const discountPercentage = useMemo(() =>
+    product.sale?.discount ||
+    (product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0),
+    [product.sale?.discount, product.originalPrice, product.price]
+  )
 
-  const isLowStock = product.stock > 0 && product.stock <= 5
-  const isOutOfStock = product.stock === 0
+  const isLowStock = useMemo(() => product.stock > 0 && product.stock <= 5, [product.stock])
+  const isOutOfStock = useMemo(() => product.stock === 0, [product.stock])
 
   // Color mapping for variant visualization
   const colorMap: Record<string, string> = {
@@ -148,8 +191,9 @@ export function ProductCard({
 
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full max-w-[280px] mx-auto">
+      {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
-      <ProductImageMask className="aspect-[3/4] bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
+      <ProductImageMask className="aspect-square bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
         {/* Subtle backdrop pattern for better visibility */}
         <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
 
@@ -186,9 +230,9 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Quick Action Icons - Show on Hover */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm rounded-full px-2.5 py-2 shadow-lg border border-border/20">
+        {/* Quick Action Dock - Always visible and docked shape */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300">
+          <div className="flex items-center gap-1 bg-white rounded-[18px] px-3 py-2 shadow-md border border-border/20">
             <Button
               size="icon"
               variant="ghost"
@@ -198,18 +242,23 @@ export function ProductCard({
             >
               <Eye className="w-4 h-4" />
             </Button>
-            <Button
-              size="icon"
-              variant="ghost"
+            <button
               onClick={handleToggleWishlist}
+              disabled={isWishlistLoading}
               className={cn(
-                "h-8 w-8 rounded-full hover:bg-muted",
-                isInWishlist && "text-red-500"
+                "h-8 w-8 rounded-full transition-all duration-300 flex items-center justify-center border-0 outline-none focus:outline-none",
+                isInWishlist
+                  ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30 scale-105 cursor-pointer"
+                  : "bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-500 cursor-pointer",
+                isWishlistLoading && "opacity-50 cursor-not-allowed"
               )}
               title={isInWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
             >
-              <Heart className={cn("w-4 h-4", isInWishlist && "fill-current")} />
-            </Button>
+              <Heart className={cn(
+                "w-4 h-4 transition-all duration-300",
+                isInWishlist && "fill-current animate-in zoom-in-50"
+              )} />
+            </button>
             <Button
               size="icon"
               variant="ghost"

@@ -60,6 +60,7 @@ export const productsApi = createApi({
           params,
         };
       },
+      keepUnusedDataFor: 0,
       providesTags: (result) =>
         result
           ? [

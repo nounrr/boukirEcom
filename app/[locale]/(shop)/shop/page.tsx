@@ -10,10 +10,14 @@ import { filterStateToApiRequest, type FilterState } from "@/types/api/products"
 
 export default function ShopPage() {
   const t = useTranslations('shop')
+
+  // First fetch to get initial data and price range
+  const { data: initialData } = useGetProductsQuery({ page: 1, per_page: 20, in_stock_only: true, sort: 'newest' })
+
   const [filterState, setFilterState] = useState<FilterState>({
     categories: [],
     brands: [],
-    priceRange: [0, 10000],
+    priceRange: [initialData?.filters?.price_range?.min || 0, initialData?.filters?.price_range?.max || 10000],
     colors: [],
     units: [],
     search: '',
@@ -26,8 +30,8 @@ export default function ShopPage() {
   // Convert filter state to API request
   const apiFilters = useMemo(() => filterStateToApiRequest(filterState), [filterState])
 
-  // Fetch products with filters
-  const { data, isLoading, isFetching, error } = useGetProductsQuery(apiFilters)
+  // Fetch products with filters (capture refetch for manual refresh)
+  const { data, isLoading, isFetching, error, refetch } = useGetProductsQuery(apiFilters)
 
   // Extract metadata from API response
   const categories = data?.filters?.categories || []
@@ -49,9 +53,9 @@ export default function ShopPage() {
   }, [])
 
   const handleToggleWishlist = useCallback((productId: number) => {
-    console.log('Toggle wishlist:', productId)
-    // TODO: Implement wishlist toggle
-  }, [])
+    // Immediately refetch products to refresh is_wishlisted flags
+    refetch()
+  }, [refetch])
 
   const handleQuickView = useCallback((productId: number) => {
     console.log('Quick view:', productId)

@@ -28,16 +28,17 @@ export const baseQueryWithAuth = fetchBaseQuery({
 /**
  * Base query without authentication requirement
  * Used for public endpoints (products, categories, etc.)
+ * Optionally includes auth token if user is authenticated for personalization
  */
 export const baseQueryPublic = fetchBaseQuery({
   baseUrl: API_CONFIG.BASE_URL,
-  prepareHeaders: (headers) => {
-    // Optional: Add token if available for personalization
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
+  prepareHeaders: (headers, { getState }) => {
+    const state = getState() as RootState;
+    const accessToken = state.user.accessToken;
+
+    // Optionally add token if user is authenticated (for personalization like is_wishlisted)
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
     }
 
     headers.set('Content-Type', 'application/json');

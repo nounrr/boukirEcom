@@ -6,6 +6,7 @@ import { authApi } from './api/auth-api-slice';
 import { ordersApi } from './api/orders-api-slice';
 import { subscriptionApi } from './api/subscription-api-slice';
 import { cartApi } from './api/cart-api-slice';
+import { wishlistApi } from './api/wishlist-api-slice';
 import userReducer from './slices/user-slice';
 
 export const makeStore = () => {
@@ -18,6 +19,7 @@ export const makeStore = () => {
       [ordersApi.reducerPath]: ordersApi.reducer,
       [subscriptionApi.reducerPath]: subscriptionApi.reducer,
       [cartApi.reducerPath]: cartApi.reducer,
+      [wishlistApi.reducerPath]: wishlistApi.reducer,
       
       // Regular slices
       user: userReducer,
@@ -29,7 +31,8 @@ export const makeStore = () => {
         .concat(authApi.middleware)
         .concat(ordersApi.middleware)
         .concat(subscriptionApi.middleware)
-        .concat(cartApi.middleware),
+        .concat(cartApi.middleware)
+        .concat(wishlistApi.middleware),
   });
 
   setupListeners(store.dispatch);

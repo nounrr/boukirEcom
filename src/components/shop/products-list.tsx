@@ -48,31 +48,38 @@ export function ProductsList({
     : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
 
   // Transform API products to ProductCard format
-  const transformedProducts = products.map((product) => ({
-    id: product.id,
-    name: product.designation,
-    description: '',
-    price: product.prix_vente,
-    originalPrice: product.remise_client > 0 ? product.prix_vente / (1 - product.remise_client / 100) : undefined,
-    image: product.image_url || '',
-    category: product.categorie?.nom || '',
-    brand: product.brand?.nom,
-    unit: product.base_unit,
-    stock: product.quantite_disponible,
-    rating: 0,
-    reviews: 0,
-    variants: product.variants?.all?.map(v => ({
-      id: v.id,
-      name: v.type,
-      value: v.name,
-      available: v.available
-    })) || [],
-    sale: product.remise_client > 0 ? { discount: product.remise_client } : undefined,
-    badges: [
-      ...(product.has_promo ? [{ text: "NOUVEAU", variant: "new" as const }] : []),
-      ...(product.remise_client > 0 ? [{ text: "PROMO", variant: "promo" as const }] : [])
-    ]
-  }))
+  const transformedProducts = products.map((product) => {
+    // Use prix_promo if available, otherwise prix_vente
+    const currentPrice = product.prix_promo || product.prix_vente
+    const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
+
+    return {
+      id: product.id,
+      name: product.designation,
+      description: '',
+      price: currentPrice,
+      originalPrice: hasDiscount ? product.prix_vente : undefined,
+      image: product.image_url || '',
+      category: product.categorie?.nom || '',
+      brand: product.brand?.nom,
+      unit: product.base_unit,
+      stock: product.quantite_disponible,
+      rating: 0,
+      reviews: 0,
+      variants: product.variants?.all?.map(v => ({
+        id: v.id,
+        name: v.type,
+        value: v.name,
+        available: v.available
+      })) || [],
+      is_wishlisted: product.is_wishlisted || false,
+      sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
+      badges: [
+        ...(product.has_promo ? [{ text: "NOUVEAU", variant: "new" as const }] : []),
+        ...(product.pourcentage_promo > 0 ? [{ text: "PROMO", variant: "promo" as const }] : [])
+      ]
+    }
+  })
 
   return (
     <div className="flex-1 min-w-0">

@@ -1,5 +1,7 @@
 import { Header } from "@/components/layout/header"
 import { DynamicBreadcrumb } from "@/components/layout/dynamic-breadcrumb"
+import { CartContextProvider } from "@/components/layout/cart-context-provider"
+import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
 import type React from "react"
 
 export default function ShopLayout({
@@ -8,12 +10,16 @@ export default function ShopLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <DynamicBreadcrumb />
-      <main className="flex-1">
-        {children}
-      </main>
-    </div>
+    <CartContextProvider>
+      <AuthDialogProvider>
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <DynamicBreadcrumb />
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
+      </AuthDialogProvider>
+    </CartContextProvider>
   )
 }

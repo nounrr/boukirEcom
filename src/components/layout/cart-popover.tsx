@@ -55,6 +55,11 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   
+  // Debug: Log component mount
+  useEffect(() => {
+    console.log('🎨 CartPopover component mounted')
+  }, [])
+
   // Load from localStorage on mount (for guests)
   useEffect(() => {
     if (!isAuthenticated && typeof window !== 'undefined') {
@@ -82,52 +87,59 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
   }, [localItems, isAuthenticated])
   
   // Expose methods via ref
-  useImperativeHandle(ref, () => ({
-    open: () => setIsOpen(true),
-    close: () => setIsOpen(false),
-    addItem: async (item: CartItem) => {
-      if (isAuthenticated) {
-        // Authenticated: Call API
-        try {
-          await addToCartApi({
-            productId: item.productId,
-            variantId: item.variantId,
-            quantity: item.quantity,
-          }).unwrap()
-          console.log('🔐 Item added to backend cart')
-          refetchCart()
-        } catch (error) {
-          console.error('❌ Failed to add to backend cart:', error)
-        }
-      } else {
-        // Guest: Update local state + localStorage
-        setLocalItems(prev => {
-          const itemKey = item.variantId 
-            ? `${item.productId}-${item.variantId}`
-            : `${item.productId}`
-          
-          const existingIndex = prev.findIndex(i => {
-            const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
-            return key === itemKey
-          })
-          
-          if (existingIndex >= 0) {
-            const newItems = [...prev]
-            newItems[existingIndex].quantity += item.quantity
-            return newItems
-          } else {
-            return [...prev, item]
+  useImperativeHandle(ref, () => {
+    console.log('🔧 CartPopover ref initialized')
+    return {
+      open: () => setIsOpen(true),
+      close: () => setIsOpen(false),
+      addItem: async (item: CartItem) => {
+        if (isAuthenticated) {
+          // Authenticated: Call API
+          try {
+            await addToCartApi({
+              productId: item.productId,
+              variantId: item.variantId,
+              quantity: item.quantity,
+            }).unwrap()
+            console.log('🔐 Item added to backend cart')
+            refetchCart()
+          } catch (error) {
+            console.error('❌ Failed to add to backend cart:', error)
           }
-        })
-        console.log('👤 Item added to localStorage cart')
-      }
-    },
-  }))
+        } else {
+          // Guest: Update local state + localStorage
+          setLocalItems(prev => {
+            const itemKey = item.variantId
+              ? `${item.productId}-${item.variantId}`
+              : `${item.productId}`
+
+            const existingIndex = prev.findIndex(i => {
+              const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
+              return key === itemKey
+            })
+
+            if (existingIndex >= 0) {
+              const newItems = [...prev]
+              newItems[existingIndex].quantity += item.quantity
+              return newItems
+            } else {
+              return [...prev, item]
+            }
+          })
+          console.log('👤 Item added to localStorage cart')
+        }
+      },
+    }
+  }, [isAuthenticated, addToCartApi, refetchCart])
   
-  const handleRemoveItem = async (productId: number, variantId?: number) => {
+  const handleRemoveItem = async (item: CartItem) => {
     if (isAuthenticated) {
       try {
-        await removeFromCartApi({ productId, variantId }).unwrap()
+        if (!item.id) {
+          console.error('❌ Cart item ID missing')
+          return
+        }
+        await removeFromCartApi({ id: item.id }).unwrap()
         console.log('🔐 Item removed from backend')
         refetchCart()
       } catch (error) {
@@ -135,9 +147,9 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
       }
     } else {
       setLocalItems(prev => {
-        const itemKey = variantId ? `${productId}-${variantId}` : `${productId}`
-        return prev.filter(item => {
-          const key = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
+        const itemKey = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
+        return prev.filter(i => {
+          const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
           return key !== itemKey
         })
       })
@@ -145,15 +157,19 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
     }
   }
   
-  const handleUpdateQuantity = async (productId: number, variantId: number | undefined, quantity: number) => {
+  const handleUpdateQuantity = async (item: CartItem, quantity: number) => {
     if (quantity <= 0) {
-      handleRemoveItem(productId, variantId)
+      handleRemoveItem(item)
       return
     }
     
     if (isAuthenticated) {
       try {
-        await updateCartApi({ productId, variantId, quantity }).unwrap()
+        if (!item.id) {
+          console.error('❌ Cart item ID missing')
+          return
+        }
+        await updateCartApi({ id: item.id, quantity }).unwrap()
         console.log('🔐 Quantity updated in backend')
         refetchCart()
       } catch (error) {
@@ -161,13 +177,13 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
       }
     } else {
       setLocalItems(prev => {
-        const itemKey = variantId ? `${productId}-${variantId}` : `${productId}`
-        return prev.map(item => {
-          const key = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
+        const itemKey = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
+        return prev.map(i => {
+          const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
           if (key === itemKey) {
-            return { ...item, quantity }
+            return { ...i, quantity }
           }
-          return item
+          return i
         })
       })
       console.log('👤 Quantity updated in localStorage')
@@ -179,11 +195,9 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative hover:bg-muted/50 transition-all duration-200 h-9 w-9 group">
           <ShoppingCart className="w-4.5 h-4.5 text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
-          {itemCount > 0 && (
-            <Badge className="absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200 border border-background">
-              {itemCount}
-            </Badge>
-          )}
+          <Badge className="absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200 border border-background">
+            {itemCount}
+          </Badge>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[420px] p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
@@ -264,7 +278,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleUpdateQuantity(item.productId, item.variantId, item.quantity - 1)}
+                            onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
                             className="h-6 w-6 hover:bg-muted transition-colors"
                           >
                             <Minus className="w-3 h-3" />
@@ -275,7 +289,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleUpdateQuantity(item.productId, item.variantId, item.quantity + 1)}
+                            onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
                             className="h-6 w-6 hover:bg-muted transition-colors"
                           >
                             <Plus className="w-3 h-3" />
@@ -285,7 +299,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleRemoveItem(item.productId, item.variantId)}
+                          onClick={() => handleRemoveItem(item)}
                           className="h-6 w-6 hover:bg-destructive/10 hover:text-destructive transition-all ml-auto opacity-0 group-hover:opacity-100"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

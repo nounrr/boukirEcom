@@ -73,6 +73,7 @@ interface UseGoogleAuthOptions {
   redirectTo?: string
   autoSelect?: boolean
   context?: "signin" | "signup" | "use"
+  skipRedirect?: boolean
 }
 
 export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
@@ -83,6 +84,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
     redirectTo = "/",
     autoSelect = false,
     context = "signin",
+    skipRedirect = false,
   } = options
 
   const router = useRouter()
@@ -165,11 +167,13 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             onSuccess(result.user)
           }
 
-          // Redirect after short delay
-          setTimeout(() => {
-            router.push(redirectTo)
-            router.refresh()
-          }, 500)
+          // Redirect after short delay (unless skipRedirect is true)
+          if (!skipRedirect) {
+            setTimeout(() => {
+              router.push(redirectTo)
+              router.refresh()
+            }, 500)
+          }
         } else {
           console.error("[Google Auth] Authentication failed:", result.error)
 
@@ -198,7 +202,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         setIsLoading(false)
       }
     },
-    [role, router, redirectTo, toast, t, dispatch, onSuccess, onError]
+    [role, router, redirectTo, toast, t, dispatch, onSuccess, onError, skipRedirect]
   )
 
   // Initialize Google Identity Services
@@ -223,7 +227,6 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         context: context,
         ux_mode: "popup",
         itp_support: true,
-        use_fedcm_for_prompt: false, // Disable FedCM to avoid CORS issues
       })
 
       console.log("[Google Auth] Initialized successfully")

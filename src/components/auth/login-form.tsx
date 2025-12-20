@@ -20,9 +20,11 @@ import { setAuth } from "@/state/slices/user-slice"
 
 interface LoginFormProps {
   onSubmit?: (data: { email: string; password: string }) => Promise<void>
+  onSuccess?: () => void
+  skipRedirect?: boolean
 }
 
-export function LoginForm({ onSubmit: customOnSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = false }: LoginFormProps) {
   const t = useTranslations('auth')
   const tv = useTranslations('validation')
   const tp = useTranslations('placeholders')
@@ -38,6 +40,8 @@ export function LoginForm({ onSubmit: customOnSubmit }: LoginFormProps) {
   const { isLoading: isGoogleLoading, signIn: handleGoogleSignIn } = useGoogleAuth({
     context: "signin",
     redirectTo: `/${locale}`,
+    skipRedirect,
+    onSuccess: skipRedirect ? onSuccess : undefined,
   })
 
   const {
@@ -70,10 +74,14 @@ export function LoginForm({ onSubmit: customOnSubmit }: LoginFormProps) {
         console.log('[LOGIN FORM] User data dispatched to Redux store')
       }
       
-      setTimeout(() => {
-        console.log('[LOGIN FORM] Redirecting to:', `/${locale}`)
-        router.push(`/${locale}`)
-      }, 200)
+      if (!skipRedirect) {
+        setTimeout(() => {
+          console.log('[LOGIN FORM] Redirecting to:', `/${locale}`)
+          router.push(`/${locale}`)
+        }, 200)
+      } else {
+        onSuccess?.()
+      }
     }
   }, [loginStatus, router, locale, tt, dispatch])
 

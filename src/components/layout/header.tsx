@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { useAppSelector } from "@/state/hooks"
-import { CartPopover, type CartPopoverRef } from "./cart-popover"
+import { CartPopover } from "./cart-popover"
+import { WishlistIcon } from "./wishlist-icon"
+import { useCart } from "./cart-context-provider"
 import { Heart, Search, ShoppingCart, User, Menu, ChevronDown, Package, Store, Home, LogOut, Settings, X, UserCircle2 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
@@ -20,13 +22,6 @@ import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-
-// Create a context to share cart ref
-import { createContext, useContext } from 'react'
-
-const CartContext = createContext<{ cartRef: React.RefObject<CartPopoverRef | null> }>({ cartRef: { current: null } })
-
-export const useCart = () => useContext(CartContext)
 
 export function Header() {
   const t = useTranslations('header')
@@ -38,7 +33,9 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const cartRef = useRef<CartPopoverRef | null>(null)
+
+  // Get cartRef from context
+  const { cartRef } = useCart()
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -62,8 +59,7 @@ export function Header() {
   ]
 
   return (
-    <CartContext.Provider value={{ cartRef }}>
-      <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60 shadow-lg shadow-black/5 overflow-x-clip">
+    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/60 shadow-lg shadow-black/5 overflow-x-clip">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16">
         {/* Top Bar */}
         <div className="flex h-[75px] items-center justify-between gap-4">
@@ -150,14 +146,7 @@ export function Header() {
             </AnimatePresence>
 
             {/* Wishlist */}
-            <Link href={`/${locale}/wishlist`} className="group">
-              <Button variant="ghost" size="icon" className="relative hover:bg-muted/50 transition-all duration-200 h-9 w-9">
-                <Heart className="w-4.5 h-4.5 text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
-                <Badge className="absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200 border border-background">
-                  0
-                </Badge>
-              </Button>
-            </Link>
+            <WishlistIcon />
 
             {/* Cart */}
               <CartPopover ref={cartRef} />
@@ -333,6 +322,5 @@ export function Header() {
         </AnimatePresence>
       </div>
     </header>
-    </CartContext.Provider>
   )
 }

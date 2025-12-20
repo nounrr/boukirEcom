@@ -112,6 +112,7 @@ export interface ProductListItem {
     id: number;
     nom: string;
   };
+  is_wishlisted?: boolean;
 }
 
 export interface ProductDetail extends ProductListItem {
