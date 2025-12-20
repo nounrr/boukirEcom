@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Grid3x3, LayoutGrid, Loader2, ChevronLeft, ChevronRight, Package } from "lucide-react"
 import { useState, useCallback } from "react"
 import type { ProductListItem } from "@/types/api/products"
+import { useFilterState } from "./filter-state-provider"
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -39,6 +40,12 @@ export function ProductsList({
   onQuickView,
 }: ProductsListProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
+  const { isFiltersCollapsed } = useFilterState()
+
+  // Dynamic grid columns based on filter state
+  const gridColumns = isFiltersCollapsed
+    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
 
   // Transform API products to ProductCard format
   const transformedProducts = products.map((product) => ({
@@ -117,7 +124,7 @@ export function ProductsList({
 
       {/* Products Grid */}
       {isLoading ? (
-        <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+        <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-card rounded-lg border border-border/40 overflow-hidden">
               <div className="aspect-square bg-muted animate-pulse" />
@@ -157,7 +164,7 @@ export function ProductsList({
           </p>
         </div>
       ) : (
-        <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+              <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>
           {transformedProducts.map((product) => (
             <ProductCard
               key={product.id}

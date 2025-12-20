@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useFilterState } from './filter-state-provider'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
 
 interface ProductFiltersProps {
@@ -36,6 +37,7 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const { setIsFiltersCollapsed } = useFilterState()
   const [expandedCategories, setExpandedCategories] = useState<number[]>([])
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
@@ -157,6 +159,11 @@ export function ProductFilters({
       }
     }
   }, [])
+
+  // Sync collapsed state with provider
+  useEffect(() => {
+    setIsFiltersCollapsed(isCollapsed)
+  }, [isCollapsed, setIsFiltersCollapsed])
 
   const toggleCategory = useCallback((categoryId: number) => {
     setExpandedCategories(prev =>

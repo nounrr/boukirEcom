@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Heart, ShoppingCart, Eye, Package } from 'lucide-react'
+import { Heart, ShoppingCart, Eye, Package, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { ProductImageMask } from './product-image-mask'
+import { useAppSelector } from '@/state/hooks'
+import { useCart } from '@/components/layout/header'
 
 interface ProductVariant {
   id: number
@@ -62,6 +64,8 @@ export function ProductCard({
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [currentImage, setCurrentImage] = useState(product.image)
   const [imageError, setImageError] = useState(false)
+  const [isAddedToCart, setIsAddedToCart] = useState(false)
+  const { cartRef } = useCart()
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -73,6 +77,33 @@ export function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    const cartItem = {
+      productId: product.id,
+      variantId: selectedVariant || undefined,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: currentImage,
+      category: product.category,
+      stock: product.stock,
+    }
+
+    // Add item via cart ref (handles API + localStorage automatically)
+    if (cartRef?.current) {
+      cartRef.current.addItem(cartItem)
+
+      // Show success feedback
+      setIsAddedToCart(true)
+      setTimeout(() => setIsAddedToCart(false), 2000)
+
+      // Open cart with animation
+      setTimeout(() => {
+        cartRef.current?.open()
+      }, 300)
+    }
+
+    // Also call the optional callback
     onAddToCart?.(product.id, selectedVariant || undefined)
   }
 
@@ -116,16 +147,19 @@ export function ProductCard({
   }
 
   return (
-    <div className="group relative bg-white rounded-2xl overflow-visible hover:shadow-2xl transition-all duration-300 border border-border/20">
+    <div className="group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full max-w-[280px] mx-auto">
       {/* Image Section with Mask */}
-      <ProductImageMask>
+      <ProductImageMask className="aspect-[3/4] bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
+        {/* Subtle backdrop pattern for better visibility */}
+        <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
+
         {/* Product Image */}
         {currentImage && !imageError ? (
           <Image
             src={currentImage}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            className="object-cover transition-opacity duration-300 group-hover:opacity-95"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -152,14 +186,14 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Quick Action Icons - Always Visible */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 pb-2">
-          <div className="flex items-center gap-1 bg-white rounded-full px-4 py-3 shadow-xl border border-border/10">
+        {/* Quick Action Icons - Show on Hover */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="flex items-center gap-0.5 bg-white/95 backdrop-blur-sm rounded-full px-2.5 py-2 shadow-lg border border-border/20">
             <Button
               size="icon"
               variant="ghost"
               onClick={handleQuickView}
-              className="h-9 w-9 rounded-full hover:bg-muted"
+              className="h-8 w-8 rounded-full hover:bg-muted"
               title="Aperçu rapide"
             >
               <Eye className="w-4 h-4" />
@@ -169,7 +203,7 @@ export function ProductCard({
               variant="ghost"
               onClick={handleToggleWishlist}
               className={cn(
-                "h-9 w-9 rounded-full hover:bg-muted",
+                "h-8 w-8 rounded-full hover:bg-muted",
                 isInWishlist && "text-red-500"
               )}
               title={isInWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -181,24 +215,33 @@ export function ProductCard({
               variant="ghost"
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="h-9 w-9 rounded-full hover:bg-muted disabled:opacity-50"
+              className={cn(
+                "h-8 w-8 rounded-full transition-all duration-200",
+                isAddedToCart
+                  ? "bg-primary hover:bg-primary text-primary-foreground"
+                  : "hover:bg-muted disabled:opacity-50"
+              )}
               title="Ajouter au panier"
             >
-              <ShoppingCart className="w-4 h-4" />
+              {isAddedToCart ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                  <ShoppingCart className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </div>
       </ProductImageMask>
 
       {/* Content Section - Compact */}
-      <div className="p-4">
+      <div className="p-3">
         {/* Category */}
-        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
           {product.category}
         </p>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-[2.5rem]">
+        <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-[2rem]">
           {product.name}
         </h3>
 
@@ -211,15 +254,15 @@ export function ProductCard({
         )}
 
         {/* Price */}
-        <div className="mb-3">
+        <div className="mb-2">
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-foreground">
+            <span className="text-xl font-bold text-foreground">
               {product.price.toFixed(2)}
             </span>
-            <span className="text-sm text-muted-foreground">MAD</span>
+            <span className="text-xs text-muted-foreground">MAD</span>
           </div>
           {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-xs text-muted-foreground line-through">
               {product.originalPrice.toFixed(2)} MAD
             </span>
           )}
@@ -243,7 +286,7 @@ export function ProductCard({
                     }}
                     disabled={!variant.available}
                     className={cn(
-                      "w-8 h-8 rounded-full border-2 transition-all duration-200 relative",
+                      "w-7 h-7 rounded-full border-2 transition-all duration-200 relative",
                       selectedVariant === variant.id
                         ? "border-primary ring-2 ring-primary/20 scale-110"
                         : "border-border hover:border-primary/50",
@@ -275,7 +318,7 @@ export function ProductCard({
                   }}
                   disabled={!variant.available}
                   className={cn(
-                    "px-2.5 py-1 text-xs font-medium rounded-md border transition-all duration-200",
+                    "px-2 py-0.5 text-xs font-medium rounded-md border transition-all duration-200",
                     selectedVariant === variant.id
                       ? "bg-primary text-primary-foreground border-primary"
                       : "border-border hover:border-primary/50 hover:bg-muted/50",
@@ -288,7 +331,7 @@ export function ProductCard({
               )
             })}
             {product.variants.length > 5 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground">
                 +{product.variants.length - 5}
               </span>
             )}
@@ -297,8 +340,8 @@ export function ProductCard({
 
         {/* Low Stock Warning */}
         {isLowStock && (
-          <div className="mt-3">
-            <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
+          <div className="mt-2">
+            <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-[10px] px-2 py-0.5">
               Plus que {product.stock} en stock
             </Badge>
           </div>

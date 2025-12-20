@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryPublic } from '@/lib/base-query';
 import type { LoginCredentials, RegisterData, User, AuthResponse } from '@/types/auth';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-  }),
+  baseQuery: baseQueryPublic,
   tagTypes: ['Auth'],
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginCredentials>({

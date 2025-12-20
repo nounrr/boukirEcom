@@ -6,7 +6,6 @@ import { authApi } from './api/auth-api-slice';
 import { ordersApi } from './api/orders-api-slice';
 import { subscriptionApi } from './api/subscription-api-slice';
 import { cartApi } from './api/cart-api-slice';
-import cartReducer from './slices/cart-slice';
 import userReducer from './slices/user-slice';
 
 export const makeStore = () => {
@@ -21,7 +20,6 @@ export const makeStore = () => {
       [cartApi.reducerPath]: cartApi.reducer,
       
       // Regular slices
-      cart: cartReducer,
       user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>

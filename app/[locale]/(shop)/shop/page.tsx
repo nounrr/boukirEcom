@@ -2,6 +2,7 @@
 
 import { ProductFilters } from "@/components/shop/product-filters"
 import { ProductsList } from "@/components/shop/products-list"
+import { FilterStateProvider } from "@/components/shop/filter-state-provider"
 import { useTranslations } from "next-intl"
 import { useState, useCallback, useMemo } from "react"
 import { useGetProductsQuery } from "@/state/api/products-api-slice"
@@ -63,36 +64,38 @@ export default function ShopPage() {
   }, [])
 
   return (
-    <div className="bg-background">
-      {/* Main Content */}
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
-        <div className="flex gap-6">
-          {/* Filters Sidebar */}
-          <ProductFilters
-            onFilterChange={handleFilterChange}
-            categories={categories}
-            brands={brands}
-            availableColors={availableColors}
-            availableUnits={availableUnits}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            isLoading={isLoading || isFetching}
-          />
+    <FilterStateProvider>
+      <div className="bg-background">
+        {/* Main Content */}
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
+          <div className="flex gap-6">
+            {/* Filters Sidebar */}
+            <ProductFilters
+              onFilterChange={handleFilterChange}
+              categories={categories}
+              brands={brands}
+              availableColors={availableColors}
+              availableUnits={availableUnits}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              isLoading={isLoading || isFetching}
+            />
 
-          {/* Products List */}
-          <ProductsList
-            products={products}
-            isLoading={isLoading}
-            isFetching={isFetching}
-            error={error}
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            onQuickView={handleQuickView}
-          />
+            {/* Products List */}
+            <ProductsList
+              products={products}
+              isLoading={isLoading}
+              isFetching={isFetching}
+              error={error}
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onAddToCart={handleAddToCart}
+              onToggleWishlist={handleToggleWishlist}
+              onQuickView={handleQuickView}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </FilterStateProvider>
   )
 }

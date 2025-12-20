@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryPublic } from '@/lib/base-query';
 import type { Category } from '@/types/category';
 
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-  }),
+  baseQuery: baseQueryPublic,
   tagTypes: ['Categories'],
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({

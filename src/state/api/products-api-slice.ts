@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryPublic } from '@/lib/base-query';
 import { API_CONFIG } from '@/lib/api-config';
 import type {
   ProductFiltersRequest,
@@ -9,17 +10,7 @@ import type {
 
 export const productsApi = createApi({
   reducerPath: 'productsApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_CONFIG.BASE_URL,
-    prepareHeaders: (headers) => {
-      // Token handling is optional for public endpoints
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryPublic,
   tagTypes: ['Products'],
   endpoints: (builder) => ({
     // GET All Products with comprehensive filters and pagination

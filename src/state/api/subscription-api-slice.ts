@@ -1,18 +1,10 @@
-          import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryWithAuth } from '@/lib/base-query';
 import type { Subscription, PointsHistory } from '@/types/subscription';
 
 export const subscriptionApi = createApi({
   reducerPath: 'subscriptionApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ['Subscription'],
   endpoints: (builder) => ({
     getSubscription: builder.query<Subscription, void>({
