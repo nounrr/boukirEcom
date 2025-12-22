@@ -659,28 +659,34 @@ export function ProductFilters({
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block shrink-0 relative">
+      <div className={cn("hidden lg:block relative", isCollapsed ? "shrink-0" : "shrink-0")}>
         <div 
           className={cn(
-            "sticky top-20 bg-gradient-to-br from-background via-background to-background/95 backdrop-blur-md border-2 border-border/60 rounded-2xl shadow-2xl transition-all duration-300 ease-in-out",
-            isCollapsed ? "w-16 h-16 p-2 overflow-hidden" : "w-[400px] p-6 overflow-visible"
+            // Clean container: no border, no shadow
+            "sticky top-20 bg-background rounded-2xl transition-all duration-300 ease-in-out",
+            // Keep in flex flow; when collapsed do not reserve width
+            isCollapsed ? "w-0 p-0 overflow-visible" : "w-[360px] md:w-[400px] p-6 overflow-visible"
           )}
         >
           {/* Toggle Button */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={cn(
-              "rounded-full border-2 border-border/60 bg-gradient-to-br from-background to-muted shadow-lg hover:shadow-xl flex items-center justify-center hover:scale-110 hover:border-primary/60 z-10 ring-2 ring-background transition-all duration-300 ease-in-out cursor-pointer",
+              // More visible and attractive toggle
+              "rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 hover:scale-105 z-10 transition-all duration-300 ease-in-out cursor-pointer ring-2 ring-primary/30",
+              // Keep visible even when collapsed (at the page edge)
               isCollapsed 
-                ? "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12" 
+                ? "absolute top-0 -left-4 h-10 w-10" 
                 : "absolute -right-4 top-6 h-10 w-10"
             )}
             title={isCollapsed ? "Développer les filtres" : "Réduire les filtres"}
           >
             {isCollapsed ? (
-              <SlidersHorizontal className="w-5 h-5 text-primary" />
+              <>
+                <SlidersHorizontal className="w-5 h-5" />
+              </>
             ) : (
-              <ChevronLeft className="w-6 h-6 text-primary" />
+                <ChevronLeft className="w-6 h-6" />
             )}
           </button>
 

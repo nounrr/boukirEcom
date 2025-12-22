@@ -81,8 +81,10 @@ export function ProductsList({
     }
   })
 
+  const wrapperClasses = isFiltersCollapsed ? "flex-1 min-w-0 mx-auto xl:max-w-[1200px]" : "flex-1 min-w-0"
+
   return (
-    <div className="flex-1 min-w-0">
+    <div className={wrapperClasses}>
       {/* Top Bar - View Options & Results Count */}
       <div className="bg-background border border-border/40 rounded-lg p-3 mb-4">
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">

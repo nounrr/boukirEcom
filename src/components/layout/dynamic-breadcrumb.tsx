@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import * as React from "react"
 import { useLocale, useTranslations } from 'next-intl'
+import { useGetProductQuery } from '@/state/api/products-api-slice'
 
 import { 
   Breadcrumb,
@@ -28,9 +29,17 @@ export function DynamicBreadcrumb() {
   const locale = useLocale()
   const t = useTranslations('breadcrumb')
 
+  // Detect product ID from the current path to fetch product name
+  const pathParts = pathname.split('/').filter(Boolean)
+  const filteredPartsForId = pathParts.filter(part => !['fr', 'en', 'ar'].includes(part))
+  const productIdx = filteredPartsForId.indexOf('product')
+  const productId = productIdx !== -1 ? filteredPartsForId[productIdx + 1] : undefined
+  const { data: productData } = useGetProductQuery(productId as string, { skip: !productId })
+
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     'shop': Store,
     'products': Package,
+    'product': Package,
     'cart': ShoppingCart,
     'wishlist': Heart,
     'checkout': CreditCard,
@@ -78,10 +87,33 @@ export function DynamicBreadcrumb() {
         }
       }
 
+      // On product pages, show "Shop" instead of "Product" in the trail
+      if (part === 'product') {
+        return {
+          title: t('shop'),
+          href: `/${locale}/shop`,
+          active: false,
+          icon: iconMap['shop']
+        }
+      }
+
+      // Handle product ID (skip it as a segment since it's part of product route)
+      if (filteredParts[index - 1] === 'product' && !isNaN(Number(part))) {
+        const productName = productData?.designation || searchParams.get('name') || `Produit #${part}`
+        const partIndex = parts.indexOf(part)
+        return {
+          title: productName,
+          href: '/' + parts.slice(0, partIndex + 1).join('/'),
+          active: index === filteredParts.length - 1,
+          icon: iconMap['product']
+        }
+      }
+
       // Default handling for main pages
       const titleMap: Record<string, string> = {
         'shop': t('shop'),
         'products': t('products'),
+        'product': t('product'),
         'cart': t('cart'),
         'wishlist': t('wishlist'),
         'checkout': t('checkout'),
@@ -100,7 +132,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t])
+  }, [pathname, searchParams, t, productData?.designation, locale])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)
@@ -170,16 +202,18 @@ export function DynamicBreadcrumb() {
                   </BreadcrumbSeparator>
                   <BreadcrumbItem>
                     {item.active ? (
-                      <BreadcrumbPage className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-primary/10 text-primary max-w-[200px] truncate">
-                        {Icon && <Icon className="h-3.5 w-3.5 flex-shrink-0" />}
-                        <span className="text-sm font-semibold">{item.title}</span>
+                      <BreadcrumbPage className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 text-primary">
+                        {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+                        <span className="text-sm font-semibold inline-block truncate max-w-60 sm:max-w-90 md:max-w-[560px] lg:max-w-[720px]">
+                          {item.title}
+                        </span>
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink 
                         href={item.href} 
                         className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
                       >
-                        {Icon && <Icon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200 flex-shrink-0" />}
+                          {Icon && <Icon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200 shrink-0" />}
                         <span className="text-sm font-medium">{item.title}</span>
                         {item.filter && (
                           <span className="ml-1 text-xs text-muted-foreground/70 italic">

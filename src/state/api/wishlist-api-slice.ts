@@ -177,6 +177,18 @@ export const wishlistApi = createApi({
         action: response.action,
       }),
     }),
+
+    // GET wishlist suggestions
+    getWishlistSuggestions: builder.query<any[], { limit?: number }>({
+      query: ({ limit = 4 }) => ({
+        url: `${API_CONFIG.ENDPOINTS.WISHLIST}/suggestions`,
+        params: { limit },
+      }),
+      providesTags: ['Products'],
+      transformResponse: (response: any) => {
+        return response.suggestions || [];
+      },
+    }),
   }),
 });
 
@@ -188,4 +200,5 @@ export const {
   useCheckWishlistQuery,
   useClearWishlistMutation,
   useMoveToCartMutation,
+  useGetWishlistSuggestionsQuery,
 } = wishlistApi;

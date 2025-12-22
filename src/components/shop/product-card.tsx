@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useLocale } from 'next-intl'
 import { ProductImageMask } from './product-image-mask'
 import { useAppSelector } from '@/state/hooks'
 import { useCart } from '@/components/layout/cart-context-provider'
@@ -71,6 +73,7 @@ export function ProductCard({
   const [currentImage, setCurrentImage] = useState(product.image)
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
+  const locale = useLocale()
   const { cartRef } = useCart()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const toast = useToast()
@@ -149,10 +152,13 @@ export function ProductCard({
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    onQuickView?.(product.id)
-  }, [product.id, onQuickView])
+    // Navigate to product page instead of quick view modal
+    window.location.href = `/${locale}/product/${product.id}`
+  }, [product.id, locale])
 
-  const handleVariantClick = useCallback((variant: ProductVariant) => {
+  const handleVariantClick = useCallback((e: React.MouseEvent, variant: ProductVariant) => {
+    e.preventDefault()
+    e.stopPropagation()
     setSelectedVariant(variant.id)
     if (variant.image) {
       setCurrentImage(variant.image)
@@ -193,7 +199,8 @@ export function ProductCard({
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full max-w-[280px] mx-auto">
       {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
-      <ProductImageMask className="aspect-square bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
+      <Link href={`/${locale}/product/${product.id}`} className="block">
+        <ProductImageMask className="aspect-square bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
         {/* Subtle backdrop pattern for better visibility */}
         <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
 
@@ -231,7 +238,7 @@ export function ProductCard({
         )}
 
         {/* Quick Action Dock - Always visible and docked shape */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300" onClick={(e) => e.preventDefault()}>
           <div className="flex items-center gap-1 bg-white rounded-[18px] px-3 py-2 shadow-md border border-border/20">
             <Button
               size="icon"
@@ -280,10 +287,11 @@ export function ProductCard({
             </Button>
           </div>
         </div>
-      </ProductImageMask>
+        </ProductImageMask>
+      </Link>
 
       {/* Content Section - Compact */}
-      <div className="p-3">
+      <Link href={`/${locale}/product/${product.id}`} className="block p-3">
         {/* Category */}
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
           {product.category}
@@ -329,9 +337,7 @@ export function ProductCard({
                   <button
                     key={variant.id}
                     onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      if (variant.available) handleVariantClick(variant)
+                      if (variant.available) handleVariantClick(e, variant)
                     }}
                     disabled={!variant.available}
                     className={cn(
@@ -361,9 +367,7 @@ export function ProductCard({
                 <button
                   key={variant.id}
                   onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    if (variant.available) handleVariantClick(variant)
+                    if (variant.available) handleVariantClick(e, variant)
                   }}
                   disabled={!variant.available}
                   className={cn(
@@ -395,7 +399,7 @@ export function ProductCard({
             </Badge>
           </div>
         )}
-      </div>
+      </Link>
     </div>
   )
 }

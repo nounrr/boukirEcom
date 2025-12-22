@@ -3,34 +3,33 @@
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useGetWishlistQuery, useRemoveFromWishlistMutation, useMoveToCartMutation } from "@/state/api/wishlist-api-slice"
-import { useGetProductsQuery } from "@/state/api/products-api-slice"
+import { useGetWishlistQuery, useRemoveFromWishlistMutation, useMoveToCartMutation, useGetWishlistSuggestionsQuery } from "@/state/api/wishlist-api-slice"
 import { useAppSelector } from "@/state/hooks"
-import { Heart, ShoppingCart, Trash2, Package, Sparkles } from "lucide-react"
+import { Heart, ShoppingCart, Trash2, Package } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useLocale } from "next-intl"
 import { useToast } from "@/hooks/use-toast"
 import { useCart } from "@/components/layout/cart-context-provider"
-import { ProductCard } from "@/components/shop/product-card"
+import { ProductSuggestions } from "@/components/shop/product-suggestions"
+import { useRouter } from "next/navigation"
 
 export default function WishlistPage() {
   const locale = useLocale()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const { cartRef } = useCart()
   const toast = useToast()
+  const router = useRouter()
   
   const { data: wishlist, isLoading } = useGetWishlistQuery(undefined, {
     skip: !isAuthenticated,
   })
 
-  // Fetch suggested products
-  const { data: suggestedProducts } = useGetProductsQuery({
-    page: 1,
-    per_page: 4,
-    in_stock_only: true,
-    sort: 'popular',
-  })
+  // Fetch wishlist suggestions
+  const { data: suggestedProducts } = useGetWishlistSuggestionsQuery(
+    { limit: 4 },
+    { skip: !isAuthenticated }
+  )
 
   const [removeFromWishlist, { isLoading: isRemoving }] = useRemoveFromWishlistMutation()
   const [moveToCart, { isLoading: isMoving }] = useMoveToCartMutation()
@@ -104,33 +103,38 @@ export default function WishlistPage() {
         {wishlist?.items?.map((item) => {
           const hasPromo = item.hasPromo && item.priceAfterPromo && item.priceAfterPromo < item.price
           const discount = hasPromo && item.priceAfterPromo ? Math.round(((item.price - item.priceAfterPromo) / item.price) * 100) : 0
+          const productHref = `/${locale}/product/${item.productId}`
 
           return (
             <div
               key={item.id}
-              className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
+              className="group bg-card border border-border rounded-2xl p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-200 cursor-pointer"
+              onClick={() => router.push(productHref)}
             >
               <div className="flex gap-4">
                 {/* Product Image */}
-                <Link
-                  href={`/${locale}/product/${item.productId}`}
-                  className="shrink-0"
-                >
-                  <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted">
+                <Link href={productHref} className="shrink-0">
+                  <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-muted ring-1 ring-border">
                     {item.image ? (
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-200 group-hover:scale-[1.03]"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Package className="w-8 h-8 text-muted-foreground/30" />
                       </div>
                     )}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-x-2 bottom-2 flex justify-center pointer-events-none">
+                      <span className="rounded-full bg-background/80 backdrop-blur px-2 py-0.5 text-xs text-foreground shadow">
+                        Voir le produit
+                      </span>
+                    </div>
                     {hasPromo && (
-                      <Badge className="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 text-xs">
+                      <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground px-2 py-0.5 text-xs shadow">
                         -{discount}%
                       </Badge>
                     )}
@@ -139,10 +143,7 @@ export default function WishlistPage() {
 
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/${locale}/product/${item.productId}`}
-                    className="hover:text-primary transition-colors"
-                  >
+                  <Link href={productHref} className="hover:text-primary transition-colors">
                     <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
                       {item.name}
                     </h3>
@@ -183,7 +184,8 @@ export default function WishlistPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleRemove(item.id, item.name)}
+                    aria-label="Retirer des favoris"
+                    onClick={(e) => { e.stopPropagation(); handleRemove(item.id, item.name) }}
                     disabled={isRemoving}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   >
@@ -193,7 +195,8 @@ export default function WishlistPage() {
                   {item.inStock && item.stock > 0 && (
                     <Button
                       size="sm"
-                      onClick={() => handleMoveToCart(item.id, item.name)}
+                      aria-label="Ajouter au panier"
+                      onClick={(e) => { e.stopPropagation(); handleMoveToCart(item.id, item.name) }}
                       disabled={isMoving}
                       className="gap-2"
                     >
@@ -208,41 +211,7 @@ export default function WishlistPage() {
         })}
 
         {/* Suggestions Section */}
-        {suggestedProducts?.products && suggestedProducts.products.length > 0 && (
-          <div className="space-y-6 pt-8 border-t">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20">
-                <Sparkles className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Vous pourriez aimer</h2>
-                <p className="text-sm text-muted-foreground">Découvrez nos suggestions pour vous</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {suggestedProducts.products.slice(0, 4).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: product.id,
-                    name: product.designation,
-                    price: product.prix_promo || product.prix_vente,
-                    originalPrice: product.prix_promo ? product.prix_vente : undefined,
-                    image: product.image_url || '',
-                    category: product.base_unit || '',
-                    stock: product.quantite_disponible,
-                    is_wishlisted: product.is_wishlisted,
-                    sale: product.pourcentage_promo ? {
-                      discount: product.pourcentage_promo,
-                    } : undefined,
-                  }}
-                  viewMode="grid"
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        <ProductSuggestions products={suggestedProducts || []} />
       </div>
     </ShopPageLayout>
   )

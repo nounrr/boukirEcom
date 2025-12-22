@@ -107,6 +107,18 @@ export const cartApi = createApi({
       }),
       invalidatesTags: ['Cart'],
     }),
+
+    // GET cart suggestions
+    getCartSuggestions: builder.query<any[], { limit?: number }>({
+      query: ({ limit = 4 }) => ({
+        url: `${API_CONFIG.ENDPOINTS.CART}/suggestions`,
+        params: { limit },
+      }),
+      providesTags: ['Cart'],
+      transformResponse: (response: any) => {
+        return response.suggestions || [];
+      },
+    }),
   }),
 });
 
@@ -116,4 +128,5 @@ export const {
   useUpdateCartItemMutation,
   useRemoveFromCartMutation,
   useClearCartMutation,
+  useGetCartSuggestionsQuery,
 } = cartApi;
