@@ -27,6 +27,16 @@
     "previous": "السابق",
     "viewAll": "عرض الكل"
   },
+  "shop": {
+    "filters": "الفلاتر",
+    "productsLabel": "منتجات",
+    "tagline": "توصيل سريع • إرجاع سهل • دفع آمن",
+    "taglineShort": "توصيل سريع • دفع آمن",
+    "featuredTitle": "عروض مميزة",
+    "featuredDesc": "أفضل العروض المختارة لك",
+    "newArrivalsTitle": "وصل حديثاً",
+    "newArrivalsDesc": "أحدث المنتجات المضافة للمتجر"
+  },
   "nav": {
     "home": "الرئيسية",
     "shop": "المتجر",

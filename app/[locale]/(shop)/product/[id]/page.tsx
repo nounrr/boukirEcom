@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { useLocale } from "next-intl"
 import Image from "next/image"
-import { Heart, ShoppingCart, Package, Minus, Plus, Share2, Check } from "lucide-react"
+import { Heart, ShoppingCart, Package, Minus, Plus, Share2, Check, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -18,6 +18,8 @@ import {
 } from "@/state/api/wishlist-api-slice"
 import { useGetProductQuery } from "@/state/api/products-api-slice"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
+import { ProductGallery } from "@/components/shop/product-gallery"
+import { VariantSelector } from "@/components/shop/variant-selector"
 import { cn } from "@/lib/utils"
 
 export default function ProductPage() {
@@ -30,11 +32,24 @@ export default function ProductPage() {
 
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
+  const goPrevImage = () => setSelectedImage((i) => (i - 1 + images.length) % images.length)
+  const goNextImage = () => setSelectedImage((i) => (i + 1) % images.length)
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
 
   // Fetch product from API
   const { data: product, isLoading, isError, refetch } = useGetProductQuery(params.id as string)
+  // Initialize default unit selection (must be before conditional returns)
+  useEffect(() => {
+    const units = (product as any)?.units as Array<{ id: number; is_default: boolean }> | undefined
+    if (units && units.length > 0) {
+      const def = units.find(u => u.is_default) || units[0]
+      setSelectedUnitId(def?.id ?? null)
+    } else {
+      setSelectedUnitId(null)
+    }
+  }, [product])
 
   const [addToWishlistApi, { isLoading: isAddingToWishlist }] = useAddToWishlistMutation()
   const [removeFromWishlistApi, { isLoading: isRemovingFromWishlist }] = useRemoveFromWishlistByProductMutation()
@@ -61,8 +76,10 @@ export default function ProductPage() {
     setIsAddingToCart(true)
     const cartItem = {
       productId: product.id,
+      unitId: (activeUnit as any)?.id,
+      unitName: (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit,
       name: product.designation,
-      price: product.prix_promo || product.prix_vente,
+      price: currentPrice,
       quantity,
       image: product.image_url,
       category: product.categorie?.nom || 'Produit',
@@ -153,9 +170,8 @@ export default function ProductPage() {
   }
 
   const images = product.gallery?.length > 0 ? product.gallery : [{ id: 1, image_url: product.image_url, position: 0 }]
-  const currentPrice = product.prix_promo || product.prix_vente
   const hasDiscount = product.has_promo && product.prix_promo
-  const similarProducts = product.similar_products || []
+  const similarProducts = (product as any).suggestions || product.similar_products || []
 
   // Get available colors and sizes from variants (robust detection)
   const allVariants = product.variants || []
@@ -217,74 +233,45 @@ export default function ProductPage() {
     return `hsl(${hue}, 70%, 85%)`
   }
 
+
+
+  // Resolve active unit and variant-aware price
+  const activeUnit = (product as any)?.units?.find((u: any) => u.id === selectedUnitId) || null
+  const selectedVariantObj = (selectedVariant ? (product.variants || []).find((v: any) => v.id === selectedVariant) : null) || null
+  const variantPrice: number | null = selectedVariantObj ? (selectedVariantObj.prix_vente ?? (selectedVariantObj as any).price ?? null) : null
+  const baseUnitPrice: number = (activeUnit?.prix_vente ?? product.prix_vente) as number
+  const computedPriceBeforeDiscount: number = (variantPrice ?? baseUnitPrice) as number
+  const currentPrice: number = (hasDiscount && computedPriceBeforeDiscount)
+    ? Number((computedPriceBeforeDiscount * (1 - (product.pourcentage_promo || 0) / 100)).toFixed(2))
+    : Number((product.prix_promo ?? computedPriceBeforeDiscount).toFixed(2))
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left: Image Gallery */}
-          <div className="lg:col-span-7">
-            <div className="sticky top-4 space-y-3">
-              {/* Main Image */}
-              <div className="relative aspect-square rounded-lg overflow-hidden bg-muted border border-border/40">
-                {images[selectedImage]?.image_url ? (
-                  <Image
-                    src={images[selectedImage].image_url}
-                    alt={product.designation}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Package className="w-16 h-16 text-muted-foreground/30" />
-                  </div>
-                )}
-                
-                {hasDiscount && (
-                  <Badge className="absolute top-3 left-3 bg-red-500 hover:bg-red-500 text-white px-2 py-0.5 text-xs font-semibold">
-                    -{product.pourcentage_promo}%
-                  </Badge>
-                )}
-              </div>
-
-              {/* Thumbnail Gallery */}
-              {images.length > 1 && (
-                <div className="grid grid-cols-5 gap-2">
-                  {images.map((image, index) => (
-                    <button
-                      key={image.id}
-                      onClick={() => setSelectedImage(index)}
-                      className={cn(
-                        "relative aspect-square rounded-md overflow-hidden bg-muted border transition-all",
-                        selectedImage === index
-                          ? "border-primary border-2 ring-1 ring-primary/20"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <Image
-                        src={image.image_url}
-                        alt={`${product.designation} - ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="lg:col-span-6">
+            <ProductGallery
+              images={images}
+              selectedIndex={selectedImage}
+              onSelectedChange={setSelectedImage}
+              promoPercent={hasDiscount ? product.pourcentage_promo : null}
+              className=""
+            />
           </div>
 
           {/* Right: Product Info */}
-          <div className="lg:col-span-5 space-y-4">
+          <div className="lg:col-span-6 space-y-4">
             {/* Breadcrumb/Category */}
             {product.categorie?.nom && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{product.categorie.nom}</span>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
+                  <span className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {product.categorie.nom}</span>
+                </Badge>
                 {product.brand?.nom && (
-                  <>
-                    <span>•</span>
-                    <span>{product.brand.nom}</span>
-                  </>
+                  <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">{product.brand.nom}</span>
+                  </Badge>
                 )}
               </div>
             )}
@@ -301,7 +288,7 @@ export default function ProductPage() {
               </span>
               {hasDiscount && (
                 <span className="text-base text-muted-foreground line-through">
-                  {product.prix_vente.toFixed(2)} MAD
+                  {Number(baseUnitPrice).toFixed(2)} MAD
                 </span>
               )}
             </div>
@@ -324,107 +311,49 @@ export default function ProductPage() {
 
             <Separator />
 
-            {/* Color Variants */}
-            {colorVariants.length > 0 && (
+            <VariantSelector
+              colorVariants={colorVariants as any}
+              sizeVariants={sizeVariants as any}
+              otherVariants={otherVariants as any}
+              selectedId={selectedVariant}
+              onChange={(id, v) => {
+                setSelectedVariant(id)
+                if (v.image_url) setSelectedImage(0)
+              }}
+              onPreviewImage={(img) => {
+                if (img) {
+                  const idx = images.findIndex((g) => g.image_url === img)
+                  setSelectedImage(idx >= 0 ? idx : 0)
+                }
+              }}
+            />
+
+            {/* Units Selector */}
+            {(product.units && product.units.length > 0) && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">
-                    Couleur: {selectedVariant && colorVariants.find(v => v.id === selectedVariant)?.variant_name}
-                  </label>
+                  <label className="text-sm font-medium">Unité</label>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {colorVariants.map((variant) => (
+                  {product.units.map((u: any) => (
                     <button
-                      key={variant.id}
-                      onClick={() => setSelectedVariant(variant.id)}
-                      disabled={!variant.available}
-                      className={cn(
-                        "relative w-10 h-10 rounded-full border-2 transition-all",
-                        selectedVariant === variant.id
-                          ? "border-primary ring-2 ring-primary/20 scale-110"
-                          : "border-border hover:border-primary/50",
-                        !variant.available && "opacity-30 cursor-not-allowed"
-                      )}
-                      style={{ backgroundColor: getColorHex(variant.variant_name) }}
-                      title={variant.variant_name}
-                    >
-                      {selectedVariant === variant.id && (
-                        <Check className="w-5 h-5 absolute inset-0 m-auto text-white drop-shadow-md" />
-                      )}
-                      {['blanc','blanc pur','white'].includes(variant.variant_name?.toLowerCase?.() || '') && (
-                        <div className="absolute inset-0 rounded-full border border-border/30" />
-                      )}
-                      {!variant.available && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-full h-0.5 bg-destructive rotate-45" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Size Variants */}
-            {sizeVariants.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Taille</label>
-                  <button className="text-xs text-primary hover:underline">
-                    Guide des tailles
-                  </button>
-                </div>
-                <div className="grid grid-cols-6 gap-2">
-                  {sizeVariants.map((variant) => (
-                    <button
-                      key={variant.id}
-                      onClick={() => setSelectedVariant(variant.id)}
-                      disabled={!variant.available}
-                      className={cn(
-                        "px-3 py-2 text-sm font-medium rounded-md border transition-all",
-                        selectedVariant === variant.id
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border hover:border-primary/50 hover:bg-muted/50",
-                        !variant.available && "opacity-30 cursor-not-allowed line-through"
-                      )}
-                    >
-                      {variant.variant_name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Other Variants */}
-            {otherVariants.length > 0 && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{otherVariants[0]?.variant_type || 'Options'}</label>
-                <div className="flex flex-wrap gap-2">
-                  {otherVariants.map((variant) => (
-                    <button
-                      key={variant.id}
-                      onClick={() => setSelectedVariant(variant.id)}
-                      disabled={!variant.available}
+                      key={u.id}
+                      onClick={() => setSelectedUnitId(u.id)}
                       className={cn(
                         "px-3 py-1.5 text-sm font-medium rounded-md border transition-all",
-                        selectedVariant === variant.id
+                        selectedUnitId === u.id
                           ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border hover:border-primary/50 hover:bg-muted/50",
-                        !variant.available && "opacity-30 cursor-not-allowed line-through"
+                          : "border-border hover:border-primary/50 hover:bg-muted/50"
                       )}
+                      title={u.unit_name || u.name}
                     >
-                      {variant.variant_name}
+                      <span className="mr-2">{u.unit_name || u.name}</span>
+                      {typeof u.prix_vente === 'number' && (
+                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} MAD</span>
+                      )}
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Unit */}
-            {product.base_unit && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium">Unité:</span>
-                <span>{product.base_unit}</span>
               </div>
             )}
 

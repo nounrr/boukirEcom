@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
-import { useFilterState } from './filter-state-provider'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
 
 interface ProductFiltersProps {
@@ -23,6 +22,8 @@ interface ProductFiltersProps {
   minPrice?: number
   maxPrice?: number
   isLoading?: boolean
+  isCollapsed?: boolean
+  onCollapsedChange?: (collapsed: boolean) => void
 }
 
 export function ProductFilters({ 
@@ -33,12 +34,17 @@ export function ProductFilters({
   availableUnits = [],
   minPrice = 0,
   maxPrice = 10000,
-  isLoading = false
+  isLoading = false,
+  isCollapsed: controlledCollapsed,
+  onCollapsedChange,
 }: ProductFiltersProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const { setIsFiltersCollapsed } = useFilterState()
+  const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false)
+  const isCollapsed = typeof controlledCollapsed === 'boolean' ? controlledCollapsed : uncontrolledCollapsed
   const [expandedCategories, setExpandedCategories] = useState<number[]>([])
+  const [categorySearch, setCategorySearch] = useState('')
+  const debouncedCategorySearch = useDebounce(categorySearch, 300)
+  const [visibleCategoryCount, setVisibleCategoryCount] = useState(8)
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
     brands: true,
@@ -160,10 +166,12 @@ export function ProductFilters({
     }
   }, [])
 
-  // Sync collapsed state with provider
-  useEffect(() => {
-    setIsFiltersCollapsed(isCollapsed)
-  }, [isCollapsed, setIsFiltersCollapsed])
+  const setCollapsed = useCallback((value: boolean) => {
+    if (typeof controlledCollapsed !== 'boolean') {
+      setUncontrolledCollapsed(value)
+    }
+    onCollapsedChange?.(value)
+  }, [controlledCollapsed, onCollapsedChange])
 
   const toggleCategory = useCallback((categoryId: number) => {
     setExpandedCategories(prev =>
@@ -295,6 +303,29 @@ export function ProductFilters({
   }, [filters, minPrice, maxPrice])
 
   // Helper function to render category tree recursively
+  // Flatten categories to leaves for quick-pick grid
+  const flattenCategories = useCallback((nodes: ProductCategory[]): ProductCategory[] => {
+    const result: ProductCategory[] = []
+    const stack = [...nodes]
+    while (stack.length) {
+      const node = stack.pop()!
+      if (node.children && node.children.length) {
+        stack.push(...node.children)
+      } else {
+        result.push(node)
+      }
+    }
+    return result
+  }, [])
+
+  const quickCategories = useMemo(() => {
+    const leaves = flattenCategories(categories)
+    const filtered = debouncedCategorySearch
+      ? leaves.filter(c => c.nom.toLowerCase().includes(debouncedCategorySearch.toLowerCase()))
+      : leaves
+    return filtered.slice(0, visibleCategoryCount)
+  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories])
+
   const renderCategoryTree = useCallback((category: ProductCategory) => {
     const hasChildren = category.children && category.children.length > 0
     
@@ -444,7 +475,9 @@ export function ProductFilters({
             </button>
             {expandedSections.categories && (
               <div className="space-y-2 pt-1">
-                {categories.map((category) => renderCategoryTree(category))}
+                {categories.map((category) => (
+                  <div key={category.id}>{renderCategoryTree(category)}</div>
+                ))}
               </div>
             )}
           </div>
@@ -668,28 +701,6 @@ export function ProductFilters({
             isCollapsed ? "w-0 p-0 overflow-visible" : "w-[360px] md:w-[400px] p-6 overflow-visible"
           )}
         >
-          {/* Toggle Button */}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={cn(
-              // More visible and attractive toggle
-              "rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 hover:scale-105 z-10 transition-all duration-300 ease-in-out cursor-pointer ring-2 ring-primary/30",
-              // Keep visible even when collapsed (at the page edge)
-              isCollapsed 
-                ? "absolute top-0 -left-4 h-10 w-10" 
-                : "absolute -right-4 top-6 h-10 w-10"
-            )}
-            title={isCollapsed ? "Développer les filtres" : "Réduire les filtres"}
-          >
-            {isCollapsed ? (
-              <>
-                <SlidersHorizontal className="w-5 h-5" />
-              </>
-            ) : (
-                <ChevronLeft className="w-6 h-6" />
-            )}
-          </button>
-
           {/* Content with smooth opacity transition */}
           {!isCollapsed && (
             <div className="transition-opacity duration-300">

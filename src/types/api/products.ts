@@ -61,7 +61,8 @@ export interface ProductVariants {
 
 export interface ProductUnit {
   id: number;
-  name: string;
+  unit_name: string; // API field
+  name?: string; // optional alias for legacy
   conversion_factor: number;
   prix_vente: number | null;
   is_default: boolean;
@@ -141,6 +142,7 @@ export interface ProductDetail extends ProductListItem {
     gallery: ProductGalleryImage[];
   }[];
   similar_products: ProductListItem[];
+  suggestions?: ProductListItem[]; // optional suggestions list from API
   created_at?: string;
   updated_at?: string;
 }

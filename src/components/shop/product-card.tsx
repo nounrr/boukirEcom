@@ -9,6 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { ProductImageMask } from './product-image-mask'
+import { VariantSwatches } from './variant-swatches'
 import { useAppSelector } from '@/state/hooks'
 import { useCart } from '@/components/layout/cart-context-provider'
 import { useToast } from '@/hooks/use-toast'
@@ -55,6 +56,7 @@ interface Product {
 interface ProductCardProps {
   product: Product
   viewMode?: 'grid' | 'large'
+  isWide?: boolean
   onAddToCart?: (productId: number, variantId?: number) => void
   onToggleWishlist?: (productId: number) => void
   onQuickView?: (productId: number) => void
@@ -63,6 +65,7 @@ interface ProductCardProps {
 export function ProductCard({
   product,
   viewMode = 'grid',
+  isWide = false,
   onAddToCart,
   onToggleWishlist,
   onQuickView
@@ -196,11 +199,14 @@ export function ProductCard({
   }
 
   return (
-    <div className="group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full max-w-[280px] mx-auto">
+    <div className={cn(
+      "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full mx-auto",
+      isWide ? "max-w-none" : "max-w-[280px]"
+    )}>
       {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
       <Link href={`/${locale}/product/${product.id}`} className="block">
-        <ProductImageMask className="aspect-square bg-gradient-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
+        <ProductImageMask className="aspect-square bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
         {/* Subtle backdrop pattern for better visibility */}
         <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
 
@@ -298,7 +304,7 @@ export function ProductCard({
         </p>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-[2rem]">
+        <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-8">
           {product.name}
         </h3>
 
@@ -327,68 +333,18 @@ export function ProductCard({
 
         {/* Color/Variant Swatches */}
         {product.variants && product.variants.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {product.variants.slice(0, 5).map((variant) => {
-              const colorHex = colorMap[variant.name] || colorMap[variant.value]
-              const isColorVariant = colorHex !== undefined
-              
-              if (isColorVariant) {
-                return (
-                  <button
-                    key={variant.id}
-                    onClick={(e) => {
-                      if (variant.available) handleVariantClick(e, variant)
-                    }}
-                    disabled={!variant.available}
-                    className={cn(
-                      "w-7 h-7 rounded-full border-2 transition-all duration-200 relative",
-                      selectedVariant === variant.id
-                        ? "border-primary ring-2 ring-primary/20 scale-110"
-                        : "border-border hover:border-primary/50",
-                      !variant.available && "opacity-30 cursor-not-allowed"
-                    )}
-                    style={{ backgroundColor: colorHex }}
-                    title={variant.name || variant.value}
-                  >
-                    {(variant.name === 'Blanc' || variant.name === 'Blanc Pur' || 
-                      variant.value === 'Blanc' || variant.value === 'Blanc Pur') && (
-                      <div className="absolute inset-0 rounded-full border border-border/30" />
-                    )}
-                    {!variant.available && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-full h-0.5 bg-destructive rotate-45" />
-                      </div>
-                    )}
-                  </button>
-                )
+          <VariantSwatches
+            variants={product.variants}
+            selectedId={selectedVariant}
+            onSelect={(variant) => {
+              setSelectedVariant(variant.id)
+              if (variant.image) {
+                setCurrentImage(variant.image)
+                setImageError(false)
               }
-              
-              return (
-                <button
-                  key={variant.id}
-                  onClick={(e) => {
-                    if (variant.available) handleVariantClick(e, variant)
-                  }}
-                  disabled={!variant.available}
-                  className={cn(
-                    "px-2 py-0.5 text-xs font-medium rounded-md border transition-all duration-200",
-                    selectedVariant === variant.id
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "border-border hover:border-primary/50 hover:bg-muted/50",
-                    !variant.available && "opacity-30 cursor-not-allowed line-through"
-                  )}
-                  title={variant.name || variant.value}
-                >
-                  {variant.value}
-                </button>
-              )
-            })}
-            {product.variants.length > 5 && (
-              <span className="text-[10px] text-muted-foreground">
-                +{product.variants.length - 5}
-              </span>
-            )}
-          </div>
+            }}
+            max={5}
+          />
         )}
 
         {/* Low Stock Warning */}

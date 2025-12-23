@@ -2,10 +2,9 @@
 
 import { ProductCard } from "@/components/shop/product-card"
 import { Button } from "@/components/ui/button"
-import { Grid3x3, LayoutGrid, Loader2, ChevronLeft, ChevronRight, Package } from "lucide-react"
-import { useState, useCallback } from "react"
+import { ChevronLeft, ChevronRight, Package } from "lucide-react"
+import { useMemo } from "react"
 import type { ProductListItem } from "@/types/api/products"
-import { useFilterState } from "./filter-state-provider"
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -26,6 +25,8 @@ interface ProductsListProps {
   onAddToCart: (productId: number, variantId?: number) => void
   onToggleWishlist: (productId: number) => void
   onQuickView: (productId: number) => void
+  viewMode: 'grid' | 'large'
+  isFiltersCollapsed: boolean
 }
 
 export function ProductsList({
@@ -38,99 +39,63 @@ export function ProductsList({
   onAddToCart,
   onToggleWishlist,
   onQuickView,
+  viewMode,
+  isFiltersCollapsed,
 }: ProductsListProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
-  const { isFiltersCollapsed } = useFilterState()
 
-  // Dynamic grid columns based on filter state
-  const gridColumns = isFiltersCollapsed
-    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-    : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
-
-  // Transform API products to ProductCard format
-  const transformedProducts = products.map((product) => {
-    // Use prix_promo if available, otherwise prix_vente
-    const currentPrice = product.prix_promo || product.prix_vente
-    const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
-
-    return {
-      id: product.id,
-      name: product.designation,
-      description: '',
-      price: currentPrice,
-      originalPrice: hasDiscount ? product.prix_vente : undefined,
-      image: product.image_url || '',
-      category: product.categorie?.nom || '',
-      brand: product.brand?.nom,
-      unit: product.base_unit,
-      stock: product.quantite_disponible,
-      rating: 0,
-      reviews: 0,
-      variants: product.variants?.all?.map(v => ({
-        id: v.id,
-        name: v.type,
-        value: v.name,
-        available: v.available
-      })) || [],
-      is_wishlisted: product.is_wishlisted || false,
-      sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
-      badges: [
-        ...(product.has_promo ? [{ text: "NOUVEAU", variant: "new" as const }] : []),
-        ...(product.pourcentage_promo > 0 ? [{ text: "PROMO", variant: "promo" as const }] : [])
-      ]
+  // Dynamic grid columns based on filter state and view mode
+  const gridColumns = (() => {
+    if (viewMode === 'large') {
+      // Comfortable view: fewer columns, larger tiles
+      return isFiltersCollapsed
+        ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3'
+        : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
     }
-  })
+    // Compact grid
+    return isFiltersCollapsed
+      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+      : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+  })()
 
-  const wrapperClasses = isFiltersCollapsed ? "flex-1 min-w-0 mx-auto xl:max-w-[1200px]" : "flex-1 min-w-0"
+  // Transform API products to ProductCard format (memoized for performance)
+  const transformedProducts = useMemo(() => {
+    return products.map((product) => {
+      const currentPrice = product.prix_promo || product.prix_vente
+      const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
+
+      return {
+        id: product.id,
+        name: product.designation,
+        description: '',
+        price: currentPrice,
+        originalPrice: hasDiscount ? product.prix_vente : undefined,
+        image: product.image_url || '',
+        category: product.categorie?.nom || '',
+        brand: product.brand?.nom,
+        unit: product.base_unit,
+        stock: product.quantite_disponible,
+        rating: 0,
+        reviews: 0,
+        variants: product.variants?.all?.map(v => ({
+          id: v.id,
+          name: v.type,
+          value: v.name,
+          available: v.available
+        })) || [],
+        is_wishlisted: product.is_wishlisted || false,
+        sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
+        badges: [
+          ...(product.has_promo ? [{ text: "NOUVEAU", variant: "new" as const }] : []),
+          ...(product.pourcentage_promo > 0 ? [{ text: "PROMO", variant: "promo" as const }] : []),
+        ],
+      }
+    })
+  }, [products])
+
+  const wrapperClasses = "flex-1 min-w-0"
 
   return (
     <div className={wrapperClasses}>
-      {/* Top Bar - View Options & Results Count */}
-      <div className="bg-background border border-border/40 rounded-lg p-3 mb-4">
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-          {/* Results Count */}
-          <div className="flex items-center gap-3">
-            {isLoading ? (
-              <div className="h-5 w-40 bg-muted/50 animate-pulse rounded" />
-            ) : error ? (
-              <p className="text-sm text-destructive font-medium">Erreur lors du chargement</p>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{pagination?.total_items || 0}</span> produits
-                {pagination && pagination.total_items > 0 && (
-                  <span className="ml-2 text-xs">
-                    · Page {pagination.current_page}/{pagination.total_pages}
-                  </span>
-                )}
-              </p>
-            )}
-          </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden sm:inline">Vue:</span>
-            <div className="flex items-center gap-1 border border-border/40 rounded-lg p-1">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="h-8 w-8 p-0"
-              >
-                <Grid3x3 className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                variant={viewMode === 'large' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('large')}
-                className="h-8 w-8 p-0"
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Products Grid */}
       {isLoading ? (
         <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>
@@ -173,12 +138,13 @@ export function ProductsList({
           </p>
         </div>
       ) : (
-              <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>
+              <div className={`grid ${viewMode === 'large' ? 'gap-6' : 'gap-5'} ${gridColumns}`}>
           {transformedProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               viewMode={viewMode}
+              isWide={isFiltersCollapsed || viewMode === 'large'}
               onAddToCart={onAddToCart}
               onToggleWishlist={onToggleWishlist}
               onQuickView={onQuickView}

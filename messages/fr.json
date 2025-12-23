@@ -27,6 +27,16 @@
     "previous": "Précédent",
     "viewAll": "Voir tout"
   },
+  "shop": {
+    "filters": "Filtres",
+    "productsLabel": "produits",
+    "tagline": "Livraison rapide • Retours faciles • Paiement sécurisé",
+    "taglineShort": "Livraison rapide • Paiement sécurisé",
+    "featuredTitle": "Promotions du moment",
+    "featuredDesc": "Nos meilleures offres sélectionnées pour vous",
+    "newArrivalsTitle": "Nouveautés",
+    "newArrivalsDesc": "Les derniers produits ajoutés à la boutique"
+  },
   "nav": {
     "home": "Accueil",
     "shop": "Boutique",
