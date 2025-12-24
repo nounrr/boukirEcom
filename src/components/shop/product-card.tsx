@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { Heart, ShoppingCart, Eye, Package, Check } from 'lucide-react'
+import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -9,7 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { ProductImageMask } from './product-image-mask'
-import { VariantSwatches } from './variant-swatches'
+import { VariantSwatches, type SimpleVariant } from './variant-swatches'
 import { useAppSelector } from '@/state/hooks'
 import { useCart } from '@/components/layout/cart-context-provider'
 import { useToast } from '@/hooks/use-toast'
@@ -159,14 +159,14 @@ export function ProductCard({
     window.location.href = `/${locale}/product/${product.id}`
   }, [product.id, locale])
 
-  const handleVariantClick = useCallback((e: React.MouseEvent, variant: ProductVariant) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleVariantClick = useCallback((variant: SimpleVariant) => {
     setSelectedVariant(variant.id)
     if (variant.image) {
       setCurrentImage(variant.image)
       setImageError(false)
     }
+    // Update price if variant has different price (would come from API)
+    // For now we keep the base price
   }, [])
 
   // Memoize computed values
@@ -308,11 +308,42 @@ export function ProductCard({
           {product.name}
         </h3>
 
-        {/* Available Sizes/Variants Info */}
+        {/* Available Sizes/Variants Info with Icons */}
         {product.variants && product.variants.length > 0 && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-            <span className="font-medium">{product.variants.length}</span>
-            <span>variant{product.variants.length > 1 ? 's' : ''}</span>
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            {/* Color variants count */}
+            {product.variants.filter(v => {
+              const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
+              return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige'].some(color => name.includes(color));
+            }).length > 0 && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+                  <div className="w-2 h-2 rounded-full bg-linear-to-br from-red-400 via-blue-400 to-green-400" />
+                  <span>{product.variants.filter(v => {
+                    const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
+                    return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige'].some(color => name.includes(color));
+                  }).length}</span>
+                </Badge>
+              )}
+            {/* Size variants count */}
+            {product.variants.filter(v => {
+              const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
+              return /^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl)$/.test(name) || name.includes('taille');
+            }).length > 0 && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+                  <Ruler className="w-2.5 h-2.5" />
+                  <span>{product.variants.filter(v => {
+                    const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
+                    return /^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl)$/.test(name) || name.includes('taille');
+                  }).length}</span>
+                </Badge>
+              )}
+            {/* Unit display if available */}
+            {product.unit && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+                <Box className="w-2.5 h-2.5" />
+                <span>{product.unit}</span>
+              </Badge>
+            )}
           </div>
         )}
 
@@ -333,18 +364,16 @@ export function ProductCard({
 
         {/* Color/Variant Swatches */}
         {product.variants && product.variants.length > 0 && (
-          <VariantSwatches
-            variants={product.variants}
-            selectedId={selectedVariant}
-            onSelect={(variant) => {
-              setSelectedVariant(variant.id)
-              if (variant.image) {
-                setCurrentImage(variant.image)
-                setImageError(false)
-              }
-            }}
-            max={5}
-          />
+          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+            <VariantSwatches
+              variants={product.variants}
+              selectedId={selectedVariant}
+              onSelect={(variant) => {
+                handleVariantClick(variant)
+              }}
+              max={5}
+            />
+          </div>
         )}
 
         {/* Low Stock Warning */}

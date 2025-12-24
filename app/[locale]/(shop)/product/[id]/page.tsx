@@ -1,26 +1,25 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
-import { useLocale } from "next-intl"
-import Image from "next/image"
-import { Heart, ShoppingCart, Package, Minus, Plus, Share2, Check, Tag } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { useAppSelector } from "@/state/hooks"
-import { useToast } from "@/hooks/use-toast"
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useAuthDialog } from "@/components/providers/auth-dialog-provider"
+import { ProductGallery } from "@/components/shop/product-gallery"
+import { ProductSuggestions } from "@/components/shop/product-suggestions"
+import { VariantSelector } from "@/components/shop/variant-selector"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
+import { useGetProductQuery } from "@/state/api/products-api-slice"
 import {
   useAddToWishlistMutation,
   useRemoveFromWishlistByProductMutation
 } from "@/state/api/wishlist-api-slice"
-import { useGetProductQuery } from "@/state/api/products-api-slice"
-import { ProductSuggestions } from "@/components/shop/product-suggestions"
-import { ProductGallery } from "@/components/shop/product-gallery"
-import { VariantSelector } from "@/components/shop/variant-selector"
-import { cn } from "@/lib/utils"
+import { useAppSelector } from "@/state/hooks"
+import { Heart, Minus, Package, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
+import { useLocale } from "next-intl"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function ProductPage() {
   const params = useParams()
@@ -32,8 +31,9 @@ export default function ProductPage() {
 
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
-  const goPrevImage = () => setSelectedImage((i) => (i - 1 + images.length) % images.length)
-  const goNextImage = () => setSelectedImage((i) => (i + 1) % images.length)
+  const [displayImages, setDisplayImages] = useState<{ id: number; image_url: string }[]>([])
+  const goPrevImage = () => setSelectedImage((i) => (i - 1 + (displayImages?.length || 1)) % (displayImages?.length || 1))
+  const goNextImage = () => setSelectedImage((i) => (i + 1) % (displayImages?.length || 1))
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
@@ -50,6 +50,45 @@ export default function ProductPage() {
       setSelectedUnitId(null)
     }
   }, [product])
+
+  // Keep hooks before any conditional returns: initialize gallery images when product changes
+  useEffect(() => {
+    if (!product) {
+      setDisplayImages([])
+      setSelectedImage(0)
+      return
+    }
+    const baseGallery = (Array.isArray(product.gallery) && product.gallery.length > 0)
+      ? product.gallery
+      : [{ id: 1, image_url: product.image_url, position: 0 }]
+    const defaultImages = baseGallery.map(({ id, image_url }: any) => ({ id, image_url }))
+    setDisplayImages(defaultImages)
+    setSelectedImage(0)
+  }, [product?.id])
+
+  // Sync variant selection to a variant-specific gallery subset if available
+  useEffect(() => {
+    if (!product) return
+    const v = selectedVariant ? (product.variants || []).find((x: any) => x.id === selectedVariant) : null
+    const variantGallery = v?.gallery || []
+    if (variantGallery.length > 0) {
+      const imgs = variantGallery.map(({ id, image_url }: any) => ({ id, image_url }))
+      setDisplayImages(imgs)
+      if (v?.image_url) {
+        const idx = imgs.findIndex((g) => g.image_url === v.image_url)
+        setSelectedImage(idx >= 0 ? idx : 0)
+      } else {
+        setSelectedImage(0)
+      }
+    } else {
+      const fallback = ((product.gallery && product.gallery.length > 0)
+        ? product.gallery
+        : [{ id: 1, image_url: product.image_url, position: 0 }]
+      ).map(({ id, image_url }: any) => ({ id, image_url }))
+      setDisplayImages(fallback)
+      setSelectedImage(0)
+    }
+  }, [selectedVariant, product])
 
   const [addToWishlistApi, { isLoading: isAddingToWishlist }] = useAddToWishlistMutation()
   const [removeFromWishlistApi, { isLoading: isRemovingFromWishlist }] = useRemoveFromWishlistByProductMutation()
@@ -245,6 +284,8 @@ export default function ProductPage() {
     ? Number((computedPriceBeforeDiscount * (1 - (product.pourcentage_promo || 0) / 100)).toFixed(2))
     : Number((product.prix_promo ?? computedPriceBeforeDiscount).toFixed(2))
 
+
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
@@ -252,11 +293,17 @@ export default function ProductPage() {
           {/* Left: Image Gallery */}
           <div className="lg:col-span-6">
             <ProductGallery
-              images={images}
+              images={displayImages}
               selectedIndex={selectedImage}
               onSelectedChange={setSelectedImage}
               promoPercent={hasDiscount ? product.pourcentage_promo : null}
               className=""
+              altText={product.designation}
+              onMainClick={() => goNextImage()}
+              showIndex
+              maxHeight={520}
+              thumbSize={72}
+              thumbsOnLeft
             />
           </div>
 
@@ -322,7 +369,7 @@ export default function ProductPage() {
               }}
               onPreviewImage={(img) => {
                 if (img) {
-                  const idx = images.findIndex((g) => g.image_url === img)
+                  const idx = displayImages.findIndex((g) => g.image_url === img)
                   setSelectedImage(idx >= 0 ? idx : 0)
                 }
               }}

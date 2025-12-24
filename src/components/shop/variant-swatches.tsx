@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { Ruler, Package } from "lucide-react"
 
 export interface SimpleVariant {
   id: number
@@ -23,30 +24,48 @@ const colorMap: Record<string, string> = {
 
 export function VariantSwatches({ variants, selectedId, onSelect, max = 5 }: VariantSwatchesProps) {
   const list = variants.slice(0, max)
+
+  // Detect variant type for better UI
+  const detectVariantType = (variant: SimpleVariant): 'color' | 'size' | 'other' => {
+    const key = (variant.name || variant.value || '').toString().toLowerCase()
+
+    // Check if it's a color
+    if (Object.keys(colorMap).some(color => key.includes(color.toLowerCase()))) {
+      return 'color'
+    }
+
+    // Check if it's a size
+    if (/^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl|4xl|5xl)$/.test(key) || key.includes('taille')) {
+      return 'size'
+    }
+
+    return 'other'
+  }
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {list.map((variant) => {
         const key = (variant.name || variant.value || '').toString()
         const colorHex = colorMap[key] || colorMap[variant.value || '']
-        const isColorVariant = colorHex !== undefined
+        const variantType = detectVariantType(variant)
         const available = variant.available !== false
 
-        if (isColorVariant) {
+        if (variantType === 'color' && colorHex) {
           return (
             <button
               key={variant.id}
               onClick={() => available && onSelect(variant)}
               disabled={!available}
               className={cn(
-                "w-7 h-7 rounded-full border-2 transition-all duration-200 relative",
+                "w-7 h-7 rounded-full border-2 transition-all duration-200 relative bg-white hover:scale-110",
                 selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-110" : "border-border hover:border-primary/50",
                 !available && "opacity-30 cursor-not-allowed"
               )}
-              style={{ backgroundColor: colorHex }}
               title={variant.name || variant.value}
             >
+              <span className="absolute inset-0.5 rounded-full shadow-inner" style={{ backgroundColor: colorHex }} />
               {(key === 'Blanc' || key === 'Blanc Pur') && (
-                <div className="absolute inset-0 rounded-full border border-border/30" />
+                <div className="absolute inset-0.5 rounded-full border border-border/30" />
               )}
               {!available && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -57,24 +76,47 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5 }: Var
           )
         }
 
+        if (variantType === 'size') {
+          return (
+            <button
+              key={variant.id}
+              onClick={() => available && onSelect(variant)}
+              disabled={!available}
+              className={cn(
+                "px-2 py-1 text-xs font-semibold rounded-md border transition-all duration-200 min-w-8 flex items-center justify-center gap-1",
+                selectedId === variant.id
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                  : "border-border hover:border-primary/50 hover:bg-muted/50 text-foreground",
+                !available && "opacity-30 cursor-not-allowed line-through"
+              )}
+              title={variant.name || variant.value}
+            >
+              {(variant.value || variant.name)?.toUpperCase()}
+            </button>
+          )
+        }
+
         return (
           <button
             key={variant.id}
             onClick={() => available && onSelect(variant)}
             disabled={!available}
             className={cn(
-              "px-2 py-0.5 text-xs font-medium rounded-md border transition-all duration-200",
-              selectedId === variant.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50 hover:bg-muted/50",
+              "px-2 py-1 text-xs font-medium rounded-md border transition-all duration-200 flex items-center gap-1",
+              selectedId === variant.id
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border hover:border-primary/50 hover:bg-muted/50",
               !available && "opacity-30 cursor-not-allowed line-through"
             )}
             title={variant.name || variant.value}
           >
+            <Package className="w-3 h-3" />
             {variant.value || variant.name}
           </button>
         )
       })}
       {variants.length > max && (
-        <span className="text-[10px] text-muted-foreground">+{variants.length - max}</span>
+        <span className="text-[10px] font-medium text-muted-foreground px-1.5 py-0.5 bg-muted/50 rounded">+{variants.length - max}</span>
       )}
     </div>
   )

@@ -54,18 +54,19 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                 }}
                 disabled={!variant.available}
                 className={cn(
-                  "relative w-10 h-10 rounded-full border-2 transition-all",
-                  selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-110" : "border-border hover:border-primary/50",
+                  "relative w-10 h-10 rounded-full border-2 transition-all bg-white",
+                  selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
                   !variant.available && "opacity-30 cursor-not-allowed"
                 )}
-                style={{ backgroundColor: getColorHex(variant.variant_name) }}
                 title={variant.variant_name}
               >
-                {selectedId === variant.id && (
-                  <Check className="w-5 h-5 absolute inset-0 m-auto text-white drop-shadow-md" />
-                )}
+                <span
+                  aria-hidden
+                  className="absolute inset-1 rounded-full"
+                  style={{ backgroundColor: getColorHex(variant.variant_name) }}
+                />
                 {["blanc","blanc pur","white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
-                  <div className="absolute inset-0 rounded-full border border-border/30" />
+                  <div className="absolute inset-1 rounded-full border border-border/30" />
                 )}
                 {!variant.available && (
                   <div className="absolute inset-0 flex items-center justify-center">
