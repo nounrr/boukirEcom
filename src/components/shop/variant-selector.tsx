@@ -18,6 +18,7 @@ interface VariantSelectorProps {
   selectedId: number | null
   onChange: (id: number, variant: ApiVariant) => void
   onPreviewImage?: (imageUrl: string | null) => void
+  style?: 'circle' | 'pill'
 }
 
 const colorMap: Record<string, string> = {
@@ -36,7 +37,19 @@ function getColorHex(name?: string) {
   return `hsl(${hue}, 70%, 85%)`
 }
 
-export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVariants = [], selectedId, onChange, onPreviewImage }: VariantSelectorProps) {
+function getForeground(hex: string): string {
+  let h = hex.replace('#', '')
+  if (h.length === 3) {
+    h = h.split('').map((c) => c + c).join('')
+  }
+  const r = parseInt(h.substring(0, 2), 16)
+  const g = parseInt(h.substring(2, 4), 16)
+  const b = parseInt(h.substring(4, 6), 16)
+  const brightness = (r * 0.299 + g * 0.587 + b * 0.114)
+  return brightness > 180 ? '#111111' : '#ffffff'
+}
+
+export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVariants = [], selectedId, onChange, onPreviewImage, style = 'circle' }: VariantSelectorProps) {
   return (
     <div className="space-y-4">
       {colorVariants.length > 0 && (
@@ -45,36 +58,59 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
             <label className="text-sm font-medium">Couleur</label>
           </div>
           <div className="flex flex-wrap gap-2">
-            {colorVariants.map((variant) => (
-              <button
-                key={variant.id}
-                onClick={() => {
-                  onChange(variant.id, variant)
-                  onPreviewImage?.(variant.image_url || null)
-                }}
-                disabled={!variant.available}
-                className={cn(
-                  "relative w-10 h-10 rounded-full border-2 transition-all bg-white",
-                  selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
-                  !variant.available && "opacity-30 cursor-not-allowed"
-                )}
-                title={variant.variant_name}
-              >
-                <span
-                  aria-hidden
-                  className="absolute inset-1 rounded-full"
-                  style={{ backgroundColor: getColorHex(variant.variant_name) }}
-                />
-                {["blanc","blanc pur","white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
-                  <div className="absolute inset-1 rounded-full border border-border/30" />
-                )}
-                {!variant.available && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-full h-0.5 bg-destructive rotate-45" />
-                  </div>
-                )}
-              </button>
-            ))}
+            {colorVariants.map((variant) => {
+              const hex = getColorHex(variant.variant_name)
+              if (style === 'pill') {
+                const fg = getForeground(hex)
+                return (
+                  <button
+                    key={variant.id}
+                    onClick={() => {
+                      onChange(variant.id, variant)
+                      onPreviewImage?.(variant.image_url || null)
+                    }}
+                    disabled={!variant.available}
+                    className={cn(
+                      "px-3 py-1.5 text-sm font-semibold rounded-full border transition-all flex items-center gap-2",
+                      selectedId === variant.id ? "ring-2 ring-primary/20 scale-[1.02]" : "",
+                      !variant.available && "opacity-50 cursor-not-allowed line-through"
+                    )}
+                    style={{ backgroundColor: hex, color: fg }}
+                    title={variant.variant_name}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: hex, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)' }} />
+                    <span>{variant.variant_name}</span>
+                  </button>
+                )
+              }
+              // circle style: filled colored circle
+              return (
+                <button
+                  key={variant.id}
+                  onClick={() => {
+                    onChange(variant.id, variant)
+                    onPreviewImage?.(variant.image_url || null)
+                  }}
+                  disabled={!variant.available}
+                  className={cn(
+                    "relative w-10 h-10 rounded-full border-2 transition-all",
+                    selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
+                    !variant.available && "opacity-30 cursor-not-allowed"
+                  )}
+                  style={{ backgroundColor: hex }}
+                  title={variant.variant_name}
+                >
+                  {["blanc","blanc pur","white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
+                    <div className="absolute inset-0 rounded-full border border-border/30" />
+                  )}
+                  {!variant.available && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-full h-0.5 bg-destructive rotate-45" />
+                    </div>
+                  )}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}

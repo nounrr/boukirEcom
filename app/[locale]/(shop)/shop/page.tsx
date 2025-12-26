@@ -92,7 +92,7 @@ export default function ShopPage() {
                 <SlidersHorizontal className="h-4 w-4" />
                 {t('filters', { defaultValue: 'Filtres' })}
               </Button>
-            </div>
+            </div>  
 
             {/* Center: summary + compact tagline (centered) */}
             <div className="flex flex-col items-center justify-center text-center text-xs sm:text-sm">

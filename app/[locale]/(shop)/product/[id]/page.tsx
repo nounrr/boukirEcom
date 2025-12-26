@@ -5,6 +5,7 @@ import { useAuthDialog } from "@/components/providers/auth-dialog-provider"
 import { ProductGallery } from "@/components/shop/product-gallery"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { VariantSelector } from "@/components/shop/variant-selector"
+import { TechnicalSheet } from "@/components/shop/technical-sheet"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -355,7 +356,6 @@ export default function ProductPage() {
                 <Badge variant="destructive" className="text-xs">Rupture de stock</Badge>
               )}
             </div>
-
             <Separator />
 
             <VariantSelector
@@ -373,6 +373,7 @@ export default function ProductPage() {
                   setSelectedImage(idx >= 0 ? idx : 0)
                 }
               }}
+              style="circle"
             />
 
             {/* Units Selector */}
@@ -488,6 +489,13 @@ export default function ProductPage() {
             )}
           </div>
         </div>
+
+        {/* Technical Sheet - Full Width Below */}
+        {product.fiche_technique && (
+          <div className="mt-8">
+            <TechnicalSheet fiche={product.fiche_technique} />
+          </div>
+        )}
       </div>
 
       {/* Similar Products */}
