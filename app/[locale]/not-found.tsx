@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 type Props = {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale?: string }>;
 };
 
 export function generateStaticParams() {
@@ -11,7 +11,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || routing.defaultLocale;
   const t = await getTranslations({ locale, namespace: 'common' });
 
   return {
@@ -25,9 +26,10 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+    params: Promise<{ locale?: string }>;
 }) {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || routing.defaultLocale;
 
   // Ensure that the incoming locale is valid
   if (!routing.locales.includes(locale as any)) {

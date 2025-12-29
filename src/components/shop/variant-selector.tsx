@@ -100,7 +100,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                   style={{ backgroundColor: hex }}
                   title={variant.variant_name}
                 >
-                  {["blanc","blanc pur","white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
+                  {["blanc", "blanc pur", "white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
                     <div className="absolute inset-0 rounded-full border border-border/30" />
                   )}
                   {!variant.available && (

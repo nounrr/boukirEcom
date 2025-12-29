@@ -107,11 +107,6 @@ export default function ProductPage() {
 
   const handleAddToCart = async () => {
     if (!product) return
-    
-    if (!isAuthenticated) {
-      openAuthDialog('login')
-      return
-    }
 
     setIsAddingToCart(true)
     const cartItem = {

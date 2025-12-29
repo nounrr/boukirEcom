@@ -9,7 +9,7 @@ import {
   Shield, 
   Ruler, 
   Box, 
-  CheckCircle2, 
+  CheckCircle2,
   AlertTriangle,
   Grid3x3,
   Settings,

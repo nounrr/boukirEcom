@@ -123,6 +123,7 @@ export function ProductCard({
     e.preventDefault()
     e.stopPropagation()
 
+    // Guest users can add to cart via localStorage, which syncs on auth
     const cartItem = {
       productId: product.id,
       variantId: selectedVariant || undefined,
@@ -372,6 +373,7 @@ export function ProductCard({
                 handleVariantClick(variant)
               }}
               max={5}
+              assumeColor
             />
           </div>
         )}

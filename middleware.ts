@@ -1,6 +1,8 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './src/i18n/routing';
 
+// Use next-intl middleware with the routing configuration. Locale
+// detection behaviour is controlled via the routing config itself.
 export default createMiddleware(routing);
 
 export const config = {

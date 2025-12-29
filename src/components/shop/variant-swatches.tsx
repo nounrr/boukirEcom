@@ -17,10 +17,27 @@ interface VariantSwatchesProps {
   onSelect: (variant: SimpleVariant) => void
   max?: number
   style?: 'circle' | 'pill'
+  // When true, always treat variants as colors (for product cards)
+  assumeColor?: boolean
 }
 
+// Color map matching product-filters.tsx exactly
 const colorMap: Record<string, string> = {
-  'blanc': '#FFFFFF','blanc pur': '#FAFAFA','beige': '#D4C5B9','beige sable': '#C9B99B','noir': '#000000','gris': '#6B7280','gris perle': '#D3D3D3','rouge': '#EF4444','bleu': '#3B82F6','bleu ciel': '#87CEEB','vert': '#10B981','jaune': '#FBBF24','orange': '#F97316','violet': '#8B5CF6','marron': '#92400E'
+  'blanc': '#FFFFFF',
+  'blanc pur': '#FAFAFA',
+  'beige': '#D4C5B9',
+  'beige sable': '#C9B99B',
+  'noir': '#000000',
+  'gris': '#6B7280',
+  'gris perle': '#D3D3D3',
+  'rouge': '#EF4444',
+  'bleu': '#3B82F6',
+  'bleu ciel': '#87CEEB',
+  'vert': '#10B981',
+  'jaune': '#FBBF24',
+  'orange': '#F97316',
+  'violet': '#8B5CF6',
+  'marron': '#92400E'
 }
 
 function getForeground(hex: string): string {
@@ -49,7 +66,22 @@ function getColorHex(name?: string) {
   if (colorMap[key]) return colorMap[key]
   // Also handle common English color names
   const english: Record<string, string> = {
-    white: '#FFFFFF', black: '#000000', red: '#EF4444', blue: '#3B82F6', green: '#10B981', yellow: '#FBBF24', orange: '#F97316', purple: '#8B5CF6', brown: '#92400E', gray: '#6B7280', grey: '#6B7280', beige: '#D4C5B9'
+    white: '#FFFFFF',
+    black: '#000000',
+    red: '#EF4444',
+    blue: '#3B82F6',
+    green: '#10B981',
+    yellow: '#FBBF24',
+    orange: '#F97316',
+    purple: '#8B5CF6',
+    brown: '#92400E',
+    gray: '#6B7280',
+    grey: '#6B7280',
+    beige: '#D4C5B9',
+    // Extra explicit mappings for product card colors
+    pink: '#ec4899',
+    'light blue': '#60a5fa',
+    lightblue: '#60a5fa'
   }
   if (english[key]) return english[key]
 
@@ -62,16 +94,18 @@ function getColorHex(name?: string) {
   return `hsl(${hue}, 70%, 85%)`
 }
 
-export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style = 'circle' }: VariantSwatchesProps) {
+export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style = 'circle', assumeColor = false }: VariantSwatchesProps) {
   const list = variants.slice(0, max)
 
   // Detect variant type for better UI
   const detectVariantType = (variant: SimpleVariant): 'color' | 'size' | 'other' => {
-    const key = (variant.name || variant.value || '').toString().toLowerCase()
+    // Prefer the variant value (actual option like "Beige Sable")
+    // and fall back to name only if value is missing
+    const key = (variant.value || variant.name || '').toString().toLowerCase()
 
     // Check if it's a color
     const isCssColor = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(key) || /^rgb\s*\(/i.test(key) || /^hsl\s*\(/i.test(key)
-    const englishColorKeys = ['white','black','red','blue','green','yellow','orange','purple','brown','gray','grey','beige']
+    const englishColorKeys = ['white', 'black', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'brown', 'gray', 'grey', 'beige']
     if (isCssColor || Object.keys(colorMap).some(color => key.includes(color)) || englishColorKeys.some(color => key.includes(color))) {
       return 'color'
     }
@@ -87,10 +121,12 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {list.map((variant) => {
-        const keyRaw = (variant.name || variant.value || '').toString()
+        // Use the variant value (e.g. "Beige Sable") as the color key,
+        // just like product-filters does when mapping availableColors
+        const keyRaw = (variant.value || variant.name || '').toString()
         const keyLc = keyRaw.toLowerCase()
         const colorHex = colorMap[keyLc] || getColorHex(keyLc)
-        const variantType = detectVariantType(variant)
+        const variantType = assumeColor ? 'color' : detectVariantType(variant)
         const available = variant.available !== false
 
         if (variantType === 'color' && colorHex) {
@@ -114,15 +150,15 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               </button>
             )
           }
-          // circle style: filled colored circle
+          // circle style: filled colored circle (matching product-filters size and styling)
           return (
             <button
               key={variant.id}
               onClick={() => available && onSelect(variant)}
               disabled={!available}
               className={cn(
-                "w-7 h-7 rounded-full border-2 transition-all duration-200 hover:scale-110",
-                selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-110" : "border-border hover:border-primary/50",
+                "w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
+                selectedId === variant.id ? "border-primary scale-110 shadow-md" : "border-border hover:border-border/60 hover:scale-105",
                 !available && "opacity-30 cursor-not-allowed"
               )}
               style={{ backgroundColor: colorHex }}

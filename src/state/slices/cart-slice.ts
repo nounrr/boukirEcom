@@ -22,8 +22,8 @@ interface CartState {
 
 // Load initial state from localStorage
 const loadInitialState = (): CartState => {
-  const items = cartStorage.getCart()
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const items = cartStorage.getCart() as CartItem[]
+  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0)
 
   return {
     items,
@@ -39,7 +39,7 @@ const initialState: CartState = {
 };
 
 const calculateTotal = (items: CartItem[]): number => {
-  return items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  return items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0)
 }
 
 // Helper to check if user is authenticated

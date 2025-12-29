@@ -39,12 +39,12 @@ export function ShopPageLayout({
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
-              <IconComponent className="w-7 h-7 text-primary" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+              <IconComponent className="w-6 h-6 text-primary" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-foreground">{title}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h1>
                 {itemCount > 0 && (
                   <Badge variant="secondary" className="text-sm px-3 py-1">
                     {itemCount} {itemCount === 1 ? "article" : "articles"}

@@ -1,0 +1,251 @@
+"use client"
+
+import { useState } from "react"
+import { type FieldErrors, type UseFormRegister } from "react-hook-form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { User, Mail, Phone, MapPin, Building2, CreditCard, MessageSquare } from "lucide-react"
+
+interface CheckoutFormSectionProps {
+  register: UseFormRegister<any>
+  errors: any
+}
+
+const PHONE_COUNTRIES = [
+  { code: "MA", name: "Maroc", dialCode: "+212", flag: "🇲🇦" },
+  { code: "FR", name: "France", dialCode: "+33", flag: "🇫🇷" },
+  { code: "ES", name: "Espagne", dialCode: "+34", flag: "🇪🇸" },
+  { code: "DE", name: "Allemagne", dialCode: "+49", flag: "🇩🇪" },
+  { code: "IT", name: "Italie", dialCode: "+39", flag: "🇮🇹" },
+  { code: "GB", name: "Royaume-Uni", dialCode: "+44", flag: "🇬🇧" },
+  { code: "BE", name: "Belgique", dialCode: "+32", flag: "🇧🇪" },
+  { code: "NL", name: "Pays-Bas", dialCode: "+31", flag: "🇳🇱" },
+  { code: "CH", name: "Suisse", dialCode: "+41", flag: "🇨🇭" },
+  { code: "PT", name: "Portugal", dialCode: "+351", flag: "🇵🇹" },
+  { code: "DZ", name: "Algérie", dialCode: "+213", flag: "🇩🇿" },
+  { code: "TN", name: "Tunisie", dialCode: "+216", flag: "🇹🇳" },
+  { code: "EG", name: "Égypte", dialCode: "+20", flag: "🇪🇬" },
+  { code: "SA", name: "Arabie Saoudite", dialCode: "+966", flag: "🇸🇦" },
+  { code: "AE", name: "Émirats arabes unis", dialCode: "+971", flag: "🇦🇪" },
+  { code: "US", name: "États-Unis", dialCode: "+1", flag: "🇺🇸" },
+  { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
+  { code: "TR", name: "Turquie", dialCode: "+90", flag: "🇹🇷" },
+  { code: "SE", name: "Suède", dialCode: "+46", flag: "🇸🇪" },
+  { code: "NO", name: "Norvège", dialCode: "+47", flag: "🇳🇴" },
+]
+
+export function CheckoutFormSection({ register, errors }: CheckoutFormSectionProps) {
+  const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
+
+  return (
+    <div className="space-y-4">
+      {/* Shipping information */}
+      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-5 space-y-3.5 shadow-sm">
+        <div className="flex items-center gap-2 pb-2 border-b border-border/40">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <MapPin className="w-3.5 h-3.5 text-primary" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Informations de livraison</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-muted-foreground" />
+              Prénom
+            </Label>
+            <Input
+              {...register("shippingAddress.firstName")}
+              placeholder="Votre prénom"
+              className="h-9"
+              error={errors.shippingAddress?.firstName?.message as string | undefined}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-muted-foreground" />
+              Nom
+            </Label>
+            <Input
+              {...register("shippingAddress.lastName")}
+              placeholder="Votre nom"
+              className="h-9"
+              error={errors.shippingAddress?.lastName?.message as string | undefined}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+            Email
+          </Label>
+          <Input
+            {...register("email")}
+            type="email"
+            placeholder="vous@example.com"
+            className="h-9"
+            error={errors.email?.message as string | undefined}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium flex items-center gap-1.5">
+            <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+            Téléphone
+          </Label>
+          <div className="flex gap-2">
+            <Select
+              value={selectedCountry.code}
+              onValueChange={(code) => {
+                const found = PHONE_COUNTRIES.find((c) => c.code === code)
+                if (found) setSelectedCountry(found)
+              }}
+            >
+              <SelectTrigger className="w-[140px] h-[42px] bg-gradient-to-br from-background via-muted/20 to-muted/40 border-border/60 shadow-sm rounded-md">
+                <SelectValue>
+                  <span className="flex items-center gap-1.5">
+                    <span>{selectedCountry.flag}</span>
+                    <span className="text-xs">{selectedCountry.dialCode}</span>
+                  </span>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-card/95 border border-border/60 shadow-lg rounded-md">
+                {PHONE_COUNTRIES.map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
+                    <span className="flex items-center gap-2">
+                      <span>{country.flag}</span>
+                      <span className="text-xs">{country.name}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {country.dialCode}
+                      </span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              {...register("shippingAddress.phone")}
+              placeholder="612345678"
+              maxLength={15}
+              className="flex-1 h-10"
+              error={errors.shippingAddress?.phone?.message as string | undefined}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+            Adresse
+          </Label>
+          <Input
+            {...register("shippingAddress.address")}
+            placeholder="Adresse complète de livraison"
+            className="h-9"
+            error={errors.shippingAddress?.address?.message as string | undefined}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
+              Ville
+            </Label>
+            <Input
+              {...register("shippingAddress.city")}
+              placeholder="Ville"
+              className="h-9"
+              error={errors.shippingAddress?.city?.message as string | undefined}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">
+              Code postal (optionnel)
+            </Label>
+            <Input
+              {...register("shippingAddress.postalCode")}
+              placeholder="Code postal"
+              className="h-9"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Payment & notes */}
+      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-5 space-y-3.5 shadow-sm">
+        <div className="flex items-center gap-2 pb-2 border-b border-border/40">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <CreditCard className="w-3.5 h-3.5 text-primary" />
+          </div>
+          <h2 className="text-sm font-semibold text-foreground">Paiement</h2>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs font-medium">Méthode de paiement</Label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              {
+                value: "cash_on_delivery",
+                label: "À la livraison",
+                icon: "💵",
+              },
+              { value: "card", label: "Carte bancaire", icon: "💳" },
+              {
+                value: "bank_transfer",
+                label: "Virement bancaire",
+                icon: "🏦",
+              },
+            ].map((option) => (
+              <label
+                key={option.value}
+                className="group relative flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background hover:bg-accent/50 hover:border-primary/30 transition-all cursor-pointer text-xs"
+              >
+                <input
+                  type="radio"
+                  value={option.value}
+                  {...register("paymentMethod")}
+                  className="peer sr-only"
+                />
+                <div className="absolute inset-0 rounded-lg border-2 border-primary opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                <span className="text-base">{option.icon}</span>
+                <span className="font-medium">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          {errors.paymentMethod && (
+            <p className="text-[10px] text-destructive mt-0.5">
+              {errors.paymentMethod.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium flex items-center gap-1.5">
+            <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
+            Remarques (optionnel)
+          </Label>
+          <textarea
+            {...register("notes")}
+            rows={2}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+            placeholder="Instructions spéciales pour la livraison..."
+          />
+          {errors.notes && (
+            <p className="text-[10px] text-destructive mt-0.5">
+              {errors.notes.message}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

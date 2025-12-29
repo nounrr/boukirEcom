@@ -116,7 +116,7 @@ export interface ProductListItem {
   is_wishlisted?: boolean;
 }
 
-export interface ProductDetail extends ProductListItem {
+export interface ProductDetail extends Omit<ProductListItem, 'variants'> {
   description?: string;
   description_ar?: string;
   description_en?: string;

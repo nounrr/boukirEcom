@@ -122,7 +122,7 @@ export const registerSchema = z.object({
 export const addressSchema = z.object({
   firstName: z.string().min(2, { message: 'Le prénom est requis' }),
   lastName: z.string().min(2, { message: 'Le nom est requis' }),
-  phone: z.string().regex(/^(\+212|0)[5-7]\d{8}$/, { message: 'Numéro de téléphone invalide' }),
+  phone: z.string().min(6, { message: 'Numéro de téléphone invalide' }).max(15, { message: 'Numéro de téléphone trop long' }),
   address: z.string().min(10, { message: 'L\'adresse doit contenir au moins 10 caractères' }),
   city: z.string().min(2, { message: 'La ville est requise' }),
   postalCode: z.string().optional(),
@@ -133,7 +133,7 @@ export const addressSchema = z.object({
 export const checkoutSchema = z.object({
   shippingAddress: addressSchema,
   billingAddress: addressSchema,
-  paymentMethod: z.enum(['cash_on_delivery', 'credit_card', 'bank_transfer']),
+  paymentMethod: z.enum(['cash_on_delivery', 'card', 'bank_transfer']),
   notes: z.string().max(500).optional(),
   pointsToRedeem: z.number().min(0).optional(),
 });

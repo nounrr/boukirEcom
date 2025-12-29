@@ -11,18 +11,81 @@ import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
+import { useState, useEffect } from "react"
+
+// Keep this key in sync with CART_STORAGE_KEY used in cart-popover
+const CART_STORAGE_KEY = 'boukir_guest_cart'
+
+interface LocalCartItem {
+  id?: number
+  productId: number
+  variantId?: number
+  unitId?: number
+  unitName?: string
+  name: string
+  price: number
+  quantity: number
+  image: string
+  category?: string
+  stock?: number
+}
 
 export default function CartPage() {
   const locale = useLocale()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const toast = useToast()
   
-  const { data: cart, isLoading } = useGetCartQuery(undefined, {
+  // State for localStorage cart (guest users)
+  const [localCart, setLocalCart] = useState<LocalCartItem[]>([])
+  const [localCartLoading, setLocalCartLoading] = useState(true)
+
+  // Load localStorage cart on mount
+  useEffect(() => {
+    console.log('[CartPage] mount/useEffect, isAuthenticated =', isAuthenticated)
+    if (!isAuthenticated) {
+      try {
+        const stored = localStorage.getItem(CART_STORAGE_KEY)
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          console.log('[CartPage] loaded from localStorage:', parsed)
+          setLocalCart(parsed)
+        }
+      } catch (error) {
+        console.error('Failed to load cart from localStorage:', error)
+      }
+    }
+    setLocalCartLoading(false)
+  }, [isAuthenticated])
+
+  // Save to localStorage when localCart changes
+  useEffect(() => {
+    if (!isAuthenticated && !localCartLoading) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(localCart))
+      } catch (error) {
+        console.error('Failed to save cart to localStorage:', error)
+      }
+    }
+  }, [localCart, isAuthenticated, localCartLoading])
+
+  const { data: cart, isLoading: apiLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
   })
 
-  const cartItems = cart?.items || []
+  // Use API cart for authenticated users, localStorage for guests
+  const cartItems = isAuthenticated ? (cart?.items || []) : localCart
+  const isLoading = isAuthenticated ? apiLoading : localCartLoading
   const isEmpty = !isLoading && cartItems.length === 0
+  const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
+  console.log('[CartPage] state snapshot', {
+    isAuthenticated,
+    apiLoading,
+    localCartLoading,
+    cartItemsLength: cartItems.length,
+    isEmpty,
+    cartItems,
+  })
 
   // Fetch cart suggestions
   const { data: suggestedProducts, isLoading: isSuggestionsLoading } = useGetCartSuggestionsQuery(
@@ -38,20 +101,36 @@ export default function CartPage() {
   const handleQuantityChange = async (itemId: number, newQuantity: number, productName: string) => {
     if (newQuantity < 1) return
 
-    try {
-      await updateCartItem({ id: itemId, quantity: newQuantity }).unwrap()
+    if (isAuthenticated) {
+    // API update for authenticated users
+      try {
+        await updateCartItem({ id: itemId, quantity: newQuantity }).unwrap()
+        toast.success("Quantité mise à jour", { description: productName })
+      } catch (error) {
+        toast.error("Erreur", { description: "Impossible de mettre à jour la quantité" })
+      }
+    } else {
+      // localStorage update for guests
+      setLocalCart(prev => prev.map(item =>
+        item.productId === itemId ? { ...item, quantity: newQuantity } : item
+      ))
       toast.success("Quantité mise à jour", { description: productName })
-    } catch (error) {
-      toast.error("Erreur", { description: "Impossible de mettre à jour la quantité" })
     }
   }
 
   const handleRemove = async (itemId: number, productName: string) => {
-    try {
-      await removeFromCart({ id: itemId }).unwrap()
+    if (isAuthenticated) {
+    // API remove for authenticated users
+      try {
+        await removeFromCart({ id: itemId }).unwrap()
+        toast.success("Retiré du panier", { description: productName })
+      } catch (error) {
+        toast.error("Erreur", { description: "Impossible de retirer le produit" })
+      }
+    } else {
+      // localStorage remove for guests
+      setLocalCart(prev => prev.filter(item => item.productId !== itemId))
       toast.success("Retiré du panier", { description: productName })
-    } catch (error) {
-      toast.error("Erreur", { description: "Impossible de retirer le produit" })
     }
   }
 
@@ -101,7 +180,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
               <div
-                key={item.id}
+                key={item.id || item.productId}
                 className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
               >
                 <div className="flex gap-4">
@@ -152,7 +231,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-r-none"
-                            onClick={() => handleQuantityChange(item.id!, item.quantity - 1, item.name)}
+                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity - 1, item.name)}
                             disabled={isUpdating || item.quantity <= 1}
                           >
                             <Minus className="w-3 h-3" />
@@ -164,7 +243,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-l-none"
-                            onClick={() => handleQuantityChange(item.id!, item.quantity + 1, item.name)}
+                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, item.name)}
                             disabled={isUpdating || item.quantity >= (item.stock || 999)}
                           >
                             <Plus className="w-3 h-3" />
@@ -196,7 +275,7 @@ export default function CartPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemove(item.id!, item.name)}
+                      onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, item.name)}
                       disabled={isRemoving}
                       className="hover:bg-destructive/10 hover:text-destructive"
                     >
@@ -217,7 +296,7 @@ export default function CartPage() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Sous-total</span>
-                    <span className="font-medium">{cart?.total.toFixed(2)} MAD</span>
+                    <span className="font-medium">{cartTotal.toFixed(2)} MAD</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Livraison</span>
@@ -225,7 +304,7 @@ export default function CartPage() {
                   </div>
                   <div className="border-t pt-3 flex justify-between">
                     <span className="font-semibold">Total</span>
-                    <span className="text-xl font-bold text-primary">{cart?.total.toFixed(2)} MAD</span>
+                    <span className="text-xl font-bold text-primary">{cartTotal.toFixed(2)} MAD</span>
                   </div>
                 </div>
 
