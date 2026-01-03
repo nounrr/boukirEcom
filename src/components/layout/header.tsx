@@ -66,7 +66,7 @@ export function Header() {
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2.5 flex-shrink-0 group">
             <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shadow-md shadow-primary/15 group-hover:shadow-lg group-hover:shadow-primary/25 transition-all duration-300 ring-1 ring-primary/10 group-hover:ring-primary/20">
-              <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
+              <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain h-auto" />
             </div>
             <span className="font-bold text-lg hidden sm:block bg-gradient-to-r from-foreground via-foreground/95 to-foreground/90 bg-clip-text text-transparent group-hover:from-primary group-hover:via-primary/90 group-hover:to-primary/80 transition-all duration-300">
               Boukir

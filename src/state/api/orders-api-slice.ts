@@ -31,6 +31,7 @@ const mapOrderItemsFromApi = (items: any[] | undefined): OrderItem[] | undefined
     subtotal: Number(item.subtotal ?? 0),
     discountPercentage: item.discount_percentage ?? null,
     discountAmount: item.discount_amount ?? null,
+    imageUrl: item.image_url ?? null,
   }));
 };
 
@@ -183,6 +184,7 @@ export const ordersApi = createApi({
           shipping_country: data.shippingCountry,
           payment_method: data.paymentMethod ?? 'cash_on_delivery',
           customer_notes: data.customerNotes,
+          promo_code: data.promoCode,
           use_cart: data.useCart !== undefined ? data.useCart : true,
           items: data.items?.map((item) => ({
             product_id: item.productId,

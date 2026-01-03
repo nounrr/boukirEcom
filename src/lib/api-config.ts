@@ -13,6 +13,7 @@ export const API_CONFIG = {
     CART: '/api/ecommerce/cart',
     ORDERS: '/api/ecommerce/orders',
     WISHLIST: '/api/ecommerce/wishlist',
+    PROMO_VALIDATE: '/api/ecommerce/promo/validate',
   },
   TIMEOUT: 30000, // 30 seconds
 } as const;

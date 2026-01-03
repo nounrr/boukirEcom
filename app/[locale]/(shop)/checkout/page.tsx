@@ -1,100 +1,133 @@
 "use client"
 
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useState, useTransition, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
 import { z } from "zod"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useAppSelector } from "@/state/hooks"
-import { useGetCartQuery, useUpdateCartItemMutation } from "@/state/api/cart-api-slice"
-import type { CartItem } from "@/state/api/cart-api-slice"
-import { useCreateOrderMutation } from "@/state/api/orders-api-slice"
-import { checkoutSchema } from "@/lib/validations"
-import { useToast } from "@/hooks/use-toast"
-import { CheckoutFormSection } from "@/components/shop/checkout-form"
+import { Input } from "@/components/ui/input"
+import CheckoutWizard from "@/components/shop/checkout/checkout-wizard"
+import ShippingInfoStep from "@/components/shop/checkout/shipping-info-step"
+import PaymentStep from "@/components/shop/checkout/payment-step"
+import OrderSummaryStep from "@/components/shop/checkout/order-summary-step"
+import OrderCartSummary from "@/components/shop/checkout/order-cart-summary"
+import { ShoppingCart, ChevronLeft, ChevronRight, Check, Package } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
-import { ShoppingCart, Plus, Minus } from "lucide-react"
+import { useGetCartQuery } from "@/state/api/cart-api-slice"
+import type { CartItem as APICartItem } from "@/state/api/cart-api-slice"
+import { useCreateOrderMutation } from "@/state/api/orders-api-slice"
+import { useAppSelector, useAppDispatch } from "@/state/hooks"
+import { clearCart } from "@/state/slices/cart-slice"
+import { cartStorage } from "@/lib/cart-storage"
 
-// Keep this key in sync with CART_STORAGE_KEY used in cart-popover and cart page
-const CART_STORAGE_KEY = "boukir_guest_cart"
-
-// Extend existing checkout schema to add customer email (required for guests)
-// and relax phone validation to support international formats while keeping a
-// reasonable max length for international numbers
-const extendedCheckoutSchema = checkoutSchema.extend({
-  shippingAddress: checkoutSchema.shape.shippingAddress.extend({
+// Validation schema
+const checkoutSchema = z.object({
+  shippingAddress: z.object({
+    firstName: z.string().min(2, { message: "Le prénom doit contenir au moins 2 caractères" }),
+    lastName: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
     phone: z
       .string()
       .min(6, { message: "Numéro de téléphone invalide" })
       .max(15, { message: "Numéro de téléphone trop long" }),
+    address: z.string().min(5, { message: "L'adresse doit contenir au moins 5 caractères" }),
+    city: z.string().min(2, { message: "La ville doit contenir au moins 2 caractères" }),
+    postalCode: z.string().optional(),
   }),
+  billingAddress: z
+    .object({
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      phone: z.string().optional(),
+      address: z.string().optional(),
+      city: z.string().optional(),
+      postalCode: z.string().optional(),
+    })
+    .optional(),
+  paymentMethod: z.enum(["cash_on_delivery", "card", "bank_transfer", "mobile_payment"], {
+    message: "Veuillez sélectionner une méthode de paiement",
+  }),
+  // Card payment fields
+  cardholderName: z.string().min(3, { message: "Le nom du titulaire est requis" }).optional().or(z.literal("")),
+  cardNumber: z.string().min(13, { message: "Numéro de carte invalide" }).optional().or(z.literal("")),
+  cardExpiry: z.string().min(5, { message: "Date d'expiration requise" }).optional().or(z.literal("")),
+  cardCVV: z.string().min(3, { message: "CVV invalide" }).max(4).optional().or(z.literal("")),
+  notes: z.string().optional(),
   email: z.string().email({ message: "Email invalide" }),
 })
 
-type CheckoutFormValues = z.infer<typeof extendedCheckoutSchema>
+type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 export default function CheckoutPage() {
   const locale = useLocale()
   const router = useRouter()
-  const { isAuthenticated, user } = useAppSelector((state) => state.user)
-  const toast = useToast()
+  const dispatch = useAppDispatch()
 
-  // Load cart items: backend cart for authenticated users, localStorage for guests
-  const { data: backendCart } = useGetCartQuery(undefined, {
-    skip: !isAuthenticated,
+  // Get user state
+  const user = useAppSelector((state) => state.user.user)
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated)
+
+  // Fetch cart data from API (only for authenticated users)
+  const { data: cartData, isLoading: isCartLoading } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated, // Skip API call for guest users
+    refetchOnMountOrArgChange: true,
   })
 
-  const [guestItems, setGuestItems] = useState<CartItem[]>([])
-  const [guestCartLoading, setGuestCartLoading] = useState(true)
+  // Create order mutation
+  const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation()
 
-  useEffect(() => {
-    if (!isAuthenticated && typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem(CART_STORAGE_KEY)
-        if (stored) {
-          const parsed: CartItem[] = JSON.parse(stored)
-          setGuestItems(parsed)
-        }
-      } catch (error) {
-        console.error("Failed to load guest cart from localStorage:", error)
-      }
+  // Wizard step state
+  const [currentStep, setCurrentStep] = useState(1)
+
+  // Promo code state
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [promoCodeValue, setPromoCodeValue] = useState("")
+
+  const wizardSteps = useMemo(() => [
+    { id: 1, title: "Livraison", description: "Informations" },
+    { id: 2, title: "Paiement", description: "Méthode" },
+    { id: 3, title: "Confirmation", description: "Vérification" },
+  ], [])
+
+  // Transform cart items - use API cart for authenticated users, localStorage for guests
+  const items: APICartItem[] = useMemo(() => {
+    if (isAuthenticated) {
+      return cartData?.items || []
     }
-    setGuestCartLoading(false)
-  }, [isAuthenticated])
+    // For guest users, read directly from localStorage
+    const localItems = cartStorage.getCart()
+    return localItems as APICartItem[]
+  }, [isAuthenticated, cartData])
 
-  const items: CartItem[] = useMemo(
-    () => (isAuthenticated ? backendCart?.items || [] : guestItems || []),
-    [isAuthenticated, backendCart?.items, guestItems]
-  )
+  const { itemsCount, subtotal } = useMemo(() => ({
+    itemsCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+  }), [items])
 
-  const itemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shippingCost: number = 0
-  const total = subtotal + shippingCost
+  const total = useMemo(() => subtotal - promoDiscount + shippingCost, [subtotal, promoDiscount, shippingCost])
 
-  const [createOrder, { isLoading: isCreating }] = useCreateOrderMutation()
   const [isPending, startTransition] = useTransition()
-  const [updateCartItem, { isLoading: isUpdating }] = useUpdateCartItemMutation()
-
-  const isCartEmpty = !items.length && !guestCartLoading
+  const isProcessing = isPending || isCreatingOrder
+  const isCartEmpty = !items.length
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
+    trigger,
+    watch,
+    setValue,
   } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(extendedCheckoutSchema) as any,
-    mode: "onBlur",
+    resolver: zodResolver(checkoutSchema) as any,
+    mode: "onChange",
     defaultValues: {
       shippingAddress: {
-        firstName: user?.prenom || "",
-        lastName: user?.nom || "",
+        firstName: "",
+        lastName: "",
         phone: "",
         address: "",
         city: "",
@@ -109,229 +142,267 @@ export default function CheckoutPage() {
         postalCode: "",
       },
       paymentMethod: "cash_on_delivery",
+      cardholderName: "",
+      cardNumber: "",
+      cardExpiry: "",
+      cardCVV: "",
       notes: "",
-      email: user?.email || "",
+      email: "",
     },
   })
 
-  const onSubmit: SubmitHandler<CheckoutFormValues> = (values) => {
+  // Watch form values for summary step
+  const formValues = watch()
+
+  // Handle promo code applied
+  const handlePromoApplied = useCallback((discount: number, code: string) => {
+    setPromoDiscount(discount)
+    setPromoCodeValue(code)
+  }, [])
+
+  // Handle promo code removed
+  const handlePromoRemoved = useCallback(() => {
+    setPromoDiscount(0)
+    setPromoCodeValue("")
+  }, [])
+
+  const onSubmit: SubmitHandler<CheckoutFormValues> = useCallback(async (values) => {
     if (!items.length) {
-      toast.error("Votre panier est vide")
       return
     }
 
-    const shipping = values.shippingAddress
-
     startTransition(async () => {
       try {
-        const order = await createOrder({
-          customerName: `${shipping.firstName} ${shipping.lastName}`.trim(),
+        // Prepare order data
+        const orderData: any = {
+          customerName: `${values.shippingAddress.firstName} ${values.shippingAddress.lastName}`,
           customerEmail: values.email,
-          customerPhone: shipping.phone,
-          shippingAddressLine1: shipping.address,
-          shippingCity: shipping.city,
+          customerPhone: values.shippingAddress.phone,
+          shippingAddressLine1: values.shippingAddress.address,
           shippingAddressLine2: undefined,
+          shippingCity: values.shippingAddress.city,
           shippingState: undefined,
-          shippingPostalCode: shipping.postalCode,
+          shippingPostalCode: values.shippingAddress.postalCode || undefined,
           shippingCountry: "Morocco",
           paymentMethod: values.paymentMethod,
-          customerNotes: values.notes,
-          // Authenticated users checkout from backend cart, guests send explicit items
+          customerNotes: values.notes || undefined,
+          promoCode: promoCodeValue || undefined,
+          // For authenticated users: use cart from backend
+          // For guest users: send items explicitly
           useCart: isAuthenticated,
-          items: !isAuthenticated
-            ? items.map((item) => ({
-                productId: item.productId,
-                variantId: item.variantId,
-                quantity: item.quantity,
-              }))
-            : undefined,
-        }).unwrap()
-
-        toast.success("Commande créée avec succès", {
-          description: `Numéro de commande ${order.orderNumber}`,
-        })
-
-        // Clear guest cart after successful order
-        if (!isAuthenticated && typeof window !== "undefined") {
-          localStorage.removeItem(CART_STORAGE_KEY)
+          // Send items explicitly for guest users
+          items: !isAuthenticated ? items.map(item => ({
+            productId: item.productId,
+            variantId: item.variantId || undefined,
+            quantity: item.quantity,
+          })) : undefined,
         }
 
-        // Redirect to orders page (we'll show order history there)
+        console.log("🛒 Creating order with data:", {
+          ...orderData,
+          isAuthenticated,
+          itemsCount: items.length,
+          subtotal,
+          total,
+        })
+
+        // Create order
+        const order = await createOrder(orderData).unwrap()
+
+        console.log("✅ Order created successfully:", {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          totalAmount: order.totalAmount,
+          status: order.status,
+        })
+
+        // Clear cart for guest users (authenticated users' cart is cleared by backend)
+        if (!isAuthenticated) {
+          console.log("🧹 Clearing guest cart from localStorage")
+          dispatch(clearCart())
+        }
+
+        // Redirect to orders page
+        console.log("➡️  Redirecting to orders page...")
         router.push(`/${locale}/orders`)
       } catch (error: any) {
-        console.error("Failed to create order", error)
-        toast.error("Impossible de créer la commande", {
-          description: error?.data?.message || "Veuillez vérifier vos informations et réessayer.",
+        console.error("❌ Failed to create order:", error)
+        console.error("Error details:", {
+          message: error?.data?.message || error?.message,
+          status: error?.status,
+          data: error?.data,
         })
+        // Show error to user
+        alert(error?.data?.message || "Échec de la création de la commande. Veuillez réessayer.")
       }
     })
-  }
+  }, [items, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch])
 
-  const handleQuantityChange = (item: CartItem, newQuantity: number) => {
-    if (newQuantity < 1) return
+  // Navigate between steps with validation
+  const goToNextStep = useCallback(async () => {
+    let isValid = false
 
-    if (isAuthenticated) {
-      if (!item.id) return
-
-      updateCartItem({ id: item.id, quantity: newQuantity })
-        .unwrap()
-        .catch((error: any) => {
-          console.error("Failed to update cart item quantity", error)
-          toast.error("Impossible de mettre à jour la quantité")
-        })
+    if (currentStep === 1) {
+      isValid = await trigger(["shippingAddress", "email"])
+    } else if (currentStep === 2) {
+      // Check if card payment is selected and validate card fields
+      const paymentMethod = watch("paymentMethod")
+      if (paymentMethod === "card") {
+        isValid = await trigger(["paymentMethod", "cardholderName", "cardNumber", "cardExpiry", "cardCVV"])
+      } else {
+        isValid = await trigger("paymentMethod")
+      }
     } else {
-      setGuestItems((prev) => {
-        const updated = prev.map((i) => {
-          const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
-          const itemKey = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
-          if (key === itemKey) {
-            return { ...i, quantity: newQuantity }
-          }
-          return i
-        })
-
-        try {
-          if (typeof window !== "undefined") {
-            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(updated))
-          }
-        } catch (error) {
-          console.error("Failed to persist guest cart quantity change", error)
-        }
-
-        return updated
-      })
+      isValid = true
     }
-  }
+
+    if (isValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, wizardSteps.length))
+    }
+  }, [currentStep, trigger, watch, wizardSteps.length])
+
+  const goToPreviousStep = useCallback(() => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1))
+  }, [])
 
   return (
-    <ShopPageLayout
-      title="Finaliser la commande"
-      subtitle="Renseignez vos informations pour valider votre achat"
-      icon="cart"
-      itemCount={itemsCount}
-      isEmpty={isCartEmpty}
-      emptyState={{
-        icon: <ShoppingCart className="w-10 h-10 text-muted-foreground" />,
-        title: "Votre panier est vide",
-        description:
-          "Ajoutez des produits à votre panier avant de passer à la commande.",
-        actionLabel: "Revenir à la boutique",
-        actionHref: `/${locale}/shop`,
-      }}
-    >
-      {!isCartEmpty && (
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {/* Checkout form */}
-          <div className="lg:col-span-3">
-            <CheckoutFormSection register={register} errors={errors} />
+    <div className="min-h-screen bg-background py-6 px-4">
+      {/* Loading State */}
+      {isCartLoading && (
+        <div className="max-w-md mx-auto text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center animate-pulse">
+            <ShoppingCart className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">Chargement...</h2>
+          <p className="text-sm text-muted-foreground">Récupération de votre panier</p>
+        </div>
+      )}
+
+      {/* Empty Cart */}
+      {!isCartLoading && isCartEmpty && (
+        <div className="max-w-md mx-auto text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+            <ShoppingCart className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">Votre panier est vide</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Ajoutez des produits à votre panier avant de passer à la commande.
+          </p>
+          <Button onClick={() => router.push(`/${locale}/shop`)}>Revenir à la boutique</Button>
+        </div>
+      )}
+
+      {/* Cart Loaded */}
+      {!isCartLoading && !isCartEmpty && (
+        <div className="max-w-[1400px] mx-auto">
+          {/* Page Title - Compact */}
+          <div className="text-center mb-5">
+            <h1 className="text-2xl font-bold text-foreground mb-1">Checkout</h1>
+            <p className="text-sm text-muted-foreground">Finalisez votre commande en toute sécurité</p>
           </div>
 
-          {/* Order summary */}
-          <div className="lg:col-span-2">
-            <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-5 space-y-3.5 shadow-sm sticky top-24">
-              <h2 className="text-base font-semibold pb-2 border-b border-border/40">Récapitulatif</h2>
+          {/* Timeline */}
+          <div className="mb-6">
+            <CheckoutWizard currentStep={currentStep} steps={wizardSteps} />
+          </div>
 
-              <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
-                {items.map((item) => (
-                  <div key={`${item.productId}-${item.variantId || ""}`} className="flex gap-2.5 pb-2 border-b border-border/30 last:border-0">
-                    <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground">
-                          Produit
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-0.5">
-                      <h3 className="text-xs font-medium leading-tight line-clamp-1">{item.name}</h3>
-                      <p className="text-[10px] text-muted-foreground">
-                        {item.quantity} × {item.price.toFixed(2)} MAD
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 bg-muted/50 rounded-md">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleQuantityChange(item, item.quantity - 1)}
-                            disabled={isUpdating || item.quantity <= 1}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-                          <span className="text-[11px] font-medium w-5 text-center">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleQuantityChange(item, item.quantity + 1)}
-                            disabled={isUpdating}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
-                        <p className="text-xs font-semibold text-primary ml-auto">
-                          {(item.price * item.quantity).toFixed(2)} MAD
-                        </p>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+            {/* Left: Wizard Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-3 flex flex-col gap-6">
+              {/* Step Content */}
+              <div>
+                {currentStep === 1 && <ShippingInfoStep register={register} errors={errors} />}
+
+                {currentStep === 2 && (
+                  <PaymentStep
+                    register={register}
+                    errors={errors}
+                    watch={watch}
+                    setValue={setValue}
+                    paymentMethod={formValues.paymentMethod}
+                  />
+                )}
+
+                {currentStep === 3 && (
+                  <OrderSummaryStep
+                    formValues={{
+                      shippingAddress: {
+                        ...formValues.shippingAddress,
+                        postalCode: formValues.shippingAddress.postalCode || "",
+                      },
+                      email: formValues.email,
+                      paymentMethod: formValues.paymentMethod,
+                      notes: formValues.notes || "",
+                      cardholderName: formValues.cardholderName || "",
+                      cardNumber: formValues.cardNumber || "",
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Navigation Buttons - Only show for steps 1 and 2 */}
+              {currentStep < 3 && (
+                <div className="flex items-center justify-center pt-6 mt-4 border-t border-border/50">
+                  <div className="flex items-center gap-4 w-full max-w-2xl mx-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={goToPreviousStep}
+                      disabled={currentStep === 1}
+                      className="flex-1 h-11 border-border/60 hover:bg-muted/50 disabled:opacity-50"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                      Précédent
+                    </Button>
+
+                    <Button
+                      type="button"
+                      onClick={goToNextStep}
+                      className="flex-1 h-11 bg-gradient-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md hover:shadow-lg transition-all"
+                    >
+                      Suivant
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
                   </div>
-                ))}
-              </div>
-
-              <div className="space-y-1.5 pt-2 border-t border-border/40">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Sous-total</span>
-                  <span className="font-medium">{subtotal.toFixed(2)} MAD</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Livraison</span>
-                  <span className="font-medium">{shippingCost === 0 ? "Gratuite" : `${shippingCost.toFixed(2)} MAD`}</span>
+              )}
+
+              {/* Back Button for Step 3 */}
+              {currentStep === 3 && (
+                <div className="flex items-center justify-center pt-6 mt-4 border-t border-border/50">
+                  <div className="flex items-center gap-4 w-full max-w-2xl mx-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={goToPreviousStep}
+                      className="flex-1 h-11 border-border/60 hover:bg-muted/50"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                      Retour
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center pt-1.5 border-t border-border/40">
-                  <span className="font-semibold text-sm">Total</span>
-                  <span className="text-lg font-bold text-primary">{total.toFixed(2)} MAD</span>
-                </div>
-              </div>
+              )}
+            </form>
 
-              <div className="text-[10px] text-muted-foreground leading-relaxed">
-                En cliquant sur "Confirmer la commande", vous acceptez nos conditions
-                générales de vente.
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <Badge variant="outline" className="text-[10px] px-2 py-0.5">🔒 Paiement sécurisé</Badge>
-                <Badge variant="outline" className="text-[10px] px-2 py-0.5">↩️ Retour 14 jours</Badge>
-                <Badge variant="outline" className="text-[10px] px-2 py-0.5">💬 Support dédié</Badge>
-              </div>
-
-              <div className="text-center">
-                <Link href={`/${locale}/cart`} className="text-[11px] text-muted-foreground underline hover:text-primary transition-colors">
-                  Modifier le panier
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                disabled={isCreating || isPending || isCartEmpty}
-                className="w-full h-10 text-sm font-semibold"
-              >
-                {isCreating || isPending ? "Validation en cours..." : "Confirmer la commande"}
-              </Button>
+            {/* Right: Cart Summary */}
+            <div className="lg:col-span-2">
+              <OrderCartSummary
+                items={items}
+                subtotal={subtotal}
+                shippingCost={shippingCost}
+                discount={promoDiscount}
+                total={total}
+                showConfirmButton={currentStep === 3}
+                onConfirmOrder={currentStep === 3 ? handleSubmit(onSubmit) : undefined}
+                isPending={isProcessing}
+                onPromoApplied={handlePromoApplied}
+                onPromoRemoved={handlePromoRemoved}
+              />
             </div>
           </div>
-        </form>
+        </div>
       )}
-    </ShopPageLayout>
+    </div>
   )
 }

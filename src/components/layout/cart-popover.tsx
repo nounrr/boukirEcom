@@ -60,6 +60,14 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
     console.log('🎨 CartPopover component mounted')
   }, [])
 
+  // Refetch cart when popover opens (for authenticated users)
+  useEffect(() => {
+    if (isOpen && isAuthenticated) {
+      console.log('🔄 Cart popover opened, refetching cart data...')
+      refetchCart()
+    }
+  }, [isOpen, isAuthenticated, refetchCart])
+
   // Load from localStorage on mount (for guests)
   useEffect(() => {
     if (!isAuthenticated && typeof window !== 'undefined') {
@@ -102,7 +110,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
               quantity: item.quantity,
             }).unwrap()
             console.log('🔐 Item added to backend cart')
-            refetchCart()
+            await refetchCart()
           } catch (error) {
             console.error('❌ Failed to add to backend cart:', error)
           }

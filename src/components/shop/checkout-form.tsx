@@ -45,120 +45,122 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Shipping information */}
-      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-5 space-y-3.5 shadow-sm">
-        <div className="flex items-center gap-2 pb-2 border-b border-border/40">
+      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 pb-3 border-b border-border/40">
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <MapPin className="w-3.5 h-3.5 text-primary" />
           </div>
           <h2 className="text-sm font-semibold text-foreground">Informations de livraison</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
+        <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                Prénom <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                {...register("shippingAddress.firstName")}
+                placeholder="Votre prénom"
+                className="h-9"
+                error={errors.shippingAddress?.firstName?.message as string | undefined}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                Nom <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                {...register("shippingAddress.lastName")}
+                placeholder="Votre nom"
+                className="h-9"
+                error={errors.shippingAddress?.lastName?.message as string | undefined}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label className="text-xs font-medium flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-muted-foreground" />
-              Prénom
+              <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+              Email <span className="text-destructive">*</span>
             </Label>
             <Input
-              {...register("shippingAddress.firstName")}
-              placeholder="Votre prénom"
+              {...register("email")}
+              type="email"
+              placeholder="vous@example.com"
               className="h-9"
-              error={errors.shippingAddress?.firstName?.message as string | undefined}
+              error={errors.email?.message as string | undefined}
             />
           </div>
-          <div className="space-y-1.5">
+
+          <div className="space-y-2">
             <Label className="text-xs font-medium flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-muted-foreground" />
-              Nom
+              <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+              Téléphone <span className="text-destructive">*</span>
             </Label>
-            <Input
-              {...register("shippingAddress.lastName")}
-              placeholder="Votre nom"
-              className="h-9"
-              error={errors.shippingAddress?.lastName?.message as string | undefined}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium flex items-center gap-1.5">
-            <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-            Email
-          </Label>
-          <Input
-            {...register("email")}
-            type="email"
-            placeholder="vous@example.com"
-            className="h-9"
-            error={errors.email?.message as string | undefined}
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium flex items-center gap-1.5">
-            <Phone className="w-3.5 h-3.5 text-muted-foreground" />
-            Téléphone
-          </Label>
-          <div className="flex gap-2">
-            <Select
-              value={selectedCountry.code}
-              onValueChange={(code) => {
-                const found = PHONE_COUNTRIES.find((c) => c.code === code)
-                if (found) setSelectedCountry(found)
-              }}
-            >
-              <SelectTrigger className="w-[140px] h-[42px] bg-gradient-to-br from-background via-muted/20 to-muted/40 border-border/60 shadow-sm rounded-md">
-                <SelectValue>
-                  <span className="flex items-center gap-1.5">
-                    <span>{selectedCountry.flag}</span>
-                    <span className="text-xs">{selectedCountry.dialCode}</span>
-                  </span>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="bg-card/95 border border-border/60 shadow-lg rounded-md">
-                {PHONE_COUNTRIES.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    <span className="flex items-center gap-2">
-                      <span>{country.flag}</span>
-                      <span className="text-xs">{country.name}</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {country.dialCode}
-                      </span>
+            <div className="flex gap-3">
+              <Select
+                value={selectedCountry.code}
+                onValueChange={(code) => {
+                  const found = PHONE_COUNTRIES.find((c) => c.code === code)
+                  if (found) setSelectedCountry(found)
+                }}
+              >
+                <SelectTrigger className="w-[140px] !h-[41px] bg-gradient-to-br from-background via-muted/20 to-muted/40 border-border/60 shadow-sm rounded-md">
+                  <SelectValue>
+                    <span className="flex items-center gap-1.5">
+                      <span>{selectedCountry.flag}</span>
+                      <span className="text-xs">{selectedCountry.dialCode}</span>
                     </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-card/95 border border-border/60 shadow-lg rounded-md">
+                  {PHONE_COUNTRIES.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      <span className="flex items-center gap-2">
+                        <span>{country.flag}</span>
+                        <span className="text-xs">{country.name}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {country.dialCode}
+                        </span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                {...register("shippingAddress.phone")}
+                placeholder="612345678"
+                maxLength={15}
+                className="flex-1 h-10"
+                error={errors.shippingAddress?.phone?.message as string | undefined}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-medium flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+              Adresse <span className="text-destructive">*</span>
+            </Label>
             <Input
-              {...register("shippingAddress.phone")}
-              placeholder="612345678"
-              maxLength={15}
-              className="flex-1 h-10"
-              error={errors.shippingAddress?.phone?.message as string | undefined}
+              {...register("shippingAddress.address")}
+              placeholder="Adresse complète de livraison"
+              className="h-9"
+              error={errors.shippingAddress?.address?.message as string | undefined}
             />
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-            Adresse
-          </Label>
-          <Input
-            {...register("shippingAddress.address")}
-            placeholder="Adresse complète de livraison"
-            className="h-9"
-            error={errors.shippingAddress?.address?.message as string | undefined}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
             <Label className="text-xs font-medium flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
-              Ville
+              Ville <span className="text-destructive">*</span>
             </Label>
             <Input
               {...register("shippingAddress.city")}
@@ -167,7 +169,7 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
               error={errors.shippingAddress?.city?.message as string | undefined}
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-3">
             <Label className="text-xs font-medium text-muted-foreground">
               Code postal (optionnel)
             </Label>
@@ -181,17 +183,17 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
       </div>
 
       {/* Payment & notes */}
-      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-5 space-y-3.5 shadow-sm">
-        <div className="flex items-center gap-2 pb-2 border-b border-border/40">
+      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 pb-3 border-b border-border/40">
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <CreditCard className="w-3.5 h-3.5 text-primary" />
           </div>
           <h2 className="text-sm font-semibold text-foreground">Paiement</h2>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Méthode de paiement</Label>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <Label className="text-xs font-medium">Méthode de paiement <span className="text-destructive">*</span></Label>
+          <div className="flex flex-wrap gap-3">
             {[
               {
                 value: "cash_on_delivery",
@@ -228,7 +230,7 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
           )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <Label className="text-xs font-medium flex items-center gap-1.5">
             <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
             Remarques (optionnel)

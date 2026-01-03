@@ -35,24 +35,24 @@ export function ShopPageLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
-              <IconComponent className="w-6 h-6 text-primary" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Header - Compact */}
+        <div className="mb-5">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+              <IconComponent className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
                 {itemCount > 0 && (
-                  <Badge variant="secondary" className="text-sm px-3 py-1">
-                    {itemCount} {itemCount === 1 ? "article" : "articles"}
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                    {itemCount}
                   </Badge>
                 )}
               </div>
               {subtitle && (
-                <p className="text-muted-foreground mt-1">{subtitle}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
               )}
             </div>
           </div>
@@ -60,19 +60,19 @@ export function ShopPageLayout({
 
         {/* Content or Empty State */}
         {isEmpty && emptyState ? (
-          <div className="flex flex-col items-center justify-center py-20 px-4">
-            <div className="flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-muted/50 mb-4">
               {emptyState.icon}
             </div>
-            <h2 className="text-2xl font-semibold text-foreground mb-2">
+            <h2 className="text-xl font-semibold text-foreground mb-2">
               {emptyState.title}
             </h2>
-            <p className="text-muted-foreground text-center max-w-md mb-8">
+            <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
               {emptyState.description}
             </p>
             {emptyState.actionLabel && emptyState.actionHref && (
               <Link href={emptyState.actionHref}>
-                <Button size="lg" className="gap-2">
+                <Button size="default" className="gap-2">
                   <Package className="w-4 h-4" />
                   {emptyState.actionLabel}
                 </Button>

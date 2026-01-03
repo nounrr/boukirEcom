@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
-import { setUser, selectAccessToken, clearAuth } from "@/state/slices/user-slice"
+import { setAuth, setUser, selectAccessToken, selectRefreshToken, clearAuth } from "@/state/slices/user-slice"
 import { getCurrentUser } from "@/actions/auth/get-current-user"
 
 /**
@@ -13,6 +13,7 @@ import { getCurrentUser } from "@/actions/auth/get-current-user"
 export function CurrentUserInitializer() {
   const dispatch = useAppDispatch()
   const accessToken = useAppSelector(selectAccessToken)
+  const refreshToken = useAppSelector(selectRefreshToken)
 
   useEffect(() => {
     if (!accessToken) return
@@ -23,11 +24,31 @@ export function CurrentUserInitializer() {
       
       if (result.success) {
         console.log('[CurrentUserInitializer] User fetched successfully:', result.user.email)
-        dispatch(setUser(result.user))
+
+        // Persist full user details together with tokens in the slice
+        if (accessToken) {
+          dispatch(setAuth({
+            user: result.user,
+            accessToken,
+            refreshToken: refreshToken || null,
+          }))
+        } else {
+        // Fallback: update just the user info
+          dispatch(setUser(result.user))
+        }
       } else {
         console.error('[CurrentUserInitializer] Failed to fetch user:', result.error)
+
+        const errorMessage = result.error.toLowerCase()
+
         // If error is authentication related, clear the invalid token
-        if (result.error.includes('authentifié') || result.error.includes('401') || result.error.includes('403')) {
+        const isAuthError =
+          errorMessage.includes('authentifi') || // "Non authentifié"
+          errorMessage.includes('401') ||
+          errorMessage.includes('403') ||
+          errorMessage.includes('session expir')
+
+        if (isAuthError) {
           console.log('[CurrentUserInitializer] Clearing invalid authentication')
           dispatch(clearAuth())
         }

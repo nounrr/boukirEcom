@@ -1,4 +1,4 @@
-export type PaymentMethod = 'cash_on_delivery' | 'card' | 'bank_transfer'
+export type PaymentMethod = 'cash_on_delivery' | 'card' | 'bank_transfer' | 'mobile_payment'
 
 export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
 
@@ -19,6 +19,7 @@ export interface OrderItem {
   subtotal: number
   discountPercentage?: number | null
   discountAmount?: number | null
+  imageUrl?: string | null
 }
 
 export interface ShippingAddress {
@@ -92,6 +93,7 @@ export interface CreateOrderData {
   shippingCountry?: string
   paymentMethod?: PaymentMethod
   customerNotes?: string
+  promoCode?: string
   useCart?: boolean
   items?: CreateOrderItemInput[]
 }
