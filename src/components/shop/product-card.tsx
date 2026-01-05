@@ -123,12 +123,22 @@ export function ProductCard({
     e.preventDefault()
     e.stopPropagation()
 
+    // Get current price based on selected variant
+    let itemPrice = product.price
+    if (selectedVariant) {
+      const variant = product.variants?.find(v => v.id === selectedVariant)
+      const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
+      if (variantPrice != null) {
+        itemPrice = Number(variantPrice)
+      }
+    }
+
     // Guest users can add to cart via localStorage, which syncs on auth
     const cartItem = {
       productId: product.id,
       variantId: selectedVariant || undefined,
       name: product.name,
-      price: product.price,
+      price: itemPrice,
       quantity: 1,
       image: currentImage,
       category: product.category,
@@ -151,7 +161,7 @@ export function ProductCard({
 
     // Also call the optional callback
     onAddToCart?.(product.id, selectedVariant || undefined)
-  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, selectedVariant, currentImage, onAddToCart])
+  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, product.variants, selectedVariant, currentImage, onAddToCart])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -179,6 +189,31 @@ export function ProductCard({
 
   const isLowStock = useMemo(() => product.stock > 0 && product.stock <= 5, [product.stock])
   const isOutOfStock = useMemo(() => product.stock === 0, [product.stock])
+
+  // Calculate current price based on selected variant
+  const currentPrice = useMemo(() => {
+    if (selectedVariant) {
+      const variant = product.variants?.find(v => v.id === selectedVariant)
+      // Check if variant has a specific price (prix_vente or price field)
+      const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
+      if (variantPrice != null) {
+        return Number(variantPrice)
+      }
+    }
+    return product.price
+  }, [selectedVariant, product.variants, product.price])
+
+  // Calculate current original price for discount display
+  const currentOriginalPrice = useMemo(() => {
+    if (selectedVariant && product.originalPrice) {
+      const variant = product.variants?.find(v => v.id === selectedVariant)
+      const variantOriginal = (variant as any)?.prix_original ?? (variant as any)?.originalPrice
+      if (variantOriginal != null) {
+        return Number(variantOriginal)
+      }
+    }
+    return product.originalPrice
+  }, [selectedVariant, product.variants, product.originalPrice])
 
   // Color mapping for variant visualization
   const colorMap: Record<string, string> = {
@@ -217,7 +252,7 @@ export function ProductCard({
             src={currentImage}
             alt={product.name}
             fill
-            className="object-cover transition-opacity duration-300 group-hover:opacity-95"
+              className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -366,20 +401,20 @@ export function ProductCard({
         <div className="mb-2">
           <div className="flex items-baseline gap-2">
             <span className="text-xl font-bold text-foreground">
-              {product.price.toFixed(2)}
+              {currentPrice.toFixed(2)}
             </span>
             <span className="text-xs text-muted-foreground">MAD</span>
           </div>
-          {product.originalPrice && product.originalPrice > product.price && (
+          {currentOriginalPrice && currentOriginalPrice > currentPrice && (
             <span className="text-xs text-muted-foreground line-through">
-              {product.originalPrice.toFixed(2)} MAD
+              {currentOriginalPrice.toFixed(2)} MAD
             </span>
           )}
         </div>
 
         {/* Color/Variant Swatches */}
         {product.variants && product.variants.length > 0 && (
-          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="cursor-pointer">
             <VariantSwatches
               variants={product.variants}
               selectedId={selectedVariant}

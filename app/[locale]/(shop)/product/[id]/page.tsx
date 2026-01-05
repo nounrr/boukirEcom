@@ -353,23 +353,25 @@ export default function ProductPage() {
             </div>
             <Separator />
 
-            <VariantSelector
-              colorVariants={colorVariants as any}
-              sizeVariants={sizeVariants as any}
-              otherVariants={otherVariants as any}
-              selectedId={selectedVariant}
-              onChange={(id, v) => {
-                setSelectedVariant(id)
-                if (v.image_url) setSelectedImage(0)
-              }}
-              onPreviewImage={(img) => {
-                if (img) {
-                  const idx = displayImages.findIndex((g) => g.image_url === img)
-                  setSelectedImage(idx >= 0 ? idx : 0)
-                }
-              }}
-              style="circle"
-            />
+            <div className="cursor-pointer">
+              <VariantSelector
+                colorVariants={colorVariants as any}
+                sizeVariants={sizeVariants as any}
+                otherVariants={otherVariants as any}
+                selectedId={selectedVariant}
+                onChange={(id, v) => {
+                  setSelectedVariant(id)
+                  if (v.image_url) setSelectedImage(0)
+                }}
+                onPreviewImage={(img) => {
+                  if (img) {
+                    const idx = displayImages.findIndex((g) => g.image_url === img)
+                    setSelectedImage(idx >= 0 ? idx : 0)
+                  }
+                }}
+                style="circle"
+              />
+            </div>
 
             {/* Units Selector */}
             {(product.units && product.units.length > 0) && (
@@ -383,7 +385,7 @@ export default function ProductPage() {
                       key={u.id}
                       onClick={() => setSelectedUnitId(u.id)}
                       className={cn(
-                        "px-3 py-1.5 text-sm font-medium rounded-md border transition-all",
+                        "px-3 py-1.5 text-sm font-medium rounded-md border transition-all cursor-pointer",
                         selectedUnitId === u.id
                           ? "bg-primary text-primary-foreground border-primary"
                           : "border-border hover:border-primary/50 hover:bg-muted/50"

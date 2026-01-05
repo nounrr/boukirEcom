@@ -71,7 +71,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                     }}
                     disabled={!variant.available}
                     className={cn(
-                      "px-3 py-1.5 text-sm font-semibold rounded-full border transition-all flex items-center gap-2",
+                      "px-3 py-1.5 text-sm font-semibold rounded-full border transition-all flex items-center gap-2 cursor-pointer",
                       selectedId === variant.id ? "ring-2 ring-primary/20 scale-[1.02]" : "",
                       !variant.available && "opacity-50 cursor-not-allowed line-through"
                     )}
@@ -93,7 +93,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                   }}
                   disabled={!variant.available}
                   className={cn(
-                    "relative w-10 h-10 rounded-full border-2 transition-all",
+                    "relative w-10 h-10 rounded-full border-2 transition-all cursor-pointer",
                     selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
                     !variant.available && "opacity-30 cursor-not-allowed"
                   )}
@@ -127,7 +127,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                 onClick={() => onChange(variant.id, variant)}
                 disabled={!variant.available}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-md border transition-all",
+                  "px-3 py-2 text-sm font-medium rounded-md border transition-all cursor-pointer",
                   selectedId === variant.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50 hover:bg-muted/50",
                   !variant.available && "opacity-30 cursor-not-allowed line-through"
                 )}
@@ -149,7 +149,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                 onClick={() => onChange(variant.id, variant)}
                 disabled={!variant.available}
                 className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md border transition-all",
+                  "px-3 py-1.5 text-sm font-medium rounded-md border transition-all cursor-pointer",
                   selectedId === variant.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50 hover:bg-muted/50",
                   !variant.available && "opacity-30 cursor-not-allowed line-through"
                 )}
