@@ -62,7 +62,9 @@ export default async function LocaleLayout({
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
             <GoogleOneTapWrapper />
-            {children}
+            <div className="min-h-screen flex flex-col">
+              <div className="flex-1">{children}</div>
+            </div>
           </StoreProvider>
         </NextIntlClientProvider>
         <Toaster

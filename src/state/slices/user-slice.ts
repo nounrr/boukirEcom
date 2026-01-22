@@ -17,6 +17,10 @@ export interface User {
   created_at?: string;
   demande_artisan?: boolean;
   artisan_approuve?: boolean;
+  // Remise balance (loyalty credit)
+  remise_balance?: number;
+  // Solde eligibility (Buy Now, Pay Later)
+  is_solde?: boolean | number;
 }
 
 // Full auth state including tokens

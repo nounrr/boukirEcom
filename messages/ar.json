@@ -107,7 +107,15 @@
     "securePayment": "دفع آمن ومضمون",
     "role": "نوع الحساب",
     "client": "عميل",
-    "artisanPromoter": "حرفي / مروّج"
+    "artisanPromoter": "حرفي / مروّج",
+    "clientType": "نوع العميل",
+    "individual": "فرد",
+    "company": "شركة",
+    "companyInfoTitle": "معلومات الشركة",
+    "companyInfoDesc": "أضف معلومات شركتك من أجل الفوترة.",
+    "companyName": "اسم الشركة",
+    "ice": "ICE",
+    "iceHint": "يجب أن يحتوي ICE على 15 رقماً."
   },
   "validation": {
     "required": "هذا الحقل مطلوب",
@@ -131,7 +139,10 @@
     "phoneRequired": "رقم الهاتف مطلوب",
     "passwordRequired": "كلمة المرور مطلوبة",
     "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
-    "roleRequired": "يرجى اختيار نوع الحساب"
+    "roleRequired": "يرجى اختيار نوع الحساب",
+    "companyNameRequired": "اسم الشركة مطلوب",
+    "iceRequired": "ICE مطلوب",
+    "iceFormat": "يجب أن يحتوي ICE على 15 رقماً"
   },
   "placeholders": {
     "email": "example@email.com",
@@ -139,7 +150,9 @@
     "confirmPassword": "أعد كتابة كلمة المرور",
     "firstName": "أحمد",
     "lastName": "بنعلي",
-    "phone": "0612345678"
+    "phone": "0612345678",
+    "companyName": "Boukir SARL",
+    "ice": "001234567890123"
   },
   "product": {
     "addToCart": "أضف إلى السلة",

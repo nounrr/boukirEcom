@@ -107,7 +107,15 @@
     "securePayment": "Paiement sécurisé garanti",
     "role": "Type de compte",
     "client": "Client",
-    "artisanPromoter": "Artisan/Promoteur"
+    "artisanPromoter": "Artisan/Promoteur",
+    "clientType": "Profil client",
+    "individual": "Particulier",
+    "company": "Société",
+    "companyInfoTitle": "Informations société",
+    "companyInfoDesc": "Ajoutez les informations de votre entreprise pour la facturation.",
+    "companyName": "Nom de la société",
+    "ice": "ICE",
+    "iceHint": "L’ICE doit contenir 15 chiffres."
   },
   "validation": {
     "required": "Ce champ est requis",
@@ -131,7 +139,10 @@
     "phoneRequired": "Le téléphone est requis",
     "passwordRequired": "Le mot de passe est requis",
     "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
-    "roleRequired": "Veuillez sélectionner un type de compte"
+    "roleRequired": "Veuillez sélectionner un type de compte",
+    "companyNameRequired": "Le nom de la société est requis",
+    "iceRequired": "L'ICE est requis",
+    "iceFormat": "L'ICE doit contenir 15 chiffres"
   },
   "placeholders": {
     "email": "exemple@email.com",
@@ -139,7 +150,9 @@
     "confirmPassword": "Répétez le mot de passe",
     "firstName": "Ahmed",
     "lastName": "Benali",
-    "phone": "0612345678"
+    "phone": "0612345678",
+    "companyName": "Boukir SARL",
+    "ice": "001234567890123"
   },
   "product": {
     "addToCart": "Ajouter au panier",

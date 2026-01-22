@@ -2,11 +2,14 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Package, Clock, CheckCircle, XCircle, Truck, ChevronRight, Eye, RotateCcw } from "lucide-react"
+import { Package, Truck, ChevronRight, Eye, RotateCcw, ChevronDown, Clock, Store } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
+import type { Order, OrderStatus, PaymentStatus, PaymentMethod } from "@/types/order"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { useMemo, useState } from "react"
+import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 
 interface OrderCardProps {
   order: Order
@@ -27,6 +30,31 @@ interface OrderCardProps {
 
 export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStatusConfig }: OrderCardProps) {
   const router = useRouter()
+  const [open, setOpen] = useState(false)
+
+  const hasId = typeof order.id === "number" ? order.id > 0 : Boolean(order.id)
+  const shouldFetchDetails = open && hasId && !(order.items && order.items.length > 0)
+  const { data: detailedOrder, isFetching: isFetchingDetails } = useGetOrderQuery(
+    { id: order.id },
+    { skip: !shouldFetchDetails }
+  )
+
+  const displayOrder = detailedOrder ?? order
+
+  const remiseUsedAmount = useMemo(() => {
+    const raw = (displayOrder as any)?.remiseUsedAmount
+    const parsed = typeof raw === "number" ? raw : Number(raw)
+    return Number.isFinite(parsed) ? parsed : 0
+  }, [displayOrder])
+
+  const amountToPay = useMemo(() => {
+    return Math.max(0, Number(displayOrder.totalAmount || 0) - remiseUsedAmount)
+  }, [displayOrder.totalAmount, remiseUsedAmount])
+
+  const itemsCount = useMemo(() => {
+    if (typeof displayOrder.itemsCount === "number") return displayOrder.itemsCount
+    return displayOrder.items?.reduce((sum, item) => sum + (item.quantity || 0), 0) ?? 0
+  }, [displayOrder.items, displayOrder.itemsCount])
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
@@ -48,28 +76,28 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   }
 
   const getDeliveryStatus = () => {
-    if (order.status === 'delivered' && order.deliveredAt) {
+    if (displayOrder.status === 'delivered' && displayOrder.deliveredAt) {
       return {
-        label: `Livrée ${formatShortDate(order.deliveredAt)}`,
+        label: `Livrée ${formatShortDate(displayOrder.deliveredAt)}`,
         color: 'text-green-600',
         bg: 'bg-green-50',
       }
     }
-    if (order.status === 'shipped' && order.shippedAt) {
+    if (displayOrder.status === 'shipped' && displayOrder.shippedAt) {
       return {
-        label: `Expédiée ${formatShortDate(order.shippedAt)}`,
+        label: `Expédiée ${formatShortDate(displayOrder.shippedAt)}`,
         color: 'text-purple-600',
         bg: 'bg-purple-50',
       }
     }
-    if (order.status === 'confirmed' && order.confirmedAt) {
+    if (displayOrder.status === 'confirmed' && displayOrder.confirmedAt) {
       return {
-        label: `Confirmée ${formatShortDate(order.confirmedAt)}`,
+        label: `Confirmée ${formatShortDate(displayOrder.confirmedAt)}`,
         color: 'text-blue-600',
         bg: 'bg-blue-50',
       }
     }
-    if (order.status === 'cancelled') {
+    if (displayOrder.status === 'cancelled') {
       return {
         label: 'Annulée',
         color: 'text-red-600',
@@ -86,162 +114,200 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const deliveryStatus = getDeliveryStatus()
 
   return (
-    <div className="bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
-      {/* Header */}
-      <div className="bg-muted/30 px-5 py-3 border-b border-border/40">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-muted-foreground">Commande passée</span>
-                <span className="text-xs font-medium">{formatDate(order.createdAt)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Total</span>
-                <span className="text-sm font-bold text-foreground">{order.totalAmount.toFixed(2)} MAD</span>
-              </div>
-            </div>
-            
-            <div className="h-10 w-px bg-border/40" />
-            
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground mb-1">Livrer à</span>
-              <span className="text-xs font-medium">{order.customerName}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">N° {order.orderNumber}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push(`/${locale}/orders/${order.id}`)}
-              className="h-8 text-xs hover:text-primary"
-            >
-              Voir les détails
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Delivery Status */}
-      <div className={cn("px-5 py-2.5 border-b border-border/40", deliveryStatus.bg)}>
-        <p className={cn("text-sm font-semibold", deliveryStatus.color)}>
-          {deliveryStatus.label}
-        </p>
-        {order.status === 'delivered' && order.deliveredAt && (
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Votre colis a été livré. Il a été remis directement à un résident.
-          </p>
-        )}
-      </div>
-
-      {/* Items */}
-      <div className="p-5 space-y-4">
-        {order.items?.map((item) => (
-          <div key={item.id} className="flex gap-4 pb-4 border-b border-border/20 last:border-0 last:pb-0">
-            {/* Product Image */}
-            <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/30">
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.productName}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Package className="w-8 h-8 text-muted-foreground/30" />
+    <div className="bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200">
+      <Collapsible open={open} onOpenChange={setOpen}>
+        {/* Header */}
+        <div className="bg-muted/30 px-4 sm:px-5 py-3 border-b border-border/40">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Commande</span>
+                    <span className="text-xs font-medium">{formatDate(order.createdAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">Total</span>
+                    <span className="text-sm font-bold text-foreground">{order.totalAmount.toFixed(2)} MAD</span>
+                    {remiseUsedAmount > 0 && (
+                      <span className="text-xs text-emerald-700 dark:text-emerald-400">
+                        • Remise: -{remiseUsedAmount.toFixed(2)}
+                      </span>
+                    )}
+                    {remiseUsedAmount > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        • À payer: <span className="font-semibold text-foreground">{amountToPay.toFixed(2)} MAD</span>
+                      </span>
+                    )}
+                    <span className="text-xs text-muted-foreground">• {itemsCount} article{itemsCount > 1 ? "s" : ""}</span>
+                  </div>
                 </div>
-              )}
+
+                <div className="hidden sm:block h-10 w-px bg-border/40" />
+
+                <div className="hidden sm:flex flex-col">
+                  <span className="text-xs text-muted-foreground">Livrer à</span>
+                  <span className="text-xs font-medium">{order.customerName}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between sm:justify-end gap-2">
+                <span className="text-xs text-muted-foreground">N° {displayOrder.orderNumber}</span>
+
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (!hasId) return
+                      router.push(`/${locale}/orders/${order.id}`)
+                    }}
+                    className="h-8 text-xs hover:text-primary"
+                  >
+                    Détails
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={open ? "Réduire la commande" : "Afficher les articles"}
+                      className="h-8 w-8 hover:bg-muted/60"
+                    >
+                      <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", open && "rotate-180")} />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+              </div>
             </div>
 
-            {/* Product Details */}
-            <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
-                {item.productName}
-              </h4>
-              {item.variantName && (
-                <p className="text-xs text-muted-foreground mb-2">
-                  {item.variantType}: {item.variantName}
-                </p>
-              )}
-              {order.status === 'delivered' && order.deliveredAt && (
-                <p className="text-xs text-muted-foreground mb-2">
-                  Retourner ou remplacer les articles: Éligible jusqu'au {formatDate(new Date(new Date(order.deliveredAt).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString())}
-                </p>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-2 mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onBuyAgain(item)}
-                  className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Acheter à nouveau
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/${locale}/product/${item.productId}`)}
-                  className="h-8 text-xs gap-1.5"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  Voir le produit
-                </Button>
-                {(order.status === 'shipped' || order.status === 'delivered') && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/${locale}/orders/${order.id}/track`)}
-                    className="h-8 text-xs gap-1.5"
-                  >
-                    <Truck className="w-3.5 h-3.5" />
-                    Suivre le colis
-                  </Button>
+            {/* Status row (always visible) */}
+            <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2 border border-border/40", deliveryStatus.bg)}>
+              <div className="flex items-center gap-2 min-w-0">
+                <p className={cn("text-xs sm:text-sm font-semibold truncate", deliveryStatus.color)}>{deliveryStatus.label}</p>
+                {displayOrder.status === "delivered" && displayOrder.deliveredAt && (
+                  <span className="hidden sm:inline text-xs text-muted-foreground truncate">Colis livré.</span>
                 )}
               </div>
-            </div>
 
-            {/* Quantity & Price */}
-            <div className="text-right flex-shrink-0">
-              <p className="text-sm font-semibold text-foreground">
-                {item.subtotal.toFixed(2)} MAD
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Qté: {item.quantity}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className={cn("text-[11px]", statusConfig.border, statusConfig.color, statusConfig.bg)}>
+                  {statusConfig.label}
+                </Badge>
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className={cn("text-xs font-medium", paymentStatusConfig.color)}>
+                  {paymentStatusConfig.label}
+                </span>
+                {displayOrder.paymentMethod === "solde" && (
+                  <>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <Badge variant="outline" className="text-[10px] bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800 gap-1">
+                      <Clock className="w-3 h-3" />
+                      Solde
+                    </Badge>
+                  </>
+                )}
+                {displayOrder.paymentMethod === "pay_in_store" && (
+                  <>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <Badge variant="outline" className="text-[10px] bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800 gap-1">
+                      <Store className="w-3 h-3" />
+                      Boutique
+                    </Badge>
+                  </>
+                )}
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    if (!hasId) return
+                    router.push(`/${locale}/orders/${order.id}`)
+                  }}
+                  className="h-auto p-0 text-xs text-primary hover:underline"
+                >
+                  Facture
+                </Button>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Footer Actions */}
-      <div className="bg-muted/20 px-5 py-3 border-t border-border/40">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className={cn("text-xs", statusConfig.border, statusConfig.color, statusConfig.bg)}>
-              {statusConfig.label}
-            </Badge>
-            <span className="text-xs text-muted-foreground">•</span>
-            <span className={cn("text-xs font-medium", paymentStatusConfig.color)}>
-              {paymentStatusConfig.label}
-            </span>
-          </div>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => router.push(`/${locale}/orders/${order.id}`)}
-            className="h-auto p-0 text-xs text-primary hover:underline"
-          >
-            Voir la facture
-          </Button>
         </div>
-      </div>
+
+        {/* Collapsible content */}
+        <CollapsibleContent>
+          <div className="p-4 sm:p-5 space-y-3">
+            {isFetchingDetails && (!displayOrder.items || displayOrder.items.length === 0) ? (
+              <div className="text-sm text-muted-foreground">Chargement des détails...</div>
+            ) : null}
+
+            {displayOrder.items?.map((item) => (
+              <div key={item.id} className="flex gap-3 pb-3 border-b border-border/20 last:border-0 last:pb-0">
+                {/* Product Image */}
+                <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted shrink-0 border border-border/30">
+                  {item.imageUrl ? (
+                    <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package className="w-7 h-7 text-muted-foreground/30" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Details */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm text-foreground line-clamp-2">
+                    {item.productName}
+                  </h4>
+                  {item.variantName && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {item.variantType}: {item.variantName}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+                    <span>Qté: {item.quantity}</span>
+                    <span className="text-foreground font-semibold">{item.subtotal.toFixed(2)} MAD</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onBuyAgain(item)}
+                      className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Acheter à nouveau
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/${locale}/product/${item.productId}`)}
+                      className="h-8 text-xs gap-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Voir le produit
+                    </Button>
+                    {(displayOrder.status === "shipped" || displayOrder.status === "delivered") && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/${locale}/orders/${order.id}/track`)}
+                        className="h-8 text-xs gap-1.5"
+                      >
+                        <Truck className="w-3.5 h-3.5" />
+                        Suivre le colis
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   )
 }

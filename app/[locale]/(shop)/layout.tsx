@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/header"
 import { DynamicBreadcrumb } from "@/components/layout/dynamic-breadcrumb"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
+import { Footer } from "@/components/layout/footer"
 import type React from "react"
 
 export default function ShopLayout({
@@ -18,6 +19,7 @@ export default function ShopLayout({
           <main className="flex-1">
             {children}
           </main>
+          <Footer />
         </div>
       </AuthDialogProvider>
     </CartContextProvider>

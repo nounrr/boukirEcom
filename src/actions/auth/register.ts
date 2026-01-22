@@ -32,15 +32,20 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
     const confirmPassword = formData.get('confirmPassword') as string
 
     const role = formData.get('role') as string
-    
+
+    const isCompanyRaw = formData.get('isCompany')
+    const isCompany = typeof isCompanyRaw === 'string' ? isCompanyRaw === 'true' : false
+    const companyName = (formData.get('companyName') as string | null) ?? ''
+    const ice = (formData.get('ice') as string | null) ?? ''
+
     console.log('[REGISTER] Action called')
     console.log('[REGISTER] Email:', email)
     console.log('[REGISTER] Role:', role)
     
     // Map frontend role to backend type_compte
     const typeCompte = role === "artisan-promoter" ? "Artisan/Promoteur" : "Client"
-    
-    const response = await apiClient.post('/users/auth/register', {
+
+    const payload: Record<string, any> = {
       prenom: firstName.trim(),
       nom: lastName.trim(),
       email: email.toLowerCase().trim(),
@@ -48,7 +53,20 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
       type_compte: typeCompte,
       password: password,
       confirm_password: confirmPassword,
-    })
+    }
+
+    // Client profile details (required by backend)
+    if (typeCompte === 'Client') {
+      payload.profil_client = isCompany ? 'societe' : 'particulier'
+
+      if (isCompany) {
+        const cleanedIce = ice.replace(/\D+/g, '')
+        if (companyName.trim()) payload.societe = companyName.trim()
+        if (cleanedIce) payload.ice = cleanedIce
+      }
+    }
+
+    const response = await apiClient.post('/users/auth/register', payload)
 
     const data = response.data
     console.log('[REGISTER] Response:', { status: response.status, hasToken: !!data.token })

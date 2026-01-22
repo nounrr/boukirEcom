@@ -67,9 +67,11 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, {
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   cash_on_delivery: "Paiement à la livraison",
+  pay_in_store: "Paiement en boutique",
   card: "Carte bancaire",
   bank_transfer: "Virement bancaire",
   mobile_payment: "Paiement mobile",
+  solde: "Paiement différé (Solde)",
 }
 
 export default function OrdersPage() {
@@ -145,7 +147,7 @@ export default function OrdersPage() {
         actionHref: `/${locale}/shop`,
       }}
     >
-      <div className="space-y-5">
+      <div className="space-y-3">
         {orders.map((order) => (
           <OrderCard
             key={order.id}

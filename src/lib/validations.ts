@@ -46,6 +46,17 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
       message: t('phoneFormat')
     })
     .trim(),
+  isCompany: z
+    .boolean()
+    .default(false),
+  companyName: z
+    .string()
+    .trim()
+    .optional(),
+  ice: z
+    .string()
+    .trim()
+    .optional(),
   password: z
     .string({ message: t('passwordRequired') })
     .min(1, { message: t('passwordRequired') })
@@ -64,6 +75,25 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: t('passwordsNotMatch'),
   path: ['confirmPassword'],
+}).refine((data) => {
+  if (!data.isCompany) return true;
+  return typeof data.companyName === 'string' && data.companyName.trim().length >= 2;
+}, {
+  message: t('companyNameRequired'),
+  path: ['companyName'],
+}).refine((data) => {
+  if (!data.isCompany) return true;
+  return typeof data.ice === 'string' && data.ice.trim().length > 0;
+}, {
+  message: t('iceRequired'),
+  path: ['ice'],
+}).refine((data) => {
+  if (!data.isCompany) return true;
+  const cleaned = (data.ice ?? '').replace(/\s+/g, '');
+  return /^\d{15}$/.test(cleaned);
+}, {
+  message: t('iceFormat'),
+  path: ['ice'],
 });
 
 // Static schemas (legacy - for backward compatibility)

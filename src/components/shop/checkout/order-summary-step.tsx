@@ -1,17 +1,22 @@
 "use client"
 
 import { memo } from "react"
-import { MapPin, Mail, CreditCard, FileText, ShieldCheck, RefreshCw, MessageCircle, Truck } from "lucide-react"
+import { MapPin, Mail, CreditCard, FileText, ShieldCheck, RefreshCw, MessageCircle, Truck, Banknote, Clock, Building2, Smartphone, Store } from "lucide-react"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { useGetPickupLocationsQuery } from "@/state/api/ecommerce-public-api-slice"
 
 interface OrderSummaryStepProps {
   formValues: {
+    deliveryMethod?: string
+    pickupLocationId?: number
     shippingAddress: {
       firstName: string
       lastName: string
       phone: string
-      address: string
-      city: string
-      postalCode: string
+      address?: string
+      city?: string
+      postalCode?: string
     }
     email: string
     paymentMethod: string
@@ -21,11 +26,69 @@ interface OrderSummaryStepProps {
   }
 }
 
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  cash_on_delivery: "Paiement à la livraison",
-  card: "Carte bancaire",
-  bank_transfer: "Virement bancaire",
-  mobile_payment: "Paiement mobile",
+const PAYMENT_METHODS_CONFIG: Record<string, {
+  label: string
+  icon: any
+  iconBg: string
+  iconColor: string
+  cardBg: string
+  borderColor: string
+  description: string
+}> = {
+  cash_on_delivery: {
+    label: "Paiement à la livraison",
+    icon: Banknote,
+    iconBg: "bg-amber-100 dark:bg-amber-900/40",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    cardBg: "bg-linear-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/20",
+    borderColor: "border-amber-200/60 dark:border-amber-800/40",
+    description: "Payez en espèces à la réception",
+  },
+  pay_in_store: {
+    label: "Paiement en boutique",
+    icon: Store,
+    iconBg: "bg-violet-100 dark:bg-violet-900/40",
+    iconColor: "text-violet-600 dark:text-violet-400",
+    cardBg: "bg-linear-to-br from-violet-50 to-purple-50/50 dark:from-violet-950/30 dark:to-purple-950/20",
+    borderColor: "border-violet-200/60 dark:border-violet-800/40",
+    description: "Payez lors du retrait de votre commande",
+  },
+  card: {
+    label: "Carte bancaire",
+    icon: CreditCard,
+    iconBg: "bg-blue-100 dark:bg-blue-900/40",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    cardBg: "bg-linear-to-br from-blue-50 to-indigo-50/50 dark:from-blue-950/30 dark:to-indigo-950/20",
+    borderColor: "border-blue-200/60 dark:border-blue-800/40",
+    description: "Visa, Mastercard, American Express",
+  },
+  solde: {
+    label: "Paiement différé (Solde)",
+    icon: Clock,
+    iconBg: "bg-violet-100 dark:bg-violet-900/40",
+    iconColor: "text-violet-600 dark:text-violet-400",
+    cardBg: "bg-linear-to-br from-violet-50 to-purple-50/50 dark:from-violet-950/30 dark:to-purple-950/20",
+    borderColor: "border-violet-200/60 dark:border-violet-800/40",
+    description: "Achetez maintenant, payez plus tard",
+  },
+  bank_transfer: {
+    label: "Virement bancaire",
+    icon: Building2,
+    iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    cardBg: "bg-linear-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/20",
+    borderColor: "border-emerald-200/60 dark:border-emerald-800/40",
+    description: "Transfert bancaire sécurisé",
+  },
+  mobile_payment: {
+    label: "Paiement mobile",
+    icon: Smartphone,
+    iconBg: "bg-pink-100 dark:bg-pink-900/40",
+    iconColor: "text-pink-600 dark:text-pink-400",
+    cardBg: "bg-linear-to-br from-pink-50 to-rose-50/50 dark:from-pink-950/30 dark:to-rose-950/20",
+    borderColor: "border-pink-200/60 dark:border-pink-800/40",
+    description: "Paiement via application mobile",
+  },
 }
 
 const maskCardNumber = (cardNumber: string): string => {
@@ -34,68 +97,125 @@ const maskCardNumber = (cardNumber: string): string => {
   return "•••• •••• •••• " + cleaned.slice(-4)
 }
 
-// Card brand logos
-const VisaIcon = () => (
-  <svg className="h-6 w-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32">
-    <rect width="48" height="32" rx="4" fill="#1434CB" />
-    <path
-      d="M20.5 11h-2.7l-1.7 10h2.7l1.7-10zm7.4 6.5l1.4-3.9.8 3.9h-2.2zm3 3.5h2.5l-2.2-10h-2.3c-.5 0-.9.3-1.1.7l-3.8 9.3h2.8l.6-1.5h3.4l.3 1.5zm-6.8-3.3c0-2.6-3.6-2.7-3.6-3.9 0-.3.3-.7 1.1-.8.4 0 1.4-.1 2.6.5l.5-2.2c-.6-.2-1.5-.5-2.5-.5-2.7 0-4.5 1.4-4.5 3.4 0 1.5 1.3 2.3 2.3 2.8 1 .5 1.4.8 1.4 1.3 0 .7-.8 1-1.6 1-1.3 0-2.1-.3-2.7-.6l-.5 2.3c.6.3 1.8.5 3 .5 2.8.1 4.6-1.3 4.6-3.4zm-12.2-6.7l-4.4 10h-2.8l-2.2-8.3c-.1-.5-.3-.7-.7-.9-.7-.3-1.9-.6-2.9-.8l.1-.3h5c.6 0 1.2.4 1.3 1.1l1.2 6.2 3-7.3h2.8z"
-      fill="white"
-    />
-  </svg>
-)
-
-const MastercardIcon = () => (
-  <svg className="h-6 w-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32">
-    <rect width="48" height="32" rx="4" fill="#000" />
-    <circle cx="18" cy="16" r="8" fill="#EB001B" />
-    <circle cx="30" cy="16" r="8" fill="#F79E1B" />
-    <path d="M24 10.4c1.5 1.3 2.5 3.3 2.5 5.6s-1 4.3-2.5 5.6c-1.5-1.3-2.5-3.3-2.5-5.6s1-4.3 2.5-5.6z" fill="#FF5F00" />
-  </svg>
-)
-
 export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
-  const { shippingAddress, email, paymentMethod, notes, cardholderName, cardNumber } = formValues
+  const { deliveryMethod, pickupLocationId, shippingAddress, email, paymentMethod, notes, cardholderName, cardNumber } = formValues
+  const isPickup = deliveryMethod === "pickup"
+
+  // Fetch pickup locations to get the selected one
+  const { data: pickupLocations = [] } = useGetPickupLocationsQuery(undefined, {
+    skip: !isPickup,
+  })
+
+  const selectedPickupLocation = pickupLocations.find((loc) => loc.id === pickupLocationId)
 
   return (
     <div className="flex flex-col gap-4 max-w-3xl">
-      {/* Shipping & Contact - Combined Card */}
+      {/* Delivery Method & Info */}
       <div className="bg-background border border-border/50 rounded-2xl p-5 shadow-sm">
         <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-border/50">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-            <Truck className="w-4 h-4 text-emerald-600" />
+          <div className={cn(
+            "w-8 h-8 rounded-lg flex items-center justify-center",
+            isPickup ? "bg-violet-500/10" : "bg-emerald-500/10"
+          )}>
+            {isPickup ? (
+              <Store className="w-4 h-4 text-violet-600" />
+            ) : (
+              <Truck className="w-4 h-4 text-emerald-600" />
+            )}
           </div>
-          <h3 className="text-sm font-semibold text-foreground">Informations de livraison</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Shipping Address */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 mb-1">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Adresse</p>
-            </div>
-            <p className="text-sm font-semibold text-foreground">
-              {shippingAddress.firstName} {shippingAddress.lastName}
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {shippingAddress.address}
-              <br />
-              {shippingAddress.city}
-              {shippingAddress.postalCode && `, ${shippingAddress.postalCode}`}
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">{shippingAddress.phone}</p>
-          </div>
-
-          {/* Contact */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 mb-1">
-              <Mail className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact</p>
-            </div>
-            <p className="text-sm text-foreground break-all">{email}</p>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground">
+              {isPickup ? "Retrait en boutique" : "Livraison à domicile"}
+            </h3>
+            <span className={cn(
+              "px-2 py-0.5 rounded-full text-[10px] font-medium",
+              isPickup
+                ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400"
+                : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+            )}>
+              {isPickup ? "Pickup" : "Delivery"}
+            </span>
           </div>
         </div>
+
+        {isPickup ? (
+          // Pickup Location Info
+          <div className="flex flex-col gap-3">
+            {selectedPickupLocation ? (
+              <div className={cn(
+                "flex items-start gap-3 p-3 rounded-xl border",
+                "bg-violet-50/50 dark:bg-violet-950/20 border-violet-200/60 dark:border-violet-800/40"
+              )}>
+                <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0">
+                  <Store className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-foreground">{selectedPickupLocation.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedPickupLocation.address}, {selectedPickupLocation.city}
+                    {selectedPickupLocation.postalCode && `, ${selectedPickupLocation.postalCode}`}
+                  </p>
+                  {selectedPickupLocation.phone && (
+                    <p className="text-xs text-muted-foreground mt-1">{selectedPickupLocation.phone}</p>
+                  )}
+                  {selectedPickupLocation.openingHours && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <Clock className="w-3 h-3 inline mr-1" />
+                      {selectedPickupLocation.openingHours}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Point de retrait sélectionné</p>
+            )}
+
+            {/* Customer Contact for Pickup */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-border/40">
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Récupéré par</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {shippingAddress.firstName} {shippingAddress.lastName}
+                </p>
+                <p className="text-xs text-muted-foreground">{shippingAddress.phone}</p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact</p>
+                <p className="text-sm text-foreground break-all">{email}</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+        // Delivery Address Info
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Shipping Address */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className="w-4 h-4 text-muted-foreground" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Adresse</p>
+                </div>
+                <p className="text-sm font-semibold text-foreground">
+                  {shippingAddress.firstName} {shippingAddress.lastName}
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {shippingAddress.address}
+                  <br />
+                  {shippingAddress.city}
+                  {shippingAddress.postalCode && `, ${shippingAddress.postalCode}`}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">{shippingAddress.phone}</p>
+              </div>
+
+              {/* Contact */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact</p>
+                </div>
+                <p className="text-sm text-foreground break-all">{email}</p>
+              </div>
+            </div>
+        )}
       </div>
 
       {/* Payment Method */}
@@ -107,37 +227,76 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
           <h3 className="text-base font-semibold text-foreground">Méthode de paiement</h3>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <p className="text-base font-medium text-foreground">
-              {PAYMENT_METHOD_LABELS[paymentMethod] || paymentMethod}
-            </p>
-            {/* Show card brand icons for card payment */}
-            {paymentMethod === "card" && (
-              <div className="flex items-center gap-2">
-                <VisaIcon />
-                <MastercardIcon />
+        {(() => {
+          const config = PAYMENT_METHODS_CONFIG[paymentMethod]
+          if (!config) {
+            return (
+              <p className="text-sm text-muted-foreground">{paymentMethod}</p>
+            )
+          }
+          const Icon = config.icon
+          return (
+            <div className="flex flex-col gap-3">
+              {/* Payment Method Card */}
+              <div className={cn(
+                "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                config.cardBg,
+                config.borderColor
+              )}>
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                  config.iconBg
+                )}>
+                  <Icon className={cn("w-6 h-6", config.iconColor)} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{config.label}</p>
+                  <p className="text-xs text-muted-foreground">{config.description}</p>
+                </div>
+                {/* Show card brand icons for card payment */}
+                {paymentMethod === "card" && (
+                  <div className="flex items-center gap-1.5">
+                    <Image src="/payments/visa.svg" alt="Visa" width={36} height={24} sizes="36px" className="h-5 w-auto opacity-80" />
+                    <Image src="/payments/master-card.svg" alt="Mastercard" width={36} height={24} sizes="36px" className="h-5 w-auto opacity-80" />
+                  </div>
+                )}
+                {/* Show solde badge */}
+                {paymentMethod === "solde" && (
+                  <span className="px-2 py-1 rounded-full text-[10px] font-semibold bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
+                    Exclusif
+                  </span>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Card Details - Discreet Mode */}
-          {paymentMethod === "card" && cardNumber && (
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg p-4 mt-2 border border-border/50">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                  {cardholderName && (
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">{cardholderName}</p>
-                  )}
-                  <p className="text-sm font-mono font-bold text-foreground tracking-wider">{maskCardNumber(cardNumber)}</p>
+              {/* Card Details - Discreet Mode */}
+              {paymentMethod === "card" && cardNumber && (
+                <div className="bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg p-4 border border-border/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-1">
+                      {cardholderName && (
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">{cardholderName}</p>
+                      )}
+                      <p className="text-sm font-mono font-bold text-foreground tracking-wider">{maskCardNumber(cardNumber)}</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-primary" />
+                    </div>
+                  </div>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="w-5 h-5 text-primary" />
+              )}
+
+              {/* Solde info */}
+              {paymentMethod === "solde" && (
+                <div className="flex items-center gap-2 p-2.5 rounded-lg bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40">
+                  <ShieldCheck className="w-4 h-4 text-violet-600 dark:text-violet-400 shrink-0" />
+                  <p className="text-xs text-violet-700 dark:text-violet-300">
+                    Votre commande sera traitée après validation. Paiement selon conditions convenues.
+                  </p>
                 </div>
-              </div>
+              )}
             </div>
-          )}
-        </div>
+          )
+        })()}
       </div>
 
       {/* Special Instructions */}
@@ -154,10 +313,10 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
       )}
 
       {/* Trust Badges */}
-      <div className="bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/10 rounded-2xl p-5">
+      <div className="bg-linear-to-br from-primary/5 via-primary/3 to-transparent border border-primary/10 rounded-2xl p-5">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
@@ -167,7 +326,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <RefreshCw className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
@@ -177,7 +336,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <MessageCircle className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">

@@ -261,29 +261,6 @@ export function ProductCard({
           </div>
         )}
 
-          {/* Discount Tag - Hanging Style */}
-        {discountPercentage > 0 && (
-            <div className="absolute top-2 left-2 z-20 animate-in slide-in-from-top-2 duration-300">
-              <div className="relative">
-                {/* Tag shape with shadow */}
-                <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-3 py-2 rounded-lg shadow-xl">
-                  {/* Hole punch effect at top */}
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-background/90 rounded-full border-2 border-red-600" />
-                  {/* String/rope effect */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-gradient-to-b from-gray-400 to-red-600" />
-
-                  <div className="flex items-center gap-1 font-bold text-sm">
-                    <span className="text-xs">-</span>
-                    <span className="text-lg leading-none">{discountPercentage}</span>
-                    <span className="text-xs">%</span>
-                  </div>
-                </div>
-                {/* Shadow below tag */}
-                <div className="absolute inset-0 bg-red-600/30 blur-md translate-y-1 -z-10 rounded-lg" />
-              </div>
-          </div>
-        )}
-
         {/* Stock Status Overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
@@ -399,11 +376,18 @@ export function ProductCard({
 
         {/* Price */}
         <div className="mb-2">
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-foreground">
-              {currentPrice.toFixed(2)}
-            </span>
-            <span className="text-xs text-muted-foreground">MAD</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-foreground">
+                {currentPrice.toFixed(2)}
+              </span>
+              <span className="text-xs text-muted-foreground">MAD</span>
+            </div>
+            {discountPercentage > 0 && (
+              <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 h-6 font-bold">
+                -{discountPercentage}%
+              </Badge>
+            )}
           </div>
           {currentOriginalPrice && currentOriginalPrice > currentPrice && (
             <span className="text-xs text-muted-foreground line-through">

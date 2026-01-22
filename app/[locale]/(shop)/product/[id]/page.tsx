@@ -325,10 +325,17 @@ export default function ProductPage() {
             </h1>
 
             {/* Price */}
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-foreground">
-                {currentPrice.toFixed(2)} MAD
-              </span>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-foreground">
+                  {currentPrice.toFixed(2)} MAD
+                </span>
+                {hasDiscount && product.pourcentage_promo && (
+                  <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-0.5 h-6 font-bold">
+                    -{product.pourcentage_promo}%
+                  </Badge>
+                )}
+              </div>
               {hasDiscount && (
                 <span className="text-base text-muted-foreground line-through">
                   {Number(baseUnitPrice).toFixed(2)} MAD

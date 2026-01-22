@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithAuth } from '@/lib/base-query';
+import { baseQueryWithAuth, baseQueryPublic } from '@/lib/base-query';
 import { API_CONFIG } from '@/lib/api-config';
 import type {
   Order,
@@ -9,6 +9,7 @@ import type {
   OrderItem,
   OrderStatusHistoryEntry,
   ShippingAddress,
+  PickupLocation,
 } from '@/types/order';
 
 // Helpers to map backend snake_case structures to our frontend camelCase types
@@ -31,7 +32,6 @@ const mapOrderItemsFromApi = (items: any[] | undefined): OrderItem[] | undefined
     subtotal: Number(item.subtotal ?? 0),
     discountPercentage: item.discount_percentage ?? null,
     discountAmount: item.discount_amount ?? null,
-    imageUrl: item.image_url ?? null,
   }));
 };
 
@@ -60,6 +60,24 @@ const mapStatusHistoryFromApi = (history: any[] | undefined): OrderStatusHistory
   }));
 };
 
+const mapPickupLocationFromApi = (location: any): PickupLocation | null => {
+  if (!location) return null;
+  return {
+    id: location.id,
+    name: location.name,
+    address: location.address ?? location.address_line1 ?? '',
+    addressLine1: location.address_line1 ?? null,
+    addressLine2: location.address_line2 ?? null,
+    city: location.city,
+    state: location.state ?? null,
+    postalCode: location.postal_code ?? null,
+    country: location.country ?? 'Morocco',
+    phone: location.phone ?? null,
+    openingHours: location.opening_hours ?? null,
+    isActive: location.is_active ?? true,
+  };
+};
+
 const mapOrderFromApi = (order: any): Order => {
   if (!order) {
     // Fallback empty structure – should not normally happen
@@ -82,6 +100,9 @@ const mapOrderFromApi = (order: any): Order => {
       status: 'pending',
       paymentStatus: 'pending',
       paymentMethod: 'cash_on_delivery',
+      deliveryMethod: 'delivery',
+      pickupLocationId: null,
+      pickupLocation: null,
       customerNotes: null,
       adminNotes: null,
       itemsCount: 0,
@@ -98,6 +119,7 @@ const mapOrderFromApi = (order: any): Order => {
   const items = mapOrderItemsFromApi(order.items);
   const statusHistory = mapStatusHistoryFromApi(order.status_history);
   const shippingAddress = mapShippingAddressFromApi(order);
+  const pickupLocation = mapPickupLocationFromApi(order.pickup_location);
 
   return {
     id: order.id,
@@ -114,6 +136,9 @@ const mapOrderFromApi = (order: any): Order => {
     status: order.status,
     paymentStatus: order.payment_status,
     paymentMethod: order.payment_method,
+    deliveryMethod: order.delivery_method ?? 'delivery',
+    pickupLocationId: order.pickup_location_id ?? null,
+    pickupLocation,
     customerNotes: order.customer_notes ?? null,
     adminNotes: order.admin_notes ?? null,
     itemsCount: order.items_count ?? (items ? items.length : 0),
@@ -176,6 +201,8 @@ export const ordersApi = createApi({
           customer_name: data.customerName,
           customer_email: data.customerEmail,
           customer_phone: data.customerPhone,
+          delivery_method: data.deliveryMethod ?? 'delivery',
+          pickup_location_id: data.pickupLocationId,
           shipping_address_line1: data.shippingAddressLine1,
           shipping_address_line2: data.shippingAddressLine2,
           shipping_city: data.shippingCity,
@@ -185,6 +212,8 @@ export const ordersApi = createApi({
           payment_method: data.paymentMethod ?? 'cash_on_delivery',
           customer_notes: data.customerNotes,
           promo_code: data.promoCode,
+          use_remise_balance: data.useRemiseBalance,
+          remise_to_use: data.remiseToUse,
           use_cart: data.useCart !== undefined ? data.useCart : true,
           items: data.items?.map((item) => ({
             product_id: item.productId,

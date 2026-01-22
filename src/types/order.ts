@@ -1,8 +1,25 @@
-export type PaymentMethod = 'cash_on_delivery' | 'card' | 'bank_transfer' | 'mobile_payment'
+export type PaymentMethod = 'cash_on_delivery' | 'card' | 'bank_transfer' | 'mobile_payment' | 'solde' | 'pay_in_store'
+
+export type DeliveryMethod = 'delivery' | 'pickup'
 
 export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
+
+export interface PickupLocation {
+  id: number
+  name: string
+  address: string
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city: string
+  state?: string | null
+  postalCode?: string | null
+  country?: string
+  phone?: string | null
+  openingHours?: string | null
+  isActive?: boolean
+}
 
 export interface OrderItem {
   id: number
@@ -51,10 +68,14 @@ export interface Order {
   taxAmount: number
   shippingCost: number
   discountAmount: number
+  remiseUsedAmount?: number
   totalAmount: number
   status: OrderStatus
   paymentStatus: PaymentStatus
   paymentMethod: PaymentMethod
+  deliveryMethod?: DeliveryMethod
+  pickupLocationId?: number | null
+  pickupLocation?: PickupLocation | null
   customerNotes?: string | null
   adminNotes?: string | null
   itemsCount: number
@@ -85,8 +106,10 @@ export interface CreateOrderData {
   customerName: string
   customerEmail: string
   customerPhone?: string
-  shippingAddressLine1: string
-  shippingCity: string
+  deliveryMethod?: DeliveryMethod
+  pickupLocationId?: number
+  shippingAddressLine1?: string
+  shippingCity?: string
   shippingAddressLine2?: string
   shippingState?: string
   shippingPostalCode?: string
@@ -94,6 +117,8 @@ export interface CreateOrderData {
   paymentMethod?: PaymentMethod
   customerNotes?: string
   promoCode?: string
+  useRemiseBalance?: boolean
+  remiseToUse?: number
   useCart?: boolean
   items?: CreateOrderItemInput[]
 }

@@ -33,11 +33,12 @@ export interface CartPopoverRef {
   addItem: (item: CartItem) => void
 }
 
-export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
+export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPrimary" }>((props, ref) => {
   const t = useTranslations('cart')
   const locale = useLocale()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const [isOpen, setIsOpen] = useState(false)
+  const tone = props.tone ?? "default"
   
   // Local state for cart items (used for guests)
   const [localItems, setLocalItems] = useState<CartItem[]>([])
@@ -201,19 +202,40 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative hover:bg-muted/50 transition-all duration-200 h-9 w-9 group">
-          <ShoppingCart className="w-4.5 h-4.5 text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
-          <Badge className="absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-200 border border-background">
-            {itemCount}
-          </Badge>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative transition-all duration-200 h-9 w-9 group",
+            tone === "onPrimary" ? "hover:bg-white/10" : "hover:bg-muted/50",
+          )}
+        >
+          <ShoppingCart
+            className={cn(
+              "w-4.5 h-4.5 transition-colors duration-200",
+              tone === "onPrimary" ? "text-white/85 group-hover:text-white" : "text-muted-foreground group-hover:text-foreground",
+            )}
+          />
+          {itemCount > 0 && (
+            <Badge
+              className={cn(
+                "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+                tone === "onPrimary"
+                  ? "bg-white text-primary border border-white/70 shadow-black/10 hover:bg-white/90 hover:border-white/90 hover:shadow-black/20 group-hover:bg-white/90 group-hover:border-white/90 group-hover:shadow-black/20"
+                  : "bg-primary text-primary-foreground shadow-primary/20 border border-background hover:bg-primary/90 hover:shadow-primary/30 group-hover:bg-primary/90 group-hover:shadow-primary/30",
+              )}
+            >
+              {itemCount}
+            </Badge>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[420px] p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
         <DropdownMenuLabel className="p-0 mb-1">
-          <div className="relative overflow-hidden rounded-t-lg bg-gradient-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
+          <div className="relative overflow-hidden rounded-t-lg bg-linear-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shadow-md shadow-primary/15 ring-1 ring-primary/20">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shadow-md shadow-primary/15 ring-1 ring-primary/20">
                   <ShoppingBag className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div className="flex flex-col gap-0.5">
@@ -241,7 +263,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
             <p className="text-sm font-medium text-foreground mb-1">Votre panier est vide</p>
             <p className="text-xs text-muted-foreground mb-4">Ajoutez des articles pour commencer vos achats</p>
             <Link href={`/${locale}/shop`}>
-              <Button size="sm" className="bg-gradient-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15">
+              <Button size="sm" className="bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15">
                 Parcourir les produits
               </Button>
             </Link>
@@ -343,7 +365,7 @@ export const CartPopover = forwardRef<CartPopoverRef>((props, ref) => {
                   </Button>
                 </Link>
                 <Link href={`/${locale}/checkout`} className="w-full">
-                  <Button className="w-full bg-gradient-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
+                    <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
                     Commander
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>

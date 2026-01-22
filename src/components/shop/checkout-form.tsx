@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { type FieldErrors, type UseFormRegister } from "react-hook-form"
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -11,11 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { User, Mail, Phone, MapPin, Building2, CreditCard, MessageSquare } from "lucide-react"
+import { User, Mail, Phone, MapPin, Building2, CreditCard, MessageSquare, Coins } from "lucide-react"
 
 interface CheckoutFormSectionProps {
   register: UseFormRegister<any>
-  errors: any
+  errors: FieldErrors<any>
+  watch?: UseFormWatch<any>
+  setValue?: UseFormSetValue<any>
+  orderTotal?: number
+  remiseBalance?: number
+  isAuthenticated?: boolean
 }
 
 const PHONE_COUNTRIES = [
@@ -41,13 +46,26 @@ const PHONE_COUNTRIES = [
   { code: "NO", name: "Norvège", dialCode: "+47", flag: "🇳🇴" },
 ]
 
-export function CheckoutFormSection({ register, errors }: CheckoutFormSectionProps) {
+export function CheckoutFormSection({
+  register,
+  errors,
+  watch,
+  setValue,
+  orderTotal,
+  remiseBalance,
+  isAuthenticated,
+}: CheckoutFormSectionProps) {
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
+
+  const paymentMethodError = errors?.paymentMethod?.message
+  const phoneError = (errors as any)?.shippingAddress?.phone?.message
+  const canShowRemise = typeof remiseBalance === "number" || typeof orderTotal === "number"
+  const useRemiseBalance = watch ? !!watch("useRemiseBalance") : false
 
   return (
     <div className="space-y-6">
       {/* Shipping information */}
-      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
+      <div className="bg-linear-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
         <div className="flex items-center gap-2 pb-3 border-b border-border/40">
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <MapPin className="w-3.5 h-3.5 text-primary" />
@@ -110,7 +128,7 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
                   if (found) setSelectedCountry(found)
                 }}
               >
-                <SelectTrigger className="w-[140px] !h-[41px] bg-gradient-to-br from-background via-muted/20 to-muted/40 border-border/60 shadow-sm rounded-md">
+                <SelectTrigger className="w-[140px] h-[41px]! bg-linear-to-br from-background via-muted/20 to-muted/40 border-border/60 shadow-sm rounded-md">
                   <SelectValue>
                     <span className="flex items-center gap-1.5">
                       <span>{selectedCountry.flag}</span>
@@ -137,9 +155,15 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
                 placeholder="612345678"
                 maxLength={15}
                 className="flex-1 h-10"
-                error={errors.shippingAddress?.phone?.message as string | undefined}
+                error={phoneError as string | undefined}
               />
             </div>
+
+            {phoneError && (
+              <p className="text-[10px] text-destructive mt-1">
+                {String(phoneError)}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -183,13 +207,80 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
       </div>
 
       {/* Payment & notes */}
-      <div className="bg-gradient-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
+      <div className="bg-linear-to-br from-card via-card to-card/95 border border-border/60 rounded-xl p-6 space-y-4 shadow-sm">
         <div className="flex items-center gap-2 pb-3 border-b border-border/40">
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <CreditCard className="w-3.5 h-3.5 text-primary" />
           </div>
           <h2 className="text-sm font-semibold text-foreground">Paiement</h2>
         </div>
+
+        {canShowRemise && (
+          <div className="rounded-lg border border-border/60 bg-background p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Coins className="w-3.5 h-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-foreground">Solde remise</p>
+                <p className="text-[11px] text-muted-foreground">Utilisez votre remise pour réduire le montant à payer</p>
+              </div>
+            </div>
+
+            {!isAuthenticated ? (
+              <p className="text-[11px] text-muted-foreground">Connectez-vous pour utiliser votre solde remise.</p>
+            ) : (
+              <div className="space-y-3">
+                {typeof remiseBalance === "number" && (
+                  <p className="text-[11px] text-muted-foreground">
+                    Disponible: <span className="font-semibold text-foreground">{remiseBalance.toFixed(2)} DH</span>
+                  </p>
+                )}
+
+                <label className="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    {...register("useRemiseBalance")}
+                    className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                  />
+                  <span className="font-medium">Utiliser ma remise</span>
+                </label>
+
+                {useRemiseBalance && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium">Montant remise (DH)</Label>
+                      <Input
+                        {...register("remiseToUse")}
+                        type="number"
+                        step="0.01"
+                        min={0}
+                        className="h-9"
+                        error={(errors as any)?.remiseToUse?.message as string | undefined}
+                      />
+                    </div>
+
+                    <div className="flex items-end justify-end">
+                      <button
+                        type="button"
+                        className="h-9 px-3 rounded-md bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/15"
+                        onClick={() => {
+                          if (!setValue) return
+                          if (typeof remiseBalance !== "number" || typeof orderTotal !== "number") return
+                          const max = Math.max(0, Math.min(remiseBalance, orderTotal))
+                          setValue("remiseToUse", max, { shouldValidate: true, shouldDirty: true })
+                        }}
+                        disabled={!setValue || typeof remiseBalance !== "number" || typeof orderTotal !== "number"}
+                      >
+                        Max
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3">
           <Label className="text-xs font-medium">Méthode de paiement <span className="text-destructive">*</span></Label>
@@ -223,9 +314,9 @@ export function CheckoutFormSection({ register, errors }: CheckoutFormSectionPro
               </label>
             ))}
           </div>
-          {errors.paymentMethod && (
+          {paymentMethodError && (
             <p className="text-[10px] text-destructive mt-0.5">
-              {errors.paymentMethod.message}
+              {String(paymentMethodError)}
             </p>
           )}
         </div>

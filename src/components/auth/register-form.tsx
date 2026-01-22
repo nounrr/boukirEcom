@@ -8,10 +8,11 @@ import { Toggle } from "@/components/ui/toggle"
 import { useGoogleAuth } from "@/hooks/use-google-auth"
 import { toast } from "@/hooks/use-toast"
 import { createRegisterSchema } from "@/lib/validations"
+import { cn } from "@/lib/utils"
 import { useAppDispatch } from "@/state/hooks"
 import { setAuth } from "@/state/slices/user-slice"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Eye, EyeOff, Loader2, Lock, Mail, Phone, User } from "lucide-react"
+import { Building2, Eye, EyeOff, Hash, Loader2, Lock, Mail, Phone, User } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -48,11 +49,23 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
     resolver: zodResolver(createRegisterSchema(tv)),
     mode: "all",
     defaultValues: {
-      role: "client" as "client" | "artisan-promoter"
+      role: "client" as "client" | "artisan-promoter",
+      isCompany: false,
+      companyName: "",
+      ice: "",
     }
   })
 
   const role = watch('role')
+  const isCompany = watch('isCompany')
+
+  useEffect(() => {
+    if (role !== 'client') {
+      setValue('isCompany', false)
+      setValue('companyName', '')
+      setValue('ice', '')
+    }
+  }, [role, setValue])
 
   // Initialize Google OAuth with custom button
   const { isLoading: isGoogleLoading, signIn: handleGoogleSignIn } = useGoogleAuth({
@@ -106,7 +119,16 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
       }
       
       const formData = new FormData()
-      Object.entries(data).forEach(([key, value]) => formData.append(key, value as string))
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return
+        if (typeof value === 'string') {
+          formData.append(key, value)
+          return
+        }
+        if (typeof value === 'number' || typeof value === 'boolean') {
+          formData.append(key, String(value))
+        }
+      })
       console.log('[REGISTER FORM] Calling register action')
       const result = await registerAction(formData)
       console.log('[REGISTER FORM] Register result:', result)
@@ -247,6 +269,121 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
             <p className={`text-sm text-destructive mt-1 ${isArabic ? 'font-arabic' : ''}`}>{errors.role.message as string}</p>
           )}
         </div>
+
+        {/* Client type: individual vs company */}
+        {role === 'client' && (
+          <div className="space-y-2">
+            <Label className={isArabic ? 'font-arabic' : ''}>{t('clientType')}</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Toggle
+                pressed={!isCompany}
+                onPressedChange={() => {
+                  setValue('isCompany', false)
+                  setValue('companyName', '')
+                  setValue('ice', '')
+                }}
+                variant="outline"
+                className={`flex items-center justify-start gap-2 px-3 py-2.5 h-auto ${!isCompany ? 'border-primary bg-primary/5 data-[state=on]:bg-primary/5 data-[state=on]:text-primary' : ''
+                  }`}
+              >
+                <User className="w-5 h-5" />
+                <span className={`text-sm font-medium ${isArabic ? 'font-arabic' : ''}`}>{t('individual')}</span>
+                {!isCompany && (
+                  <svg className="w-4 h-4 ltr:ml-auto rtl:mr-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </Toggle>
+
+              <Toggle
+                pressed={!!isCompany}
+                onPressedChange={() => setValue('isCompany', true)}
+                variant="outline"
+                className={`flex items-center justify-start gap-2 px-3 py-2.5 h-auto ${isCompany ? 'border-primary bg-primary/5 data-[state=on]:bg-primary/5 data-[state=on]:text-primary' : ''
+                  }`}
+              >
+                <Building2 className="w-5 h-5" />
+                <span className={`text-sm font-medium ${isArabic ? 'font-arabic' : ''}`}>{t('company')}</span>
+                {isCompany && (
+                  <svg className="w-4 h-4 ltr:ml-auto rtl:mr-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </Toggle>
+            </div>
+
+            {isCompany && (
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className={isArabic ? 'font-arabic' : ''}>{t('companyInfoTitle')}</span>
+                </div>
+                <p className={`mt-1 text-xs text-muted-foreground ${isArabic ? 'font-arabic' : ''}`}>{t('companyInfoDesc')}</p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className={isArabic ? 'font-arabic' : ''}>
+                      {t('companyName')} <span className="text-destructive">{t('required')}</span>
+                    </Label>
+                    <Input
+                      id="companyName"
+                      type="text"
+                      disabled={isPending}
+                      placeholder={tp('companyName')}
+                      Icon={Building2}
+                      className={cn(
+                        "[&>div>input]:bg-white",
+                        errors.companyName ? "[&>div>input]:border-destructive!" : ""
+                      )}
+                      sm={true}
+                      {...register('companyName')}
+                    />
+                    {errors.companyName?.message && (
+                      <p className={cn("text-[11px] leading-tight text-destructive", isArabic ? "font-arabic" : "")}>
+                        {errors.companyName.message as string}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="ice" className={isArabic ? 'font-arabic' : ''}>
+                      {t('ice')} <span className="text-destructive">{t('required')}</span>
+                    </Label>
+                    <Input
+                      id="ice"
+                      type="text"
+                      inputMode="numeric"
+                      disabled={isPending}
+                      placeholder={tp('ice')}
+                      Icon={Hash}
+                      className={cn(
+                        "[&>div>input]:bg-white",
+                        errors.ice ? "[&>div>input]:border-destructive!" : ""
+                      )}
+                      sm={true}
+                      {...register('ice')}
+                    />
+                    {errors.ice?.message ? (
+                      <p className={cn("text-[11px] leading-tight text-destructive", isArabic ? "font-arabic" : "")}>
+                        {errors.ice.message as string}
+                      </p>
+                    ) : (
+                      <p className={`text-xs text-muted-foreground ${isArabic ? 'font-arabic' : ''}`}>{t('iceHint')}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
