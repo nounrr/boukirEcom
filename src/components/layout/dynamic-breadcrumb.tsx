@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import * as React from "react"
 import { useLocale, useTranslations } from 'next-intl'
 import { useGetProductQuery } from '@/state/api/products-api-slice'
+import { useGetOrderQuery } from '@/state/api/orders-api-slice'
 
 import { 
   Breadcrumb,
@@ -35,6 +36,11 @@ export function DynamicBreadcrumb() {
   const productIdx = filteredPartsForId.indexOf('product')
   const productId = productIdx !== -1 ? filteredPartsForId[productIdx + 1] : undefined
   const { data: productData } = useGetProductQuery(productId as string, { skip: !productId })
+
+  // Detect order ID from the current path to fetch order number
+  const ordersIdx = filteredPartsForId.indexOf('orders')
+  const orderId = ordersIdx !== -1 ? filteredPartsForId[ordersIdx + 1] : undefined
+  const { data: orderData } = useGetOrderQuery({ id: orderId as string }, { skip: !orderId })
 
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     'shop': Store,
@@ -109,6 +115,18 @@ export function DynamicBreadcrumb() {
         }
       }
 
+      // Handle order ID - display order number instead
+      if (filteredParts[index - 1] === 'orders' && !isNaN(Number(part))) {
+        const orderNumber = orderData?.orderNumber || part
+        const partIndex = parts.indexOf(part)
+        return {
+          title: `Commande #${orderNumber}`,
+          href: '/' + parts.slice(0, partIndex + 1).join('/'),
+          active: index === filteredParts.length - 1,
+          icon: iconMap['orders']
+        }
+      }
+
       // Default handling for main pages
       const titleMap: Record<string, string> = {
         'shop': t('shop'),
@@ -132,7 +150,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, productData?.designation, locale])
+  }, [pathname, searchParams, t, productData?.designation, orderData?.orderNumber, locale])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)

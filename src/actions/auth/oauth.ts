@@ -6,7 +6,7 @@ import { apiClient, getErrorMessage } from "@/lib/axios"
 type GoogleAuthResponse = {
   success: true
   accessToken: string
-  refreshToken: string
+  refreshToken: string | null
   user: {
     id: number
     prenom: string
@@ -85,21 +85,13 @@ export async function googleAuth(
       path: "/",
     })
     
-    if (data.refreshToken) {
-      cookieStore.set("refreshToken", data.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-        path: "/",
-      })
-    }
+    // Refresh tokens are not used in this project
 
     console.log('[GOOGLE AUTH] Success! Token set in cookies')
     return {
       success: true,
       accessToken: data.token,
-      refreshToken: data.refreshToken || data.token,
+      refreshToken: null,
       user: data.user,
       isNewUser: data.isNewUser || false,
     }
@@ -167,21 +159,13 @@ export async function facebookAuth(
       path: "/",
     })
     
-    if (data.refreshToken) {
-      cookieStore.set("refreshToken", data.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-        path: "/",
-      })
-    }
+    // Refresh tokens are not used in this project
 
     console.log('[FACEBOOK AUTH] Success! Token set in cookies')
     return {
       success: true,
       accessToken: data.token,
-      refreshToken: data.refreshToken || data.token,
+      refreshToken: null,
       user: data.user,
       isNewUser: data.isNewUser || false,
     }

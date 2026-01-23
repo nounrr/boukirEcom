@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Package, Truck, ChevronRight, Eye, RotateCcw, ChevronDown, Clock, Store } from "lucide-react"
+import { Package, Truck, ChevronRight, Eye, RotateCcw, ChevronDown, Clock, Store, CreditCard, Wallet, MapPin, Home } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -113,6 +113,73 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
 
   const deliveryStatus = getDeliveryStatus()
 
+  const getDeliveryMethodConfig = () => {
+    if (displayOrder.deliveryMethod === "pickup") {
+      return {
+        label: "Retrait en boutique",
+        icon: Store,
+        color: "text-violet-700 dark:text-violet-300",
+        bg: "bg-violet-50 dark:bg-violet-950/30",
+        border: "border-violet-200 dark:border-violet-800",
+      }
+    }
+    return {
+      label: "Livraison à domicile",
+      icon: Truck,
+      color: "text-emerald-700 dark:text-emerald-300",
+      bg: "bg-emerald-50 dark:bg-emerald-950/30",
+      border: "border-emerald-200 dark:border-emerald-800",
+    }
+  }
+
+  const getPaymentMethodConfig = () => {
+    switch (displayOrder.paymentMethod) {
+      case "solde":
+        return {
+          label: "Paiement différé",
+          icon: Clock,
+          color: "text-violet-700 dark:text-violet-300",
+          bg: "bg-violet-50 dark:bg-violet-950/30",
+          border: "border-violet-200 dark:border-violet-800",
+        }
+      case "pay_in_store":
+        return {
+          label: "Paiement en boutique",
+          icon: Store,
+          color: "text-violet-700 dark:text-violet-300",
+          bg: "bg-violet-50 dark:bg-violet-950/30",
+          border: "border-violet-200 dark:border-violet-800",
+        }
+      case "cash_on_delivery":
+        return {
+          label: "Paiement à la livraison",
+          icon: Wallet,
+          color: "text-emerald-700 dark:text-emerald-300",
+          bg: "bg-emerald-50 dark:bg-emerald-950/30",
+          border: "border-emerald-200 dark:border-emerald-800",
+        }
+      case "card":
+        return {
+          label: "Carte bancaire",
+          icon: CreditCard,
+          color: "text-blue-700 dark:text-blue-300",
+          bg: "bg-blue-50 dark:bg-blue-950/30",
+          border: "border-blue-200 dark:border-blue-800",
+        }
+      default:
+        return {
+          label: displayOrder.paymentMethod,
+          icon: CreditCard,
+          color: "text-muted-foreground",
+          bg: "bg-muted/50",
+          border: "border-border",
+        }
+    }
+  }
+
+  const deliveryMethodConfig = getDeliveryMethodConfig()
+  const paymentMethodConfig = getPaymentMethodConfig()
+
   return (
     <div className="bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200">
       <Collapsible open={open} onOpenChange={setOpen}>
@@ -197,27 +264,28 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   {statusConfig.label}
                 </Badge>
                 <span className="text-xs text-muted-foreground">•</span>
+                <Badge variant="outline" className={cn("text-[10px] gap-1", deliveryMethodConfig.bg, deliveryMethodConfig.color, deliveryMethodConfig.border)}>
+                  <deliveryMethodConfig.icon className="w-3 h-3" />
+                  {deliveryMethodConfig.label}
+                </Badge>
+                <span className="text-xs text-muted-foreground">•</span>
+                {remiseUsedAmount > 0 ? (
+                  <>
+                    <Badge variant="outline" className="text-[10px] gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+                      <CreditCard className="w-3 h-3" />
+                      Remise + {paymentMethodConfig.label}
+                    </Badge>
+                  </>
+                ) : (
+                  <Badge variant="outline" className={cn("text-[10px] gap-1", paymentMethodConfig.bg, paymentMethodConfig.color, paymentMethodConfig.border)}>
+                    <paymentMethodConfig.icon className="w-3 h-3" />
+                    {paymentMethodConfig.label}
+                  </Badge>
+                )}
+                <span className="text-xs text-muted-foreground">•</span>
                 <span className={cn("text-xs font-medium", paymentStatusConfig.color)}>
                   {paymentStatusConfig.label}
                 </span>
-                {displayOrder.paymentMethod === "solde" && (
-                  <>
-                    <span className="text-xs text-muted-foreground">•</span>
-                    <Badge variant="outline" className="text-[10px] bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800 gap-1">
-                      <Clock className="w-3 h-3" />
-                      Solde
-                    </Badge>
-                  </>
-                )}
-                {displayOrder.paymentMethod === "pay_in_store" && (
-                  <>
-                    <span className="text-xs text-muted-foreground">•</span>
-                    <Badge variant="outline" className="text-[10px] bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800 gap-1">
-                      <Store className="w-3 h-3" />
-                      Boutique
-                    </Badge>
-                  </>
-                )}
                 <Button
                   variant="link"
                   size="sm"
@@ -241,12 +309,58 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
               <div className="text-sm text-muted-foreground">Chargement des détails...</div>
             ) : null}
 
+            {/* Pickup Location Info */}
+            {displayOrder.deliveryMethod === "pickup" && displayOrder.pickupLocation && (
+              <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-violet-50/50 dark:bg-violet-950/20 p-3 mb-3">
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-violet-600 dark:text-violet-400 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">{displayOrder.pickupLocation.name}</p>
+                    <p className="text-xs text-violet-700/80 dark:text-violet-300/80 mt-0.5">
+                      {displayOrder.pickupLocation.addressLine1}
+                      {displayOrder.pickupLocation.addressLine2 && `, ${displayOrder.pickupLocation.addressLine2}`}
+                    </p>
+                    <p className="text-xs text-violet-700/80 dark:text-violet-300/80">
+                      {displayOrder.pickupLocation.city}
+                      {displayOrder.pickupLocation.postalCode && `, ${displayOrder.pickupLocation.postalCode}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Delivery Address Info */}
+            {displayOrder.deliveryMethod === "delivery" && displayOrder.shippingAddress && (
+              <div className="rounded-lg border border-emerald-200/60 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-950/20 p-3 mb-3">
+                <div className="flex items-start gap-2">
+                  <Home className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">Adresse de livraison</p>
+                    <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">
+                      {displayOrder.shippingAddress.line1}
+                      {displayOrder.shippingAddress.line2 && `, ${displayOrder.shippingAddress.line2}`}
+                    </p>
+                    <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80">
+                      {displayOrder.shippingAddress.city}
+                      {displayOrder.shippingAddress.postalCode && `, ${displayOrder.shippingAddress.postalCode}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {displayOrder.items?.map((item) => (
               <div key={item.id} className="flex gap-3 pb-3 border-b border-border/20 last:border-0 last:pb-0">
                 {/* Product Image */}
                 <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted shrink-0 border border-border/30">
                   {item.imageUrl ? (
-                    <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" />
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      fill
+                      className="object-cover"
+                      unoptimized={item.imageUrl.includes('picsum') || item.imageUrl.includes('unsplash')}
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Package className="w-7 h-7 text-muted-foreground/30" />

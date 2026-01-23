@@ -2,10 +2,12 @@
 
 import {
   ArrowLeft,
+  Banknote,
   Calendar,
   CheckCircle2,
   ChevronRight,
   Clock,
+  Coins,
   CreditCard,
   Mail,
   MapPin,
@@ -13,7 +15,9 @@ import {
   Phone,
   Receipt,
   RefreshCw,
+  Store,
   Truck,
+  Wallet,
   XCircle,
 } from "lucide-react"
 import { useLocale } from "next-intl"
@@ -348,13 +352,23 @@ function TotalsCard({ order }: { order: Order }) {
 
         {remiseUsed > 0 && (
           <>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Payé avec remise</span>
-              <span className="font-medium text-emerald-700 dark:text-emerald-400">- {moneyMAD(remiseUsed)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">À payer</span>
-              <span className="font-bold text-foreground">{moneyMAD(amountToPay)}</span>
+            <Separator className="my-2" />
+            <div className="rounded-lg border border-emerald-200/60 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-950/20 p-3 space-y-2">
+              <div className="flex items-center gap-2 mb-2">
+                <CreditCard className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs font-semibold text-emerald-900 dark:text-emerald-100">Paiement mixte</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <Wallet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-emerald-700/80 dark:text-emerald-300/80">Solde remise utilisé</span>
+                </div>
+                <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{moneyMAD(remiseUsed)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">Reste à payer</span>
+                <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{moneyMAD(amountToPay)}</span>
+              </div>
             </div>
           </>
         )}
@@ -368,6 +382,48 @@ function PaymentCard({ order }: { order: Order }) {
   const remiseUsed = Number((order as any).remiseUsedAmount || 0)
   const amountToPay = Math.max(0, Number(order.totalAmount || 0) - remiseUsed)
 
+  const getPaymentMethodConfig = () => {
+    switch (order.paymentMethod) {
+      case "solde":
+        return {
+          icon: Clock,
+          color: "text-violet-700 dark:text-violet-300",
+          bg: "bg-violet-50/50 dark:bg-violet-950/20",
+          border: "border-violet-200/60 dark:border-violet-800/40",
+        }
+      case "pay_in_store":
+        return {
+          icon: Store,
+          color: "text-violet-700 dark:text-violet-300",
+          bg: "bg-violet-50/50 dark:bg-violet-950/20",
+          border: "border-violet-200/60 dark:border-violet-800/40",
+        }
+      case "cash_on_delivery":
+        return {
+          icon: Banknote,
+          color: "text-emerald-700 dark:text-emerald-300",
+          bg: "bg-emerald-50/50 dark:bg-emerald-950/20",
+          border: "border-emerald-200/60 dark:border-emerald-800/40",
+        }
+      case "card":
+        return {
+          icon: CreditCard,
+          color: "text-blue-700 dark:text-blue-300",
+          bg: "bg-blue-50/50 dark:bg-blue-950/20",
+          border: "border-blue-200/60 dark:border-blue-800/40",
+        }
+      default:
+        return {
+          icon: CreditCard,
+          color: "text-muted-foreground",
+          bg: "bg-muted/30",
+          border: "border-border/40",
+        }
+    }
+  }
+
+  const paymentConfig = getPaymentMethodConfig()
+
   return (
     <Card className="p-4 border-border/50">
       <div className="flex items-center justify-between gap-3">
@@ -375,7 +431,24 @@ function PaymentCard({ order }: { order: Order }) {
           <CreditCard className="w-4 h-4 text-primary" />
           <div className="min-w-0">
             <p className="text-sm font-semibold truncate">Paiement</p>
-            <p className="text-xs text-muted-foreground truncate">{methodLabel}</p>
+            {remiseUsed > 0 ? (
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="inline-flex items-center gap-1 text-[10px] font-medium rounded-full px-2 py-0.5 border bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/40">
+                  <Wallet className="w-3 h-3" />
+                  <span>Remise</span>
+                </div>
+                <span className="text-xs text-muted-foreground">+</span>
+                <div className={cn("inline-flex items-center gap-1 text-[10px] font-medium rounded-full px-2 py-0.5 border", paymentConfig.bg, paymentConfig.color, paymentConfig.border)}>
+                  <paymentConfig.icon className="w-3 h-3" />
+                  <span>{methodLabel}</span>
+                </div>
+              </div>
+            ) : (
+              <div className={cn("inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-2 py-0.5 mt-1 border", paymentConfig.bg, paymentConfig.color, paymentConfig.border)}>
+                <paymentConfig.icon className="w-3 h-3" />
+                <span>{methodLabel}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -387,29 +460,45 @@ function PaymentCard({ order }: { order: Order }) {
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <Image src="/payments/visa.svg" alt="Visa" width={36} height={24} className="h-5 w-auto opacity-90" />
-          <Image
-            src="/payments/master-card.svg"
-            alt="Mastercard"
-            width={36}
-            height={24}
-            className="h-5 w-auto opacity-90"
-          />
-          <Image src="/payments/naps.png" alt="NAPS" width={36} height={24} className="h-5 w-auto opacity-90" />
+      {(order.paymentMethod === "card" || order.paymentMethod === "cash_on_delivery") && (
+        <div className="mt-3 flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Image src="/payments/visa.svg" alt="Visa" width={36} height={24} className="h-5 w-auto opacity-90" />
+            <Image
+              src="/payments/master-card.svg"
+              alt="Mastercard"
+              width={36}
+              height={24}
+              className="h-5 w-auto opacity-90"
+            />
+            <Image src="/payments/naps.png" alt="NAPS" width={36} height={24} className="h-5 w-auto opacity-90" />
+          </div>
         </div>
-      </div>
+      )}
 
       {remiseUsed > 0 && (
-        <div className="mt-3 rounded-lg border border-border/50 bg-muted/30 p-3">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Remise utilisée</span>
-            <span className="font-semibold text-foreground">-{moneyMAD(remiseUsed)}</span>
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-sm font-semibold">Montant à payer</span>
-            <span className="text-sm font-bold">{moneyMAD(amountToPay)}</span>
+        <div className="mt-3 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-950/20 p-3">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-emerald-700/80 dark:text-emerald-300/80">Remise utilisée</span>
+              </div>
+              <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{moneyMAD(remiseUsed)}</span>
+            </div>
+            <Separator className="bg-emerald-200/40 dark:bg-emerald-800/40" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <paymentConfig.icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">À payer ({methodLabel})</span>
+              </div>
+              <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{moneyMAD(amountToPay)}</span>
+            </div>
+            {order.customerNotes && (
+              <div className="pt-2 border-t border-emerald-200/40 dark:border-emerald-800/40">
+                <p className="text-[10px] text-emerald-700/70 dark:text-emerald-300/70 italic">Note: {order.customerNotes}</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -419,43 +508,99 @@ function PaymentCard({ order }: { order: Order }) {
 
 function ShippingCard({ order }: { order: Order }) {
   const addr = order.shippingAddress
+  const isPickup = order.deliveryMethod === "pickup"
+
   return (
     <Card className="p-4 border-border/50">
       <div className="flex items-center gap-2 mb-3">
-        <MapPin className="w-4 h-4 text-primary" />
-        <h3 className="font-semibold">Livraison</h3>
+        {isPickup ? (
+          <>
+            <Store className="w-4 h-4 text-violet-600" />
+            <h3 className="font-semibold">Retrait en boutique</h3>
+          </>
+        ) : (
+          <>
+            <MapPin className="w-4 h-4 text-emerald-600" />
+            <h3 className="font-semibold">Livraison</h3>
+          </>
+        )}
       </div>
 
-      <div className="space-y-2 text-sm">
-        <div className="flex items-start gap-2">
-          <Truck className="w-4 h-4 text-muted-foreground mt-0.5" />
-          <div>
-            <p className="font-medium">{order.customerName}</p>
-            <p className="text-muted-foreground">
-              {addr.line1}
-              {addr.line2 ? `, ${addr.line2}` : ""}
-            </p>
-            <p className="text-muted-foreground">
-              {addr.city}
-              {addr.postalCode ? `, ${addr.postalCode}` : ""}
-              {addr.country ? ` • ${addr.country}` : ""}
-            </p>
+      {isPickup && order.pickupLocation ? (
+        <div className="space-y-3">
+          <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-violet-50/50 dark:bg-violet-950/20 p-3">
+            <div className="flex items-start gap-2">
+              <Store className="w-4 h-4 text-violet-600 dark:text-violet-400 mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">{order.pickupLocation.name}</p>
+                <p className="text-xs text-violet-700/80 dark:text-violet-300/80 mt-1">
+                  {order.pickupLocation.addressLine1 || order.pickupLocation.address}
+                  {order.pickupLocation.addressLine2 && `, ${order.pickupLocation.addressLine2}`}
+                </p>
+                <p className="text-xs text-violet-700/80 dark:text-violet-300/80">
+                  {order.pickupLocation.city}
+                  {order.pickupLocation.postalCode && `, ${order.pickupLocation.postalCode}`}
+                  {order.pickupLocation.country && ` • ${order.pickupLocation.country}`}
+                </p>
+                {order.pickupLocation.phone && (
+                  <p className="text-xs text-violet-700/80 dark:text-violet-300/80 mt-1">
+                    📞 {order.pickupLocation.phone}
+                  </p>
+                )}
+                {order.pickupLocation.openingHours && (
+                  <p className="text-xs text-violet-700/80 dark:text-violet-300/80 mt-1">
+                    🕒 {order.pickupLocation.openingHours}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="grid sm:grid-cols-2 gap-2">
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <span className="text-muted-foreground text-sm">{order.customerEmail}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <span className="text-muted-foreground text-sm">{order.customerPhone || "—"}</span>
+            </div>
           </div>
         </div>
+      ) : (
+          <div className="space-y-2 text-sm">
+            <div className="flex items-start gap-2">
+              <Truck className="w-4 h-4 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="font-medium">{order.customerName}</p>
+                <p className="text-muted-foreground">
+                  {addr.line1}
+                  {addr.line2 ? `, ${addr.line2}` : ""}
+                </p>
+                <p className="text-muted-foreground">
+                  {addr.city}
+                  {addr.postalCode ? `, ${addr.postalCode}` : ""}
+                  {addr.country ? ` • ${addr.country}` : ""}
+                </p>
+              </div>
+            </div>
 
-        <Separator />
+            <Separator />
 
-        <div className="grid sm:grid-cols-2 gap-2">
-          <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-muted-foreground" />
-            <span className="text-muted-foreground">{order.customerEmail}</span>
+            <div className="grid sm:grid-cols-2 gap-2">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{order.customerEmail}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{order.customerPhone || "—"}</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-muted-foreground" />
-            <span className="text-muted-foreground">{order.customerPhone || "—"}</span>
-          </div>
-        </div>
-      </div>
+      )}
     </Card>
   )
 }

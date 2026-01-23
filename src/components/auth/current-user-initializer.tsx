@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
-import { setAuth, setUser, selectAccessToken, selectRefreshToken, clearAuth, setTokens } from "@/state/slices/user-slice"
+import { setAuth, setUser, selectAccessToken, clearAuth } from "@/state/slices/user-slice"
 import { getCurrentUser } from "@/actions/auth/get-current-user"
 
 /**
@@ -14,7 +14,6 @@ import { getCurrentUser } from "@/actions/auth/get-current-user"
 export function CurrentUserInitializer() {
   const dispatch = useAppDispatch()
   const accessToken = useAppSelector(selectAccessToken)
-  const refreshToken = useAppSelector(selectRefreshToken)
 
   useEffect(() => {
     if (!accessToken) return
@@ -27,22 +26,12 @@ export function CurrentUserInitializer() {
         console.log('[CurrentUserInitializer] User fetched successfully:', result.user.email)
 
         // Check if token was refreshed server-side
-        const newToken = result.newAccessToken || accessToken
-
-        // Persist full user details together with tokens in the slice
+        // Persist full user details together with the access token
         dispatch(setAuth({
           user: result.user,
-          accessToken: newToken,
-          refreshToken: refreshToken || null,
+          accessToken: accessToken,
+          refreshToken: null,
         }))
-
-        // If token was refreshed, update Redux state
-        if (result.newAccessToken && result.newAccessToken !== accessToken) {
-          console.log('[CurrentUserInitializer] Token was refreshed, updating Redux')
-          dispatch(setTokens({
-            accessToken: result.newAccessToken,
-          }))
-        }
       } else {
         console.error('[CurrentUserInitializer] Failed to fetch user:', result.error)
 
@@ -64,7 +53,7 @@ export function CurrentUserInitializer() {
     }
 
     fetchCurrentUser()
-  }, [accessToken, refreshToken, dispatch])
+  }, [accessToken, dispatch])
 
   return null
 }

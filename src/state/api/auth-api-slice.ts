@@ -9,31 +9,31 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginCredentials>({
       query: (credentials) => ({
-        url: '/auth/login',
+        url: '/api/users/auth/login',
         method: 'POST',
         body: credentials,
       }),
     }),
     register: builder.mutation<AuthResponse, RegisterData>({
       query: (data) => ({
-        url: '/auth/register',
+        url: '/api/users/auth/register',
         method: 'POST',
         body: data,
       }),
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: '/auth/logout',
+        url: '/api/users/auth/logout',
         method: 'POST',
       }),
     }),
     getCurrentUser: builder.query<User, void>({
-      query: () => '/auth/me',
+      query: () => '/api/users/auth/me',
       providesTags: ['Auth'],
     }),
     updateProfile: builder.mutation<User, Partial<User>>({
       query: (data) => ({
-        url: '/auth/profile',
+        url: '/api/users/auth/profile',
         method: 'PATCH',
         body: data,
       }),

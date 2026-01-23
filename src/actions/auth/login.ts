@@ -6,7 +6,7 @@ import { apiClient, getErrorMessage } from "@/lib/axios"
 type LoginResponse = {
   success: true
   accessToken: string
-  refreshToken: string
+  refreshToken: string | null
   user: {
     id: number
     prenom: string
@@ -55,16 +55,7 @@ export async function login(formData: FormData): Promise<LoginResponse> {
       path: "/",
     })
     
-    // Store refresh token if provided
-    if (data.refreshToken) {
-      cookieStore.set("refreshToken", data.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-        path: "/",
-      })
-    }
+    // Refresh tokens are not used in this project
 
     console.log('[LOGIN] Success! Token set in cookies')
     
@@ -73,7 +64,7 @@ export async function login(formData: FormData): Promise<LoginResponse> {
     return {
       success: true,
       accessToken: data.token,
-      refreshToken: data.refreshToken || data.token,
+      refreshToken: null,
       user: data.user,
     }
   } catch (error) {

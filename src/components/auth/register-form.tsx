@@ -92,7 +92,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
         dispatch(setAuth({
           user: registerStatus.user,
           accessToken: registerStatus.accessToken,
-          refreshToken: registerStatus.refreshToken || null
+          refreshToken: null
         }))
         console.log('[REGISTER FORM] User data dispatched to Redux store')
       }

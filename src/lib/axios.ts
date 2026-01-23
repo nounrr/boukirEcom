@@ -55,41 +55,14 @@ apiClient.interceptors.response.use(
       message: error.message,
     })
 
-    // Handle 401 Unauthorized - Token expired
+    // Handle 401 Unauthorized - clear cookies on server
     if (error.response?.status === 401 && originalRequest && typeof window === 'undefined') {
       try {
         const cookieStore = await cookies()
-        const refreshToken = cookieStore.get('refreshToken')?.value
-
-        if (refreshToken) {
-          // Try to refresh the token
-          const response = await axios.post(`${API_URL}/users/auth/refresh`, {
-            refreshToken,
-          })
-
-          if (response.data.token) {
-            // Update the access token
-            cookieStore.set('accessToken', response.data.token, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              maxAge: 60 * 60 * 24 * 7,
-              path: '/',
-            })
-
-            // Retry the original request with new token
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${response.data.token}`
-            }
-            return apiClient(originalRequest)
-          }
-        }
-      } catch (refreshError) {
-        console.error('[API Client] Token refresh failed:', refreshError)
-        // Clear invalid tokens
-        const cookieStore = await cookies()
         cookieStore.delete('accessToken')
         cookieStore.delete('refreshToken')
+      } catch (clearError) {
+        console.error('[API Client] Failed to clear cookies:', clearError)
       }
     }
 

@@ -149,7 +149,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             dispatch(setAuth({
               user: result.user,
               accessToken: result.accessToken,
-              refreshToken: result.refreshToken || null
+              refreshToken: null
             }))
             console.log("[Google Auth] User data dispatched to Redux store")
           }

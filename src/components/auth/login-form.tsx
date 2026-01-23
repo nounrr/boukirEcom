@@ -69,7 +69,7 @@ export function LoginForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = 
         dispatch(setAuth({
           user: loginStatus.user,
           accessToken: loginStatus.accessToken,
-          refreshToken: loginStatus.refreshToken || null
+          refreshToken: null
         }))
         console.log('[LOGIN FORM] User data dispatched to Redux store')
       }

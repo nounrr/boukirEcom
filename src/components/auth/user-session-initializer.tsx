@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { useAppDispatch } from "@/state/hooks"
-import { setAuth } from "@/state/slices/user-slice"
+import { useAppDispatch, useAppSelector } from "@/state/hooks"
+import { clearAuth, selectAccessToken, selectUser, setAuth } from "@/state/slices/user-slice"
 
 interface UserSessionInitializerProps {
   session: {
@@ -17,16 +17,34 @@ interface UserSessionInitializerProps {
  */
 export function UserSessionInitializer({ session }: UserSessionInitializerProps) {
   const dispatch = useAppDispatch()
+  const currentAccessToken = useAppSelector(selectAccessToken)
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
-    if (session?.accessToken) {
-      dispatch(setAuth({
-        user: null, // Will be set by CurrentUserInitializer
-        accessToken: session.accessToken,
-        refreshToken: session.refreshToken,
-      }))
+    const cookieAccessToken = session?.accessToken ?? null
+
+    // If cookies no longer contain a token but client still does, clear client auth.
+    if (!cookieAccessToken && currentAccessToken) {
+      dispatch(clearAuth())
+      return
     }
-  }, [session, dispatch])
+
+    // If token didn't change and we already have user data, don't overwrite it.
+    if (cookieAccessToken && cookieAccessToken === currentAccessToken && currentUser) {
+      return
+    }
+
+    // If token changed (or we have token but no user yet), initialize tokens.
+    if (cookieAccessToken) {
+      dispatch(
+        setAuth({
+          user: currentUser ?? null,
+          accessToken: cookieAccessToken,
+          refreshToken: session?.refreshToken ?? null,
+        })
+      )
+    }
+  }, [currentAccessToken, currentUser, dispatch, session])
 
   return null
 }
