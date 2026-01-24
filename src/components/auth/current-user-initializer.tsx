@@ -18,8 +18,12 @@ export function CurrentUserInitializer() {
   useEffect(() => {
     if (!accessToken) return
 
+    let retryCount = 0
+    const maxRetries = 2
+    const retryDelay = 1000 // 1 second
+
     const fetchCurrentUser = async () => {
-      console.log('[CurrentUserInitializer] Fetching current user with token')
+      console.log('[CurrentUserInitializer] Fetching current user with token (attempt', retryCount + 1, ')')
       const result = await getCurrentUser()
       
       if (result.success) {
@@ -37,17 +41,32 @@ export function CurrentUserInitializer() {
 
         const errorMessage = result.error.toLowerCase()
 
-        // If error is authentication related, clear the invalid token
+        // Only clear auth on ACTUAL authentication errors from the server
+        // Don't clear on network errors, timeout, or generic errors
         const isAuthError =
-          errorMessage.includes('authentifi') || // "Non authentifié"
-          errorMessage.includes('401') ||
-          errorMessage.includes('403') ||
-          errorMessage.includes('session expir') ||
-          errorMessage.includes('accès refusé')
+          errorMessage.includes('non authentifié') ||
+          errorMessage.includes('session expirée') ||
+          errorMessage.includes('accès refusé') ||
+          errorMessage.includes('veuillez vous reconnecter')
+
+        const isNetworkError =
+          errorMessage.includes('network') ||
+          errorMessage.includes('timeout') ||
+          errorMessage.includes('fetch') ||
+          errorMessage === 'error' // Generic error
 
         if (isAuthError) {
-          console.log('[CurrentUserInitializer] Clearing invalid authentication')
+          console.log('[CurrentUserInitializer] Authentication error - clearing auth')
           dispatch(clearAuth())
+        } else if (isNetworkError && retryCount < maxRetries) {
+          // Retry on network errors
+          retryCount++
+          console.log('[CurrentUserInitializer] Network error - retrying in', retryDelay, 'ms')
+          setTimeout(fetchCurrentUser, retryDelay)
+        } else {
+          console.warn('[CurrentUserInitializer] Non-auth error - keeping token:', result.error)
+          // Don't clear auth for non-authentication errors
+          // The token might still be valid, just a temporary backend issue
         }
       }
     }

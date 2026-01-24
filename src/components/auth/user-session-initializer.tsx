@@ -25,17 +25,23 @@ export function UserSessionInitializer({ session }: UserSessionInitializerProps)
 
     // If cookies no longer contain a token but client still does, clear client auth.
     if (!cookieAccessToken && currentAccessToken) {
+      console.log('[UserSessionInitializer] Cookie token removed - clearing auth')
       dispatch(clearAuth())
       return
     }
 
     // If token didn't change and we already have user data, don't overwrite it.
     if (cookieAccessToken && cookieAccessToken === currentAccessToken && currentUser) {
+      console.log('[UserSessionInitializer] Token unchanged and user exists - skipping')
       return
     }
 
     // If token changed (or we have token but no user yet), initialize tokens.
     if (cookieAccessToken) {
+      console.log('[UserSessionInitializer] Setting token in Redux:', {
+        hasUser: !!currentUser,
+        tokenChanged: cookieAccessToken !== currentAccessToken
+      })
       dispatch(
         setAuth({
           user: currentUser ?? null,

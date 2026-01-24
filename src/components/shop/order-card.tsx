@@ -47,9 +47,24 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
     return Number.isFinite(parsed) ? parsed : 0
   }, [displayOrder])
 
+  const soldeAmount = useMemo(() => {
+    const raw = (displayOrder as any)?.soldeAmount
+    const parsed = typeof raw === "number" ? raw : Number(raw)
+    return Number.isFinite(parsed) ? parsed : 0
+  }, [displayOrder])
+
+  const isSolde = useMemo(() => {
+    return (displayOrder as any)?.isSolde === true || (displayOrder as any)?.isSolde === 1
+  }, [displayOrder])
+
   const amountToPay = useMemo(() => {
+    // For solde orders, show solde_amount as the amount to pay
+    if (displayOrder.paymentMethod === 'solde' && soldeAmount > 0) {
+      return soldeAmount
+    }
+    // For other orders with remise, calculate remaining amount
     return Math.max(0, Number(displayOrder.totalAmount || 0) - remiseUsedAmount)
-  }, [displayOrder.totalAmount, remiseUsedAmount])
+  }, [displayOrder.totalAmount, displayOrder.paymentMethod, remiseUsedAmount, soldeAmount])
 
   const itemsCount = useMemo(() => {
     if (typeof displayOrder.itemsCount === "number") return displayOrder.itemsCount
@@ -201,7 +216,11 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                         • Remise: -{remiseUsedAmount.toFixed(2)}
                       </span>
                     )}
-                    {remiseUsedAmount > 0 && (
+                    {displayOrder.paymentMethod === 'solde' && soldeAmount > 0 ? (
+                      <span className="text-xs text-violet-700 dark:text-violet-400">
+                        • À payer en solde: <span className="font-semibold">{soldeAmount.toFixed(2)} MAD</span>
+                      </span>
+                    ) : remiseUsedAmount > 0 && (
                       <span className="text-xs text-muted-foreground">
                         • À payer: <span className="font-semibold text-foreground">{amountToPay.toFixed(2)} MAD</span>
                       </span>

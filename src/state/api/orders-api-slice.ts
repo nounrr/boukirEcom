@@ -132,7 +132,10 @@ const mapOrderFromApi = (order: any): Order => {
     taxAmount: Number(order.tax_amount ?? 0),
     shippingCost: Number(order.shipping_cost ?? 0),
     discountAmount: Number(order.discount_amount ?? 0),
+    remiseUsedAmount: order.remise_used_amount != null ? Number(order.remise_used_amount) : undefined,
     totalAmount: Number(order.total_amount ?? 0),
+    isSolde: order.is_solde === 1 || order.is_solde === true,
+    soldeAmount: order.solde_amount != null ? Number(order.solde_amount) : undefined,
     status: order.status,
     paymentStatus: order.payment_status,
     paymentMethod: order.payment_method,
@@ -158,16 +161,36 @@ export const ordersApi = createApi({
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
     // List orders for authenticated user or guest (by email)
-    getOrders: builder.query<OrdersResponse, { email?: string } | void>({
+    getOrders: builder.query<OrdersResponse, {
+      email?: string
+      page?: number
+      limit?: number
+      period?: 'this_week' | 'this_month'
+      startDate?: string
+      endDate?: string
+      status?: string
+      paymentStatus?: string
+      paymentMethod?: string
+      deliveryMethod?: string
+    } | void>({
       query: (args) => {
         const url = API_CONFIG.ENDPOINTS.ORDERS;
-        const email = (args as { email?: string } | undefined)?.email;
+        const params: Record<string, any> = {};
 
-        if (email) {
-          return { url, params: { email } };
+        if (args) {
+          if (args.email) params.email = args.email;
+          if (args.page) params.page = args.page;
+          if (args.limit) params.limit = args.limit;
+          if (args.period) params.period = args.period;
+          if (args.startDate) params.start_date = args.startDate;
+          if (args.endDate) params.end_date = args.endDate;
+          if (args.status) params.status = args.status;
+          if (args.paymentStatus) params.payment_status = args.paymentStatus;
+          if (args.paymentMethod) params.payment_method = args.paymentMethod;
+          if (args.deliveryMethod) params.delivery_method = args.deliveryMethod;
         }
 
-        return { url };
+        return { url, params: Object.keys(params).length > 0 ? params : undefined };
       },
       providesTags: ['Orders'],
       transformResponse: (response: any): OrdersResponse => {

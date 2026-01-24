@@ -70,6 +70,8 @@ export interface Order {
   discountAmount: number
   remiseUsedAmount?: number
   totalAmount: number
+  isSolde?: boolean
+  soldeAmount?: number
   status: OrderStatus
   paymentStatus: PaymentStatus
   paymentMethod: PaymentMethod

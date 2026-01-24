@@ -340,6 +340,7 @@ export default function CheckoutPage() {
           items: !isAuthenticated ? items.map(item => ({
             productId: item.productId,
             variantId: item.variantId || undefined,
+            unitId: item.unitId || undefined,
             quantity: item.quantity,
           })) : undefined,
         }
@@ -366,7 +367,12 @@ export default function CheckoutPage() {
           orderId: order.id,
           orderNumber: order.orderNumber,
           totalAmount: order.totalAmount,
+          remiseUsedAmount: order.remiseUsedAmount,
+          isSolde: order.isSolde,
+          soldeAmount: order.soldeAmount,
           status: order.status,
+          paymentStatus: order.paymentStatus,
+          paymentMethod: order.paymentMethod,
         })
 
         // Clear cart for guest users (authenticated users' cart is cleared by backend)

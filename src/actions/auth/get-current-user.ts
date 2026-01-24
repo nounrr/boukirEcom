@@ -75,6 +75,14 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
       user: data.user,
     }
   } catch (error: any) {
+    // Log detailed error information for debugging
+    console.error('[getCurrentUser] Error occurred:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      message: error.message,
+      data: error.response?.data,
+    })
+
     // If 401, clear cookies and return auth error
     if (error.response?.status === 401) {
       await clearAuthCookies()
@@ -95,9 +103,13 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse> {
       }
     }
 
+    // Return detailed error message
+    const errorMsg = getErrorMessage(error)
+    console.error('[getCurrentUser] Returning error:', errorMsg)
+
     return {
       success: false,
-      error: getErrorMessage(error),
+      error: errorMsg,
     }
   }
 }
