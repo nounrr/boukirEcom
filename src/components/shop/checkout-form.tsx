@@ -84,7 +84,7 @@ export function CheckoutFormSection({
                 {...register("shippingAddress.firstName")}
                 placeholder="Votre prénom"
                 className="h-9"
-                error={errors.shippingAddress?.firstName?.message as string | undefined}
+                error={(errors as any)?.shippingAddress?.firstName?.message as string | undefined}
               />
             </div>
             <div className="space-y-2">
@@ -96,7 +96,7 @@ export function CheckoutFormSection({
                 {...register("shippingAddress.lastName")}
                 placeholder="Votre nom"
                 className="h-9"
-                error={errors.shippingAddress?.lastName?.message as string | undefined}
+                error={(errors as any)?.shippingAddress?.lastName?.message as string | undefined}
               />
             </div>
           </div>
@@ -111,7 +111,7 @@ export function CheckoutFormSection({
               type="email"
               placeholder="vous@example.com"
               className="h-9"
-              error={errors.email?.message as string | undefined}
+              error={(errors as any)?.email?.message as string | undefined}
             />
           </div>
 
@@ -175,7 +175,7 @@ export function CheckoutFormSection({
               {...register("shippingAddress.address")}
               placeholder="Adresse complète de livraison"
               className="h-9"
-              error={errors.shippingAddress?.address?.message as string | undefined}
+              error={(errors as any)?.shippingAddress?.address?.message as string | undefined}
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ export function CheckoutFormSection({
               {...register("shippingAddress.city")}
               placeholder="Ville"
               className="h-9"
-              error={errors.shippingAddress?.city?.message as string | undefined}
+              error={(errors as any)?.shippingAddress?.city?.message as string | undefined}
             />
           </div>
           <div className="space-y-3">
@@ -332,9 +332,9 @@ export function CheckoutFormSection({
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             placeholder="Instructions spéciales pour la livraison..."
           />
-          {errors.notes && (
+          {(errors as any)?.notes && (
             <p className="text-[10px] text-destructive mt-0.5">
-              {errors.notes.message}
+              {(errors as any)?.notes?.message}
             </p>
           )}
         </div>

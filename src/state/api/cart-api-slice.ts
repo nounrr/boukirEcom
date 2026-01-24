@@ -6,6 +6,7 @@ export interface CartItem {
   id?: number; // Cart item ID (for updates/deletes)
   productId: number;
   variantId?: number;
+  unitId?: number;
   name: string;
   price: number;
   quantity: number;

@@ -32,6 +32,7 @@ const mapOrderItemsFromApi = (items: any[] | undefined): OrderItem[] | undefined
     subtotal: Number(item.subtotal ?? 0),
     discountPercentage: item.discount_percentage ?? null,
     discountAmount: item.discount_amount ?? null,
+    imageUrl: item.image_url ?? null,
   }));
 };
 
