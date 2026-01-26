@@ -9,6 +9,7 @@ export const API_CONFIG = {
     PRODUCTS: '/api/ecommerce/products',
     CATEGORIES: '/api/categories',
     BRANDS: '/api/brands',
+    HERO_SLIDES: '/api/hero-slides',
     FEATURED_PROMO: '/api/ecommerce/products/featured/promo',
     NEW_ARRIVALS: '/api/ecommerce/products/featured/new',
     AUTH: '/users/auth',

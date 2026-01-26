@@ -24,7 +24,17 @@ export function Footer({ className }: { className?: string }) {
   }, [brands]);
 
   return (
-    <footer className={cn('mt-12 bg-primary text-white', className)}>
+    <footer className={cn('relative mt-12 bg-primary text-white overflow-hidden', className)}>
+      <div className="absolute inset-0 pointer-events-none opacity-[0.07] [mask-image:linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_90%,black_100%)]">
+        <Image
+          src="/droguerie-pattern.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+      </div>
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-transparent via-black/5 to-black/25" />
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-12">
         {/* Nos engagements */}
         <div className="mb-10 rounded-2xl border border-white/15 bg-white/5 p-6">

@@ -17,10 +17,10 @@ import { cartStorage } from "@/lib/cart-storage"
 import type { CartItem as APICartItem } from "@/state/api/cart-api-slice"
 import { useClearCartMutation, useGetCartQuery } from "@/state/api/cart-api-slice"
 import { useCreateOrderMutation } from "@/state/api/orders-api-slice"
+import { useGetCurrentUserQuery } from "@/state/api/auth-api-slice"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearCart } from "@/state/slices/cart-slice"
 import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react"
-import { getCurrentUser } from "@/actions/auth/get-current-user"
 import { setUser } from "@/state/slices/user-slice"
 
 // Validation schema
@@ -221,6 +221,10 @@ export default function CheckoutPage() {
   const didPrefillFromReduxRef = useRef(false)
   const didFetchMeRef = useRef(false)
 
+  const { data: meUser } = useGetCurrentUserQuery(undefined, {
+    skip: !isAuthenticated,
+  })
+
   const applyIfEmpty = useCallback(
     (path: any, value?: string | null) => {
       if (!value) return
@@ -256,42 +260,35 @@ export default function CheckoutPage() {
     didPrefillFromReduxRef.current = true
   }, [applyIfEmpty, isAuthenticated, user])
 
-  // 2) Fetch /me (server action) to load latest user details from DB and prefill any missing fields
+  // 2) Fetch /me (GET via RTK Query) to load latest user details and prefill any missing fields
   useEffect(() => {
-    if (!isAuthenticated || didFetchMeRef.current) return
+    if (!isAuthenticated || !meUser || didFetchMeRef.current) return
     didFetchMeRef.current = true
 
-    const run = async () => {
-      const result = await getCurrentUser()
-      if (!result.success) return
+    // Keep Redux user in sync (optional but helps other screens)
+    dispatch(setUser(meUser as any))
 
-      // Keep Redux user in sync (optional but helps other screens)
-      dispatch(setUser(result.user as any))
+    const me: any = meUser
 
-      const me: any = result.user
+    applyIfEmpty("shippingAddress.firstName", extractString(me, ["prenom", "firstName", "first_name"]))
+    applyIfEmpty("shippingAddress.lastName", extractString(me, ["nom", "lastName", "last_name"]))
+    applyIfEmpty("shippingAddress.phone", extractString(me, ["telephone", "phone", "mobile", "tel"]))
+    applyIfEmpty("email", extractString(me, ["email"]))
 
-      applyIfEmpty("shippingAddress.firstName", extractString(me, ["prenom", "firstName", "first_name"]))
-      applyIfEmpty("shippingAddress.lastName", extractString(me, ["nom", "lastName", "last_name"]))
-      applyIfEmpty("shippingAddress.phone", extractString(me, ["telephone", "phone", "mobile", "tel"]))
-      applyIfEmpty("email", extractString(me, ["email"]))
-
-      // If backend returns saved shipping address fields, use them too (best-effort)
-      applyIfEmpty(
-        "shippingAddress.address",
-        extractString(me, ["address", "adresse", "shippingAddressLine1", "shipping_address_line1", "adresse_livraison"])
-      )
-      applyIfEmpty(
-        "shippingAddress.city",
-        extractString(me, ["city", "ville", "shippingCity", "shipping_city", "shipping_ville"])
-      )
-      applyIfEmpty(
-        "shippingAddress.postalCode",
-        extractString(me, ["postalCode", "postal_code", "code_postal", "shippingPostalCode", "shipping_postal_code"])
-      )
-    }
-
-    run()
-  }, [applyIfEmpty, dispatch, extractString, isAuthenticated])
+    // If backend returns saved shipping address fields, use them too (best-effort)
+    applyIfEmpty(
+      "shippingAddress.address",
+      extractString(me, ["address", "adresse", "shippingAddressLine1", "shipping_address_line1", "adresse_livraison"])
+    )
+    applyIfEmpty(
+      "shippingAddress.city",
+      extractString(me, ["city", "ville", "shippingCity", "shipping_city", "shipping_ville"])
+    )
+    applyIfEmpty(
+      "shippingAddress.postalCode",
+      extractString(me, ["postalCode", "postal_code", "code_postal", "shippingPostalCode", "shipping_postal_code"])
+    )
+  }, [applyIfEmpty, dispatch, extractString, isAuthenticated, meUser])
 
   // Handle promo code applied
   const handlePromoApplied = useCallback((discount: number, code: string) => {

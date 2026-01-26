@@ -1,170 +1,242 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Building2, Grid3X3, ArrowRight } from 'lucide-react'
+import { Grid3X3, ArrowRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import { cn } from '@/lib/utils'
-import { useGetBrandsQuery } from '@/state/api/brands-api-slice'
+import { API_CONFIG } from '@/lib/api-config'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
+import type { Category } from '@/types/category'
 
-export function HomeCatalogHighlights({ className }: { className?: string }) {
-  const locale = useLocale()
-  const t = useTranslations('home')
+type CategoryShape = 'rounded' | 'circle'
 
-  const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery()
-  const { data: brands = [], isLoading: isBrandsLoading } = useGetBrandsQuery()
+function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
+  if (!imageUrl) return null
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl
 
-  const topCategories = useMemo(() => {
-    const roots = categories.filter((c) => !c.parent_id)
-    return (roots.length > 0 ? roots : categories).slice(0, 10)
-  }, [categories])
+  const base = (API_CONFIG.BASE_URL || '').replace(/\/+$/, '')
+  const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
 
-  const topBrands = useMemo(() => brands.slice(0, 12), [brands])
+  return base ? `${base}${path}` : path
+}
+
+function CategoryCard({
+  category,
+  locale,
+  shape,
+}: {
+  category: Category
+  locale: string
+  shape: CategoryShape
+}) {
+  const href = `/${locale}/shop?category_id=${encodeURIComponent(String(category.id))}`
+  const imageSrc = toAbsoluteImageUrl(category.image_url)
+  const isCircle = shape === 'circle'
+  const categoryInitial = category.nom?.[0]?.toUpperCase() ?? 'C'
 
   return (
-    <section className={cn('py-10', className)}>
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Categories */}
-          <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Grid3X3 className="h-4 w-4 text-muted-foreground" />
-                  {t('categoriesTitle')}
-                </div>
-                <div className="mt-1 text-sm text-muted-foreground">{t('categoriesDesc')}</div>
-              </div>
-              <Link href={`/${locale}/shop`} className="shrink-0">
-                <Button variant="outline" className="gap-2">
-                  {t('viewAll')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+    <Link href={href} className="group block">
+      <div className="relative">
+        {/* Glow effect on hover */}
+        <div className="absolute inset-0 bg-linear-to-br from-teal-400/0 via-cyan-400/0 to-blue-400/0 group-hover:from-teal-400/20 group-hover:via-cyan-400/20 group-hover:to-blue-400/20 rounded-full blur-xl transition-all duration-500" />
 
-            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {isCategoriesLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-[68px] rounded-2xl border border-border/30 bg-muted/40 animate-pulse"
-                  />
-                ))
-              ) : topCategories.length === 0 ? (
-                <div className="col-span-full text-sm text-muted-foreground">{t('emptyCategories')}</div>
-              ) : (
-                topCategories.map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/${locale}/shop?category_id=${encodeURIComponent(String(c.id))}`}
-                    className="group flex items-center gap-3 rounded-2xl border border-border/40 bg-background/60 p-3 hover:bg-muted/40 transition-colors"
-                  >
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-muted/60">
-                      {c.image_url ? (
-                        <Image
-                          src={c.image_url}
-                          alt={c.nom}
-                          fill
-                          sizes="40px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="grid h-full w-full place-items-center text-xs font-bold text-foreground/70">
-                          {c.nom?.[0]?.toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-foreground group-hover:text-foreground">
-                        {c.nom}
-                      </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {t('browse')}
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              )}
+        {/* Category container - SMALLER than brands */}
+        <div
+          className={cn(
+            'relative overflow-hidden bg-white dark:bg-gray-900',
+            'border-2 border-teal-100 dark:border-teal-900/50',
+            'transition-all duration-300',
+            'group-hover:border-teal-300 dark:group-hover:border-teal-700',
+            'group-hover:shadow-xl group-hover:shadow-teal-500/20',
+            'aspect-square w-full max-w-20 mx-auto',
+            isCircle ? 'rounded-full' : 'rounded-xl'
+          )}
+        >
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt={category.nom}
+              fill
+              sizes="(min-width: 1024px) 80px, (min-width: 768px) 72px, 64px"
+              unoptimized={/^https?:\/\//i.test(imageSrc)}
+              className="object-contain p-2.5 transition-transform duration-300 group-hover:scale-110"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20">
+              <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                {categoryInitial}
+              </span>
             </div>
-          </div>
-
-          {/* Brands */}
-          <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                  {t('brandsTitle')}
-                </div>
-                <div className="mt-1 text-sm text-muted-foreground">{t('brandsDesc')}</div>
-              </div>
-              <Link href={`/${locale}/shop`} className="shrink-0">
-                <Button variant="outline" className="gap-2">
-                  {t('viewAll')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="mt-5">
-              {isBrandsLoading ? (
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-14 rounded-2xl border border-border/30 bg-muted/40 animate-pulse"
-                    />
-                  ))}
-                </div>
-              ) : topBrands.length === 0 ? (
-                <div className="text-sm text-muted-foreground">{t('emptyBrands')}</div>
-              ) : (
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-                  {topBrands.map((b) => (
-                    <Link
-                      key={b.id}
-                      href={`/${locale}/shop?brand_id=${encodeURIComponent(String(b.id))}`}
-                      className="group flex h-14 items-center justify-center rounded-2xl border border-border/40 bg-background/60 px-3 hover:bg-muted/40 transition-colors"
-                      aria-label={b.nom}
-                      title={b.nom}
-                    >
-                      <div className="relative h-8 w-full max-w-[120px]">
-                        {b.image_url ? (
-                          <Image
-                            src={b.image_url}
-                            alt={b.nom}
-                            fill
-                            sizes="120px"
-                            className="object-contain opacity-90 group-hover:opacity-100 transition-opacity"
-                          />
-                        ) : (
-                          <div className="w-full text-center text-xs font-semibold text-foreground/80 truncate">
-                            {b.nom}
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-5 flex items-center justify-between">
-                <div className="text-xs text-muted-foreground">{t('brandsHint')}</div>
-                <Link
-                  href={`/${locale}/shop`}
-                  className="text-sm font-semibold text-primary hover:underline underline-offset-4"
-                >
-                  {t('ctaBrowse')}
-                </Link>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
+      </div>
+
+      {/* Category name */}
+      <div className="mt-2 text-center">
+        <p className="text-xs font-medium text-foreground line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+          {category.nom}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+export function HomeCatalogHighlights({
+  locale,
+  className,
+  shape = 'rounded',
+  limit = 20,
+}: {
+  locale?: string
+  className?: string
+  shape?: CategoryShape
+  limit?: number
+}) {
+  const t = useTranslations('home')
+  const detectedLocale = useLocale()
+  const activeLocale = locale || detectedLocale
+
+  const { data: categories = [], isLoading } = useGetCategoriesQuery()
+
+  const [api, setApi] = useState<CarouselApi | null>(null)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const items = useMemo(() => {
+    const roots = categories.filter((c) => !c.parent_id)
+    const list = roots.length > 0 ? roots : categories
+    return list.slice(0, limit)
+  }, [categories, limit])
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!api) return
+    if (isPaused) return
+    if (items.length <= 6) return
+
+    const id = window.setInterval(() => {
+      api.scrollNext()
+    }, 3500)
+
+    return () => window.clearInterval(id)
+  }, [api, isPaused, items.length])
+
+  return (
+    <section className={cn('relative py-20 overflow-hidden', className)}>
+      {/* Moroccan-inspired gradient background */}
+      <div className="absolute inset-0 bg-linear-to-br from-teal-50/60 via-cyan-50/40 to-blue-50/60 dark:from-teal-950/30 dark:via-cyan-950/20 dark:to-blue-950/30" />
+
+      {/* Moroccan zellige pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.015]">
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="moroccan-categories-pattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+              <path d="M25 0L30 10L40 15L30 20L25 25L20 20L10 15L20 10Z" fill="currentColor" />
+              <circle cx="25" cy="25" r="2.5" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#moroccan-categories-pattern)" />
+        </svg>
+      </div>
+
+      <div className="relative container mx-auto px-6 sm:px-8 lg:px-16">
+        {/* Moroccan-style header */}
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-linear-to-br from-teal-500 to-cyan-500 rounded-xl blur-md opacity-50" />
+              <div className="relative bg-linear-to-br from-teal-500 to-cyan-500 p-2.5 rounded-xl shadow-lg">
+                <Grid3X3 className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-teal-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                {t('categoriesTitle')}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-0.5">{t('categoriesDesc')}</p>
+            </div>
+          </div>
+          <Link href={`/${activeLocale}/shop`}>
+            <Button
+              variant="outline"
+              className="gap-2 border-teal-200 hover:bg-teal-50 hover:border-teal-300 dark:border-teal-800 dark:hover:bg-teal-950/50"
+            >
+              {t('viewAll')}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-5">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <Skeleton
+                  className={cn(
+                    'aspect-square w-full max-w-20',
+                    shape === 'circle' ? 'rounded-full' : 'rounded-xl'
+                  )}
+                />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="rounded-3xl border border-teal-200 dark:border-teal-800 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm p-12 text-center">
+            <p className="text-muted-foreground">{t('emptyCategories')}</p>
+          </div>
+        ) : (
+              <div
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onFocusCapture={() => setIsPaused(true)}
+                onBlurCapture={() => setIsPaused(false)}
+              >
+                <Carousel
+                  className="relative"
+                  opts={{
+                    loop: items.length > 6,
+                    align: 'start',
+                    slidesToScroll: 1,
+                  }}
+                  setApi={(a) => setApi(a)}
+                >
+                  <CarouselContent className="-ml-3 md:-ml-5">
+                    {items.map((c) => (
+                      <CarouselItem
+                        key={c.id}
+                        className="pl-3 md:pl-5 basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8 xl:basis-1/10"
+                      >
+                    <CategoryCard category={c} locale={activeLocale} shape={shape} />
+                  </CarouselItem>
+                ))}
+                  </CarouselContent>
+
+                  {items.length > 6 && (
+                    <>
+                      <CarouselPrevious
+                        className="-left-4 bg-white/95 dark:bg-gray-900/95 border-teal-200 dark:border-teal-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/50 shadow-lg"
+                      />
+                      <CarouselNext
+                        className="-right-4 bg-white/95 dark:bg-gray-900/95 border-teal-200 dark:border-teal-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/50 shadow-lg"
+                      />
+                    </>
+                  )}
+            </Carousel>
+          </div>
+        )}
       </div>
     </section>
   )

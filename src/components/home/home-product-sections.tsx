@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Package } from 'lucide-react'
+import { useLocale } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/shop/product-card'
@@ -11,6 +12,7 @@ import {
   useGetNewArrivalsQuery,
 } from '@/state/api/products-api-slice'
 import type { ProductListItem } from '@/types/api/products'
+import { normalizeLocale } from '@/i18n/locale'
 
 function toProductCardModel(product: ProductListItem) {
   const currentPrice = product.prix_promo || product.prix_vente
@@ -130,12 +132,15 @@ export function HomeProductSections({
   newArrivalsTitle,
   newArrivalsDesc,
 }: {
-  locale: string
+    locale?: string
   featuredTitle: string
   featuredDesc?: string
   newArrivalsTitle: string
   newArrivalsDesc?: string
 }) {
+  const detectedLocale = useLocale()
+  const activeLocale = normalizeLocale(locale ?? detectedLocale)
+
   const { data: featured, isLoading: isFeaturedLoading } = useGetFeaturedPromoQuery(12)
   const { data: newArrivals, isLoading: isNewLoading } = useGetNewArrivalsQuery(12)
 
@@ -144,14 +149,14 @@ export function HomeProductSections({
       <ProductRail
         title={featuredTitle}
         description={featuredDesc}
-        href={`/${locale}/shop?sort=promo`}
+        href={`/${activeLocale}/shop?sort=promo`}
         products={featured ?? []}
         isLoading={isFeaturedLoading}
       />
       <ProductRail
         title={newArrivalsTitle}
         description={newArrivalsDesc}
-        href={`/${locale}/shop?sort=newest`}
+        href={`/${activeLocale}/shop?sort=newest`}
         products={newArrivals ?? []}
         isLoading={isNewLoading}
       />

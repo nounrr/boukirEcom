@@ -15,6 +15,7 @@ import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/t
 
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterState) => void
+  initialFilters?: Partial<FilterState>
   categories?: ProductCategory[]
   brands?: ProductBrand[]
   availableColors?: string[]
@@ -28,6 +29,7 @@ interface ProductFiltersProps {
 
 export function ProductFilters({ 
   onFilterChange, 
+  initialFilters,
   categories = [],
   brands = [],
   availableColors = [],
@@ -53,27 +55,30 @@ export function ProductFilters({
     units: false
   })
 
-  const [filters, setFilters] = useState<FilterState>({
-    categories: [],
-    brands: [],
-    priceRange: [minPrice, maxPrice],
-    colors: [],
-    units: [],
-    search: '',
-    inStock: true,
-    sort: 'newest',
-    page: 1,
-    per_page: 20
-  })
+  const [filters, setFilters] = useState<FilterState>(() => ({
+    categories: initialFilters?.categories ?? [],
+    brands: initialFilters?.brands ?? [],
+    priceRange: initialFilters?.priceRange ?? [minPrice, maxPrice],
+    colors: initialFilters?.colors ?? [],
+    units: initialFilters?.units ?? [],
+    search: initialFilters?.search ?? '',
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    sort: initialFilters?.sort ?? 'newest',
+    page: initialFilters?.page ?? 1,
+    per_page: initialFilters?.per_page ?? 20,
+  }))
 
-  const [searchInput, setSearchInput] = useState('')
+  const [searchInput, setSearchInput] = useState(() => initialFilters?.search ?? '')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([minPrice, maxPrice])
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(() =>
+    (initialFilters?.priceRange as [number, number] | undefined) ?? [minPrice, maxPrice]
+  )
   
   // Refs for optimization
   const isInitialMount = useRef(true)
   const previousFilters = useRef<FilterState>(filters)
   const notifyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const lastPriceBoundsRef = useRef<[number, number]>([minPrice, maxPrice])
 
   // Sort options with labels
   const sortOptions: Array<{ value: SortOption; label: string }> = [
@@ -86,6 +91,9 @@ export function ProductFilters({
 
   // Helper to check if filters actually changed (deep equality for arrays)
   const filtersChanged = useCallback((prev: FilterState, current: FilterState): boolean => {
+    const sortNums = (arr: number[]) => [...arr].sort((a, b) => a - b)
+    const sortStrings = (arr: string[]) => [...arr].sort((a, b) => a.localeCompare(b))
+
     return (
       prev.page !== current.page ||
       prev.per_page !== current.per_page ||
@@ -94,12 +102,39 @@ export function ProductFilters({
       prev.inStock !== current.inStock ||
       prev.priceRange[0] !== current.priceRange[0] ||
       prev.priceRange[1] !== current.priceRange[1] ||
-      JSON.stringify(prev.categories.sort()) !== JSON.stringify(current.categories.sort()) ||
-      JSON.stringify(prev.brands.sort()) !== JSON.stringify(current.brands.sort()) ||
-      JSON.stringify(prev.colors.sort()) !== JSON.stringify(current.colors.sort()) ||
-      JSON.stringify(prev.units.sort()) !== JSON.stringify(current.units.sort())
+      JSON.stringify(sortNums(prev.categories)) !== JSON.stringify(sortNums(current.categories)) ||
+      JSON.stringify(sortNums(prev.brands)) !== JSON.stringify(sortNums(current.brands)) ||
+      JSON.stringify(sortStrings(prev.colors)) !== JSON.stringify(sortStrings(current.colors)) ||
+      JSON.stringify(sortStrings(prev.units)) !== JSON.stringify(sortStrings(current.units))
     )
   }, [])
+
+  const desiredFilters = useMemo<FilterState>(() => ({
+    categories: initialFilters?.categories ?? [],
+    brands: initialFilters?.brands ?? [],
+    priceRange: (initialFilters?.priceRange as [number, number] | undefined) ?? [minPrice, maxPrice],
+    colors: initialFilters?.colors ?? [],
+    units: initialFilters?.units ?? [],
+    search: initialFilters?.search ?? '',
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    sort: (initialFilters?.sort as SortOption | undefined) ?? 'newest',
+    page: initialFilters?.page ?? 1,
+    per_page: initialFilters?.per_page ?? 20,
+  }), [initialFilters, minPrice, maxPrice])
+
+  // Keep UI in sync when URL params change (e.g., browser back/forward)
+  useEffect(() => {
+    if (isInitialMount.current) return
+
+    setFilters((prev) => {
+      if (!filtersChanged(prev, desiredFilters)) return prev
+      previousFilters.current = desiredFilters
+      return desiredFilters
+    })
+
+    setSearchInput(desiredFilters.search)
+    setLocalPriceRange(desiredFilters.priceRange)
+  }, [desiredFilters, filtersChanged])
 
   // Debounced notification to parent (batches rapid changes)
   const notifyParent = useCallback((newFilters: FilterState) => {
@@ -126,27 +161,39 @@ export function ProductFilters({
     })
   }, [debouncedSearch, notifyParent])
 
-  // Initialize price range from props (only on mount or when props actually change)
+  // Sync price bounds from API (only when min/max props change)
   useEffect(() => {
     const newMin = minPrice ?? 0
     const newMax = maxPrice ?? 10000
-    
-    // Only update if values actually changed
-    if (localPriceRange[0] !== newMin || localPriceRange[1] !== newMax) {
-      setLocalPriceRange([newMin, newMax])
-      
-      if (!isInitialMount.current) {
-        setFilters(prev => {
-          const updated = { ...prev, priceRange: [newMin, newMax] as [number, number] }
-          notifyParent(updated)
-          return updated
-        })
-      } else {
-        // On mount, just set without notifying
-        setFilters(prev => ({ ...prev, priceRange: [newMin, newMax] as [number, number] }))
-      }
+
+    const [prevMin, prevMax] = lastPriceBoundsRef.current
+    if (prevMin === newMin && prevMax === newMax) return
+    lastPriceBoundsRef.current = [newMin, newMax]
+
+    // Clamp current UI selection within new bounds
+    setLocalPriceRange((prev) => {
+      const clampedMin = Math.max(newMin, prev[0])
+      const clampedMax = Math.min(newMax, prev[1])
+      if (clampedMin > clampedMax) return [newMin, newMax]
+      return [clampedMin, clampedMax]
+    })
+
+    if (!isInitialMount.current) {
+      setFilters((prev) => {
+        const clampedMin = Math.max(newMin, prev.priceRange[0])
+        const clampedMax = Math.min(newMax, prev.priceRange[1])
+        const range: [number, number] =
+          clampedMin > clampedMax ? [newMin, newMax] : [clampedMin, clampedMax]
+
+        const updated = { ...prev, priceRange: range, page: 1 }
+        notifyParent(updated)
+        return updated
+      })
+    } else {
+      // On mount, just set without notifying
+      setFilters((prev) => ({ ...prev, priceRange: [newMin, newMax] as [number, number] }))
     }
-  }, [minPrice, maxPrice, localPriceRange, notifyParent])
+  }, [minPrice, maxPrice, notifyParent])
 
   // Mark initial mount as complete and notify parent with initial filters
   useEffect(() => {
@@ -370,6 +417,47 @@ export function ProductFilters({
       </div>
     )
   }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading])
+
+  // Auto-expand parents so selected categories (e.g., 23/27) are visible & checked.
+  const autoExpanded = useMemo(() => {
+    if (!categories.length || filters.categories.length === 0) return [] as number[]
+
+    const findPath = (
+      nodes: ProductCategory[],
+      targetId: number,
+      path: number[]
+    ): number[] | null => {
+      for (const node of nodes) {
+        const nextPath = [...path, node.id]
+        if (node.id === targetId) return nextPath
+        if (node.children && node.children.length > 0) {
+          const found = findPath(node.children, targetId, nextPath)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    const expanded = new Set<number>()
+    for (const selectedId of filters.categories) {
+      const path = findPath(categories, selectedId, [])
+      if (!path || path.length < 2) continue
+      // Expand all ancestors (exclude the selected leaf itself)
+      for (let i = 0; i < path.length - 1; i += 1) {
+        expanded.add(path[i])
+      }
+    }
+    return Array.from(expanded)
+  }, [categories, filters.categories])
+
+  useEffect(() => {
+    if (autoExpanded.length === 0) return
+    setExpandedCategories((prev) => {
+      const merged = new Set(prev)
+      for (const id of autoExpanded) merged.add(id)
+      return Array.from(merged)
+    })
+  }, [autoExpanded])
 
   const colorMap: Record<string, string> = {
     'Blanc': '#FFFFFF',

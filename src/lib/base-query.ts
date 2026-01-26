@@ -70,6 +70,7 @@ export const baseQueryPublic = fetchBaseQuery({
     const accessToken = state.user.accessToken;
 
     // Optionally add token if user is authenticated (for personalization like is_wishlisted)
+    console.log(accessToken);
     if (accessToken) {
       headers.set('Authorization', `Bearer ${accessToken}`);
     }

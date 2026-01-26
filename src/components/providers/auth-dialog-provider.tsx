@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import { AuthDialog, AuthDialogMode } from "@/components/auth/auth-dialog"
+import { normalizeLocale } from "@/i18n/locale"
 
 interface AuthDialogContextValue {
   openAuthDialog: (mode?: AuthDialogMode) => void
@@ -37,6 +38,20 @@ export function AuthDialogProvider({ children }: { children: React.ReactNode }) 
 
 export function useAuthDialog() {
   const ctx = useContext(AuthDialogContext)
-  if (!ctx) throw new Error("useAuthDialog must be used within AuthDialogProvider")
-  return ctx
+  if (ctx) return ctx
+
+  // Fallback: don't crash the whole UI if a component is rendered outside the provider.
+  // Redirect user to login page instead.
+  const openAuthDialog = () => {
+    if (typeof window === 'undefined') return
+    const seg = window.location.pathname.split('/').filter(Boolean)
+    const maybeLocale = seg[0]
+    const locale = normalizeLocale(maybeLocale)
+    window.location.assign(`/${locale}/login`)
+  }
+
+  return {
+    openAuthDialog,
+    closeAuthDialog: () => { },
+  }
 }

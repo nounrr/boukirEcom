@@ -3,32 +3,145 @@
 import { ProductFilters } from "@/components/shop/product-filters"
 import { ProductsList } from "@/components/shop/products-list"
 import { useTranslations } from "next-intl"
-import { useState, useCallback, useMemo, useEffect } from "react"
+import { useState, useCallback, useMemo, useEffect, useRef } from "react"
 import { useGetProductsQuery, useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
 import { filterStateToApiRequest, type FilterState } from "@/types/api/products"
 import { Button } from "@/components/ui/button"
 import { SlidersHorizontal, Grid3x3, LayoutGrid, Package } from "lucide-react"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 export default function ShopPage() {
   const t = useTranslations('shop')
 
-  const [filterState, setFilterState] = useState<FilterState>({
-    categories: [],
-    brands: [],
-    // The real min/max range will be hydrated from the API response
-    priceRange: [0, 10000],
-    colors: [],
-    units: [],
-    search: '',
-    inStock: true,
-    sort: 'newest',
-    page: 1,
-    per_page: 20
-  })
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const parseIdList = useCallback((value: string | null): number[] => {
+    if (!value) return []
+    return value
+      .split(',')
+      .map((v) => Number.parseInt(v.trim(), 10))
+      .filter((n) => Number.isFinite(n) && n > 0)
+  }, [])
+
+  const parseStringList = useCallback((value: string | null): string[] => {
+    if (!value) return []
+    return value
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean)
+  }, [])
+
+  const urlFilters = useMemo<FilterState>(() => {
+    const categories = parseIdList(searchParams.get('category_id'))
+    const brands = parseIdList(searchParams.get('brand_id'))
+
+    const search = searchParams.get('search') ?? ''
+
+    const sortRaw = searchParams.get('sort')
+    const allowedSort: Array<FilterState['sort']> = ['newest', 'price_asc', 'price_desc', 'promo', 'popular']
+    const sort = (allowedSort as readonly string[]).includes(sortRaw ?? '')
+      ? (sortRaw as FilterState['sort'])
+      : 'newest'
+
+    const inStockRaw = searchParams.get('inStock')
+    const inStock = inStockRaw == null
+      ? true
+      : inStockRaw === '1' || inStockRaw === 'true' || inStockRaw === 'yes'
+
+    const page = Math.max(1, Number.parseInt(searchParams.get('page') ?? '1', 10) || 1)
+    const per_page = Math.max(1, Number.parseInt(searchParams.get('per_page') ?? '20', 10) || 20)
+
+    const min_price = Number.parseInt(searchParams.get('min_price') ?? '', 10)
+    const max_price = Number.parseInt(searchParams.get('max_price') ?? '', 10)
+    const priceRange: [number, number] = [
+      Number.isFinite(min_price) ? min_price : 0,
+      Number.isFinite(max_price) ? max_price : 10000,
+    ]
+
+    const colors = parseStringList(searchParams.get('colors'))
+    const units = parseStringList(searchParams.get('units'))
+
+    return {
+      categories,
+      brands,
+      priceRange,
+      colors,
+      units,
+      search,
+      inStock,
+      sort,
+      page,
+      per_page,
+    }
+  }, [parseIdList, parseStringList, searchParams])
+
+  const [filterState, setFilterState] = useState<FilterState>(() => urlFilters)
 
   const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false)
+
+  // Keep state aligned when user uses browser back/forward or manual URL edits
+  useEffect(() => {
+    const same =
+      filterState.search === urlFilters.search &&
+      filterState.sort === urlFilters.sort &&
+      filterState.inStock === urlFilters.inStock &&
+      filterState.page === urlFilters.page &&
+      filterState.per_page === urlFilters.per_page &&
+      filterState.priceRange[0] === urlFilters.priceRange[0] &&
+      filterState.priceRange[1] === urlFilters.priceRange[1] &&
+      filterState.categories.join(',') === urlFilters.categories.join(',') &&
+      filterState.brands.join(',') === urlFilters.brands.join(',') &&
+      filterState.colors.join(',') === urlFilters.colors.join(',') &&
+      filterState.units.join(',') === urlFilters.units.join(',')
+
+    if (!same) {
+      setFilterState(urlFilters)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlFilters])
+
+  // Debounced URL sync for shareable/filterable URLs without thrashing
+  const lastUrlRef = useRef<string>('')
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      const next = new URLSearchParams()
+
+      if (filterState.categories.length > 0) next.set('category_id', filterState.categories.join(','))
+      if (filterState.brands.length > 0) next.set('brand_id', filterState.brands.join(','))
+      if (filterState.search) next.set('search', filterState.search)
+
+      if (filterState.sort && filterState.sort !== 'newest') next.set('sort', filterState.sort)
+      if (filterState.inStock === false) next.set('inStock', '0')
+
+      if (filterState.page && filterState.page !== 1) next.set('page', String(filterState.page))
+      if (filterState.per_page && filterState.per_page !== 20) next.set('per_page', String(filterState.per_page))
+
+      // Only include min/max if they are meaningful (avoid noise)
+      if (filterState.priceRange?.[0] != null && filterState.priceRange[0] !== 0) {
+        next.set('min_price', String(filterState.priceRange[0]))
+      }
+      if (filterState.priceRange?.[1] != null && filterState.priceRange[1] !== 10000) {
+        next.set('max_price', String(filterState.priceRange[1]))
+      }
+
+      if (filterState.colors.length > 0) next.set('colors', filterState.colors.join(','))
+      if (filterState.units.length > 0) next.set('units', filterState.units.join(','))
+
+      const nextQuery = next.toString()
+      const currentQuery = searchParams.toString()
+
+      if (nextQuery !== currentQuery && nextQuery !== lastUrlRef.current) {
+        lastUrlRef.current = nextQuery
+        router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
+      }
+    }, 200)
+
+    return () => window.clearTimeout(id)
+  }, [filterState, pathname, router, searchParams])
 
   // Convert filter state to API request
   const apiFilters = useMemo(() => filterStateToApiRequest(filterState), [filterState])
@@ -166,6 +279,7 @@ export default function ShopPage() {
             {/* Filters Sidebar */}
             <ProductFilters
               onFilterChange={handleFilterChange}
+            initialFilters={urlFilters}
               categories={categories}
               brands={brands}
               availableColors={availableColors}

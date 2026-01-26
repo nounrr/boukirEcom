@@ -4,13 +4,15 @@ import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { HomeProductSections } from '@/components/home/home-product-sections'
+import { normalizeLocale } from '@/i18n/locale'
 
 export default async function HomePage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: rawLocale } = await params
+  const locale = normalizeLocale(rawLocale)
   const tCommon = useTranslations('common')
   const tShop = useTranslations('shop')
 

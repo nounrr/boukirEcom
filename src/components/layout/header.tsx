@@ -125,12 +125,14 @@ export function Header() {
                   <Button variant="ghost" className="hidden lg:flex items-center gap-1.5 h-9 px-2 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 group text-white">
                     <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20 group-hover:border-white/30 transition-all duration-200 shadow-sm overflow-hidden">
                       {user.avatar_url ? (
-                        <Image
+                          <img
                           src={user.avatar_url}
                           alt={`${user.prenom} ${user.nom}`}
                           width={28}
                           height={28}
                           className="object-cover w-full h-full"
+                            referrerPolicy="no-referrer"
+                            loading="lazy"
                         />
                       ) : (
                           <span className="text-[11px] font-bold text-white">
@@ -148,12 +150,14 @@ export function Header() {
                         <div className="relative">
                           <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shrink-0 shadow-md shadow-primary/15 ring-1 ring-primary/20 overflow-hidden">
                             {user.avatar_url ? (
-                              <Image
+                                <img
                                 src={user.avatar_url}
                                 alt={`${user.prenom} ${user.nom}`}
                                 width={40}
                                 height={40}
                                 className="object-cover w-full h-full"
+                                  referrerPolicy="no-referrer"
+                                  loading="lazy"
                               />
                             ) : (
                               <span className="text-sm font-bold text-primary-foreground">
