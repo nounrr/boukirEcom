@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useAppSelector } from '@/state/hooks'
 import { useGoogleAuth } from '@/hooks/use-google-auth'
 import { usePathname } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { 
   shouldShowOneTap, 
   markOneTapDismissed,
@@ -23,6 +24,7 @@ let oneTapTimeout: NodeJS.Timeout | null = null
 export function GoogleOneTap() {
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const pathname = usePathname()
+  const locale = useLocale()
   const [showCount, setShowCount] = useState(0)
   const hasShownRef = useRef(false)
   const isMountedRef = useRef(true)
@@ -30,6 +32,7 @@ export function GoogleOneTap() {
   const { promptOneTap, isReady, cancelOneTap } = useGoogleAuth({
     context: 'signin',
     autoSelect: false,
+    redirectTo: `/${locale}/shop`,
     onSuccess: () => {
       console.log('[Google One Tap] Sign-in successful')
       isOneTapActive = false

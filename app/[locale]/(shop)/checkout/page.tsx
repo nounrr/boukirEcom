@@ -15,7 +15,7 @@ import ShippingInfoStep from "@/components/shop/checkout/shipping-info-step"
 import { Button } from "@/components/ui/button"
 import { cartStorage } from "@/lib/cart-storage"
 import type { CartItem as APICartItem } from "@/state/api/cart-api-slice"
-import { useGetCartQuery } from "@/state/api/cart-api-slice"
+import { useClearCartMutation, useGetCartQuery } from "@/state/api/cart-api-slice"
 import { useCreateOrderMutation } from "@/state/api/orders-api-slice"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearCart } from "@/state/slices/cart-slice"
@@ -35,8 +35,8 @@ const checkoutSchema = z.object({
     lastName: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
     phone: z
       .string()
-      .min(6, { message: "Numéro de téléphone invalide" })
-      .max(15, { message: "Numéro de téléphone trop long" }),
+      .min(10, { message: "Numéro de téléphone invalide" })
+      .max(20, { message: "Numéro de téléphone trop long" }),
     address: z.string().optional(),
     city: z.string().optional(),
     postalCode: z.string().optional(),
@@ -122,6 +122,7 @@ export default function CheckoutPage() {
 
   // Create order mutation
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation()
+  const [clearCartApi] = useClearCartMutation()
 
   // Wizard step state
   const [currentStep, setCurrentStep] = useState(1)
@@ -375,11 +376,17 @@ export default function CheckoutPage() {
           paymentMethod: order.paymentMethod,
         })
 
-        // Clear cart for guest users (authenticated users' cart is cleared by backend)
-        if (!isAuthenticated) {
-          console.log("🧹 Clearing guest cart from localStorage")
-          dispatch(clearCart())
+        // Clear cart on success (backend + local state)
+        if (isAuthenticated) {
+          try {
+            await clearCartApi().unwrap()
+          } catch (clearError) {
+            console.warn("⚠️ Failed to clear backend cart after order:", clearError)
+          }
         }
+
+        console.log("🧹 Clearing local cart state")
+        dispatch(clearCart())
 
         // Redirect to orders page
         console.log("➡️  Redirecting to orders page...")
@@ -395,7 +402,7 @@ export default function CheckoutPage() {
         alert(error?.data?.message || "Échec de la création de la commande. Veuillez réessayer.")
       }
     })
-  }, [items, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch])
+  }, [items, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi])
 
   // Navigate between steps with validation
   const goToNextStep = useCallback(async () => {
@@ -537,7 +544,7 @@ export default function CheckoutPage() {
                     <Button
                       type="button"
                       onClick={goToNextStep}
-                      className="flex-1 h-11 bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md hover:shadow-lg transition-all"
+                      className="text-white flex-1 h-11 bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md hover:shadow-lg transition-all"
                     >
                       Suivant
                       <ChevronRight className="w-4 h-4 ml-2" />

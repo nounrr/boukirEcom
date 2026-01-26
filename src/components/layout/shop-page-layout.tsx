@@ -12,6 +12,7 @@ interface ShopPageLayoutProps {
   subtitle?: string
   icon?: "heart" | "cart"
   itemCount?: number
+  showHeader?: boolean
   emptyState?: {
     icon: ReactNode
     title: string
@@ -28,6 +29,7 @@ export function ShopPageLayout({
   subtitle,
   icon = "heart",
   itemCount = 0,
+  showHeader = true,
   emptyState,
   isEmpty = false,
 }: ShopPageLayoutProps) {
@@ -37,26 +39,28 @@ export function ShopPageLayout({
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Header - Compact */}
-        <div className="mb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
-              <IconComponent className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
-                {itemCount > 0 && (
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
-                    {itemCount}
-                  </Badge>
+        {showHeader && (
+          <div className="mb-5">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+                <IconComponent className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
+                  {itemCount > 0 && (
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                      {itemCount}
+                    </Badge>
+                  )}
+                </div>
+                {subtitle && (
+                  <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
                 )}
               </div>
-              {subtitle && (
-                <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
-              )}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Content or Empty State */}
         {isEmpty && emptyState ? (

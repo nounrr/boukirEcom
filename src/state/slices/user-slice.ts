@@ -6,8 +6,22 @@ export interface User {
   id: number;
   prenom: string;  // First name
   nom: string;     // Last name
+  nom_complet?: string;
   email: string;
   telephone: string | null;
+  // These fields may be omitted by some auth endpoints (login/register/oauth)
+  // and will be available after fetching the full current user profile.
+  adresse?: string | null;
+  societe?: string | null;
+  ice?: string | null;
+  is_company?: boolean;
+  is_solde?: boolean | number;
+  shipping_address_line1?: string | null;
+  shipping_address_line2?: string | null;
+  shipping_city?: string | null;
+  shipping_state?: string | null;
+  shipping_postal_code?: string | null;
+  shipping_country?: string | null;
   type_compte: string;  // "Client" | "Artisan/Promoteur"
   auth_provider?: string;
   email_verified?: boolean;
@@ -19,8 +33,6 @@ export interface User {
   artisan_approuve?: boolean;
   // Remise balance (loyalty credit)
   remise_balance?: number;
-  // Solde eligibility (Buy Now, Pay Later)
-  is_solde?: boolean | number;
 }
 
 // Full auth state including tokens

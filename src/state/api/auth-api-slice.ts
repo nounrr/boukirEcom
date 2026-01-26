@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryPublic } from '@/lib/base-query';
-import type { LoginCredentials, RegisterData, User, AuthResponse } from '@/types/auth';
+import type { User } from '@/state/slices/user-slice';
+import type { LoginCredentials, RegisterData, AuthResponse } from '@/types/auth';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -33,10 +34,11 @@ export const authApi = createApi({
     }),
     updateProfile: builder.mutation<User, Partial<User>>({
       query: (data) => ({
-        url: '/api/users/auth/profile',
-        method: 'PATCH',
+        url: '/api/users/auth/me',
+        method: 'PUT',
         body: data,
       }),
+      transformResponse: (response: { message: string; user: User }) => response.user,
       invalidatesTags: ['Auth'],
     }),
   }),

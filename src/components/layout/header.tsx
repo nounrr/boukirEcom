@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,13 +15,14 @@ import { clearAuth } from "@/state/slices/user-slice"
 import { CartPopover } from "./cart-popover"
 import { WishlistIcon } from "./wishlist-icon"
 import { useCart } from "./cart-context-provider"
-import { Heart, Search, ShoppingCart, User, Menu, ChevronDown, Package, Store, Home, LogOut, Settings, X, UserCircle2 } from "lucide-react"
+import { Menu, ChevronDown, Package, Store, Home, LogOut, Settings, UserCircle2 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { HeaderSearch } from "./header-search"
 
 export function Header() {
   const t = useTranslations('header')
@@ -30,29 +30,12 @@ export function Header() {
   const isArabic = locale === 'ar'
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { user, isAuthenticated } = useAppSelector((state) => state.user)
-  const [searchQuery, setSearchQuery] = useState("")
+  const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const searchInputRef = useRef<HTMLInputElement>(null)
+  const isAuthLoading = !!accessToken && !user
 
   // Get cartRef from context
   const { cartRef } = useCart()
-
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus()
-    }
-  }, [isSearchOpen])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/${locale}/shop?search=${encodeURIComponent(searchQuery)}`)
-      setIsSearchOpen(false)
-      setSearchQuery("")
-    }
-  }
 
   const handleLogout = async () => {
     try {
@@ -77,7 +60,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-white/15 bg-primary text-white shadow-xs shadow-black/10 overflow-x-clip">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16">
         {/* Top Bar */}
-        <div className="flex h-[75px] items-center justify-between gap-4">
+        <div className="flex h-[75px] items-center justify-between gap-3">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
             <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center shadow-md shadow-black/10 group-hover:shadow-lg group-hover:shadow-black/15 transition-all duration-300 ring-1 ring-white/15 group-hover:ring-white/25">
@@ -88,77 +71,26 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-0.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative px-4 py-2.5 text-sm font-medium text-white/85 hover:text-white transition-colors duration-200 capitalize group"
-              >
-                <span className="relative z-10">{link.label}</span>
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-white/70 group-hover:w-8 transition-all duration-300 rounded-full" />
-              </Link>
-            ))}
-          </nav>
-
-          {/* Spacer */}
-          <div className="flex-1" />
+          {/* Desktop Search */}
+          <div className="hidden md:flex flex-1 justify-center px-3 lg:px-6">
+            <HeaderSearch
+              placeholder={t('searchPlaceholder')}
+              className="w-full"
+              maxWidthClassName="max-w-[720px]"
+              onSearchDone={() => setIsMobileMenuOpen(false)}
+            />
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-1 sm:gap-1.5">
-            {/* Search - Icon or Input */}
-            <AnimatePresence mode="wait">
-              {isSearchOpen ? (
-                <motion.form
-                  key="search-form"
-                  initial={{ width: 40, opacity: 0 }}
-                  animate={{ width: "auto", opacity: 1 }}
-                  exit={{ width: 40, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  onSubmit={handleSearch}
-                  className="relative py-1"
-                >
-                  <Input
-                    ref={searchInputRef}
-                    type="search"
-                    placeholder={t('searchPlaceholder')}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 w-[360px] sm:w-[500px] ltr:pl-4 rtl:pr-4 ltr:pr-11 rtl:pl-11 text-sm bg-white/10 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:appearance-none"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setIsSearchOpen(false)
-                      setSearchQuery("")
-                    }}
-                    className="absolute ltr:right-1 rtl:left-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent text-white"
-                  >
-                    <X className="w-4 h-4 text-white/85" />
-                  </Button>
-                </motion.form>
-              ) : (
-                <motion.div
-                  key="search-icon"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsSearchOpen(true)}
-                      className="hover:bg-white/10 transition-all duration-200"
-                  >
-                      <Search className="w-4.5 h-4.5 text-white/85 hover:text-white transition-colors" />
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Mobile Search */}
+            <div className="md:hidden">
+              <HeaderSearch
+                variant="icon"
+                placeholder={t('searchPlaceholder')}
+                onSearchDone={() => setIsMobileMenuOpen(false)}
+              />
+            </div>
 
             {/* Wishlist */}
             <WishlistIcon tone="onPrimary" />
@@ -182,7 +114,12 @@ export function Header() {
             </Button>
 
             {/* User Menu */}
-            {isAuthenticated && user ? (
+            {isAuthLoading ? (
+              <div className="hidden sm:flex items-center gap-2 pl-3 ml-2 border-l border-white/15">
+                <div className="h-9 w-20 rounded-full bg-white/15 animate-pulse" />
+                <div className="h-9 w-24 rounded-full bg-white/25 animate-pulse" />
+              </div>
+            ) : isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="hidden lg:flex items-center gap-1.5 h-9 px-2 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 group text-white">
@@ -279,7 +216,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-                <div className="hidden sm:flex items-center gap-2 pl-3 ml-2 border-l border-white/15">
+                  <div className="hidden sm:flex items-center gap-2 pl-3 ml-2 border-l border-white/15">
                 <Link href={`/${locale}/login`}>
                     <Button
                       variant="ghost"
@@ -328,7 +265,12 @@ export function Header() {
                 </nav>
 
                 {/* Mobile Auth Buttons */}
-                {!isAuthenticated && (
+                {isAuthLoading ? (
+                  <div className="flex gap-3 mt-4 px-3">
+                    <div className="flex-1 h-10 rounded-md bg-white/15 animate-pulse" />
+                    <div className="flex-1 h-10 rounded-md bg-white/25 animate-pulse" />
+                  </div>
+                ) : !isAuthenticated ? (
                   <div className="flex gap-3 mt-4 px-3">
                     <Link href={`/${locale}/login`} className="flex-1">
                       <Button variant="ghost" className="w-full bg-white/10 text-white hover:bg-white/15">
@@ -341,7 +283,7 @@ export function Header() {
                       </Button>
                     </Link>
                   </div>
-                )}
+                ) : null}
               </div>
             </motion.div>
           )}

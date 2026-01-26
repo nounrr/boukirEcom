@@ -3,12 +3,15 @@ import StoreProvider from '@/state/StoreProvider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Inter, Tajawal } from 'next/font/google';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'sonner';
 import { getAuthCookies } from '@/lib/cookies';
 import { UserSessionInitializer } from '@/components/auth/user-session-initializer';
 import { CurrentUserInitializer } from '@/components/auth/current-user-initializer';
 import { GoogleOneTapWrapper } from '@/components/auth/google-one-tap-wrapper';
+import { CartContextProvider } from '@/components/layout/cart-context-provider';
+import { AuthDialogProvider } from '@/components/providers/auth-dialog-provider';
 import '../arabic-fonts.css';
 import '../globals.css';
 
@@ -31,6 +34,13 @@ const tajawal = Tajawal({
   preload: true,
   adjustFontFallback: true,
 });
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
+};
 
 export default async function LocaleLayout({
   children,
@@ -62,9 +72,13 @@ export default async function LocaleLayout({
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
             <GoogleOneTapWrapper />
-            <div className="min-h-screen flex flex-col">
-              <div className="flex-1">{children}</div>
-            </div>
+            <CartContextProvider>
+              <AuthDialogProvider>
+                <div className="min-h-screen flex flex-col">
+                  <div className="flex-1">{children}</div>
+                </div>
+              </AuthDialogProvider>
+            </CartContextProvider>
           </StoreProvider>
         </NextIntlClientProvider>
         <Toaster

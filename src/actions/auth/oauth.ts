@@ -61,14 +61,15 @@ export async function googleAuth(
     const response = await apiClient.post('/users/auth/google', requestBody)
 
     const data = response.data
+    const token = data.token || data.accessToken
     console.log('[GOOGLE AUTH] Response:', {
       status: response.status,
-      hasToken: !!data.token,
+      hasToken: !!token,
       isNewUser: data.isNewUser,
       dataKeys: Object.keys(data)
     })
 
-    if (!data.token) {
+    if (!token) {
       return {
         success: false,
         error: "Réponse invalide du serveur",
@@ -77,7 +78,7 @@ export async function googleAuth(
 
     // Set authentication tokens in cookies
     const cookieStore = await cookies()
-    cookieStore.set("accessToken", data.token, {
+    cookieStore.set("accessToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -90,7 +91,7 @@ export async function googleAuth(
     console.log('[GOOGLE AUTH] Success! Token set in cookies')
     return {
       success: true,
-      accessToken: data.token,
+      accessToken: token,
       refreshToken: null,
       user: data.user,
       isNewUser: data.isNewUser || false,

@@ -17,36 +17,68 @@ interface ShippingInfoStepProps {
 }
 
 const PHONE_COUNTRIES = [
-  { code: "MA", name: "Maroc", dialCode: "+212", flag: "🇲🇦" },
-  { code: "FR", name: "France", dialCode: "+33", flag: "🇫🇷" },
-  { code: "ES", name: "Espagne", dialCode: "+34", flag: "🇪🇸" },
-  { code: "DE", name: "Allemagne", dialCode: "+49", flag: "🇩🇪" },
-  { code: "IT", name: "Italie", dialCode: "+39", flag: "🇮🇹" },
-  { code: "GB", name: "Royaume-Uni", dialCode: "+44", flag: "🇬🇧" },
-  { code: "BE", name: "Belgique", dialCode: "+32", flag: "🇧🇪" },
-  { code: "NL", name: "Pays-Bas", dialCode: "+31", flag: "🇳🇱" },
-  { code: "CH", name: "Suisse", dialCode: "+41", flag: "🇨🇭" },
-  { code: "PT", name: "Portugal", dialCode: "+351", flag: "🇵🇹" },
-  { code: "DZ", name: "Algérie", dialCode: "+213", flag: "🇩🇿" },
-  { code: "TN", name: "Tunisie", dialCode: "+216", flag: "🇹🇳" },
-  { code: "EG", name: "Égypte", dialCode: "+20", flag: "🇪🇬" },
-  { code: "SA", name: "Arabie Saoudite", dialCode: "+966", flag: "🇸🇦" },
-  { code: "AE", name: "Émirats arabes unis", dialCode: "+971", flag: "🇦🇪" },
-  { code: "US", name: "États-Unis", dialCode: "+1", flag: "🇺🇸" },
-  { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
-  { code: "TR", name: "Turquie", dialCode: "+90", flag: "🇹🇷" },
-  { code: "SE", name: "Suède", dialCode: "+46", flag: "🇸🇪" },
-  { code: "NO", name: "Norvège", dialCode: "+47", flag: "🇳🇴" },
+  { code: "MA", name: "Maroc", dialCode: "+212" },
+  { code: "FR", name: "France", dialCode: "+33" },
+  { code: "ES", name: "Espagne", dialCode: "+34" },
+  { code: "DE", name: "Allemagne", dialCode: "+49" },
+  { code: "IT", name: "Italie", dialCode: "+39" },
+  { code: "GB", name: "Royaume-Uni", dialCode: "+44" },
+  { code: "BE", name: "Belgique", dialCode: "+32" },
+  { code: "NL", name: "Pays-Bas", dialCode: "+31" },
+  { code: "CH", name: "Suisse", dialCode: "+41" },
+  { code: "PT", name: "Portugal", dialCode: "+351" },
+  { code: "DZ", name: "Algérie", dialCode: "+213" },
+  { code: "TN", name: "Tunisie", dialCode: "+216" },
+  { code: "EG", name: "Égypte", dialCode: "+20" },
+  { code: "SA", name: "Arabie Saoudite", dialCode: "+966" },
+  { code: "AE", name: "Émirats arabes unis", dialCode: "+971" },
+  { code: "US", name: "États-Unis", dialCode: "+1" },
+  { code: "CA", name: "Canada", dialCode: "+1" },
+  { code: "TR", name: "Turquie", dialCode: "+90" },
+  { code: "SE", name: "Suède", dialCode: "+46" },
+  { code: "NO", name: "Norvège", dialCode: "+47" },
 ]
 
 export function ShippingInfoStep({ register, errors, watch, setValue }: ShippingInfoStepProps) {
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
+  const [localPhoneNumber, setLocalPhoneNumber] = useState("")
 
   // Ensure fields exist in react-hook-form even if no native input is rendered
   useEffect(() => {
     register("deliveryMethod")
     register("pickupLocationId")
   }, [register])
+
+  // Parse existing phone number from form to extract country code and number
+  // Phone format: country code + local number (e.g., "+212612345678")
+  const fullPhoneNumber = watch?.("shippingAddress.phone") as string | undefined
+
+  useEffect(() => {
+    if (!fullPhoneNumber || fullPhoneNumber === localPhoneNumber) return
+
+    // Try to parse the full phone number to extract country code
+    const matchedCountry = PHONE_COUNTRIES.find(country =>
+      fullPhoneNumber.startsWith(country.dialCode)
+    )
+
+    if (matchedCountry) {
+      setSelectedCountry(matchedCountry)
+      // Extract the local number (remove country code)
+      const localNumber = fullPhoneNumber.slice(matchedCountry.dialCode.length)
+      setLocalPhoneNumber(localNumber)
+    } else {
+      // If no country code found, assume it's just the local number
+      setLocalPhoneNumber(fullPhoneNumber)
+    }
+  }, [fullPhoneNumber])
+
+  // Update full phone number in form whenever country or local number changes
+  // This ensures the backend receives the complete phone number with country code
+  useEffect(() => {
+    if (!setValue) return
+    const fullPhone = selectedCountry.dialCode + localPhoneNumber
+    setValue("shippingAddress.phone", fullPhone, { shouldValidate: true })
+  }, [selectedCountry, localPhoneNumber, setValue])
 
   // Watch delivery method
   const deliveryMethod = (watch?.("deliveryMethod") as "delivery" | "pickup" | undefined) ?? "delivery"
@@ -277,11 +309,16 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 if (found) setSelectedCountry(found)
               }}
             >
-              <SelectTrigger className="h-[41px]! bg-background border-input w-full">
+              <SelectTrigger className="h-[41px] bg-background border-input w-full">
                 <SelectValue>
                   <div className="flex items-center gap-2">
-                    <span className="text-base">{selectedCountry.flag}</span>
-                    <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
+                    <img
+                      src={`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`}
+                      srcSet={`https://flagcdn.com/w40/${selectedCountry.code.toLowerCase()}.png 2x`}
+                      alt={selectedCountry.name}
+                      className="w-5 h-auto shrink-0"
+                    />
+                    <span className="text-sm font-semibold text-primary">{selectedCountry.dialCode}</span>
                   </div>
                 </SelectValue>
               </SelectTrigger>
@@ -289,8 +326,13 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 {PHONE_COUNTRIES.map((country) => (
                   <SelectItem key={country.code} value={country.code}>
                     <div className="flex items-center gap-3">
-                      <span className="text-base">{country.flag}</span>
-                      <span className="text-sm">{country.name}</span>
+                      <img
+                        src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
+                        srcSet={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png 2x`}
+                        alt={country.name}
+                        className="w-5 h-auto shrink-0"
+                      />
+                      <span className="text-sm font-medium">{country.name}</span>
                       <span className="text-xs text-muted-foreground">{country.dialCode}</span>
                     </div>
                   </SelectItem>
@@ -299,9 +341,10 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
             </Select>
 
             <Input
-              {...register("shippingAddress.phone")}
+              value={localPhoneNumber}
+              onChange={(e) => setLocalPhoneNumber(e.target.value)}
               placeholder="612345678"
-              maxLength={9}
+              maxLength={15}
               Icon={Phone}
               error={(errors.shippingAddress as any)?.phone?.message as string}
               className="h-11"

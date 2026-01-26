@@ -37,6 +37,34 @@
     "newArrivalsTitle": "وصل حديثاً",
     "newArrivalsDesc": "أحدث المنتجات المضافة للمتجر"
   },
+  "home": {
+    "heroKicker": "متجرك للعدد واللوازم",
+    "heroTitle": "تسوّق احتياجاتك بسهولة",
+    "heroSubtitle": "آلاف المنتجات للحرفيين والأفراد، بتجربة شراء سريعة وواضحة وآمنة.",
+    "ctaShop": "اذهب للمتجر",
+    "ctaPromos": "شاهد العروض",
+    "ctaBrowse": "تصفّح",
+    "trustDelivery": "توصيل سريع لجميع مناطق المغرب",
+    "trustSecure": "دفع آمن",
+    "trustPayments": "طرق دفع متعددة",
+    "heroCardSubtitle": "اختيار واسع وأسعار مناسبة",
+    "heroCard1Title": "فئات أساسية",
+    "heroCard1Desc": "وصول سريع لأكثر الأقسام طلباً.",
+    "heroCard2Title": "علامات موثوقة",
+    "heroCard2Desc": "اختر من علامات معروفة.",
+    "heroCard3Title": "عروض حالية",
+    "heroCard3Desc": "استفد من أفضل التخفيضات.",
+    "heroCardHint": "نصيحة: استخدم البحث بالأعلى للوصول بسرعة.",
+    "categoriesTitle": "فئات شائعة",
+    "categoriesDesc": "دخول سريع للأقسام الأكثر طلباً.",
+    "brandsTitle": "العلامات التجارية",
+    "brandsDesc": "اكتشف علاماتنا الشريكة.",
+    "brandsHint": "اضغط على علامة لتصفية المتجر.",
+    "viewAll": "عرض الكل",
+    "browse": "تصفّح",
+    "emptyCategories": "لا توجد فئات متاحة",
+    "emptyBrands": "لا توجد علامات متاحة"
+  },
   "nav": {
     "home": "الرئيسية",
     "shop": "المتجر",
@@ -56,6 +84,18 @@
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
     "register": "التسجيل"
+  },
+  "headerSearch": {
+    "placeholder": "ابحث عن منتج أو علامة…",
+    "openSearch": "فتح البحث",
+    "recentSearches": "عمليات البحث الأخيرة",
+    "suggestions": "اقتراحات",
+    "searchFor": "البحث عن \"{query}\"",
+    "clear": "مسح",
+    "loading": "جاري البحث…",
+    "empty": "لا توجد اقتراحات",
+    "recent": "حديثاً",
+    "noResults": "لا توجد نتائج"
   },
   "breadcrumb": {
     "home": "الرئيسية",

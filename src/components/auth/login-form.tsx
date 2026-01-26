@@ -39,7 +39,7 @@ export function LoginForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = 
   // Initialize Google OAuth with custom button
   const { isLoading: isGoogleLoading, signIn: handleGoogleSignIn } = useGoogleAuth({
     context: "signin",
-    redirectTo: `/${locale}`,
+    redirectTo: `/${locale}/shop`,
     skipRedirect,
     onSuccess: skipRedirect ? onSuccess : undefined,
   })
@@ -76,8 +76,8 @@ export function LoginForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = 
       
       if (!skipRedirect) {
         setTimeout(() => {
-          console.log('[LOGIN FORM] Redirecting to:', `/${locale}`)
-          router.push(`/${locale}`)
+          console.log('[LOGIN FORM] Redirecting to:', `/${locale}/shop`)
+          router.push(`/${locale}/shop`)
         }, 200)
       } else {
         onSuccess?.()

@@ -3,7 +3,9 @@
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useGetWishlistQuery, useRemoveFromWishlistMutation, useMoveToCartMutation, useGetWishlistSuggestionsQuery } from "@/state/api/wishlist-api-slice"
+import { AccountSidebar } from "@/components/account/account-sidebar"
+import { useGetWishlistQuery, useRemoveFromWishlistMutation, useGetWishlistSuggestionsQuery } from "@/state/api/wishlist-api-slice"
+import { useAddToCartMutation } from "@/state/api/cart-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import { Heart, ShoppingCart, Trash2, Package } from "lucide-react"
 import Image from "next/image"
@@ -32,7 +34,7 @@ export default function WishlistPage() {
   )
 
   const [removeFromWishlist, { isLoading: isRemoving }] = useRemoveFromWishlistMutation()
-  const [moveToCart, { isLoading: isMoving }] = useMoveToCartMutation()
+  const [addToCart, { isLoading: isMoving }] = useAddToCartMutation()
 
   const handleRemove = async (itemId: number, productName: string) => {
     try {
@@ -45,7 +47,17 @@ export default function WishlistPage() {
 
   const handleMoveToCart = async (itemId: number, productName: string) => {
     try {
-      await moveToCart({ id: itemId }).unwrap()
+      const item = wishlist?.items?.find((wishlistItem) => wishlistItem.id === itemId)
+      if (!item) {
+        toast.error("Erreur", { description: "Produit introuvable dans les favoris" })
+        return
+      }
+
+      await addToCart({
+        productId: item.productId,
+        variantId: item.variantId,
+        quantity: 1,
+      }).unwrap()
       toast.success("Ajouté au panier", { description: productName })
       
       // Open cart with animation
@@ -91,6 +103,7 @@ export default function WishlistPage() {
       icon="heart"
       itemCount={wishlist?.items?.length || 0}
       isEmpty={isEmpty}
+      showHeader={false}
       emptyState={{
         icon: <Heart className="w-10 h-10 text-muted-foreground" />,
         title: "Votre liste de favoris est vide",
@@ -99,7 +112,25 @@ export default function WishlistPage() {
         actionHref: `/${locale}/shop`,
       }}
     >
-      <div className="space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <AccountSidebar active="wishlist" />
+        <section className="lg:col-span-3 space-y-5">
+          <div className="mb-2 flex items-center gap-3 pb-4 border-b border-border/60">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Heart className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl font-bold text-foreground">Mes Favoris</h1>
+                {wishlist?.items?.length ? (
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                    {wishlist.items.length}
+                  </Badge>
+                ) : null}
+              </div>
+              <p className="text-sm text-muted-foreground">Tous vos produits préférés en un seul endroit</p>
+            </div>
+          </div>
         {wishlist?.items?.map((item) => {
           const hasPromo = item.hasPromo && item.priceAfterPromo && item.priceAfterPromo < item.price
           const discount = hasPromo && item.priceAfterPromo ? Math.round(((item.price - item.priceAfterPromo) / item.price) * 100) : 0
@@ -247,13 +278,14 @@ export default function WishlistPage() {
           )
         })}
 
-        {/* Suggestions Section */}
-        {suggestedProducts && suggestedProducts.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-border/50">
-            <ProductSuggestions products={suggestedProducts} />
-          </div>
-        )}
+        </section>
       </div>
+      {/* Suggestions Section */}
+      {suggestedProducts && suggestedProducts.length > 0 && (
+        <div className="mt-8 pt-8 border-t border-border/50">
+          <ProductSuggestions products={suggestedProducts} />
+        </div>
+      )}
     </ShopPageLayout>
   )
 }

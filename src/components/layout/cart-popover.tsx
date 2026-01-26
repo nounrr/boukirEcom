@@ -23,6 +23,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { cartStorage } from "@/lib/cart-storage"
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -81,6 +82,21 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
       } catch (error) {
         console.error('Error loading cart from localStorage:', error)
       }
+    }
+  }, [isAuthenticated])
+
+  // Sync guest cart when storage changes (e.g., checkout clears cart)
+  useEffect(() => {
+    if (isAuthenticated || typeof window === 'undefined') return
+
+    const syncFromStorage = () => {
+      setLocalItems(cartStorage.getCart() as CartItem[])
+    }
+
+    window.addEventListener('cart:updated', syncFromStorage)
+
+    return () => {
+      window.removeEventListener('cart:updated', syncFromStorage)
     }
   }, [isAuthenticated])
   

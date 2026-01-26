@@ -1,6 +1,7 @@
 "use client"
 
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
+import { AccountSidebar } from "@/components/account/account-sidebar"
 import { useGetOrdersQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import { Package, Clock, CheckCircle, XCircle, Truck, CalendarIcon, ChevronLeft, ChevronRight, Filter, X, CreditCard } from "lucide-react"
@@ -198,33 +199,45 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-6 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 flex items-center gap-3 pb-4 border-b border-border/60">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Package className="w-5 h-5 text-primary" />
+    <ShopPageLayout
+      title="Mes Commandes"
+      subtitle={
+        total > 0
+          ? `${total} commande${total > 1 ? 's' : ''}${totalPages > 1 ? ` • Page ${page}/${totalPages}` : ''}`
+          : isFilteredEmpty
+            ? "Aucun résultat pour ces filtres"
+            : "Suivez l'état de vos commandes"
+      }
+      icon="cart"
+      showHeader={false}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <AccountSidebar active="orders" />
+        <section className="lg:col-span-3">
+          <div className="mb-4 flex items-center gap-3 pb-4 border-b border-border/60">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Package className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Mes Commandes</h1>
+              <p className="text-sm text-muted-foreground">
+                {total > 0 ? (
+                  <>
+                    <span className="font-semibold text-foreground">{total}</span> commande{total > 1 ? 's' : ''}
+                    {totalPages > 1 && ` • Page ${page}/${totalPages}`}
+                  </>
+                ) : isFilteredEmpty ? (
+                  "Aucun résultat pour ces filtres"
+                ) : (
+                  "Suivez l'état de vos commandes"
+                )}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Mes Commandes</h1>
-            <p className="text-sm text-muted-foreground">
-              {total > 0 ? (
-                <>
-                  <span className="font-semibold text-foreground">{total}</span> commande{total > 1 ? 's' : ''}
-                  {totalPages > 1 && ` • Page ${page}/${totalPages}`}
-                </>
-              ) : isFilteredEmpty ? (
-                "Aucun résultat pour ces filtres"
-              ) : (
-                "Suivez l'état de vos commandes"
-              )}
-            </p>
-          </div>
-        </div>
 
-        {/* Filters Bar */}
-        {isAuthenticated && (
-          <div className="mb-6 flex flex-wrap items-center gap-2">
+          {/* Filters Bar */}
+          {isAuthenticated && (
+            <div className="mb-6 flex flex-wrap items-center gap-2">
             {/* Period Selector */}
             <Select value={period || 'all'} onValueChange={handlePeriodChange}>
               <SelectTrigger className="w-44 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
@@ -446,129 +459,130 @@ export default function OrdersPage() {
               </>
             )}
           </div>
-        )}
-        {isLoading && (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-5 animate-pulse">
-                <div className="flex gap-4">
-                  <div className="flex-1 space-y-3">
-                    <div className="h-4 bg-muted rounded w-1/4" />
-                    <div className="h-3 bg-muted rounded w-1/2" />
-                    <div className="h-8 bg-muted rounded w-32" />
+          )}
+          {isLoading && (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card border border-border rounded-xl p-5 animate-pulse">
+                  <div className="flex gap-4">
+                    <div className="flex-1 space-y-3">
+                      <div className="h-4 bg-muted rounded w-1/4" />
+                      <div className="h-3 bg-muted rounded w-1/2" />
+                      <div className="h-8 bg-muted rounded w-32" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
         {/* Empty State */}
-        {isEmpty && !isLoading && (
-          <div className="text-center py-14">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-              <Package className="w-7 h-7 text-muted-foreground" />
-            </div>
-            {isFilteredEmpty ? (
-              <>
-                <h3 className="text-base font-semibold text-foreground mb-2">Aucun résultat</h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Aucune commande ne correspond à ces filtres. Modifiez la période ou réinitialisez les filtres.
-                </p>
-                <div className="flex items-center justify-center gap-2">
-                  <Button variant="outline" onClick={clearFilters} className="h-9 px-3 text-xs cursor-pointer">
-                    Réinitialiser les filtres
-                  </Button>
+          {isEmpty && !isLoading && (
+            <div className="text-center py-14">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <Package className="w-7 h-7 text-muted-foreground" />
+              </div>
+              {isFilteredEmpty ? (
+                <>
+                  <h3 className="text-base font-semibold text-foreground mb-2">Aucun résultat</h3>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                    Aucune commande ne correspond à ces filtres. Modifiez la période ou réinitialisez les filtres.
+                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <Button variant="outline" onClick={clearFilters} className="h-9 px-3 text-xs cursor-pointer">
+                      Réinitialiser les filtres
+                    </Button>
+                    <Button onClick={() => window.location.href = `/${locale}/shop`} className="h-9 px-3 text-xs cursor-pointer">
+                      Découvrir les produits
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-base font-semibold text-foreground mb-2">Aucune commande</h3>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                    Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande.
+                  </p>
                   <Button onClick={() => window.location.href = `/${locale}/shop`} className="h-9 px-3 text-xs cursor-pointer">
                     Découvrir les produits
                   </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className="text-base font-semibold text-foreground mb-2">Aucune commande</h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande.
-                </p>
-                <Button onClick={() => window.location.href = `/${locale}/shop`} className="h-9 px-3 text-xs cursor-pointer">
-                  Découvrir les produits
-                </Button>
-              </>
-            )}
-          </div>
-        )}
+                </>
+              )}
+            </div>
+          )}
 
         {/* Orders List */}
-        {!isEmpty && !isLoading && (
-          <>
-            <div className="space-y-3">
-              {orders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  locale={locale}
-                  onBuyAgain={handleBuyAgain}
-                  statusConfig={ORDER_STATUS_CONFIG[order.status]}
-                  paymentStatusConfig={PAYMENT_STATUS_CONFIG[order.paymentStatus]}
-                />
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="h-9 w-9 p-0"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNumber: number
-
-                    if (totalPages <= 5) {
-                      pageNumber = i + 1
-                    } else if (page <= 3) {
-                      pageNumber = i + 1
-                    } else if (page >= totalPages - 2) {
-                      pageNumber = totalPages - 4 + i
-                    } else {
-                      pageNumber = page - 2 + i
-                    }
-
-                    return (
-                      <Button
-                        key={pageNumber}
-                        variant={page === pageNumber ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setPage(pageNumber)}
-                        className="h-9 w-9 p-0"
-                      >
-                        {pageNumber}
-                      </Button>
-                    )
-                  })}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="h-9 w-9 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+          {!isEmpty && !isLoading && (
+            <>
+              <div className="space-y-3">
+                {orders.map((order) => (
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    locale={locale}
+                    onBuyAgain={handleBuyAgain}
+                    statusConfig={ORDER_STATUS_CONFIG[order.status]}
+                    paymentStatusConfig={PAYMENT_STATUS_CONFIG[order.paymentStatus]}
+                  />
+                ))}
               </div>
-            )}
-          </>
-        )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="h-9 w-9 p-0"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNumber: number
+
+                      if (totalPages <= 5) {
+                        pageNumber = i + 1
+                      } else if (page <= 3) {
+                        pageNumber = i + 1
+                      } else if (page >= totalPages - 2) {
+                        pageNumber = totalPages - 4 + i
+                      } else {
+                        pageNumber = page - 2 + i
+                      }
+
+                      return (
+                        <Button
+                          key={pageNumber}
+                          variant={page === pageNumber ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPage(pageNumber)}
+                          className="h-9 w-9 p-0"
+                        >
+                          {pageNumber}
+                        </Button>
+                      )
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="h-9 w-9 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </section>
       </div>
-    </div>
+    </ShopPageLayout>
   )
 }

@@ -1,69 +1,87 @@
-import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, Heart, Search, Package, Truck, Shield } from 'lucide-react';
-import Link from 'next/link';
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
 
-export default function HomePage() {
-  const t = useTranslations('common');
+import { Button } from '@/components/ui/button'
+import { HomeProductSections } from '@/components/home/home-product-sections'
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const tCommon = useTranslations('common')
+  const tShop = useTranslations('shop')
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            Welcome to Boukir
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-            Professional Hardware & Building Materials Store
-          </p>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-primary/5 to-background" />
+        <div className="relative container mx-auto px-6 sm:px-8 lg:px-16 py-14 md:py-18">
+          <div className="max-w-3xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+              {tShop('tagline')}
+            </p>
+            <h1 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
+              {tCommon('home')}
+              <span className="text-primary"> Boukir</span>
+            </h1>
+            <p className="mt-4 text-base md:text-lg text-muted-foreground">
+              Découvrez nos produits et trouvez rapidement ce qu’il vous faut grâce à la recherche en haut de page.
+            </p>
 
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/shop">
-              <Button size="lg" className="gap-2">
-                <ShoppingCart className="w-5 h-5" />
-                Shop Now
-              </Button>
-            </Link>
-            <Link href="/shop">
-              <Button size="lg" variant="outline" className="gap-2">
-                <Search className="w-5 h-5" />
-                Search Products
-              </Button>
-            </Link>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href={`/${locale}/shop`}>
+                <Button size="lg" className="gap-2">
+                  {tCommon('products')}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href={`/${locale}/shop?sort=promo`}>
+                <Button size="lg" variant="outline" className="gap-2">
+                  {tShop('featuredTitle')}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-border/40 bg-card p-5">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Truck className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="mt-3 font-semibold text-foreground">Livraison rapide</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Des options adaptées à votre région.</p>
+            </div>
+            <div className="rounded-2xl border border-border/40 bg-card p-5">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="mt-3 font-semibold text-foreground">Paiement sécurisé</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Transactions protégées et fiables.</p>
+            </div>
+            <div className="rounded-2xl border border-border/40 bg-card p-5">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                <BadgeCheck className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="mt-3 font-semibold text-foreground">Qualité & choix</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Une sélection pensée pour les pros.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 px-4 bg-secondary/20">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 border rounded-xl bg-card hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Wide Selection</h3>
-              <p className="text-muted-foreground">Thousands of products for all your building needs</p>
-            </div>
-            <div className="p-6 border rounded-xl bg-card hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <Truck className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Fast Delivery</h3>
-              <p className="text-muted-foreground">Quick and reliable shipping to your location</p>
-            </div>
-            <div className="p-6 border rounded-xl bg-card hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Quality Guarantee</h3>
-              <p className="text-muted-foreground">All products backed by our quality assurance</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Product sections */}
+      <HomeProductSections
+        locale={locale}
+        featuredTitle={tShop('featuredTitle')}
+        featuredDesc={tShop('featuredDesc')}
+        newArrivalsTitle={tShop('newArrivalsTitle')}
+        newArrivalsDesc={tShop('newArrivalsDesc')}
+      />
     </div>
-  );
+  )
 }

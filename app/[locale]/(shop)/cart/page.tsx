@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Package, Trash2, Plus, Minus } from "lucide-react"
 import { useLocale } from "next-intl"
+import { useRouter } from "next/navigation"
 import { useGetCartQuery, useUpdateCartItemMutation, useRemoveFromCartMutation, useGetCartSuggestionsQuery } from "@/state/api/cart-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import { useToast } from "@/hooks/use-toast"
@@ -32,6 +33,7 @@ interface LocalCartItem {
 
 export default function CartPage() {
   const locale = useLocale()
+  const router = useRouter()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const toast = useToast()
   
@@ -308,7 +310,11 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Button className="w-full" size="lg">
+                <Button
+                  className="w-full text-white"
+                  size="lg"
+                  onClick={() => router.push(`/${locale}/checkout`)}
+                >
                   Passer la commande
                 </Button>
 

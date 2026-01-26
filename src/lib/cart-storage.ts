@@ -36,6 +36,7 @@ export const cartStorage = {
     if (!isBrowser()) return
     try {
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+      window.dispatchEvent(new CustomEvent('cart:updated'))
     } catch {
       // ignore quota / access errors
     }
@@ -45,6 +46,7 @@ export const cartStorage = {
     if (!isBrowser()) return
     try {
       window.localStorage.removeItem(CART_STORAGE_KEY)
+      window.dispatchEvent(new CustomEvent('cart:updated'))
     } catch {
       // ignore
     }

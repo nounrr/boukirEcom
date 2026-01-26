@@ -37,6 +37,34 @@
     "newArrivalsTitle": "Nouveautés",
     "newArrivalsDesc": "Les derniers produits ajoutés à la boutique"
   },
+  "home": {
+    "heroKicker": "Votre quincaillerie en ligne",
+    "heroTitle": "Achetez vos produits pro, simplement",
+    "heroSubtitle": "Des milliers d’articles pour les artisans et les particuliers, avec une expérience d’achat rapide, claire et sécurisée.",
+    "ctaShop": "Aller à la boutique",
+    "ctaPromos": "Voir les promos",
+    "ctaBrowse": "Parcourir",
+    "trustDelivery": "Livraison rapide partout au Maroc",
+    "trustSecure": "Paiement sécurisé",
+    "trustPayments": "Plusieurs moyens de paiement",
+    "heroCardSubtitle": "Sélection, prix et disponibilité",
+    "heroCard1Title": "Catégories essentielles",
+    "heroCard1Desc": "Accédez vite aux familles les plus demandées.",
+    "heroCard2Title": "Marques reconnues",
+    "heroCard2Desc": "Choisissez des références fiables.",
+    "heroCard3Title": "Promos du moment",
+    "heroCard3Desc": "Profitez des meilleures offres.",
+    "heroCardHint": "Astuce: utilisez la recherche en haut pour aller plus vite.",
+    "categoriesTitle": "Catégories populaires",
+    "categoriesDesc": "Accès rapide aux rayons les plus demandés.",
+    "brandsTitle": "Marques",
+    "brandsDesc": "Découvrez nos marques partenaires.",
+    "brandsHint": "Cliquez sur une marque pour filtrer la boutique.",
+    "viewAll": "Voir tout",
+    "browse": "Parcourir",
+    "emptyCategories": "Aucune catégorie disponible",
+    "emptyBrands": "Aucune marque disponible"
+  },
   "nav": {
     "home": "Accueil",
     "shop": "Boutique",
@@ -56,6 +84,18 @@
     "logout": "Déconnexion",
     "login": "Connexion",
     "register": "S'inscrire"
+  },
+  "headerSearch": {
+    "placeholder": "Rechercher un produit, une marque…",
+    "openSearch": "Ouvrir la recherche",
+    "recentSearches": "Recherches récentes",
+    "suggestions": "Suggestions",
+    "searchFor": "Rechercher \"{query}\"",
+    "clear": "Effacer",
+    "loading": "Recherche…",
+    "empty": "Aucune suggestion",
+    "recent": "Récent",
+    "noResults": "Aucun résultat produit"
   },
   "breadcrumb": {
     "home": "Accueil",

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
-import { clearAuth, selectAccessToken, selectUser, setAuth } from "@/state/slices/user-slice"
+import { selectAccessToken, selectUser, setAuth } from "@/state/slices/user-slice"
 
 interface UserSessionInitializerProps {
   session: {
@@ -23,10 +23,10 @@ export function UserSessionInitializer({ session }: UserSessionInitializerProps)
   useEffect(() => {
     const cookieAccessToken = session?.accessToken ?? null
 
-    // If cookies no longer contain a token but client still does, clear client auth.
-    if (!cookieAccessToken && currentAccessToken) {
-      console.log('[UserSessionInitializer] Cookie token removed - clearing auth')
-      dispatch(clearAuth())
+    // If cookies don't contain a token, avoid clearing client auth here.
+    // The server-side user fetch will invalidate and clear tokens if needed.
+    if (!cookieAccessToken) {
+      console.log('[UserSessionInitializer] No cookie token - skipping sync')
       return
     }
 

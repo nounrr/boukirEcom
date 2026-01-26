@@ -145,13 +145,15 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           console.log("[Google Auth] Authentication successful")
           
           // Dispatch to Redux store
-          if (result.user && result.accessToken) {
+          if (result.accessToken) {
             dispatch(setAuth({
-              user: result.user,
+              user: result.user ?? null,
               accessToken: result.accessToken,
               refreshToken: null
             }))
             console.log("[Google Auth] User data dispatched to Redux store")
+          } else {
+            console.warn("[Google Auth] Missing accessToken in response")
           }
           
           // Show success toast
