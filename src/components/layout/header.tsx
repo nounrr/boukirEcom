@@ -24,6 +24,8 @@ import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { HeaderSearch } from "./header-search"
 
+import { API_CONFIG } from "@/lib/api-config"
+
 export function Header() {
   const t = useTranslations('header')
   const locale = useLocale()
@@ -126,16 +128,13 @@ export function Header() {
                     <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20 group-hover:border-white/30 transition-all duration-200 shadow-sm overflow-hidden">
                       {user.avatar_url ? (
                           <img
-                          src={user.avatar_url}
-                          alt={`${user.prenom} ${user.nom}`}
-                          width={28}
-                          height={28}
+                            src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
+                            alt={user.prenom || user.email}
                           className="object-cover w-full h-full"
                             referrerPolicy="no-referrer"
-                            loading="lazy"
                         />
                       ) : (
-                          <span className="text-[11px] font-bold text-white">
+                            <span className="text-[11px] font-bold text-white">
                           {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
                         </span>
                       )}
@@ -151,13 +150,10 @@ export function Header() {
                           <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shrink-0 shadow-md shadow-primary/15 ring-1 ring-primary/20 overflow-hidden">
                             {user.avatar_url ? (
                                 <img
-                                src={user.avatar_url}
-                                alt={`${user.prenom} ${user.nom}`}
-                                width={40}
-                                height={40}
+                                  src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
+                                  alt={user.prenom || user.email}
                                 className="object-cover w-full h-full"
                                   referrerPolicy="no-referrer"
-                                  loading="lazy"
                               />
                             ) : (
                               <span className="text-sm font-bold text-primary-foreground">

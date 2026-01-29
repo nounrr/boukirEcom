@@ -30,6 +30,12 @@ export const authApi = createApi({
     }),
     getCurrentUser: builder.query<User, void>({
       query: () => '/api/users/auth/me',
+      transformResponse: (response: unknown): User => {
+        // Backend commonly returns { user: {...}, ... }.
+        // Keep backward compatibility if it ever returns the user directly.
+        const maybeEnvelope = response as any
+        return (maybeEnvelope?.user ?? maybeEnvelope) as User
+      },
       providesTags: ['Auth'],
     }),
     updateProfile: builder.mutation<User, Partial<User>>({

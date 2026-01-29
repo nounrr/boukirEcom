@@ -36,21 +36,18 @@ export function UserSessionInitializer({ session }: UserSessionInitializerProps)
       return
     }
 
-    // If token changed (or we have token but no user yet), initialize tokens.
-    if (cookieAccessToken) {
-      console.log('[UserSessionInitializer] Setting token in Redux:', {
-        hasUser: !!currentUser,
-        tokenChanged: cookieAccessToken !== currentAccessToken
-      })
+    // If token changed, initialize tokens only (user will be fetched separately).
+    if (cookieAccessToken && cookieAccessToken !== currentAccessToken) {
+      console.log('[UserSessionInitializer] Setting token in Redux (token changed)')
       dispatch(
         setAuth({
-          user: currentUser ?? null,
+          user: null, // Don't pass currentUser to avoid triggering re-render loop
           accessToken: cookieAccessToken,
           refreshToken: session?.refreshToken ?? null,
         })
       )
     }
-  }, [currentAccessToken, currentUser, dispatch, session])
+  }, [currentAccessToken, dispatch, session]) // Removed currentUser from dependencies
 
   return null
 }

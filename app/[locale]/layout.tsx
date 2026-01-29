@@ -9,6 +9,7 @@ import { Toaster } from 'sonner';
 import { getAuthCookies } from '@/lib/cookies';
 import { UserSessionInitializer } from '@/components/auth/user-session-initializer';
 import { CurrentUserInitializer } from '@/components/auth/current-user-initializer';
+import { AuthDebugPanel } from '@/components/auth/auth-debug-panel';
 import { GoogleOneTapWrapper } from '@/components/auth/google-one-tap-wrapper';
 import { CartContextProvider } from '@/components/layout/cart-context-provider';
 import { AuthDialogProvider } from '@/components/providers/auth-dialog-provider';
@@ -71,6 +72,7 @@ export default async function LocaleLayout({
           <StoreProvider>
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
+            <AuthDebugPanel />
             <GoogleOneTapWrapper />
             <CartContextProvider>
               <AuthDialogProvider>

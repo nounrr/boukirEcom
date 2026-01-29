@@ -3,9 +3,9 @@
 import { Badge } from "@/components/ui/badge"
 import { useAppSelector } from "@/state/hooks"
 import { Heart, Package, Settings, UserCircle2 } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { useLocale } from "next-intl"
+import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
   active?: "profile" | "orders" | "wishlist" | "settings"
@@ -29,12 +29,11 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
           <div className="flex flex-col items-center text-center">
             <div className="relative h-20 w-20 rounded-full overflow-hidden border border-border bg-muted">
               {user?.avatar_url ? (
-                <Image
-                  src={user.avatar_url}
-                  alt={`${user.prenom} ${user.nom}`}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
+                  <img
+                    src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
+                    alt={user.prenom || user.email}
+                    className="object-cover w-full h-full"
+                    referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-lg font-semibold text-muted-foreground">
