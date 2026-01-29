@@ -4,14 +4,19 @@
 
 This document defines the API contract and rules for the **Home Hero carousel** (dynamic slides managed in backoffice).
 
+**Latest Update:** Added support for optional secondary images (see Section 4.2)
+
 Goals:
 
 - Support 4 slide types: **category**, **brand**, **campaign**, **product**
 - Keep the hero **image-first** with short text
+- Support optional secondary featured images alongside content
 - Enforce **max 2 CTAs**
 - Support scheduling (start/end)
 - Ensure safe fallbacks (e.g. product out of stock)
 - Keep payload small + cacheable
+
+**See also:** [Hero Secondary Image Feature Guide](./HERO_SECONDARY_IMAGE_FEATURE.md) for implementation details.
 
 ---
 
@@ -63,7 +68,9 @@ Caching (recommended):
       },
       "media": {
         "image_url": "https://cdn.example.com/hero/hero-1.jpg",
-        "image_alt": "Ciment blanc Boukir"
+        "image_alt": "Ciment blanc Boukir",
+        "secondary_image_url": "https://cdn.example.com/hero/featured-product.webp",
+        "secondary_image_alt": "Featured product image"
       },
       "content": {
         "title": "Ciment blanc pour vos chantiers",
@@ -130,7 +137,43 @@ If a type is missing its required target, backend must not publish that slide.
 
 ---
 
-## 4) CTA rules
+## 4) Media and images
+
+### 4.1 Background image (required)
+
+Every slide must have a background image:
+
+- `media.image_url: string` (required)
+- `media.image_alt: string` (optional)
+
+This image covers the entire hero area and serves as the backdrop.
+
+### 4.2 Secondary image (optional)
+
+Slides can optionally include a secondary featured image that appears alongside the text content:
+
+- `media.secondary_image_url: string` (optional)
+- `media.secondary_image_alt: string` (optional)
+
+When provided, the frontend will:
+- Display the content (text + CTAs) on the left side
+- Show the secondary image on the right side (on desktop/tablet)
+- Hide the secondary image on mobile to maintain readability
+
+**Use cases:**
+- Product showcase: feature a specific product image next to the campaign text
+- Brand highlight: show brand logo or representative product
+- Campaign visuals: display promotional graphics or featured items
+
+**Image requirements:**
+- Format: PNG or WebP recommended for transparency support
+- Size: 500-800px width recommended
+- Aspect ratio: Portrait or square works best (1:1 or 3:4)
+- Background: Transparent or matching the hero background
+
+---
+
+## 5) CTA rules
 
 Hero is designed to be minimal:
 
@@ -154,7 +197,7 @@ Backend should validate:
 
 ---
 
-## 5) Scheduling and publishing
+## 6) Scheduling and publishing
 
 ### 5.1 Status
 
@@ -172,11 +215,11 @@ Backend should validate:
 
 ---
 
-## 6) Runtime eligibility rules (recommended)
+## 7) Runtime eligibility rules (recommended)
 
 To keep the homepage hero “trustworthy”:
 
-### 6.1 Product slide eligibility
+### 7.1 Product slide eligibility
 
 If `type=product`:
 
@@ -190,13 +233,13 @@ If skipped, backend may:
 - return fewer slides, or
 - fallback to a safe slide (category/brand/campaign)
 
-### 6.2 Category / brand
+### 7.2 Category / brand
 
 These can be served even if they currently have 0 products, but recommended to keep them meaningful.
 
 ---
 
-## 7) Sorting / selection strategy
+## 8) Sorting / selection strategy
 
 Recommended selection logic in backend:
 
@@ -208,7 +251,7 @@ Recommended selection logic in backend:
 
 ---
 
-## 8) Localization strategy
+## 9) Localization strategy
 
 Two good approaches:
 
@@ -235,7 +278,7 @@ Approach A is simpler for backoffice UI.
 
 ---
 
-## 9) Database schema (Prisma example)
+## 10) Database schema (Prisma example)
 
 This is a suggested schema that matches the contract.
 

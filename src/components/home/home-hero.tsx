@@ -38,6 +38,8 @@ export type HeroSlide = {
   subtitle?: string
   imageSrc: string
   imageAlt: string
+  secondaryImageSrc?: string
+  secondaryImageAlt?: string
   primaryCta: HeroCta
   secondaryCta?: HeroCta
 }
@@ -155,6 +157,8 @@ export function HomeHero({
         subtitle: s.content?.subtitle ?? t('heroSubtitle'),
         imageSrc: toAbsoluteImageUrl(s.media?.image_url),
         imageAlt: s.media?.image_alt || 'Hero slide',
+        secondaryImageSrc: s.media?.secondary_image_url ? toAbsoluteImageUrl(s.media.secondary_image_url) : undefined,
+        secondaryImageAlt: s.media?.secondary_image_alt || undefined,
         primaryCta: {
           label: primaryLabel,
           href: primaryHref,
@@ -306,42 +310,64 @@ export function HomeHero({
                         </div>
 
                         <div className="relative h-full px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14 flex items-center">
-                          <div className="max-w-[680px]">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur-sm">
-                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                              <span>{slideTag(s.type)}</span>
-                            </div>
+                          <div className={cn(
+                            "grid gap-8 items-center w-full",
+                            s.secondaryImageSrc ? "lg:grid-cols-2" : "grid-cols-1"
+                          )}>
+                            <div className="max-w-[680px] ml-6">
+                              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur-sm">
+                                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                <span>{slideTag(s.type)}</span>
+                              </div>
 
-                            <h1 className="mt-4 text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-white">
-                              {s.title}
-                            </h1>
+                              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-white">
+                                {s.title}
+                              </h1>
 
-                            {s.subtitle ? (
-                              <p className="mt-3 text-base sm:text-lg text-white/85 max-w-[52ch] sm:truncate">
-                                {s.subtitle}
-                              </p>
-                            ) : null}
+                              {s.subtitle ? (
+                                <p className="mt-3 text-base sm:text-lg text-white/85 max-w-[52ch] sm:truncate">
+                                  {s.subtitle}
+                                </p>
+                              ) : null}
 
-                            <div className="mt-7 flex flex-wrap items-center gap-3">
-                              <Link href={s.primaryCta.href}>
-                                <Button size="lg" className="gap-2">
-                                  {s.primaryCta.label}
-                                  <ArrowRight className="h-4 w-4" />
-                                </Button>
-                              </Link>
-
-                              {s.secondaryCta ? (
-                                <Link href={s.secondaryCta.href}>
-                                  <Button
-                                    size="lg"
-                                    variant="outline"
-                                    className="gap-2 border-white/30 bg-white/10 text-white hover:bg-white/15 hover:text-white"
-                                  >
-                                    {s.secondaryCta.label}
+                              <div className="mt-7 flex flex-wrap items-center gap-3">
+                                <Link href={s.primaryCta.href}>
+                                  <Button size="lg" className="gap-2">
+                                    {s.primaryCta.label}
+                                    <ArrowRight className="h-4 w-4" />
                                   </Button>
                                 </Link>
-                              ) : null}
+
+                                {s.secondaryCta ? (
+                                  <Link href={s.secondaryCta.href}>
+                                    <Button
+                                      size="lg"
+                                      variant="outline"
+                                      className="gap-2 border-white/30 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+                                    >
+                                      {s.secondaryCta.label}
+                                    </Button>
+                                  </Link>
+                                ) : null}
+                              </div>
                             </div>
+
+                            {/* {s.secondaryImageSrc ? (
+                              <div className="hidden lg:flex justify-end items-center">
+                                <div className="relative w-full h-[400px] lg:h-[500px]">
+                                  <Image
+                                    src={s.secondaryImageSrc}
+                                    alt={s.secondaryImageAlt || 'Featured product'}
+                                    fill
+                                    priority={idx === 0}
+                                    unoptimized={/^https?:\/\//i.test(s.secondaryImageSrc)}
+                                    sizes="(min-width: 1024px) 500px, 0px"
+                                    className="object-contain object-center drop-shadow-2xl"
+                                    style={{ objectFit: 'contain' }}
+                                  />
+                                </div>
+                              </div>
+                            ) : null} */}
                           </div>
                         </div>
                       </div>

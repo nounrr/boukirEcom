@@ -22,6 +22,8 @@ export interface HeroSlidesRequest {
 export interface HeroSlideMediaApi {
   image_url: string
   image_alt?: string | null
+  secondary_image_url?: string | null
+  secondary_image_alt?: string | null
 }
 
 export interface HeroSlideContentApi {
