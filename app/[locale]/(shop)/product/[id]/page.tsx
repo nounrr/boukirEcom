@@ -350,9 +350,9 @@ export default function ProductPage() {
                   <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
                     En stock
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
+                  {/* <span className="text-xs text-muted-foreground">
                     {product.quantite_disponible} unités disponibles
-                  </span>
+                  </span> */}
                 </>
               ) : (
                 <Badge variant="destructive" className="text-xs">Rupture de stock</Badge>
