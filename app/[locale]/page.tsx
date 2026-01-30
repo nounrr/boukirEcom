@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
 import { HomeCatalogHighlights } from '@/components/home/home-catalog-highlights'
 import { HomeBrandsCarousel } from '@/components/home/home-brands-carousel'
@@ -8,13 +8,14 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { normalizeLocale } from '@/i18n/locale'
 
-export default function HomePage({
+export default async function HomePage({
   params,
 }: {
-    params: { locale?: string }
+    params: Promise<{ locale?: string }>
 }) {
-  const tShop = useTranslations('shop')
-  const locale = normalizeLocale(params.locale)
+  const { locale: localeParam } = await params
+  const locale = normalizeLocale(localeParam)
+  const tShop = await getTranslations({ locale, namespace: 'shop' })
 
   // Test slide with secondary image
   const testSlides: HeroSlide[] = [

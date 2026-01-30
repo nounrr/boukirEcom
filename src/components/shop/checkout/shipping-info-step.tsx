@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -42,11 +42,14 @@ const PHONE_COUNTRIES = [
 export function ShippingInfoStep({ register, errors, watch, setValue }: ShippingInfoStepProps) {
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
   const [localPhoneNumber, setLocalPhoneNumber] = useState("")
+  const isSyncingFromFormRef = useRef(false)
+  const hasUserEditedPhoneRef = useRef(false)
 
   // Ensure fields exist in react-hook-form even if no native input is rendered
   useEffect(() => {
     register("deliveryMethod")
     register("pickupLocationId")
+    register("shippingAddress.phone")
   }, [register])
 
   // Parse existing phone number from form to extract country code and number
@@ -54,7 +57,11 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
   const fullPhoneNumber = watch?.("shippingAddress.phone") as string | undefined
 
   useEffect(() => {
-    if (!fullPhoneNumber || fullPhoneNumber === localPhoneNumber) return
+    if (!fullPhoneNumber) return
+
+    // Mark this update as coming from RHF (prefill / programmatic setValue)
+    // so we don't immediately overwrite it with dialCode-only.
+    isSyncingFromFormRef.current = true
 
     // Try to parse the full phone number to extract country code
     const matchedCountry = PHONE_COUNTRIES.find(country =>
@@ -70,15 +77,42 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
       // If no country code found, assume it's just the local number
       setLocalPhoneNumber(fullPhoneNumber)
     }
+
+    // Release the guard on the next tick (after state updates enqueue)
+    setTimeout(() => {
+      isSyncingFromFormRef.current = false
+    }, 0)
   }, [fullPhoneNumber])
 
   // Update full phone number in form whenever country or local number changes
   // This ensures the backend receives the complete phone number with country code
   useEffect(() => {
     if (!setValue) return
+
+    // Don't write back while we're hydrating local state from the form.
+    if (isSyncingFromFormRef.current) return
+
+    // IMPORTANT:
+    // Don't write a value on mount (e.g. just "+212"). That blocks later
+    // prefilling from `/me` because the form field becomes "non-empty".
+    // Only sync back after the user edits the phone UI.
+    if (!hasUserEditedPhoneRef.current) return
+
     const fullPhone = selectedCountry.dialCode + localPhoneNumber
+
+    // If user cleared local input, clear the form field too.
+    if (!localPhoneNumber) {
+      if (fullPhoneNumber) {
+        setValue("shippingAddress.phone", "", { shouldValidate: true })
+      }
+      return
+    }
+
+    // Avoid redundant setValue calls (prevents loops).
+    if (fullPhoneNumber === fullPhone) return
+
     setValue("shippingAddress.phone", fullPhone, { shouldValidate: true })
-  }, [selectedCountry, localPhoneNumber, setValue])
+  }, [selectedCountry, localPhoneNumber, setValue, fullPhoneNumber])
 
   // Watch delivery method
   const deliveryMethod = (watch?.("deliveryMethod") as "delivery" | "pickup" | undefined) ?? "delivery"
@@ -306,7 +340,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
               value={selectedCountry.code}
               onValueChange={(code) => {
                 const found = PHONE_COUNTRIES.find((c) => c.code === code)
-                if (found) setSelectedCountry(found)
+                if (found) {
+                  setSelectedCountry(found)
+                  // Only consider this an "edit" if the user is interacting
+                  // with the phone UI (prevents mount-time writes).
+                  hasUserEditedPhoneRef.current = true
+                }
               }}
             >
               <SelectTrigger className="h-[41px] bg-background border-input w-full">
@@ -342,7 +381,10 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
 
             <Input
               value={localPhoneNumber}
-              onChange={(e) => setLocalPhoneNumber(e.target.value)}
+              onChange={(e) => {
+                hasUserEditedPhoneRef.current = true
+                setLocalPhoneNumber(e.target.value)
+              }}
               placeholder="612345678"
               maxLength={15}
               Icon={Phone}

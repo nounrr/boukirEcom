@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,10 +21,21 @@ import {
 
 interface ProductVariant {
   id: number
-  name: string
-  value: string
-  available: boolean
+  // Backend data can vary a bit across endpoints; keep this flexible.
+  // We normalize these fields before passing to VariantSwatches.
+  name?: string
+  variant_name?: string
+  variant_type?: string
+  type?: string
+  value?: string
+  available?: boolean | number
   image?: string
+  image_url?: string
+  // Optional pricing fields (used when variant price differs)
+  prix_vente?: number
+  price?: number
+  prix_original?: number
+  originalPrice?: number
 }
 
 interface Product {
@@ -43,6 +54,7 @@ interface Product {
   reviews?: number
   variants?: ProductVariant[]
   is_wishlisted?: boolean | null
+  isVariantRequired?: boolean
   sale?: {
     discount: number
     label?: string
@@ -70,9 +82,46 @@ export function ProductCard({
   onToggleWishlist,
   onQuickView
 }: ProductCardProps) {
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(
-    product.variants?.[0]?.id || null
-  )
+  const normalizeAvailable = useCallback((v: ProductVariant) => {
+    const raw = (v as any)?.available
+    if (raw === undefined || raw === null) return true
+    if (typeof raw === 'boolean') return raw
+    if (typeof raw === 'number') return raw !== 0
+    if (typeof raw === 'string') return raw !== '0' && raw.toLowerCase() !== 'false'
+    return true
+  }, [])
+
+  const normalizedVariants = useMemo<SimpleVariant[]>(() => {
+    return (product.variants ?? []).map((v) => ({
+      id: v.id,
+      // Prefer the backend "variant_type" (e.g. Couleur/Taille), fall back to name.
+      name: v.variant_type ?? v.type ?? v.name ?? v.variant_name,
+      // Prefer the option value (e.g. Beige Sable), fall back to variant_name/name.
+      value: v.value ?? v.variant_name ?? v.name,
+      type: v.variant_type ?? v.type,
+      available: normalizeAvailable(v),
+      image: v.image ?? v.image_url,
+    }))
+  }, [normalizeAvailable, product.variants])
+
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(() => {
+    const firstAvailable = normalizedVariants.find((v) => v.available !== false)
+    return firstAvailable?.id ?? normalizedVariants[0]?.id ?? null
+  })
+
+  // Keep selection in sync when product or variants change
+  useEffect(() => {
+    if (normalizedVariants.length === 0) {
+      if (selectedVariant !== null) setSelectedVariant(null)
+      return
+    }
+
+    const stillExists = selectedVariant != null && normalizedVariants.some((v) => v.id === selectedVariant)
+    if (stillExists) return
+
+    const firstAvailable = normalizedVariants.find((v) => v.available !== false)
+    setSelectedVariant(firstAvailable?.id ?? normalizedVariants[0].id)
+  }, [normalizedVariants, selectedVariant])
   const [currentImage, setCurrentImage] = useState(product.image)
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
@@ -123,6 +172,11 @@ export function ProductCard({
     e.preventDefault()
     e.stopPropagation()
 
+    if (product.isVariantRequired && !selectedVariant) {
+      toast.error('Veuillez sélectionner une variante', { description: 'Cette variante est obligatoire.' })
+      return
+    }
+
     // Get current price based on selected variant
     let itemPrice = product.price
     if (selectedVariant) {
@@ -134,10 +188,18 @@ export function ProductCard({
     }
 
     // Guest users can add to cart via localStorage, which syncs on auth
+    const selectedVariantObj = selectedVariant
+      ? product.variants?.find(v => v.id === selectedVariant)
+      : undefined
+    const variantLabel = selectedVariantObj?.value || selectedVariantObj?.name
+    const unitLabel = product.unit
+    const suffixParts = [variantLabel, unitLabel].filter(Boolean)
+    const displayName = suffixParts.length > 0 ? `${product.name} • ${suffixParts.join(' · ')}` : product.name
     const cartItem = {
       productId: product.id,
       variantId: selectedVariant || undefined,
-      name: product.name,
+      variantName: selectedVariantObj?.value || selectedVariantObj?.name,
+      name: displayName,
       price: itemPrice,
       quantity: 1,
       image: currentImage,
@@ -180,6 +242,50 @@ export function ProductCard({
     // For now we keep the base price
   }, [])
 
+  // Sync card image with selected variant image_url when available
+  useEffect(() => {
+    if (!selectedVariant) return
+    const variant = product.variants?.find((v) => v.id === selectedVariant)
+    if (variant?.image) {
+      setCurrentImage(variant.image)
+      setImageError(false)
+    }
+  }, [selectedVariant, product.variants])
+
+  const getVariantLabel = useCallback((variant: ProductVariant) => {
+    const raw = variant.value || variant.name
+    return raw ? raw.toString().trim() : ''
+  }, [])
+
+  const isColorVariant = useCallback((variant: ProductVariant) => {
+    const label = getVariantLabel(variant).toLowerCase()
+    const type = variant.name?.toLowerCase?.() || ''
+    if (['couleur', 'color', 'coloris', 'couleurs'].includes(type)) return true
+    return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige', 'argent', 'doré', 'or', 'rose', 'turquoise', 'kaki'].some(color => label.includes(color))
+  }, [getVariantLabel])
+
+  const getVariantTypeLabel = useCallback((variant: ProductVariant) => {
+    const type = variant.name?.toString().trim()
+    return type || 'Variante'
+  }, [])
+
+  const hasVariants = normalizedVariants.length > 0
+  const colorVariants = useMemo(() => (product.variants || []).filter(isColorVariant), [product.variants, isColorVariant])
+  const nonColorVariants = useMemo(() => (product.variants || []).filter(v => !isColorVariant(v)), [product.variants, isColorVariant])
+  const hasColorVariants = colorVariants.length > 0
+
+  const swatchVariants = normalizedVariants
+
+  const displayName = useMemo(() => {
+    const selectedVariantObj = selectedVariant
+      ? product.variants?.find(v => v.id === selectedVariant)
+      : undefined
+    const variantLabel = selectedVariantObj?.value || selectedVariantObj?.name
+    const unitLabel = product.unit
+    const suffixParts = [variantLabel, unitLabel].filter(Boolean)
+    return suffixParts.length > 0 ? `${product.name} • ${suffixParts.join(' · ')}` : product.name
+  }, [product.name, product.unit, product.variants, selectedVariant])
+
   // Memoize computed values
   const discountPercentage = useMemo(() =>
     product.sale?.discount ||
@@ -214,25 +320,6 @@ export function ProductCard({
     }
     return product.originalPrice
   }, [selectedVariant, product.variants, product.originalPrice])
-
-  // Color mapping for variant visualization
-  const colorMap: Record<string, string> = {
-    'Blanc': '#FFFFFF',
-    'Blanc Pur': '#FAFAFA',
-    'Beige': '#D4C5B9',
-    'Beige Sable': '#C9B99B',
-    'Noir': '#000000',
-    'Gris': '#6B7280',
-    'Gris Perle': '#D3D3D3',
-    'Rouge': '#EF4444',
-    'Bleu': '#3B82F6',
-    'Bleu Ciel': '#87CEEB',
-    'Vert': '#10B981',
-    'Jaune': '#FBBF24',
-    'Orange': '#F97316',
-    'Violet': '#8B5CF6',
-    'Marron': '#92400E'
-  }
 
   return (
     <div className={cn(
@@ -332,38 +419,26 @@ export function ProductCard({
 
         {/* Product Name */}
         <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-8">
-          {product.name}
+          {displayName}
         </h3>
 
         {/* Available Sizes/Variants Info with Icons */}
-        {product.variants && product.variants.length > 0 && (
+        {hasVariants && (
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             {/* Color variants count */}
-            {product.variants.filter(v => {
-              const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
-              return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige'].some(color => name.includes(color));
-            }).length > 0 && (
+            {hasColorVariants && (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
                   <div className="w-2 h-2 rounded-full bg-linear-to-br from-red-400 via-blue-400 to-green-400" />
-                  <span>{product.variants.filter(v => {
-                    const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
-                    return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige'].some(color => name.includes(color));
-                  }).length}</span>
+                <span>{colorVariants.length}</span>
                 </Badge>
               )}
-            {/* Size variants count */}
-            {product.variants.filter(v => {
-              const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
-              return /^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl)$/.test(name) || name.includes('taille');
-            }).length > 0 && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
-                  <Ruler className="w-2.5 h-2.5" />
-                  <span>{product.variants.filter(v => {
-                    const name = v.name?.toLowerCase() || v.value?.toLowerCase() || '';
-                    return /^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl)$/.test(name) || name.includes('taille');
-                  }).length}</span>
-                </Badge>
-              )}
+            {/* Non-color variants count (size/thickness/etc.) */}
+            {nonColorVariants.length > 0 && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+                <Ruler className="w-2.5 h-2.5" />
+                <span>{nonColorVariants.length}</span>
+              </Badge>
+            )}
             {/* Unit display if available */}
             {product.unit && (
               <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
@@ -397,16 +472,16 @@ export function ProductCard({
         </div>
 
         {/* Color/Variant Swatches */}
-        {product.variants && product.variants.length > 0 && (
+        {hasVariants && (
           <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="cursor-pointer">
             <VariantSwatches
-              variants={product.variants}
+              variants={swatchVariants}
               selectedId={selectedVariant}
               onSelect={(variant) => {
                 handleVariantClick(variant)
               }}
               max={5}
-              assumeColor
+              assumeColor={hasColorVariants}
             />
           </div>
         )}

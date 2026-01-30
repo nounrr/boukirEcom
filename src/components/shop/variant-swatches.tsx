@@ -7,6 +7,7 @@ export interface SimpleVariant {
   id: number
   name?: string
   value?: string
+  type?: string
   available?: boolean
   image?: string
 }
@@ -102,6 +103,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
     // Prefer the variant value (actual option like "Beige Sable")
     // and fall back to name only if value is missing
     const key = (variant.value || variant.name || '').toString().toLowerCase()
+    const type = (variant.type || '').toString().toLowerCase()
 
     // Check if it's a color
     const isCssColor = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(key) || /^rgb\s*\(/i.test(key) || /^hsl\s*\(/i.test(key)
@@ -110,8 +112,16 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
       return 'color'
     }
 
-    // Check if it's a size
-    if (/^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl|4xl|5xl)$/.test(key) || key.includes('taille')) {
+    // Check if it's a size / dimension / thickness
+    if (
+      /^(xxs|xs|s|m|l|xl|xxl|xxxl|2xl|3xl|4xl|5xl)$/.test(key) ||
+      key.includes('taille') ||
+      key.includes('épaisseur') ||
+      key.includes('epaisseur') ||
+      key.includes('thickness') ||
+      /\d+(\.\d+)?\s?(mm|cm|m|kg|g|l|ml)$/i.test(key) ||
+      ['size', 'taille', 'épaisseur', 'epaisseur', 'thickness', 'dimension', 'dimensions'].some((t) => type.includes(t))
+    ) {
       return 'size'
     }
 

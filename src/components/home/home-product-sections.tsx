@@ -39,6 +39,8 @@ function toProductCardModel(product: ProductListItem) {
         available: v.available,
         image: v.image_url ?? undefined,
       })) || [],
+    isVariantRequired:
+      product.is_obligatoire_variant === true || product.isObligatoireVariant === true,
     is_wishlisted: product.is_wishlisted || false,
     sale:
       product.pourcentage_promo > 0

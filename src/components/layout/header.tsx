@@ -58,6 +58,12 @@ export function Header() {
     { href: `/${locale}/products`, label: t('products'), icon: Package },
   ]
 
+  const desktopLinks = [
+    { href: `/${locale}/shop`, label: t('shop') },
+    { href: `/${locale}/products`, label: t('products') },
+    ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
+  ]
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/15 bg-primary text-white shadow-xs shadow-black/10 overflow-x-clip">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16">
@@ -65,13 +71,26 @@ export function Header() {
         <div className="flex h-[75px] items-center justify-between gap-3">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
-            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center shadow-md shadow-black/10 group-hover:shadow-lg group-hover:shadow-black/15 transition-all duration-300 ring-1 ring-white/15 group-hover:ring-white/25">
+            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center shadow-md shadow-black/15 group-hover:shadow-lg group-hover:shadow-black/20 transition-all duration-300 ring-1 ring-black/10 group-hover:ring-black/15">
               <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain h-auto" />
             </div>
             <span className="font-bold text-lg hidden sm:block text-white tracking-tight">
               Boukir
             </span>
           </Link>
+
+          {/* Desktop Nav Links */}
+          <nav className="hidden lg:flex items-center gap-1.5 shrink-0">
+            {desktopLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-3 py-2 rounded-full text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
           {/* Desktop Search */}
           <div className="hidden md:flex flex-1 justify-center px-3 lg:px-6">

@@ -9,13 +9,13 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RemiseBalance } from "@/components/ui/remise-balance"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
-import { useUpdateProfileMutation } from "@/state/api/auth-api-slice"
+import { useRequestArtisanMutation, useUpdateProfileMutation } from "@/state/api/auth-api-slice"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
-import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings } from "lucide-react"
+import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent } from "lucide-react"
 import Link from "next/link"
 import { useLocale } from "next-intl"
-import { useState, useEffect } from "react"
+import { useMemo, useState, useEffect } from "react"
 
 const PHONE_COUNTRIES = [
   { code: "MA", name: "Maroc", dialCode: "+212" },
@@ -47,6 +47,7 @@ export default function ProfilePage() {
   const isAuthLoading = !!accessToken && !user
   
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
+  const [requestArtisan, { isLoading: isRequestingArtisan }] = useRequestArtisanMutation()
   const [isEditing, setIsEditing] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
   const [localPhoneNumber, setLocalPhoneNumber] = useState("")
@@ -64,6 +65,14 @@ export default function ProfilePage() {
     shipping_postal_code: "",
     shipping_country: "",
   })
+
+  const [initialSnapshot, setInitialSnapshot] = useState<string>("")
+
+  const hasChanges = useMemo(() => {
+    if (!isEditing) return false
+    if (!initialSnapshot) return true
+    return JSON.stringify(formData) !== initialSnapshot
+  }, [formData, initialSnapshot, isEditing])
 
   // Parse phone number to extract country code and local number
   useEffect(() => {
@@ -83,17 +92,10 @@ export default function ProfilePage() {
     }
   }, [user?.telephone])
 
-  // Update form telephone field when country or local number changes
-  useEffect(() => {
-    if (!isEditing) return
-    const fullPhone = selectedCountry.dialCode + localPhoneNumber
-    setFormData(prev => ({ ...prev, telephone: fullPhone }))
-  }, [selectedCountry, localPhoneNumber, isEditing])
-
   // Initialize form data when user loads
   useEffect(() => {
     if (user) {
-      setFormData({
+      const next = {
         prenom: user.prenom || "",
         nom: user.nom || "",
         telephone: user.telephone || "",
@@ -106,15 +108,29 @@ export default function ProfilePage() {
         shipping_state: user.shipping_state || "",
         shipping_postal_code: user.shipping_postal_code || "",
         shipping_country: user.shipping_country || "Morocco",
-      })
+      }
+      setFormData(next)
+
+      // Keep a stable baseline so we can avoid firing updateProfile when nothing changed.
+      // Only refresh the baseline when NOT editing.
+      if (!isEditing) {
+        setInitialSnapshot(JSON.stringify(next))
+      }
     }
-  }, [user])
+  }, [user, isEditing])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
+    if (!hasChanges) {
+      toast.info("Aucune modification", {
+        description: "Aucun champ n'a été modifié.",
+      })
+      return
+    }
+
     try {
       const result = await updateProfile(formData).unwrap()
       dispatch(setUser(result))
@@ -122,6 +138,9 @@ export default function ProfilePage() {
         description: "Vos informations ont été enregistrées avec succès." 
       })
       setIsEditing(false)
+
+      // New baseline after successful save
+      setInitialSnapshot(JSON.stringify(formData))
     } catch (error: any) {
       toast.error("Erreur", { 
         description: error?.data?.message || "Impossible de mettre à jour le profil." 
@@ -131,7 +150,7 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     if (user) {
-      setFormData({
+      const next = {
         prenom: user.prenom || "",
         nom: user.nom || "",
         telephone: user.telephone || "",
@@ -144,9 +163,48 @@ export default function ProfilePage() {
         shipping_state: user.shipping_state || "",
         shipping_postal_code: user.shipping_postal_code || "",
         shipping_country: user.shipping_country || "Morocco",
-      })
+      }
+      setFormData(next)
+      setInitialSnapshot(JSON.stringify(next))
     }
     setIsEditing(false)
+  }
+
+  const handleRequestArtisan = async () => {
+    if (!user) return
+
+    try {
+      const result = await requestArtisan()
+      const data: any = (result as any)?.data
+      const err: any = (result as any)?.error
+
+      if (!data) {
+        throw err
+      }
+
+      // Optimistic local update so UI updates immediately.
+      const partialUser = (data?.user || {}) as any
+      dispatch(
+        setUser({
+          ...user,
+          ...partialUser,
+          demande_artisan: true,
+          artisan_approuve: false,
+        } as any)
+      )
+
+      toast.success("Demande envoyée", {
+        description: data?.message || "Elle sera validée par un administrateur.",
+      })
+    } catch (error: any) {
+      toast.error("Erreur", {
+        description:
+          error?.data?.message ||
+          error?.error?.message ||
+          error?.message ||
+          "Impossible d'envoyer la demande.",
+      })
+    }
   }
 
   if (!isAuthenticated && !isAuthLoading) {
@@ -201,7 +259,11 @@ export default function ProfilePage() {
             </div>
             {!isEditing ? (
               <Button
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  // Capture baseline when entering edit mode
+                  setInitialSnapshot(JSON.stringify(formData))
+                  setIsEditing(true)
+                }}
                 variant="outline"
                 size="sm"
                 className="gap-2"
@@ -225,7 +287,7 @@ export default function ProfilePage() {
                   onClick={handleSave}
                   size="sm"
                   className="gap-2 text-white"
-                  disabled={isUpdating}
+                    disabled={isUpdating || !hasChanges}
                 >
                   <Save className="w-4 h-4" />
                   {isUpdating ? "Enregistrement..." : "Enregistrer"}
@@ -233,6 +295,64 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+
+          {/* Artisan status / request (keep in viewport) */}
+          {user && (
+            <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <BadgePercent className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-foreground">Statut Artisan / Pro</p>
+                    {(user.artisan_approuve || user.type_compte === "Artisan/Promoteur") && (
+                      <Badge variant="secondary" className="text-[10px]">Validé</Badge>
+                    )}
+                    {!!user.demande_artisan && !user.artisan_approuve && user.type_compte !== "Artisan/Promoteur" && (
+                      <Badge variant="secondary" className="text-[10px]">En attente</Badge>
+                    )}
+                  </div>
+
+                  {(user.artisan_approuve || user.type_compte === "Artisan/Promoteur") ? (
+                    <div className="mt-2 flex items-start gap-2 text-sm">
+                      <ShieldCheck className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Vous êtes Artisan/Promoteur.</p>
+                        <p className="text-xs text-muted-foreground">Votre compte bénéficie des avantages Artisan/Pro.</p>
+                      </div>
+                    </div>
+                  ) : user.demande_artisan ? (
+                    <div className="mt-2 flex items-start gap-2 text-sm">
+                      <Clock className="w-4 h-4 text-amber-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Demande en cours de validation.</p>
+                        <p className="text-xs text-muted-foreground">Un administrateur validera votre demande bientôt.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground">
+                        Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.
+                      </p>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <Button
+                          className="text-white"
+                          onClick={handleRequestArtisan}
+                          disabled={isRequestingArtisan || isEditing}
+                        >
+                          {isRequestingArtisan ? "Envoi..." : "Demander le statut Artisan"}
+                        </Button>
+                        {typeof user.remise_balance === "number" && user.remise_balance > 0 && (
+                          <RemiseBalance balance={user.remise_balance} size="sm" />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Remise Balance Card - if available */}
           {user?.remise_balance !== undefined && user.remise_balance > 0 && (
@@ -332,7 +452,13 @@ export default function ProfilePage() {
                         value={selectedCountry.code}
                         onValueChange={(code) => {
                           const found = PHONE_COUNTRIES.find((c) => c.code === code)
-                          if (found) setSelectedCountry(found)
+                          if (found) {
+                            setSelectedCountry(found)
+                            setFormData((prev) => ({
+                              ...prev,
+                              telephone: found.dialCode + localPhoneNumber,
+                            }))
+                          }
                         }}
                       >
                         <SelectTrigger className="h-10 bg-background border-input w-full">
@@ -368,7 +494,14 @@ export default function ProfilePage() {
 
                       <Input
                         value={localPhoneNumber}
-                        onChange={(e) => setLocalPhoneNumber(e.target.value)}
+                          onChange={(e) => {
+                            const nextLocal = e.target.value
+                            setLocalPhoneNumber(nextLocal)
+                            setFormData((prev) => ({
+                              ...prev,
+                              telephone: selectedCountry.dialCode + nextLocal,
+                            }))
+                          }}
                         placeholder="612345678"
                         maxLength={15}
                         className="h-10"

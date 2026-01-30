@@ -104,10 +104,12 @@ export interface ProductListItem {
   gallery: ProductGalleryImage[];
   quantite_disponible: number;
   has_variants: boolean;
+  is_obligatoire_variant?: boolean;
+  isObligatoireVariant?: boolean;
   base_unit: string;
   categorie_base: string;
   variants: ProductVariants;
-  units: ProductUnit[];
+  units: ProductUnit[] | null;
   brand: ProductBrand;
   categorie: {
     id: number;

@@ -23,7 +23,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { cartStorage } from "@/lib/cart-storage"
+import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -124,6 +124,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             await addToCartApi({
               productId: item.productId,
               variantId: item.variantId,
+              unitId: item.unitId,
               quantity: item.quantity,
             }).unwrap()
             console.log('🔐 Item added to backend cart')
@@ -134,14 +135,8 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         } else {
           // Guest: Update local state + localStorage
           setLocalItems(prev => {
-            const itemKey = item.variantId
-              ? `${item.productId}-${item.variantId}`
-              : `${item.productId}`
-
-            const existingIndex = prev.findIndex(i => {
-              const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
-              return key === itemKey
-            })
+            const itemKey = getCartItemKey(item)
+            const existingIndex = prev.findIndex(i => getCartItemKey(i) === itemKey)
 
             if (existingIndex >= 0) {
               const newItems = [...prev]
@@ -172,11 +167,8 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
       }
     } else {
       setLocalItems(prev => {
-        const itemKey = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
-        return prev.filter(i => {
-          const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
-          return key !== itemKey
-        })
+        const itemKey = getCartItemKey(item)
+        return prev.filter(i => getCartItemKey(i) !== itemKey)
       })
       console.log('👤 Item removed from localStorage')
     }
@@ -202,10 +194,9 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
       }
     } else {
       setLocalItems(prev => {
-        const itemKey = item.variantId ? `${item.productId}-${item.variantId}` : `${item.productId}`
+        const itemKey = getCartItemKey(item)
         return prev.map(i => {
-          const key = i.variantId ? `${i.productId}-${i.variantId}` : `${i.productId}`
-          if (key === itemKey) {
+          if (getCartItemKey(i) === itemKey) {
             return { ...i, quantity }
           }
           return i
@@ -290,7 +281,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
               <div className="space-y-1.5">
                 {items.map((item) => (
                   <div
-                    key={`${item.productId}-${item.variantId || ''}`}
+                    key={getCartItemKey(item)}
                     className="group flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
                   >
                     {/* Product Image */}
@@ -312,8 +303,15 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-foreground line-clamp-1 mb-1">
-                        {item.name}
+                        {formatCartItemName(item)}
                       </h4>
+                      {(item.variantName || item.unitName) && (
+                        <p className="text-[11px] text-muted-foreground mb-1">
+                          {item.variantName ? `Variante: ${item.variantName}` : null}
+                          {item.variantName && item.unitName ? ' · ' : null}
+                          {item.unitName ? `Unité: ${item.unitName}` : null}
+                        </p>
+                      )}
                       <p className="text-xs font-semibold text-primary mb-2">
                         {item.price.toFixed(2)} MAD
                       </p>

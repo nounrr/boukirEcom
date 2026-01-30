@@ -47,6 +47,17 @@ export const authApi = createApi({
       transformResponse: (response: { message: string; user: User }) => response.user,
       invalidatesTags: ['Auth'],
     }),
+
+    requestArtisan: builder.mutation<
+      { message: string; status?: string; user?: Partial<User> },
+      void
+    >({
+      query: () => ({
+        url: '/api/users/auth/request-artisan',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Auth'],
+    }),
   }),
 });
 
@@ -56,4 +67,5 @@ export const {
   useLogoutMutation,
   useGetCurrentUserQuery,
   useUpdateProfileMutation,
+  useRequestArtisanMutation,
 } = authApi;

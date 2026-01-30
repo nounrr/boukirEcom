@@ -158,6 +158,9 @@ export default function OrdersPage() {
       cartRef.current.addItem({
         productId: item.productId,
         variantId: item.variantId,
+        unitId: item.unitId ?? item.unit_id,
+        unitName: item.unitName ?? item.unit_name,
+        variantName: item.variantName ?? item.variant_name,
         name: item.productName,
         price: item.unitPrice,
         quantity: item.quantity,

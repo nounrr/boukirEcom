@@ -7,6 +7,8 @@ export interface CartItem {
   productId: number;
   variantId?: number;
   unitId?: number;
+  unitName?: string;
+  variantName?: string;
   name: string;
   price: number;
   quantity: number;
@@ -48,10 +50,13 @@ export const cartApi = createApi({
             id: item.id, // Cart item ID
             productId: item.product_id,
             variantId: item.variant_id || undefined,
+            unitId: item.unit_id || undefined,
+            unitName: item.unit?.unit_name || item.unit?.name || item.unit_name || undefined,
+            variantName: item.variant?.variant_name || item.variant?.name || item.variant_name || undefined,
             name: item.product?.designation || item.product?.designation_en || 'Unknown Product',
             price: isNaN(price) ? 0 : price,
             quantity: isNaN(quantity) ? 1 : quantity,
-            image: item.product?.image_url || undefined,
+            image: item.variant?.image_url || item.product?.image_url || undefined,
             category: item.product?.base_unit || undefined,
             stock: item.stock?.available || 0,
           };
@@ -68,13 +73,14 @@ export const cartApi = createApi({
     }),
 
     // POST add item to cart
-    addToCart: builder.mutation<Cart, { productId: number; variantId?: number; quantity: number }>({
+    addToCart: builder.mutation<Cart, { productId: number; variantId?: number; unitId?: number; quantity: number }>({
       query: (data) => ({
         url: `${API_CONFIG.ENDPOINTS.CART}/items`,
         method: 'POST',
         body: {
           product_id: data.productId,
           variant_id: data.variantId,
+          unit_id: data.unitId,
           quantity: data.quantity,
         },
       }),

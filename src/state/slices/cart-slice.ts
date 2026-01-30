@@ -1,11 +1,14 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { cartStorage } from '@/lib/cart-storage';
+import { cartStorage, getCartItemKey } from '@/lib/cart-storage';
 import type { RootState } from '../store';
 import API_CONFIG from '@/lib/api-config';
 
 export interface CartItem {
   productId: number;
   variantId?: number;
+  unitId?: number;
+  unitName?: string;
+  variantName?: string;
   name: string;
   price: number;
   quantity: number;
@@ -216,18 +219,8 @@ const cartSlice = createSlice({
       state.isLoaded = true
     },
     addItem: (state, action: PayloadAction<CartItem>) => {
-      const itemKey = action.payload.variantId
-        ? `${action.payload.productId}-${action.payload.variantId}`
-        : `${action.payload.productId}`;
-
-      const existingItem = state.items.find(
-        (item) => {
-          const existingKey = item.variantId
-            ? `${item.productId}-${item.variantId}`
-            : `${item.productId}`;
-          return existingKey === itemKey;
-        }
-      );
+      const itemKey = getCartItemKey(action.payload)
+      const existingItem = state.items.find((item) => getCartItemKey(item) === itemKey);
 
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
@@ -242,18 +235,9 @@ const cartSlice = createSlice({
       // Note: API call is handled by addItemToCart thunk
     },
     removeItem: (state, action: PayloadAction<{ productId: number; variantId?: number }>) => {
-      const itemKey = action.payload.variantId
-        ? `${action.payload.productId}-${action.payload.variantId}`
-        : `${action.payload.productId}`;
+      const itemKey = getCartItemKey(action.payload)
 
-      state.items = state.items.filter(
-        (item) => {
-          const existingKey = item.variantId
-            ? `${item.productId}-${item.variantId}`
-            : `${item.productId}`;
-          return existingKey !== itemKey;
-        }
-      );
+      state.items = state.items.filter((item) => getCartItemKey(item) !== itemKey);
       state.total = calculateTotal(state.items)
 
       // Save to localStorage
@@ -263,18 +247,9 @@ const cartSlice = createSlice({
       state,
       action: PayloadAction<{ productId: number; variantId?: number; quantity: number }>
     ) => {
-      const itemKey = action.payload.variantId
-        ? `${action.payload.productId}-${action.payload.variantId}`
-        : `${action.payload.productId}`;
+      const itemKey = getCartItemKey(action.payload)
 
-      const item = state.items.find(
-        (item) => {
-          const existingKey = item.variantId
-            ? `${item.productId}-${item.variantId}`
-            : `${item.productId}`;
-          return existingKey === itemKey;
-        }
-      );
+      const item = state.items.find((item) => getCartItemKey(item) === itemKey);
       if (item) {
         item.quantity = action.payload.quantity;
         state.total = calculateTotal(state.items)

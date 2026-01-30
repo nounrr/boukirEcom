@@ -9,10 +9,22 @@ import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
 import { cn } from '@/lib/utils';
 
-export function Footer({ className }: { className?: string }) {
+export function Footer({
+  className,
+  variant = 'full',
+}: {
+  className?: string;
+  variant?: 'full' | 'compact';
+}) {
   const locale = useLocale();
-  const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery();
-  const { data: brands = [], isLoading: isBrandsLoading } = useGetBrandsQuery();
+  const isCompact = variant === 'compact';
+
+  const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery(undefined, {
+    skip: isCompact,
+  });
+  const { data: brands = [], isLoading: isBrandsLoading } = useGetBrandsQuery(undefined, {
+    skip: isCompact,
+  });
 
   const topCategories = useMemo(() => {
     const roots = categories.filter((c) => !c.parent_id);
@@ -23,9 +35,36 @@ export function Footer({ className }: { className?: string }) {
     return brands.slice(0, 10);
   }, [brands]);
 
+  if (isCompact) {
+    return (
+      <footer className={cn('bg-primary text-white', className)}>
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
+            <div className="font-semibold">Boukir</div>
+            <div className="flex items-center gap-4">
+              <Link
+                href={`/${locale}/shop`}
+                className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
+              >
+                Boutique
+              </Link>
+              <Link
+                href={`/${locale}/orders`}
+                className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
+              >
+                Mes commandes
+              </Link>
+            </div>
+          </div>
+          <div className="mt-2 text-xs text-white/70">© {new Date().getFullYear()} Boukir • Tous droits réservés.</div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className={cn('relative mt-12 bg-primary text-white overflow-hidden', className)}>
-      <div className="absolute inset-0 pointer-events-none opacity-[0.07] [mask-image:linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_90%,black_100%)]">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.07] mask-[linear-gradient(to_bottom,transparent_0%,black_70%,black_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_90%,black_100%)]">
         <Image
           src="/droguerie-pattern.png"
           alt=""

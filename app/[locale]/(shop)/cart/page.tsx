@@ -13,6 +13,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { useState, useEffect } from "react"
+import { formatCartItemName, getCartItemKey } from "@/lib/cart-storage"
 
 // Keep this key in sync with CART_STORAGE_KEY used in cart-popover
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -23,6 +24,7 @@ interface LocalCartItem {
   variantId?: number
   unitId?: number
   unitName?: string
+  variantName?: string
   name: string
   price: number
   quantity: number
@@ -100,7 +102,7 @@ export default function CartPage() {
   const [updateCartItem, { isLoading: isUpdating }] = useUpdateCartItemMutation()
   const [removeFromCart, { isLoading: isRemoving }] = useRemoveFromCartMutation()
 
-  const handleQuantityChange = async (itemId: number, newQuantity: number, productName: string) => {
+  const handleQuantityChange = async (itemId: number, newQuantity: number, productName: string, itemKey?: string) => {
     if (newQuantity < 1) return
 
     if (isAuthenticated) {
@@ -114,13 +116,15 @@ export default function CartPage() {
     } else {
       // localStorage update for guests
       setLocalCart(prev => prev.map(item =>
-        item.productId === itemId ? { ...item, quantity: newQuantity } : item
+        (itemKey && getCartItemKey(item) === itemKey)
+          ? { ...item, quantity: newQuantity }
+          : item
       ))
       toast.success("Quantité mise à jour", { description: productName })
     }
   }
 
-  const handleRemove = async (itemId: number, productName: string) => {
+  const handleRemove = async (itemId: number, productName: string, itemKey?: string) => {
     if (isAuthenticated) {
     // API remove for authenticated users
       try {
@@ -131,7 +135,9 @@ export default function CartPage() {
       }
     } else {
       // localStorage remove for guests
-      setLocalCart(prev => prev.filter(item => item.productId !== itemId))
+      setLocalCart(prev => prev.filter(item =>
+        itemKey ? getCartItemKey(item) !== itemKey : item.productId !== itemId
+      ))
       toast.success("Retiré du panier", { description: productName })
     }
   }
@@ -182,7 +188,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
               <div
-                key={item.id || item.productId}
+                key={item.id || getCartItemKey(item as LocalCartItem)}
                 className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
               >
                 <div className="flex gap-4">
@@ -214,7 +220,7 @@ export default function CartPage() {
                       className="hover:text-primary transition-colors"
                     >
                       <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
-                        {item.name}
+                        {formatCartItemName(item as LocalCartItem)}
                       </h3>
                     </Link>
 
@@ -223,6 +229,13 @@ export default function CartPage() {
                         {item.category}
                       </p>
                     )}
+                    {(item as LocalCartItem).variantName || (item as LocalCartItem).unitName ? (
+                      <p className="text-[11px] text-muted-foreground mb-2">
+                        {(item as LocalCartItem).variantName ? `Variante: ${(item as LocalCartItem).variantName}` : null}
+                        {(item as LocalCartItem).variantName && (item as LocalCartItem).unitName ? ' · ' : null}
+                        {(item as LocalCartItem).unitName ? `Unité: ${(item as LocalCartItem).unitName}` : null}
+                      </p>
+                    ) : null}
 
                     {/* Price & Quantity Controls */}
                     <div className="flex items-center justify-between">
@@ -233,7 +246,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-r-none"
-                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity - 1, item.name)}
+                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity - 1, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                             disabled={isUpdating || item.quantity <= 1}
                           >
                             <Minus className="w-3 h-3" />
@@ -245,7 +258,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-l-none"
-                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, item.name)}
+                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                             disabled={isUpdating || item.quantity >= (item.stock || 999)}
                           >
                             <Plus className="w-3 h-3" />
@@ -277,7 +290,7 @@ export default function CartPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, item.name)}
+                      onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                       disabled={isRemoving}
                       className="hover:bg-destructive/10 hover:text-destructive"
                     >

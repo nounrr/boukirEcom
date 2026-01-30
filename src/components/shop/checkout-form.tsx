@@ -212,7 +212,10 @@ export function CheckoutFormSection({
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <CreditCard className="w-3.5 h-3.5 text-primary" />
           </div>
-          <h2 className="text-sm font-semibold text-foreground">Paiement</h2>
+          <div className="flex flex-col">
+            <h2 className="text-sm font-semibold text-foreground">Paiement</h2>
+            <p className="text-[11px] text-muted-foreground">Prix TTC (TVA incluse)</p>
+          </div>
         </div>
 
         {canShowRemise && (

@@ -110,7 +110,10 @@ export function OrderCartSummary({
           </span>
         </div>
         <div className="flex justify-between items-center pt-3 border-t border-border/50">
-          <span className="text-base font-semibold text-foreground">Total</span>
+          <div className="flex flex-col">
+            <span className="text-base font-semibold text-foreground">Total TTC</span>
+            <span className="text-[11px] text-muted-foreground">TVA incluse</span>
+          </div>
           <span className="text-2xl font-bold text-primary">{total.toFixed(2)} MAD</span>
         </div>
       </div>
@@ -132,7 +135,7 @@ export function OrderCartSummary({
             ) : (
               <>
                 <Lock className="w-4 h-4 mr-2" />
-                Confirmer • {total.toFixed(2)} MAD
+                  Confirmer • {total.toFixed(2)} MAD TTC
               </>
             )}
           </Button>

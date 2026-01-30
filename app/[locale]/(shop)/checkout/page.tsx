@@ -468,6 +468,7 @@ export default function CheckoutPage() {
           <div className="text-center mb-5">
             <h1 className="text-2xl font-bold text-foreground mb-1">Checkout</h1>
             <p className="text-sm text-muted-foreground">Finalisez votre commande en toute sécurité</p>
+            <p className="text-xs text-muted-foreground mt-1">Tous les montants affichés sont TTC (TVA incluse).</p>
           </div>
 
           {/* Timeline */}

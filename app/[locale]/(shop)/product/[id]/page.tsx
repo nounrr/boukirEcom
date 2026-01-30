@@ -19,7 +19,7 @@ import {
 import { useAppSelector } from "@/state/hooks"
 import { Heart, Minus, Package, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
 import { useLocale } from "next-intl"
-import { useParams } from "next/navigation"
+import { notFound, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function ProductPage() {
@@ -39,8 +39,18 @@ export default function ProductPage() {
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
 
+  // If user enters an obviously invalid id, render 404 immediately.
+  // (Prevents showing a generic error UI for routes like /product/ss)
+  useEffect(() => {
+    const rawId = (params as any)?.id
+    const id = Array.isArray(rawId) ? rawId?.[0] : rawId
+    if (typeof id === "string" && id.trim().length > 0 && !/^\d+$/.test(id)) {
+      notFound()
+    }
+  }, [params])
+
   // Fetch product from API
-  const { data: product, isLoading, isError, refetch } = useGetProductQuery(params.id as string)
+  const { data: product, isLoading, isError, error, refetch } = useGetProductQuery(params.id as string)
   // Initialize default unit selection (must be before conditional returns)
   useEffect(() => {
     const units = (product as any)?.units as Array<{ id: number; is_default: boolean }> | undefined
@@ -67,20 +77,36 @@ export default function ProductPage() {
     setSelectedImage(0)
   }, [product?.id])
 
+  // Auto-select first variant when variants are required
+  useEffect(() => {
+    if (!product) return
+    const variants = (product.variants || []) as Array<{ id: number; available?: boolean }>
+    if (!variants.length) return
+    const isVariantRequired = (product as any).is_obligatoire_variant || (product as any).isObligatoireVariant
+    if (isVariantRequired && !selectedVariant) {
+      const firstAvailable = variants.find((v) => v.available !== false) || variants[0]
+      setSelectedVariant(firstAvailable?.id ?? null)
+    }
+  }, [product, selectedVariant])
+
   // Sync variant selection to a variant-specific gallery subset if available
   useEffect(() => {
     if (!product) return
     const v = selectedVariant ? (product.variants || []).find((x: any) => x.id === selectedVariant) : null
     const variantGallery = v?.gallery || []
-    if (variantGallery.length > 0) {
-      const imgs = variantGallery.map(({ id, image_url }: any) => ({ id, image_url }))
-      setDisplayImages(imgs)
-      if (v?.image_url) {
-        const idx = imgs.findIndex((g) => g.image_url === v.image_url)
-        setSelectedImage(idx >= 0 ? idx : 0)
-      } else {
-        setSelectedImage(0)
-      }
+    const variantImage = v?.image_url || null
+
+    if (variantGallery.length > 0 || variantImage) {
+      const galleryImages = variantGallery.map(({ id, image_url }: any) => ({ id, image_url }))
+      const variantImageEntry = variantImage
+        ? [{ id: v?.id || 0, image_url: variantImage }]
+        : []
+      const merged = [...variantImageEntry, ...galleryImages]
+      const unique = merged.filter(
+        (img, index, arr) => arr.findIndex((x) => x.image_url === img.image_url) === index
+      )
+      setDisplayImages(unique)
+      setSelectedImage(0)
     } else {
       const fallback = ((product.gallery && product.gallery.length > 0)
         ? product.gallery
@@ -108,12 +134,24 @@ export default function ProductPage() {
   const handleAddToCart = async () => {
     if (!product) return
 
+    const isVariantRequired = (product as any).is_obligatoire_variant || (product as any).isObligatoireVariant
+    if (isVariantRequired && !selectedVariant) {
+      toast.error('Veuillez sélectionner une variante', { description: 'Cette variante est obligatoire.' })
+      return
+    }
+
     setIsAddingToCart(true)
+    const variantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
+    const unitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
+    const suffixParts = [variantLabel, unitLabel].filter(Boolean)
+    const displayName = suffixParts.length > 0 ? `${product.designation} • ${suffixParts.join(' · ')}` : product.designation
     const cartItem = {
       productId: product.id,
+      variantId: selectedVariant || undefined,
+      variantName: (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name || undefined,
       unitId: (activeUnit as any)?.id,
-      unitName: (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit,
-      name: product.designation,
+      unitName: unitLabel,
+      name: displayName,
       price: currentPrice,
       quantity,
       image: product.image_url,
@@ -175,7 +213,7 @@ export default function ProductPage() {
     }
   }
 
-  if (isLoading || !product) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
@@ -193,15 +231,23 @@ export default function ProductPage() {
   }
 
   if (isError) {
+    const status = (error as any)?.status
+    if (status === 404 || status === 400) {
+      notFound()
+    }
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center space-y-4">
           <Package className="w-16 h-16 mx-auto text-muted-foreground" />
-          <h1 className="text-2xl font-bold">Produit non trouvé</h1>
-          <p className="text-muted-foreground">Le produit que vous recherchez n'existe pas ou a été supprimé.</p>
+          <h1 className="text-2xl font-bold">Impossible de charger le produit</h1>
+          <p className="text-muted-foreground">Une erreur est survenue. Veuillez réessayer.</p>
         </div>
       </div>
     )
+  }
+
+  if (!product) {
+    notFound()
   }
 
   const images = product.gallery?.length > 0 ? product.gallery : [{ id: 1, image_url: product.image_url, position: 0 }]
@@ -282,6 +328,13 @@ export default function ProductPage() {
 
 
 
+  const titleVariantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
+  const titleUnitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
+  const titleSuffixParts = [titleVariantLabel, titleUnitLabel].filter(Boolean)
+  const titleDisplayName = titleSuffixParts.length > 0
+    ? `${product.designation} • ${titleSuffixParts.join(' · ')}`
+    : product.designation
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
@@ -321,7 +374,7 @@ export default function ProductPage() {
 
             {/* Product Name */}
             <h1 className="text-2xl font-bold text-foreground leading-tight">
-              {product.designation}
+              {titleDisplayName}
             </h1>
 
             {/* Price */}

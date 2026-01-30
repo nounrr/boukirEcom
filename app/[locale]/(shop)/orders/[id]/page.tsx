@@ -23,7 +23,7 @@ import {
 import { useLocale } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
@@ -653,7 +653,7 @@ export default function OrderDetailsPage() {
   const { cartRef } = useCart()
   const toast = useToast()
 
-  const { data: order, isLoading, isError } = useGetOrderQuery(
+  const { data: order, isLoading, isError, error } = useGetOrderQuery(
     { id: orderId ?? "" },
     { skip: !isAuthenticated || !orderId }
   )
@@ -670,6 +670,9 @@ export default function OrderDetailsPage() {
     cartRef.current.addItem({
       productId: item.productId,
       variantId: item.variantId,
+      unitId: item.unitId ?? item.unit_id,
+      unitName: item.unitName ?? item.unit_name,
+      variantName: item.variantName ?? item.variant_name,
       name: item.productName,
       price: item.unitPrice,
       quantity: item.quantity,
@@ -732,17 +735,19 @@ export default function OrderDetailsPage() {
     )
   }
 
-  if (isError || !order) {
+  if (isError) {
+    const status = (error as any)?.status
+    if (status === 404 || status === 400) {
+      notFound()
+    }
     return (
       <ShopPageLayout title="Détails de la commande" subtitle="Impossible de charger la commande" icon="cart">
         <Card className="p-6 border-border/50">
           <div className="flex items-start gap-3">
             <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
             <div className="space-y-2">
-              <p className="font-semibold">Commande introuvable</p>
-              <p className="text-sm text-muted-foreground">
-                Vérifiez l'identifiant de commande, puis réessayez.
-              </p>
+              <p className="font-semibold">Impossible de charger la commande</p>
+              <p className="text-sm text-muted-foreground">Veuillez réessayer dans quelques instants.</p>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => router.push(`/${locale}/orders`)}>
                   Retour à mes commandes
@@ -753,6 +758,10 @@ export default function OrderDetailsPage() {
         </Card>
       </ShopPageLayout>
     )
+  }
+
+  if (!order) {
+    notFound()
   }
 
   return (
