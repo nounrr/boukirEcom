@@ -34,6 +34,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { useCart } from "@/components/layout/cart-context-provider"
+import { InvoiceDialog } from "@/components/invoice/invoice-dialog"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
@@ -646,7 +647,7 @@ export default function OrderDetailsPage() {
   const locale = useLocale()
   const router = useRouter()
   const routeParams = useParams<{ id?: string | string[] }>()
-  const { isAuthenticated } = useAppSelector((state) => state.user)
+  const { isAuthenticated, user } = useAppSelector((state) => state.user)
   const orderId = Array.isArray(routeParams?.id) ? routeParams?.id?.[0] : routeParams?.id
   const [tab, setTab] = useState("overview")
 
@@ -779,15 +780,14 @@ export default function OrderDetailsPage() {
             </Button>
           </Link>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.refresh()}
-            className="gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Actualiser
-          </Button>
+          <div className="flex items-center gap-2">
+            <InvoiceDialog order={order} user={user} triggerText="Facture" />
+
+            <Button variant="ghost" size="sm" onClick={() => router.refresh()} className="gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Actualiser
+            </Button>
+          </div>
         </div>
 
         <OrderProgressHeader order={order} />
