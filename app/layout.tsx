@@ -13,6 +13,7 @@ import { GoogleOneTapWrapper } from "@/components/auth/google-one-tap-wrapper"
 import { ArtisanRequestPromptWrapper } from "@/components/auth/artisan-request-prompt-wrapper"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
+import { LocalePreferenceInitializer } from "@/components/i18n/locale-preference-initializer"
 
 import "./arabic-fonts.css"
 import "./globals.css"
@@ -66,6 +67,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${tajawal.variable} ${inter.className} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <StoreProvider>
+            <LocalePreferenceInitializer />
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
             <AuthDebugPanel />

@@ -33,6 +33,11 @@ export interface User {
   artisan_approuve?: boolean;
   // Remise balance (loyalty credit)
   remise_balance?: number;
+
+  // Solde + plafond (credit limit)
+  plafond?: number | null;
+  solde_cumule?: number;
+  solde_available?: number | null;
 }
 
 // Full auth state including tokens

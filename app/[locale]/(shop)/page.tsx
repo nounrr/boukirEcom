@@ -5,6 +5,32 @@ import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { HomeProductSections } from '@/components/home/home-product-sections'
 import { normalizeLocale } from '@/i18n/locale'
+import { buildPageMetadata } from '@/lib/seo/metadata'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params
+  const locale = normalizeLocale(rawLocale)
+
+  return buildPageMetadata({
+    locale,
+    path: '/',
+    title: locale === 'ar' ? 'الرئيسية' : 'Accueil',
+    description:
+      locale === 'ar'
+        ? 'بوكِير دايموند — دروجري ومواد تنظيف بالمغرب. اكتشف العروض والجديد مع توصيل إلى جميع مدن المغرب.'
+        : 'Boukir Diamond — droguerie & produits d’entretien au Maroc. Découvrez nos nouveautés et promotions avec livraison partout au Maroc.',
+    keywords:
+      locale === 'ar'
+        ? ['دروجري', 'مواد التنظيف', 'منتجات منزلية', 'المغرب', 'توصيل بالمغرب', 'Boukir Diamond']
+        : ['droguerie', 'produits d\'entretien', 'produits ménagers', 'Maroc', 'livraison Maroc', 'Boukir Diamond'],
+    indexable: true,
+  })
+}
 
 export default async function HomePage({
   params,
@@ -20,7 +46,7 @@ export default async function HomePage({
     <div className="min-h-screen">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-primary/5 to-background" />
+        <div className="absolute inset-0 bg-linear-to-b from-primary/10 via-primary/5 to-background" />
         <div className="relative container mx-auto px-6 sm:px-8 lg:px-16 py-14 md:py-18">
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">

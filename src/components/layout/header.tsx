@@ -20,21 +20,62 @@ import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { HeaderSearch } from "./header-search"
 
 import { API_CONFIG } from "@/lib/api-config"
+import {
+  getSupportedLocales,
+  setPreferredLocale,
+  type SupportedLocale,
+} from "@/components/i18n/locale-preference-initializer"
 
 export function Header() {
   const t = useTranslations('header')
   const locale = useLocale()
   const isArabic = locale === 'ar'
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isAuthLoading = !!accessToken && !user
+
+  const supportedLocales = getSupportedLocales()
+
+  const languageMeta: Record<SupportedLocale, { label: string; flagCode: string; short: string }> = {
+    fr: { label: "Français", flagCode: "fr", short: "FR" },
+    ar: { label: "العربية", flagCode: "ma", short: "AR" },
+    en: { label: "English", flagCode: "gb", short: "EN" },
+    zh: { label: "中文", flagCode: "cn", short: "ZH" },
+  }
+
+  const stripLocalePrefix = (value: string): string => {
+    const parts = value.split("/").filter(Boolean)
+    if (parts.length > 0 && (supportedLocales as readonly string[]).includes(parts[0])) {
+      parts.shift()
+    }
+    return `/${parts.join("/")}`.replace(/\/$/, "") || "/"
+  }
+
+  const buildLocalizedHref = (nextLocale: SupportedLocale) => {
+    const basePath = stripLocalePrefix(pathname)
+    const queryString = searchParams?.toString?.() ?? ""
+    const prefix = nextLocale === "fr" ? "" : `/${nextLocale}`
+    const path = basePath === "/" ? `${prefix || "/"}` : `${prefix}${basePath}`
+    return queryString ? `${path}?${queryString}` : path
+  }
+
+  const handleLocaleChange = (nextLocale: SupportedLocale) => {
+    if (nextLocale === (locale as any)) return
+    setPreferredLocale(nextLocale)
+    setIsMobileMenuOpen(false)
+    const href = buildLocalizedHref(nextLocale)
+    router.push(href)
+    router.refresh()
+  }
 
   // Get cartRef from context
   const { cartRef } = useCart()
@@ -55,12 +96,10 @@ export function Header() {
   const navLinks = [
     { href: `/${locale}`, label: t('home'), icon: Home },
     { href: `/${locale}/shop`, label: t('shop'), icon: Store },
-    { href: `/${locale}/products`, label: t('products'), icon: Package },
   ]
 
   const desktopLinks = [
     { href: `/${locale}/shop`, label: t('shop') },
-    { href: `/${locale}/products`, label: t('products') },
     ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
   ]
 
@@ -118,6 +157,57 @@ export function Header() {
 
             {/* Cart */}
             <CartPopover ref={cartRef} tone="onPrimary" />
+
+            {/* Separator after wishlist/cart */}
+            <div className="hidden lg:block h-6 w-px bg-linear-to-b from-transparent via-border/60 to-transparent mx-1.5" />
+
+            {/* Language */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="hidden lg:flex items-center gap-2 h-9 px-3 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 text-white"
+                  aria-label="Language"
+                >
+                  <img
+                    src={`https://flagcdn.com/w20/${languageMeta[(locale as SupportedLocale) || "fr"]?.flagCode ?? "un"}.png`}
+                    srcSet={`https://flagcdn.com/w40/${languageMeta[(locale as SupportedLocale) || "fr"]?.flagCode ?? "un"}.png 2x`}
+                    alt={languageMeta[(locale as SupportedLocale) || "fr"]?.label ?? "Language"}
+                    className="w-5 h-auto shrink-0"
+                  />
+                  <span className="text-xs font-semibold text-white/90">
+                    {languageMeta[(locale as SupportedLocale) || "fr"]?.short ?? String(locale).toUpperCase()}
+                  </span>
+                  <ChevronDown className="w-3 h-3 text-white/70" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={isArabic ? "start" : "end"}
+                className="w-56 p-1 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10"
+              >
+                <DropdownMenuLabel className="text-xs text-muted-foreground">Langue</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {supportedLocales.map((l) => (
+                  <DropdownMenuItem
+                    key={l}
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      handleLocaleChange(l)
+                    }}
+                    className="cursor-pointer flex items-center gap-2"
+                  >
+                    <img
+                      src={`https://flagcdn.com/w20/${languageMeta[l].flagCode}.png`}
+                      srcSet={`https://flagcdn.com/w40/${languageMeta[l].flagCode}.png 2x`}
+                      alt={languageMeta[l].label}
+                      className="w-5 h-auto shrink-0"
+                    />
+                    <span className="text-sm font-medium">{languageMeta[l].label}</span>
+                    {l === (locale as any) ? <span className="ml-auto text-xs text-primary">✓</span> : null}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Separator before user menu */}
             {isAuthenticated && user && (

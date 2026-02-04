@@ -2,7 +2,7 @@
 
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { AccountSidebar } from "@/components/account/account-sidebar"
-import { useGetOrdersQuery } from "@/state/api/orders-api-slice"
+import { useGetOrdersQuery, useGetSoldeOrdersHistoryQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import { Package, Clock, CheckCircle, XCircle, Truck, CalendarIcon, ChevronLeft, ChevronRight, Filter, X, CreditCard } from "lucide-react"
 import { useLocale } from "next-intl"
@@ -10,13 +10,15 @@ import type { OrderStatus, PaymentStatus } from "@/types/order"
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useToast } from "@/hooks/use-toast"
 import { OrderCard } from "@/components/shop/order-card"
+import { SoldeHistoryTable } from "@/components/shop/solde-history-table"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
+import { endOfDay, format, startOfDay, startOfMonth, startOfWeek } from "date-fns"
 import { fr } from "date-fns/locale"
 import { type DateRange } from "react-day-picker"
 
@@ -75,21 +77,17 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, {
   refunded: { label: "Remboursé", color: "text-gray-600" },
 }
 
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  cash_on_delivery: "Paiement à la livraison",
-  pay_in_store: "Paiement en boutique",
-  card: "Carte bancaire",
-  bank_transfer: "Virement bancaire",
-  mobile_payment: "Paiement mobile",
-  solde: "Paiement différé (Solde)",
-}
-
 export default function OrdersPage() {
   const locale = useLocale()
-  const { isAuthenticated } = useAppSelector((state) => state.user)
+  const { isAuthenticated, user } = useAppSelector((state) => state.user)
   const { cartRef } = useCart()
   const toast = useToast()
-  
+
+  const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
+
+  const [view, setView] = useState<"orders" | "solde">("orders")
+  const isSoldeView = view === "solde"
+
   // Pagination and filter state
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
@@ -100,7 +98,7 @@ export default function OrdersPage() {
   const [paymentMethod, setPaymentMethod] = useState<string>('')
   const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup' | ''>('')
 
-  const { data: ordersData, isLoading } = useGetOrdersQuery(
+  const { data: ordersData, isLoading: isOrdersLoading } = useGetOrdersQuery(
     {
       page,
       limit,
@@ -113,14 +111,68 @@ export default function OrdersPage() {
       deliveryMethod: deliveryMethod || undefined,
     },
     {
-      skip: !isAuthenticated,
+      skip: !isAuthenticated || isSoldeView,
+    }
+  )
+
+  const { fromIso, toIso } = (() => {
+    if (!isSoldeView) return { fromIso: undefined as string | undefined, toIso: undefined as string | undefined }
+
+    const now = new Date()
+    if (period === 'this_week') {
+      return {
+        fromIso: startOfWeek(now, { weekStartsOn: 1 }).toISOString(),
+        toIso: endOfDay(now).toISOString(),
+      }
+    }
+
+    if (period === 'this_month') {
+      return {
+        fromIso: startOfMonth(now).toISOString(),
+        toIso: endOfDay(now).toISOString(),
+      }
+    }
+
+    if (period === 'custom' && dateRange?.from) {
+      const from = startOfDay(dateRange.from)
+      const to = endOfDay(dateRange.to ?? dateRange.from)
+      return {
+        fromIso: from.toISOString(),
+        toIso: to.toISOString(),
+      }
+    }
+
+    return { fromIso: undefined, toIso: undefined }
+  })()
+
+  const {
+    data: soldeHistory,
+    isLoading: isSoldeLoading,
+  } = useGetSoldeOrdersHistoryQuery(
+    isSoldeView
+      ? {
+        view: 'statement',
+        limit: 500,
+        offset: 0,
+        from: fromIso,
+        to: toIso,
+      }
+      : undefined,
+    {
+      skip: !isAuthenticated || !isSoldeView || !canUseSolde,
     }
   )
 
   const orders = ordersData?.orders || []
   const total = ordersData?.total || 0
   const totalPages = Math.ceil(total / limit)
-  const isEmpty = !isLoading && orders.length === 0
+  const isEmpty = !isOrdersLoading && orders.length === 0
+
+  const soldeStatement = soldeHistory && soldeHistory.view === 'statement' ? soldeHistory : undefined
+  const soldeMovementsCount = Math.max(0, (soldeStatement?.timeline?.length ?? 0) - 1)
+  const isSoldeEmpty = !isSoldeLoading && isSoldeView && canUseSolde && (soldeStatement?.timeline?.length ?? 0) === 0
+
+  const isLoading = isSoldeView ? isSoldeLoading : isOrdersLoading
 
   // Reset to page 1 when filters change
   const handlePeriodChange = (value: string) => {
@@ -142,8 +194,9 @@ export default function OrdersPage() {
     setPage(1)
   }
 
-  const hasActiveFilters =
-    period !== '' ||
+  const hasActiveFilters = isSoldeView
+    ? period !== '' || dateRange?.from || dateRange?.to
+    : period !== '' ||
     dateRange?.from ||
     dateRange?.to ||
     status !== '' ||
@@ -205,11 +258,17 @@ export default function OrdersPage() {
     <ShopPageLayout
       title="Mes Commandes"
       subtitle={
-        total > 0
-          ? `${total} commande${total > 1 ? 's' : ''}${totalPages > 1 ? ` • Page ${page}/${totalPages}` : ''}`
-          : isFilteredEmpty
-            ? "Aucun résultat pour ces filtres"
-            : "Suivez l'état de vos commandes"
+        isSoldeView
+          ? orders.length > 0
+            ? `${orders.length} mouvement${orders.length > 1 ? 's' : ''} (Solde)`
+            : isFilteredEmpty
+              ? "Aucun résultat pour cette période"
+              : "Historique des commandes payées en solde"
+          : total > 0
+            ? `${total} commande${total > 1 ? 's' : ''}${totalPages > 1 ? ` • Page ${page}/${totalPages}` : ''}`
+            : isFilteredEmpty
+              ? "Aucun résultat pour ces filtres"
+              : "Suivez l'état de vos commandes"
       }
       icon="cart"
       showHeader={false}
@@ -222,9 +281,21 @@ export default function OrdersPage() {
               <Package className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Mes Commandes</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                {isSoldeView ? "Historique Solde" : "Mes Commandes"}
+              </h1>
               <p className="text-sm text-muted-foreground">
-                {total > 0 ? (
+                {isSoldeView ? (
+                  soldeMovementsCount > 0 ? (
+                    <>
+                      <span className="font-semibold text-foreground">{soldeMovementsCount}</span> mouvement{soldeMovementsCount > 1 ? 's' : ''}
+                    </>
+                  ) : isFilteredEmpty ? (
+                    "Aucun résultat pour cette période"
+                  ) : (
+                    "Relevé solde (commandes, avoirs, paiements…)"
+                  )
+                ) : total > 0 ? (
                   <>
                     <span className="font-semibold text-foreground">{total}</span> commande{total > 1 ? 's' : ''}
                     {totalPages > 1 && ` • Page ${page}/${totalPages}`}
@@ -235,6 +306,25 @@ export default function OrdersPage() {
                   "Suivez l'état de vos commandes"
                 )}
               </p>
+            </div>
+
+            <div className="ml-auto">
+              <Tabs
+                value={view}
+                onValueChange={(v) => {
+                  setView(v as any)
+                  setPage(1)
+                }}
+              >
+                <TabsList className="h-9">
+                  <TabsTrigger value="orders" className="text-xs">
+                    Commandes
+                  </TabsTrigger>
+                  <TabsTrigger value="solde" className="text-xs">
+                    Historique Solde
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </div>
 
@@ -268,134 +358,138 @@ export default function OrdersPage() {
               </SelectContent>
             </Select>
 
-            {/* Status */}
-            <Select
-              value={status || 'all_status'}
-              onValueChange={(v) => {
-                setStatus(v === 'all_status' ? '' : (v as OrderStatus))
-                setPage(1)
-              }}
-            >
-              <SelectTrigger className="w-36 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Filter className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs"><SelectValue placeholder="Statut" /></span>
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
-                <SelectItem value="all_status" className="text-xs cursor-pointer">
-                  Tous statuts
-                </SelectItem>
-                <SelectItem value="pending" className="text-xs cursor-pointer">
-                  En attente
-                </SelectItem>
-                <SelectItem value="confirmed" className="text-xs cursor-pointer">
-                  Confirmée
-                </SelectItem>
-                <SelectItem value="shipped" className="text-xs cursor-pointer">
-                  Expédiée
-                </SelectItem>
-                <SelectItem value="delivered" className="text-xs cursor-pointer">
-                  Livrée
-                </SelectItem>
-                <SelectItem value="cancelled" className="text-xs cursor-pointer">
-                  Annulée
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              {!isSoldeView && (
+                <>
+                  {/* Status */}
+                  <Select
+                    value={status || 'all_status'}
+                    onValueChange={(v) => {
+                      setStatus(v === 'all_status' ? '' : (v as OrderStatus))
+                      setPage(1)
+                    }}
+                  >
+                    <SelectTrigger className="w-36 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Filter className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate text-xs"><SelectValue placeholder="Statut" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
+                      <SelectItem value="all_status" className="text-xs cursor-pointer">
+                        Tous statuts
+                      </SelectItem>
+                      <SelectItem value="pending" className="text-xs cursor-pointer">
+                        En attente
+                      </SelectItem>
+                      <SelectItem value="confirmed" className="text-xs cursor-pointer">
+                        Confirmée
+                      </SelectItem>
+                      <SelectItem value="shipped" className="text-xs cursor-pointer">
+                        Expédiée
+                      </SelectItem>
+                      <SelectItem value="delivered" className="text-xs cursor-pointer">
+                        Livrée
+                      </SelectItem>
+                      <SelectItem value="cancelled" className="text-xs cursor-pointer">
+                        Annulée
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            {/* Payment Status */}
-            <Select
-              value={paymentStatus || 'all_payment_status'}
-              onValueChange={(v) => {
-                setPaymentStatus(v === 'all_payment_status' ? '' : (v as PaymentStatus))
-                setPage(1)
-              }}
-            >
-              <SelectTrigger className="w-36 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 min-w-0">
-                  <CheckCircle className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs"><SelectValue placeholder="Paiement" /></span>
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
-                <SelectItem value="all_payment_status" className="text-xs cursor-pointer">
-                  Tous paiements
-                </SelectItem>
-                <SelectItem value="pending" className="text-xs cursor-pointer">
-                  En attente
-                </SelectItem>
-                <SelectItem value="paid" className="text-xs cursor-pointer">
-                  Payé
-                </SelectItem>
-                <SelectItem value="failed" className="text-xs cursor-pointer">
-                  Échoué
-                </SelectItem>
-                <SelectItem value="refunded" className="text-xs cursor-pointer">
-                  Remboursé
-                </SelectItem>
-              </SelectContent>
-            </Select>
+                  {/* Payment Status */}
+                  <Select
+                    value={paymentStatus || 'all_payment_status'}
+                    onValueChange={(v) => {
+                      setPaymentStatus(v === 'all_payment_status' ? '' : (v as PaymentStatus))
+                      setPage(1)
+                    }}
+                  >
+                    <SelectTrigger className="w-36 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CheckCircle className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate text-xs"><SelectValue placeholder="Paiement" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
+                      <SelectItem value="all_payment_status" className="text-xs cursor-pointer">
+                        Tous paiements
+                      </SelectItem>
+                      <SelectItem value="pending" className="text-xs cursor-pointer">
+                        En attente
+                      </SelectItem>
+                      <SelectItem value="paid" className="text-xs cursor-pointer">
+                        Payé
+                      </SelectItem>
+                      <SelectItem value="failed" className="text-xs cursor-pointer">
+                        Échoué
+                      </SelectItem>
+                      <SelectItem value="refunded" className="text-xs cursor-pointer">
+                        Remboursé
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            {/* Payment Method */}
-            <Select
-              value={paymentMethod || 'all_payment_method'}
-              onValueChange={(v) => {
-                setPaymentMethod(v === 'all_payment_method' ? '' : v)
-                setPage(1)
-              }}
-            >
-              <SelectTrigger className="w-44 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 min-w-0">
-                  <CreditCard className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs"><SelectValue placeholder="Méthode" /></span>
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
-                <SelectItem value="all_payment_method" className="text-xs cursor-pointer">
-                  Toutes méthodes
-                </SelectItem>
-                <SelectItem value="cash_on_delivery" className="text-xs cursor-pointer">
-                  Paiement à la livraison
-                </SelectItem>
-                <SelectItem value="card" className="text-xs cursor-pointer">
-                  Carte bancaire
-                </SelectItem>
-                <SelectItem value="pay_in_store" className="text-xs cursor-pointer">
-                  Paiement en boutique
-                </SelectItem>
-                <SelectItem value="solde" className="text-xs cursor-pointer">
-                  Paiement différé (Solde)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+                  {/* Payment Method */}
+                  <Select
+                    value={paymentMethod || 'all_payment_method'}
+                    onValueChange={(v) => {
+                      setPaymentMethod(v === 'all_payment_method' ? '' : v)
+                      setPage(1)
+                    }}
+                  >
+                    <SelectTrigger className="w-44 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CreditCard className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate text-xs"><SelectValue placeholder="Méthode" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
+                      <SelectItem value="all_payment_method" className="text-xs cursor-pointer">
+                        Toutes méthodes
+                      </SelectItem>
+                      <SelectItem value="cash_on_delivery" className="text-xs cursor-pointer">
+                        Paiement à la livraison
+                      </SelectItem>
+                      <SelectItem value="card" className="text-xs cursor-pointer">
+                        Carte bancaire
+                      </SelectItem>
+                      <SelectItem value="pay_in_store" className="text-xs cursor-pointer">
+                        Paiement en boutique
+                      </SelectItem>
+                      <SelectItem value="solde" className="text-xs cursor-pointer">
+                        Paiement différé (Solde)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            {/* Delivery Method */}
-            <Select
-              value={deliveryMethod || 'all_delivery'}
-              onValueChange={(v) => {
-                setDeliveryMethod(v === 'all_delivery' ? '' : (v as any))
-                setPage(1)
-              }}
-            >
-              <SelectTrigger className="w-32 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Truck className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-xs"><SelectValue placeholder="Livraison" /></span>
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
-                <SelectItem value="all_delivery" className="text-xs cursor-pointer">
-                  Toutes
-                </SelectItem>
-                <SelectItem value="delivery" className="text-xs cursor-pointer">
-                  Livraison
-                </SelectItem>
-                <SelectItem value="pickup" className="text-xs cursor-pointer">
-                  Retrait
-                </SelectItem>
-              </SelectContent>
-            </Select>
+                  {/* Delivery Method */}
+                  <Select
+                    value={deliveryMethod || 'all_delivery'}
+                    onValueChange={(v) => {
+                      setDeliveryMethod(v === 'all_delivery' ? '' : (v as any))
+                      setPage(1)
+                    }}
+                  >
+                    <SelectTrigger className="w-32 h-9 bg-background/95 backdrop-blur-sm border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Truck className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate text-xs"><SelectValue placeholder="Livraison" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-background/98 backdrop-blur-xl border-border/60">
+                      <SelectItem value="all_delivery" className="text-xs cursor-pointer">
+                        Toutes
+                      </SelectItem>
+                      <SelectItem value="delivery" className="text-xs cursor-pointer">
+                        Livraison
+                      </SelectItem>
+                      <SelectItem value="pickup" className="text-xs cursor-pointer">
+                        Retrait
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
 
             {/* Custom Date Range Picker - Only show when custom period selected */}
             {period === 'custom' && (
@@ -489,7 +583,9 @@ export default function OrdersPage() {
                 <>
                   <h3 className="text-base font-semibold text-foreground mb-2">Aucun résultat</h3>
                   <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                    Aucune commande ne correspond à ces filtres. Modifiez la période ou réinitialisez les filtres.
+                    {isSoldeView
+                      ? "Aucun mouvement solde ne correspond à cette période. Modifiez la période ou réinitialisez."
+                      : "Aucune commande ne correspond à ces filtres. Modifiez la période ou réinitialisez les filtres."}
                   </p>
                   <div className="flex items-center justify-center gap-2">
                     <Button variant="outline" onClick={clearFilters} className="h-9 px-3 text-xs cursor-pointer">
@@ -502,9 +598,13 @@ export default function OrdersPage() {
                 </>
               ) : (
                 <>
-                  <h3 className="text-base font-semibold text-foreground mb-2">Aucune commande</h3>
+                    <h3 className="text-base font-semibold text-foreground mb-2">
+                      {isSoldeView ? "Aucun historique solde" : "Aucune commande"}
+                    </h3>
                   <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                    Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande.
+                      {isSoldeView
+                        ? "Vous n'avez pas encore de commandes payées en solde."
+                        : "Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande."}
                   </p>
                   <Button onClick={() => window.location.href = `/${locale}/shop`} className="h-9 px-3 text-xs cursor-pointer">
                     Découvrir les produits
@@ -514,8 +614,33 @@ export default function OrdersPage() {
             </div>
           )}
 
+          {/* Solde statement empty / not eligible */}
+          {isSoldeView && isAuthenticated && !canUseSolde && !isLoading && (
+            <div className="text-center py-14">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <Package className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <h3 className="text-base font-semibold text-foreground mb-2">Accès non autorisé</h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                Votre compte n’est pas autorisé au paiement par solde.
+              </p>
+            </div>
+          )}
+
+          {isSoldeView && isSoldeEmpty && !isLoading && canUseSolde && (
+            <div className="text-center py-14">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <Package className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <h3 className="text-base font-semibold text-foreground mb-2">Aucun mouvement</h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                Aucun mouvement solde n’a été trouvé pour cette période.
+              </p>
+            </div>
+          )}
+
         {/* Orders List */}
-          {!isEmpty && !isLoading && (
+          {!isSoldeView && !isEmpty && !isLoading && (
             <>
               <div className="space-y-3">
                 {orders.map((order) => (
@@ -583,6 +708,10 @@ export default function OrdersPage() {
                 </div>
               )}
             </>
+          )}
+
+          {isSoldeView && !isLoading && canUseSolde && soldeStatement && soldeStatement.timeline.length > 0 && (
+            <SoldeHistoryTable statement={soldeStatement} locale={locale} />
           )}
         </section>
       </div>

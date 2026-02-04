@@ -7,6 +7,7 @@ import * as React from "react"
 import { useLocale, useTranslations } from 'next-intl'
 import { useGetProductQuery } from '@/state/api/products-api-slice'
 import { useGetOrderQuery } from '@/state/api/orders-api-slice'
+import { getSupportedLocales } from '@/components/i18n/locale-preference-initializer'
 
 import { 
   Breadcrumb,
@@ -30,9 +31,11 @@ export function DynamicBreadcrumb() {
   const locale = useLocale()
   const t = useTranslations('breadcrumb')
 
+  const supportedLocales = getSupportedLocales()
+
   // Detect product ID from the current path to fetch product name
   const pathParts = pathname.split('/').filter(Boolean)
-  const filteredPartsForId = pathParts.filter(part => !['fr', 'en', 'ar'].includes(part))
+  const filteredPartsForId = pathParts.filter(part => !(supportedLocales as readonly string[]).includes(part))
   const productIdx = filteredPartsForId.indexOf('product')
   const productId = productIdx !== -1 ? filteredPartsForId[productIdx + 1] : undefined
   const { data: productData } = useGetProductQuery(productId as string, { skip: !productId })
@@ -59,8 +62,8 @@ export function DynamicBreadcrumb() {
 
   const segments = React.useMemo(() => {
     const parts = pathname.split('/').filter(Boolean)
-    // Filter out locale segments (fr, en, ar)
-    const filteredParts = parts.filter(part => !['fr', 'en', 'ar'].includes(part))
+    // Filter out locale segments (fr/ar/en/zh)
+    const filteredParts = parts.filter(part => !(supportedLocales as readonly string[]).includes(part))
 
     return filteredParts.map((part, index) => {
       // Check if we're in shop context
@@ -105,7 +108,7 @@ export function DynamicBreadcrumb() {
 
       // Handle product ID (skip it as a segment since it's part of product route)
       if (filteredParts[index - 1] === 'product' && !isNaN(Number(part))) {
-        const productName = productData?.designation || searchParams.get('name') || `Produit #${part}`
+        const productName = productData?.designation || searchParams.get('name') || t('productNumber', { id: part })
         const partIndex = parts.indexOf(part)
         return {
           title: productName,
@@ -120,7 +123,7 @@ export function DynamicBreadcrumb() {
         const orderNumber = orderData?.orderNumber || part
         const partIndex = parts.indexOf(part)
         return {
-          title: `Commande #${orderNumber}`,
+          title: t('orderNumber', { id: orderNumber }),
           href: '/' + parts.slice(0, partIndex + 1).join('/'),
           active: index === filteredParts.length - 1,
           icon: iconMap['orders']
@@ -150,7 +153,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, productData?.designation, orderData?.orderNumber, locale])
+  }, [pathname, searchParams, t, productData?.designation, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)
@@ -191,7 +194,7 @@ export function DynamicBreadcrumb() {
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200">
                       <BreadcrumbEllipsis className="h-3.5 w-3.5" />
-                      <span className="sr-only">Show more</span>
+                      <span className="sr-only">{t('showMore')}</span>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="bg-background/98 backdrop-blur-xl border-border/40 shadow-xl">
                       {hiddenItems.map((item) => {

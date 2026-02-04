@@ -22,6 +22,7 @@ import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearCart } from "@/state/slices/cart-slice"
 import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react"
 import { setUser } from "@/state/slices/user-slice"
+import { toast } from "@/hooks/use-toast"
 
 // Validation schema
 const checkoutSchema = z.object({
@@ -161,6 +162,27 @@ export default function CheckoutPage() {
     return Number.isFinite(parsed) ? parsed : 0
   }, [user])
 
+  const plafond = useMemo(() => {
+    const raw = (user as any)?.plafond ?? (user as any)?.plafondAmount
+    if (raw === undefined || raw === null || raw === "") return null
+    const parsed = typeof raw === "number" ? raw : Number(raw)
+    return Number.isFinite(parsed) ? parsed : null
+  }, [user])
+
+  const soldeCumule = useMemo(() => {
+    const raw = (user as any)?.solde_cumule ?? (user as any)?.soldeCumule
+    if (raw === undefined || raw === null || raw === "") return 0
+    const parsed = typeof raw === "number" ? raw : Number(raw)
+    return Number.isFinite(parsed) ? parsed : 0
+  }, [user])
+
+  const soldeAvailable = useMemo(() => {
+    const raw = (user as any)?.solde_available ?? (user as any)?.soldeAvailable
+    if (raw === undefined || raw === null || raw === "") return null
+    const parsed = typeof raw === "number" ? raw : Number(raw)
+    return Number.isFinite(parsed) ? parsed : null
+  }, [user])
+
   // Check if user is eligible for Solde (Buy Now, Pay Later)
   const isSoldeEligible = useMemo(() => {
     if (!isAuthenticated || !user) return false
@@ -221,7 +243,7 @@ export default function CheckoutPage() {
   const didPrefillFromReduxRef = useRef(false)
   const didFetchMeRef = useRef(false)
 
-  const { data: meUser } = useGetCurrentUserQuery(undefined, {
+  const { data: meUser, refetch: refetchMe } = useGetCurrentUserQuery(undefined, {
     skip: !isAuthenticated,
   })
 
@@ -305,6 +327,32 @@ export default function CheckoutPage() {
   const onSubmit: SubmitHandler<CheckoutFormValues> = useCallback(async (values) => {
     if (!items.length) {
       return
+    }
+
+    // Compute remaining-to-pay (after optional remise)
+    const maxRemiseToUse = Math.max(0, Math.min(Number(remiseBalance || 0), Number(total || 0)))
+    const parsedRequested = typeof values.remiseToUse === "number" ? values.remiseToUse : Number(values.remiseToUse)
+    const requestedRemise = Number.isFinite(parsedRequested) ? parsedRequested : undefined
+    const effectiveRemise = isAuthenticated && values.useRemiseBalance
+      ? Math.max(0, Math.min(requestedRemise ?? maxRemiseToUse, maxRemiseToUse))
+      : 0
+    const remainingToPay = Math.max(0, Number(total || 0) - effectiveRemise)
+
+    // Prevent invalid Solde requests (backend still enforces, but we avoid unnecessary calls)
+    if (values.paymentMethod === "solde") {
+      if (!isAuthenticated) {
+        toast.error("Authentification requise pour payer en solde")
+        const next = encodeURIComponent(`/${locale}/checkout`)
+        router.push(`/${locale}/login?next=${next}`)
+        return
+      }
+
+      if (remainingToPay > 0 && soldeAvailable !== null && remainingToPay > soldeAvailable) {
+        toast.error(
+          `Plafond solde dépassé. Disponible: ${soldeAvailable.toFixed(2)} DH, demandé: ${remainingToPay.toFixed(2)} DH.`
+        )
+        return
+      }
     }
 
     startTransition(async () => {
@@ -395,11 +443,55 @@ export default function CheckoutPage() {
           status: error?.status,
           data: error?.data,
         })
-        // Show error to user
-        alert(error?.data?.message || "Échec de la création de la commande. Veuillez réessayer.")
+
+        const errorType = error?.data?.error_type
+        if (errorType === "SOLDE_AUTH_REQUIRED") {
+          toast.error(error?.data?.message || "Authentification requise pour payer en solde")
+          const next = encodeURIComponent(`/${locale}/checkout`)
+          router.push(`/${locale}/login?next=${next}`)
+          return
+        }
+
+        if (errorType === "SOLDE_NOT_ALLOWED") {
+          toast.error(error?.data?.message || "Votre compte n'est pas autorisé à payer en solde")
+          return
+        }
+
+        if (errorType === "SOLDE_PLAFOND_EXCEEDED") {
+          const plafondValue = typeof error?.data?.plafond === "number" ? error.data.plafond : undefined
+          const cumuleValue = typeof error?.data?.solde_cumule === "number" ? error.data.solde_cumule : undefined
+          const amountValue = typeof error?.data?.solde_amount === "number" ? error.data.solde_amount : undefined
+          const projectedValue = typeof error?.data?.solde_projected === "number" ? error.data.solde_projected : undefined
+
+          toast.error(
+            error?.data?.message ||
+            `Plafond solde dépassé${plafondValue ? ` (Plafond ${plafondValue} DH)` : ""}`
+          )
+
+          if (
+            plafondValue !== undefined &&
+            cumuleValue !== undefined &&
+            amountValue !== undefined &&
+            projectedValue !== undefined
+          ) {
+            toast.info(
+              `Plafond: ${plafondValue.toFixed(2)} DH • Actuel: ${cumuleValue.toFixed(2)} DH • +${amountValue.toFixed(2)} DH = ${projectedValue.toFixed(2)} DH`
+            )
+          }
+
+          // Refresh /me so UI shows updated solde_available
+          try {
+            await refetchMe()
+          } catch {
+            // ignore
+          }
+          return
+        }
+
+        toast.error(error?.data?.message || "Échec de la création de la commande. Veuillez réessayer.")
       }
     })
-  }, [items, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi])
+  }, [items, remiseBalance, total, soldeAvailable, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi, refetchMe])
 
   // Navigate between steps with validation
   const goToNextStep = useCallback(async () => {
@@ -421,6 +513,26 @@ export default function CheckoutPage() {
       } else {
         isValid = await trigger("paymentMethod")
       }
+
+      // Early Solde plafond check (avoid letting user proceed with invalid selection)
+      if (isValid && paymentMethod === "solde" && isAuthenticated) {
+        const useRemiseBalance = !!watch("useRemiseBalance")
+        const remiseToUseRaw = watch("remiseToUse")
+        const maxRemiseToUse = Math.max(0, Math.min(Number(remiseBalance || 0), Number(total || 0)))
+        const parsedRequested = typeof remiseToUseRaw === "number" ? remiseToUseRaw : Number(remiseToUseRaw)
+        const requestedRemise = Number.isFinite(parsedRequested) ? parsedRequested : undefined
+        const effectiveRemise = useRemiseBalance
+          ? Math.max(0, Math.min(requestedRemise ?? maxRemiseToUse, maxRemiseToUse))
+          : 0
+        const remainingToPay = Math.max(0, Number(total || 0) - effectiveRemise)
+
+        if (remainingToPay > 0 && soldeAvailable !== null && remainingToPay > soldeAvailable) {
+          toast.error(
+            `Plafond solde dépassé. Disponible: ${soldeAvailable.toFixed(2)} DH, demandé: ${remainingToPay.toFixed(2)} DH.`
+          )
+          return
+        }
+      }
     } else {
       isValid = true
     }
@@ -435,7 +547,7 @@ export default function CheckoutPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background py-6 px-4">
+    <div className="min-h-screen bg-background py-6">
       {/* Loading State */}
       {isCartLoading && (
         <div className="max-w-md mx-auto text-center py-12">
@@ -463,7 +575,7 @@ export default function CheckoutPage() {
 
       {/* Cart Loaded */}
       {!isCartLoading && !isCartEmpty && (
-        <div className="max-w-[1400px] mx-auto">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title - Compact */}
           <div className="text-center mb-5">
             <h1 className="text-2xl font-bold text-foreground mb-1">Checkout</h1>
@@ -502,6 +614,9 @@ export default function CheckoutPage() {
                     remiseBalance={remiseBalance}
                     isAuthenticated={isAuthenticated}
                     isSoldeEligible={isSoldeEligible}
+                    soldeAvailable={soldeAvailable}
+                    soldeCumule={soldeCumule}
+                    plafond={plafond}
                   />
                 )}
 

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 import { Building2, Globe, Mail, MapPin, Phone, Store, Truck, User } from "lucide-react"
 import { useGetPickupLocationsQuery } from "@/state/api/ecommerce-public-api-slice"
+import { useTranslations } from "next-intl"
 
 interface ShippingInfoStepProps {
   register: UseFormRegister<any>
@@ -40,6 +41,9 @@ const PHONE_COUNTRIES = [
 ]
 
 export function ShippingInfoStep({ register, errors, watch, setValue }: ShippingInfoStepProps) {
+  const tCheckout = useTranslations("checkout")
+  const tAuth = useTranslations("auth")
+
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
   const [localPhoneNumber, setLocalPhoneNumber] = useState("")
   const isSyncingFromFormRef = useRef(false)
@@ -165,8 +169,8 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
               <Truck className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <h3 className="text-sm font-semibold text-foreground">Mode de livraison</h3>
-              <p className="text-xs text-muted-foreground">Choisissez comment recevoir votre commande</p>
+              <h3 className="text-sm font-semibold text-foreground">{tCheckout("deliveryMethodTitle")}</h3>
+              <p className="text-xs text-muted-foreground">{tCheckout("deliveryMethodSubtitle")}</p>
             </div>
           </div>
         </div>
@@ -184,7 +188,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
             onClick={() => setDeliveryMethod("delivery")}
           >
             <Truck className="w-4 h-4" />
-            Livraison à domicile
+            {tCheckout("homeDelivery")}
           </Button>
 
           <Button
@@ -199,7 +203,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
             onClick={() => setDeliveryMethod("pickup")}
           >
             <Store className="w-4 h-4" />
-            Retrait en boutique
+            {tCheckout("storePickup")}
           </Button>
         </div>
 
@@ -209,7 +213,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
             <div className="flex items-center gap-2">
               <Store className="w-4 h-4 text-violet-600" />
               <Label className="text-sm font-medium text-foreground">
-                Point de retrait <span className="text-destructive">*</span>
+                {tCheckout("pickupPointLabel")} <span className="text-destructive">*</span>
               </Label>
             </div>
 
@@ -220,7 +224,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                   onValueChange={(value) => setValue?.("pickupLocationId", Number(value), { shouldValidate: true })}
                 >
                   <SelectTrigger className="h-11 bg-background border-input">
-                    <SelectValue placeholder="Sélectionnez un point de retrait" />
+                    <SelectValue placeholder={tCheckout("pickupPointPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent className="bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
                     {pickupLocations.map((location) => (
@@ -242,18 +246,18 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 )}
 
                 {isLoadingLocations && (
-                  <p className="text-xs text-muted-foreground">Chargement des points de retrait...</p>
+                  <p className="text-xs text-muted-foreground">{tCheckout("pickupLoading")}</p>
                 )}
               </>
             ) : (
               <div className="flex items-center justify-center p-8 rounded-xl border border-dashed border-border/50">
-                <p className="text-sm text-muted-foreground">Aucun point de retrait disponible pour le moment</p>
+                  <p className="text-sm text-muted-foreground">{tCheckout("pickupEmpty")}</p>
               </div>
             )}
 
             {pickupError && (
               <p className="text-xs text-destructive">
-                Impossible de charger les points de retrait.
+                {tCheckout("pickupLoadError")}
               </p>
             )}
           </div>
@@ -277,8 +281,8 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
               <User className="w-4 h-4 text-sky-600" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <h3 className="text-sm font-semibold text-foreground">Informations personnelles</h3>
-              <p className="text-xs text-muted-foreground">Veuillez renseigner vos coordonnées</p>
+              <h3 className="text-sm font-semibold text-foreground">{tCheckout("personalInfoTitle")}</h3>
+              <p className="text-xs text-muted-foreground">{tCheckout("personalInfoSubtitle")}</p>
             </div>
           </div>
         </div>
@@ -287,12 +291,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="firstName" className="text-sm font-medium text-foreground">
-              Prénom <span className="text-destructive">*</span>
+              {tAuth("firstName")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="firstName"
               {...register("shippingAddress.firstName")}
-              placeholder="Jean"
+              placeholder={tCheckout("firstNamePlaceholder")}
               Icon={User}
               error={(errors.shippingAddress as any)?.firstName?.message as string}
               className="h-11"
@@ -301,12 +305,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="lastName" className="text-sm font-medium text-foreground">
-              Nom <span className="text-destructive">*</span>
+              {tAuth("lastName")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="lastName"
               {...register("shippingAddress.lastName")}
-              placeholder="Dupont"
+              placeholder={tCheckout("lastNamePlaceholder")}
               Icon={User}
               error={(errors.shippingAddress as any)?.lastName?.message as string}
               className="h-11"
@@ -317,13 +321,13 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
         {/* Email */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="text-sm font-medium text-foreground">
-            Adresse e-mail <span className="text-destructive">*</span>
+            {tAuth("email")} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="email"
             type="email"
             {...register("email")}
-            placeholder="vous@exemple.com"
+            placeholder={tCheckout("emailPlaceholder")}
             Icon={Mail}
             error={errors.email?.message as string}
             className="h-11"
@@ -333,7 +337,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
         {/* Phone */}
         <div className="flex flex-col gap-2">
           <Label className="text-sm font-medium text-foreground">
-            Téléphone <span className="text-destructive">*</span>
+            {tAuth("phone")} <span className="text-destructive">*</span>
           </Label>
           <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-2">
             <Select 
@@ -385,7 +389,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 hasUserEditedPhoneRef.current = true
                 setLocalPhoneNumber(e.target.value)
               }}
-              placeholder="612345678"
+              placeholder={tCheckout("phonePlaceholder")}
               maxLength={15}
               Icon={Phone}
               error={(errors.shippingAddress as any)?.phone?.message as string}
@@ -405,8 +409,8 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 <MapPin className="w-4 h-4 text-indigo-600" />
               </div>
               <div className="flex flex-col gap-0.5">
-                <h3 className="text-sm font-semibold text-foreground">Adresse de livraison</h3>
-                <p className="text-xs text-muted-foreground">Où souhaitez-vous recevoir votre commande</p>
+                <h3 className="text-sm font-semibold text-foreground">{tCheckout("shippingAddressTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{tCheckout("shippingAddressSubtitle")}</p>
               </div>
             </div>
           </div>
@@ -414,12 +418,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
           {/* Street Address */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="address" className="text-sm font-medium text-foreground">
-              Adresse complète <span className="text-destructive">*</span>
+              {tCheckout("fullAddressLabel")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="address"
               {...register("shippingAddress.address")}
-              placeholder="Numéro, rue, bâtiment, étage..."
+              placeholder={tCheckout("fullAddressPlaceholder")}
               Icon={MapPin}
               error={(errors.shippingAddress as any)?.address?.message as string}
               className="h-11"
@@ -430,12 +434,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="city" className="text-sm font-medium text-foreground">
-                Ville <span className="text-destructive">*</span>
+                {tCheckout("city")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="city"
                 {...register("shippingAddress.city")}
-                placeholder="Casablanca, Rabat..."
+                placeholder={tCheckout("cityPlaceholder")}
                 Icon={Building2}
                 error={(errors.shippingAddress as any)?.city?.message as string}
                 className="h-11"
@@ -444,12 +448,12 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="postalCode" className="text-sm font-medium text-foreground">
-                Code postal <span className="text-muted-foreground text-xs font-normal">(optionnel)</span>
+                {tCheckout("postalCode")} <span className="text-muted-foreground text-xs font-normal">({tCheckout("optional")})</span>
               </Label>
               <Input
                 id="postalCode"
                 {...register("shippingAddress.postalCode")}
-                placeholder="20000"
+                placeholder={tCheckout("postalCodePlaceholder")}
                 Icon={Globe}
                 className="h-11"
               />

@@ -10,6 +10,13 @@ import type {
   OrderStatusHistoryEntry,
   ShippingAddress,
   PickupLocation,
+  SoldeOrdersTimelineResponse,
+  SoldeTimelineOrder,
+  SoldeTimelineOrderItem,
+  SoldeOrdersHistoryResponse,
+  SoldeOrdersStatementResponse,
+  SoldeOrdersLegacyResponse,
+  SoldeStatementTimelineRow,
 } from '@/types/order';
 
 // Helpers to map backend snake_case structures to our frontend camelCase types
@@ -267,6 +274,218 @@ export const ordersApi = createApi({
         orderNumber: response.order_number,
       }),
     }),
+
+    // Solde orders timeline/table for the authenticated contact (or a target contact_id for backoffice roles)
+    getSoldeOrdersTimeline: builder.query<
+      SoldeOrdersTimelineResponse,
+      {
+        includeItems?: boolean | 0 | 1 | '0' | '1' | 'false' | 'true'
+        contactId?: number | string
+      } | void
+    >({
+      query: (args) => {
+        const url = `${API_CONFIG.ENDPOINTS.ORDERS}/solde`;
+        const params: Record<string, any> = {};
+
+        // Ensure we always request the legacy "orders" view.
+        // Backend defaults to "statement" which has a different shape.
+        params.view = 'orders';
+
+        if (args) {
+          if (args.contactId != null && args.contactId !== '') params.contact_id = args.contactId;
+
+          if (args.includeItems != null) {
+            const raw = args.includeItems;
+            const isFalseLike = raw === false || raw === 0 || raw === '0' || raw === 'false';
+            if (isFalseLike) params.include_items = 0;
+          }
+        }
+
+        return { url, params: Object.keys(params).length > 0 ? params : undefined };
+      },
+      providesTags: ['Orders'],
+      transformResponse: (response: any): SoldeOrdersTimelineResponse => {
+        const contactRaw = response.contact ?? {};
+        const summaryRaw = response.summary ?? {};
+        const ordersRaw = response.orders ?? [];
+
+        const mapItem = (item: any): SoldeTimelineOrderItem => ({
+          productId: Number(item.product_id ?? 0),
+          productName: item.product_name ?? '',
+          unitPrice: Number(item.unit_price ?? 0),
+          quantity: Number(item.quantity ?? 0),
+          subtotal: Number(item.subtotal ?? 0),
+          discountAmount: item.discount_amount != null ? Number(item.discount_amount) : null,
+        });
+
+        const mapOrder = (order: any): SoldeTimelineOrder => ({
+          id: Number(order.id ?? 0),
+          orderNumber: order.order_number ?? '',
+          createdAt: order.created_at,
+          status: order.status,
+          paymentStatus: order.payment_status,
+          paymentMethod: order.payment_method,
+          totalAmount: Number(order.total_amount ?? 0),
+          remiseUsedAmount: Number(order.remise_used_amount ?? 0),
+          isSolde: order.is_solde === 1 || order.is_solde === true,
+          soldeAmount: Number(order.solde_amount ?? 0),
+          soldeCumule: Number(order.solde_cumule ?? 0),
+          deliveryMethod: order.delivery_method ?? 'delivery',
+          pickupLocationId: order.pickup_location_id ?? null,
+          items: Array.isArray(order.items) ? order.items.map(mapItem) : undefined,
+        });
+
+        return {
+          contact: {
+            id: Number(contactRaw.id ?? 0),
+            nomComplet: contactRaw.nom_complet ?? '',
+            email: contactRaw.email ?? '',
+            telephone: contactRaw.telephone ?? null,
+            isSolde: Boolean(contactRaw.is_solde),
+            plafond: Number(contactRaw.plafond ?? 0),
+          },
+          summary: {
+            ordersCount: Number(summaryRaw.orders_count ?? 0),
+            soldeTotal: Number(summaryRaw.solde_total ?? 0),
+          },
+          orders: Array.isArray(ordersRaw) ? ordersRaw.map(mapOrder) : [],
+        };
+      },
+    }),
+
+    // New unified endpoint for solde history: statement (default) or legacy orders view.
+    getSoldeOrdersHistory: builder.query<
+      SoldeOrdersHistoryResponse,
+      {
+        view?: 'statement' | 'orders'
+        contactId?: number | string
+        // statement params
+        limit?: number
+        offset?: number
+        from?: string
+        to?: string
+        // orders params
+        includeItems?: boolean | 0 | 1 | '0' | '1' | 'false' | 'true'
+      } | void
+    >({
+      query: (args) => {
+        const url = `${API_CONFIG.ENDPOINTS.ORDERS}/solde`;
+        const params: Record<string, any> = {};
+
+        if (args) {
+          if (args.view) params.view = args.view;
+          if (args.contactId != null && args.contactId !== '') params.contact_id = args.contactId;
+
+          if (args.limit != null) params.limit = args.limit;
+          if (args.offset != null) params.offset = args.offset;
+          if (args.from) params.from = args.from;
+          if (args.to) params.to = args.to;
+
+          if (args.includeItems != null) {
+            const raw = args.includeItems;
+            const isFalseLike = raw === false || raw === 0 || raw === '0' || raw === 'false';
+            if (isFalseLike) params.include_items = 0;
+          }
+        }
+
+        return { url, params: Object.keys(params).length > 0 ? params : undefined };
+      },
+      providesTags: ['Orders'],
+      transformResponse: (response: any): SoldeOrdersHistoryResponse => {
+        const view = (response?.view ?? (Array.isArray(response?.timeline) ? 'statement' : 'orders')) as
+          | 'statement'
+          | 'orders';
+
+        const contactRaw = response.contact ?? {};
+
+        const contact = {
+          id: Number(contactRaw.id ?? 0),
+          nomComplet: contactRaw.nom_complet ?? '',
+          email: contactRaw.email ?? '',
+          telephone: contactRaw.telephone ?? null,
+          isSolde: Boolean(contactRaw.is_solde),
+          plafond: Number(contactRaw.plafond ?? 0),
+        };
+
+        if (view === 'statement') {
+          const summaryRaw = response.summary ?? {};
+          const timelineRaw = response.timeline ?? [];
+
+          const mapRow = (row: any): SoldeStatementTimelineRow => ({
+            source: row.source,
+            docId: row.doc_id ?? null,
+            ref: row.ref ?? null,
+            date: row.date ?? null,
+            statut: row.statut ?? null,
+            debit: Number(row.debit ?? 0),
+            credit: Number(row.credit ?? 0),
+            delta: Number(row.delta ?? 0),
+            soldeCumule: Number(row.solde_cumule ?? 0),
+            linkedId: row.linked_id ?? null,
+            modePaiement: row.mode_paiement ?? null,
+          });
+
+          const payload: SoldeOrdersStatementResponse = {
+            view: 'statement',
+            contact,
+            summary: {
+              initialSolde: Number(summaryRaw.initial_solde ?? 0),
+              debitTotal: Number(summaryRaw.debit_total ?? 0),
+              creditTotal: Number(summaryRaw.credit_total ?? 0),
+              finalSolde: Number(summaryRaw.final_solde ?? 0),
+              returned: Number(summaryRaw.returned ?? 0),
+              limit: Number(summaryRaw.limit ?? 0),
+              offset: Number(summaryRaw.offset ?? 0),
+            },
+            timeline: Array.isArray(timelineRaw) ? timelineRaw.map(mapRow) : [],
+          };
+
+          return payload;
+        }
+
+        // legacy orders view
+        const summaryRaw = response.summary ?? {};
+        const ordersRaw = response.orders ?? [];
+
+        const mapItem = (item: any): SoldeTimelineOrderItem => ({
+          productId: Number(item.product_id ?? 0),
+          productName: item.product_name ?? '',
+          unitPrice: Number(item.unit_price ?? 0),
+          quantity: Number(item.quantity ?? 0),
+          subtotal: Number(item.subtotal ?? 0),
+          discountAmount: item.discount_amount != null ? Number(item.discount_amount) : null,
+        });
+
+        const mapOrder = (order: any): SoldeTimelineOrder => ({
+          id: Number(order.id ?? 0),
+          orderNumber: order.order_number ?? '',
+          createdAt: order.created_at,
+          status: order.status,
+          paymentStatus: order.payment_status,
+          paymentMethod: order.payment_method,
+          totalAmount: Number(order.total_amount ?? 0),
+          remiseUsedAmount: Number(order.remise_used_amount ?? 0),
+          isSolde: order.is_solde === 1 || order.is_solde === true,
+          soldeAmount: Number(order.solde_amount ?? 0),
+          soldeCumule: Number(order.solde_cumule ?? 0),
+          deliveryMethod: order.delivery_method ?? 'delivery',
+          pickupLocationId: order.pickup_location_id ?? null,
+          items: Array.isArray(order.items) ? order.items.map(mapItem) : undefined,
+        });
+
+        const legacy: SoldeOrdersLegacyResponse = {
+          view: 'orders',
+          contact,
+          summary: {
+            ordersCount: Number(summaryRaw.orders_count ?? 0),
+            soldeTotal: Number(summaryRaw.solde_total ?? 0),
+          },
+          orders: Array.isArray(ordersRaw) ? ordersRaw.map(mapOrder) : [],
+        };
+
+        return legacy;
+      },
+    }),
   }),
 });
 
@@ -275,4 +494,6 @@ export const {
   useGetOrderQuery,
   useCreateOrderMutation,
   useCancelOrderMutation,
+  useGetSoldeOrdersTimelineQuery,
+  useGetSoldeOrdersHistoryQuery,
 } = ordersApi;

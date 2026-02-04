@@ -237,7 +237,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[420px] p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
+      <DropdownMenuContent align="end" className="w-[calc(100vw-1.25rem)] sm:w-[420px] p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
         <DropdownMenuLabel className="p-0 mb-1">
           <div className="relative overflow-hidden rounded-t-lg bg-linear-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
             <div className="flex items-center justify-between">

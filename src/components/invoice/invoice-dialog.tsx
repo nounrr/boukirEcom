@@ -81,7 +81,7 @@ export function InvoiceDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="p-0 sm:max-w-5xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="p-0 sm:max-w-5xl max-h-[calc(100dvh-1.5rem)] overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-border/60">
           <DialogHeader className="gap-1">
             <DialogTitle>Facture • Commande #{order.orderNumber}</DialogTitle>
@@ -98,7 +98,7 @@ export function InvoiceDialog({
           </div>
         </div>
 
-        <ScrollArea className="h-[70vh] bg-muted/30">
+        <ScrollArea className="bg-muted/30 max-h-[calc(100dvh-240px)]">
           <div className="p-4 sm:p-6 flex items-start justify-center">
             <div className="shadow-lg bg-white" style={{ width: "min(210mm, 100%)" }}>
               <InvoicePrintTemplate order={order} buyer={buyer} />

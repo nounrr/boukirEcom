@@ -2,11 +2,21 @@ import type { Metadata } from "next"
 import ForgotPasswordPageClient from "./client"
 
 export const metadata: Metadata = {
-  title: "Réinitialiser votre mot de passe - Notre Plateforme",
-  description: "Vous avez oublié votre mot de passe ? Nous vous aiderons à le récupérer en quelques étapes simples",
+  title: "Mot de passe oublié | Boukir Diamond",
+  description: "Réinitialisez votre mot de passe Boukir Diamond et récupérez l’accès à votre compte.",
+  robots: { index: false, follow: true },
+  alternates: {
+    canonical: "/forgot-password",
+    languages: {
+      fr: "/forgot-password",
+      ar: "/ar/forgot-password",
+      en: "/en/forgot-password",
+      zh: "/zh/forgot-password",
+    },
+  },
   openGraph: {
-    title: "Réinitialiser votre mot de passe - Notre Plateforme",
-    description: "Récupérez l'accès à votre compte en réinitialisant votre mot de passe",
+    title: "Mot de passe oublié | Boukir Diamond",
+    description: "Réinitialisez votre mot de passe Boukir Diamond.",
     type: "website",
   },
 }

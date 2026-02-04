@@ -2,19 +2,20 @@
 
 import { Badge } from "@/components/ui/badge"
 import { useAppSelector } from "@/state/hooks"
-import { Heart, Package, Settings, UserCircle2 } from "lucide-react"
+import { Heart, Package, Settings, UserCircle2, Wallet } from "lucide-react"
 import Link from "next/link"
 import { useLocale } from "next-intl"
 import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
-  active?: "profile" | "orders" | "wishlist" | "settings"
+  active?: "profile" | "orders" | "solde" | "wishlist" | "settings"
 }
 
 export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
   const locale = useLocale()
   const { user, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
+  const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
 
   return (
     <aside className="lg:col-span-1">
@@ -64,6 +65,16 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             <Package className="w-4 h-4" />
             Mes commandes
           </Link>
+
+          {canUseSolde && (
+            <Link
+              href={`/${locale}/solde-historique`}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "solde" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
+            >
+              <Wallet className="w-4 h-4" />
+              Solde historique
+            </Link>
+          )}
           <Link
             href={`/${locale}/wishlist`}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "wishlist" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}

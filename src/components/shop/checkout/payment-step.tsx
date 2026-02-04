@@ -18,6 +18,9 @@ interface PaymentStepProps {
   remiseBalance?: number
   isAuthenticated?: boolean
   isSoldeEligible?: boolean
+  soldeAvailable?: number | null
+  soldeCumule?: number
+  plafond?: number | null
   onSubmitPayment?: () => void
   isPending?: boolean
 }
@@ -65,6 +68,9 @@ export function PaymentStep({
   remiseBalance = 0,
   isAuthenticated = false,
   isSoldeEligible = false,
+  soldeAvailable = null,
+  soldeCumule = 0,
+  plafond = null,
   onSubmitPayment,
   isPending = false
 }: PaymentStepProps) {
@@ -84,6 +90,24 @@ export function PaymentStep({
     : 0
   const remainingToPay = Math.max(0, Number(orderTotal || 0) - effectiveRemise)
   const canUseRemise = isAuthenticated && maxRemiseToUse > 0
+
+  const hasPlafond = typeof plafond === "number" && Number.isFinite(plafond) && plafond > 0
+  const hasSoldeAvailable = typeof soldeAvailable === "number" && Number.isFinite(soldeAvailable)
+  const soldeRemaining = hasSoldeAvailable ? Math.max(0, soldeAvailable) : null
+  const isSoldeLimitExceeded = soldeRemaining !== null && remainingToPay > soldeRemaining
+  const soldeProgressPct = hasPlafond
+    ? Math.max(0, Math.min(100, (Math.max(0, Number(soldeCumule || 0)) / plafond) * 100))
+    : 0
+
+  // If the plafond is exceeded, prevent keeping "solde" selected (better UX)
+  useEffect(() => {
+    if (!setValue) return
+    if (!isSoldeLimitExceeded) return
+    if (paymentMethod !== "solde") return
+
+    const fallbackMethod = isPickup ? "pay_in_store" : "cash_on_delivery"
+    setValue("paymentMethod", fallbackMethod, { shouldValidate: true, shouldDirty: true })
+  }, [isPickup, isSoldeLimitExceeded, paymentMethod, setValue])
 
   // Filter payment methods based on delivery method
   const availablePaymentMethods = PAYMENT_METHODS.filter((method) => {
@@ -314,7 +338,7 @@ export function PaymentStep({
 
       {/* Solde (Buy Now, Pay Later) - Only for eligible users */}
       {isSoldeEligible && (
-        <div className="flex flex-col gap-3 bg-linear-to-br from-violet-50/50 via-background to-purple-50/30 dark:from-violet-950/20 dark:via-background dark:to-purple-950/10 border border-violet-200/60 dark:border-violet-800/40 rounded-xl p-4 shadow-sm transition-all duration-300">
+        <div className="flex flex-col gap-3 bg-linear-to-br from-violet-50/60 via-background to-purple-50/40 dark:from-violet-950/25 dark:via-background dark:to-purple-950/15 border border-violet-200/70 dark:border-violet-800/40 rounded-xl p-4 shadow-sm transition-all duration-300">
           <div className="flex items-center gap-2 pb-3 border-b border-violet-200/50 dark:border-violet-800/30">
             <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center">
               <Clock className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
@@ -330,77 +354,134 @@ export function PaymentStep({
             </div>
           </div>
 
-          <label className="relative group cursor-pointer transition-all duration-200">
-            <input
-              type="radio"
-              value="solde"
-              {...register("paymentMethod")}
-              className="peer sr-only"
-            />
-            <div
-              className={cn(
-                "flex items-center gap-2.5 p-3 rounded-lg border-2 transition-all duration-200",
-                "bg-background hover:bg-violet-50/50 dark:hover:bg-violet-950/20 hover:border-violet-300 dark:hover:border-violet-700",
-                "peer-checked:border-violet-500 peer-checked:bg-violet-50 dark:peer-checked:bg-violet-950/30",
-                "peer-checked:shadow-md peer-checked:shadow-violet-500/15",
-              )}
-            >
-              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm shadow-violet-500/25">
-                <Clock className="w-5 h-5 text-white" />
-              </div>
+          {/* Plafond / available summary */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
+              <p className="text-[10px] text-muted-foreground">Plafond</p>
+              <p className="text-sm font-bold text-foreground">
+                {hasPlafond ? `${plafond.toFixed(2)} DH` : "Non limité"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
+              <p className="text-[10px] text-muted-foreground">Solde cumulé</p>
+              <p className="text-sm font-bold text-foreground">{Number(soldeCumule || 0).toFixed(2)} DH</p>
+            </div>
+            <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
+              <p className="text-[10px] text-muted-foreground">Disponible</p>
+              <p className={cn("text-sm font-bold", soldeRemaining !== null && soldeRemaining <= 0 ? "text-destructive" : "text-foreground")}>
+                {soldeRemaining === null ? "—" : `${soldeRemaining.toFixed(2)} DH`}
+              </p>
+            </div>
+          </div>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <p className="font-semibold text-sm text-foreground">Payer plus tard (Solde)</p>
-                </div>
-                <p className="text-[11px] text-muted-foreground mb-1">
-                  Recevez votre commande maintenant et payez ultérieurement
-                </p>
-                <div className="flex items-center gap-2 text-[10px]">
-                  <span className="flex items-center gap-0.5 text-violet-600 dark:text-violet-400">
-                    <ShieldCheck className="w-3 h-3" />
-                    Compte vérifié
-                  </span>
-                  <span className="flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
-                    <Check className="w-3 h-3" />
-                    Sans frais
-                  </span>
-                </div>
+          {hasPlafond && (
+            <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/70 p-2.5">
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+                <span>Utilisation</span>
+                <span className="font-semibold text-foreground">{soldeProgressPct.toFixed(0)}%</span>
               </div>
-
-              {/* Custom radio indicator */}
-              <div
-                className={cn(
-                  "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                  "border-border/60 bg-background",
-                  isSoldeSelected && "border-violet-500 bg-violet-500",
-                )}
-              >
-                <Check className={cn(
-                  "w-3 h-3 text-white transition-opacity",
-                  isSoldeSelected ? "opacity-100" : "opacity-0",
-                )} />
+              <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
+                <div className="h-2 rounded-full bg-linear-to-r from-violet-500 to-purple-600" style={{ width: `${soldeProgressPct}%` }} />
               </div>
             </div>
-          </label>
+          )}
 
-          {isSoldeSelected && (
-            <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-violet-100/50 dark:bg-violet-900/20 border border-violet-200/60 dark:border-violet-800/40 animate-in fade-in-0 slide-in-from-top-1 duration-150">
-              <div className="w-7 h-7 rounded-md bg-violet-200/50 dark:bg-violet-800/30 flex items-center justify-center shrink-0">
-                <AlertCircle className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+          {/* If plafond exceeded, hide Solde selection and only show the red warning */}
+          {isSoldeLimitExceeded ? (
+            <div className="flex items-start gap-2.5 p-2.5 rounded-lg border bg-destructive/10 border-destructive/25">
+              <div className="w-7 h-7 rounded-md bg-destructive/15 flex items-center justify-center shrink-0">
+                <AlertCircle className="w-3.5 h-3.5 text-destructive" />
               </div>
               <div className="flex-1">
-                <p className="text-xs font-medium text-violet-900 dark:text-violet-100">
-                  Montant à régler ultérieurement
-                </p>
-                <p className="text-xl font-bold text-violet-700 dark:text-violet-300">
-                  {remainingToPay.toFixed(2)} DH
-                </p>
-                <p className="text-[11px] text-violet-600/80 dark:text-violet-400/80 mt-1">
-                  Votre commande sera traitée après validation. Paiement selon conditions convenues.
+                <p className="text-xs font-medium text-destructive">Plafond solde insuffisant</p>
+                <p className="text-xl font-bold text-destructive">{remainingToPay.toFixed(2)} DH</p>
+                <p className="text-[11px] text-destructive/90 mt-1">
+                  Votre solde disponible est de {soldeRemaining?.toFixed(2)} DH. Réduisez le panier ou choisissez un autre mode de paiement.
                 </p>
               </div>
             </div>
+          ) : (
+            <>
+                <label className="relative group cursor-pointer transition-all duration-200">
+                  <input
+                    type="radio"
+                    value="solde"
+                    {...register("paymentMethod")}
+                    className="peer sr-only"
+                    disabled={remainingToPay === 0 || isPending}
+                  />
+                  <div
+                    className={cn(
+                      "flex items-center gap-2.5 p-3 rounded-lg border-2 transition-all duration-200",
+                      "bg-background hover:bg-violet-50/50 dark:hover:bg-violet-950/20 hover:border-violet-300 dark:hover:border-violet-700",
+                      "peer-checked:border-violet-500 peer-checked:bg-violet-50 dark:peer-checked:bg-violet-950/30",
+                      "peer-checked:shadow-md peer-checked:shadow-violet-500/15",
+                    remainingToPay === 0 && "opacity-60 cursor-not-allowed",
+                    )}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm shadow-violet-500/25">
+                      <Clock className="w-5 h-5 text-white" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-sm text-foreground">Payer plus tard (Solde)</p>
+                        {soldeRemaining !== null && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold border bg-violet-100/70 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-200/70 dark:border-violet-700/50">
+                            Restant: {soldeRemaining.toFixed(2)} DH
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mb-1">
+                        Recevez votre commande maintenant et payez ultérieurement
+                      </p>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="flex items-center gap-0.5 text-violet-600 dark:text-violet-400">
+                          <ShieldCheck className="w-3 h-3" />
+                          Compte vérifié
+                        </span>
+                        <span className="flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
+                          <Check className="w-3 h-3" />
+                          Sans frais
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Custom radio indicator */}
+                    <div
+                      className={cn(
+                        "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                        "border-border/60 bg-background",
+                        isSoldeSelected && "border-violet-500 bg-violet-500",
+                      )}
+                    >
+                      <Check className={cn(
+                        "w-3 h-3 text-white transition-opacity",
+                        isSoldeSelected ? "opacity-100" : "opacity-0",
+                      )} />
+                    </div>
+                  </div>
+                </label>
+
+                {isSoldeSelected && (
+                  <div className="flex items-start gap-2.5 p-2.5 rounded-lg border bg-violet-100/50 dark:bg-violet-900/20 border-violet-200/60 dark:border-violet-800/40 animate-in fade-in-0 slide-in-from-top-1 duration-150">
+                    <div className="w-7 h-7 rounded-md bg-violet-200/50 dark:bg-violet-800/30 flex items-center justify-center shrink-0">
+                      <AlertCircle className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-violet-900 dark:text-violet-100">
+                        Montant à régler ultérieurement
+                      </p>
+                      <p className="text-xl font-bold text-violet-700 dark:text-violet-300">
+                        {remainingToPay.toFixed(2)} DH
+                      </p>
+                      <p className="text-[11px] text-violet-600/80 dark:text-violet-400/80 mt-1">
+                        Votre commande sera traitée après validation. Paiement selon conditions convenues.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
           )}
         </div>
       )}

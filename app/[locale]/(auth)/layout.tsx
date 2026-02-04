@@ -2,9 +2,13 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 
 export const metadata: Metadata = {
-  title: "Notre Plateforme - Authentification",
-  description: "Connectez-vous ou créez un compte sur notre plateforme de confiance",
+  title: "Boukir Diamond - Authentification",
+  description: "Connectez-vous ou créez un compte Boukir Diamond.",
   generator: "Next.js",
+  robots: {
+    index: false,
+    follow: true,
+  },
   icons: {
     icon: [
       {
@@ -23,15 +27,17 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: "Notre Plateforme",
-    description: "Votre plateforme de confiance pour tous vos besoins en ligne",
+    title: "Boukir Diamond",
+    description: "Connectez-vous à Boukir Diamond.",
     type: "website",
-    locale: "fr_FR",
+    locale: "fr_MA",
   },
   alternates: {
     languages: {
-      "fr-FR": "/fr",
-      "en-US": "/en",
+      fr: "/",
+      ar: "/ar",
+      en: "/en",
+      zh: "/zh",
     },
   },
 }

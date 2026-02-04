@@ -6,6 +6,100 @@ export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'c
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
 
+export type SoldeStatementSource =
+  | 'SOLDE_INITIAL'
+  | 'BON_ECOMMERCE'
+  | 'AVOIR_ECOMMERCE'
+  | 'BON_SORTIE'
+  | 'AVOIR_CLIENT'
+  | 'PAYMENT'
+
+export interface SoldeTimelineContact {
+  id: number
+  nomComplet: string
+  email: string
+  telephone?: string | null
+  isSolde: boolean
+  plafond: number
+}
+
+export interface SoldeOrdersTimelineSummary {
+  ordersCount: number
+  soldeTotal: number
+}
+
+export interface SoldeTimelineOrderItem {
+  productId: number
+  productName: string
+  unitPrice: number
+  quantity: number
+  subtotal: number
+  discountAmount?: number | null
+}
+
+export interface SoldeTimelineOrder {
+  id: number
+  orderNumber: string
+  createdAt: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  paymentMethod: PaymentMethod
+  totalAmount: number
+  remiseUsedAmount: number
+  isSolde: boolean
+  soldeAmount: number
+  soldeCumule: number
+  deliveryMethod: DeliveryMethod
+  pickupLocationId: number | null
+  items?: SoldeTimelineOrderItem[]
+}
+
+export interface SoldeOrdersTimelineResponse {
+  contact: SoldeTimelineContact
+  summary: SoldeOrdersTimelineSummary
+  orders: SoldeTimelineOrder[]
+}
+
+export interface SoldeStatementSummary {
+  initialSolde: number
+  debitTotal: number
+  creditTotal: number
+  finalSolde: number
+  returned: number
+  limit: number
+  offset: number
+}
+
+export interface SoldeStatementTimelineRow {
+  source: SoldeStatementSource
+  docId: number | null
+  ref: string | null
+  date: string | null
+  statut: string | null
+  debit: number
+  credit: number
+  delta: number
+  soldeCumule: number
+  linkedId: number | null
+  modePaiement: string | null
+}
+
+export interface SoldeOrdersStatementResponse {
+  view: 'statement'
+  contact: SoldeTimelineContact
+  summary: SoldeStatementSummary
+  timeline: SoldeStatementTimelineRow[]
+}
+
+export interface SoldeOrdersLegacyResponse {
+  view: 'orders'
+  contact: SoldeTimelineContact
+  summary: SoldeOrdersTimelineSummary
+  orders: SoldeTimelineOrder[]
+}
+
+export type SoldeOrdersHistoryResponse = SoldeOrdersStatementResponse | SoldeOrdersLegacyResponse
+
 export interface PickupLocation {
   id: number
   name: string
