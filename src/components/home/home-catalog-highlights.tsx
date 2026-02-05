@@ -23,6 +23,13 @@ import type { Category } from '@/types/category'
 
 type CategoryShape = 'rounded' | 'circle'
 
+function getCategoryLabel(category: Category, locale: string) {
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
 function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
   if (!imageUrl) return null
   if (/^https?:\/\//i.test(imageUrl)) return imageUrl
@@ -45,7 +52,8 @@ function CategoryCard({
   const href = `/${locale}/shop?category_id=${encodeURIComponent(String(category.id))}`
   const imageSrc = toAbsoluteImageUrl(category.image_url)
   const isCircle = shape === 'circle'
-  const categoryInitial = category.nom?.[0]?.toUpperCase() ?? 'C'
+  const label = getCategoryLabel(category, locale)
+  const categoryInitial = label?.[0]?.toUpperCase() ?? 'C'
 
   return (
     <Link href={href} className="group block">
@@ -68,7 +76,7 @@ function CategoryCard({
           {imageSrc ? (
             <Image
               src={imageSrc}
-              alt={category.nom}
+              alt={label}
               fill
               sizes="(min-width: 1024px) 80px, (min-width: 768px) 72px, 64px"
               unoptimized={/^https?:\/\//i.test(imageSrc)}
@@ -87,7 +95,7 @@ function CategoryCard({
       {/* Category name */}
       <div className="mt-2 text-center">
         <p className="text-xs font-medium text-foreground line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-          {category.nom}
+          {label}
         </p>
       </div>
     </Link>

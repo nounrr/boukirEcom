@@ -24,6 +24,9 @@ import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { HeaderSearch } from "./header-search"
 
+import { CategoriesMegaMenu } from "./categories-mega-menu"
+import { CategoriesMobileMenu } from "./categories-mobile-menu"
+
 import { API_CONFIG } from "@/lib/api-config"
 
 export function Header() {
@@ -81,6 +84,7 @@ export function Header() {
 
           {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-1.5 shrink-0">
+            <CategoriesMegaMenu />
             {desktopLinks.map((link) => (
               <Link
                 key={link.href}
@@ -281,6 +285,8 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
+
+                  <CategoriesMobileMenu onNavigate={() => setIsMobileMenuOpen(false)} />
                 </nav>
 
                 {/* Mobile Auth Buttons */}

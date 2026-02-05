@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { X, ChevronDown, ChevronRight, Tag, Package, DollarSign, Palette, Search, SlidersHorizontal, Ruler, ChevronLeft, ArrowUpDown } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -12,6 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
+
+function getCategoryLabel(category: ProductCategory, locale: string) {
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
 
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterState) => void
@@ -40,6 +48,7 @@ export function ProductFilters({
   isCollapsed: controlledCollapsed,
   onCollapsedChange,
 }: ProductFiltersProps) {
+  const locale = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false)
   const isCollapsed = typeof controlledCollapsed === 'boolean' ? controlledCollapsed : uncontrolledCollapsed
@@ -368,10 +377,12 @@ export function ProductFilters({
   const quickCategories = useMemo(() => {
     const leaves = flattenCategories(categories)
     const filtered = debouncedCategorySearch
-      ? leaves.filter(c => c.nom.toLowerCase().includes(debouncedCategorySearch.toLowerCase()))
+      ? leaves.filter((c) =>
+          getCategoryLabel(c, locale).toLowerCase().includes(debouncedCategorySearch.toLowerCase())
+        )
       : leaves
     return filtered.slice(0, visibleCategoryCount)
-  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories])
+  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories, locale])
 
   const renderCategoryTree = useCallback((category: ProductCategory) => {
     const hasChildren = category.children && category.children.length > 0
@@ -390,7 +401,7 @@ export function ProductFilters({
             htmlFor={`category-${category.id}`}
             className="flex-1 text-sm cursor-pointer hover:text-foreground transition-colors"
           >
-            {category.nom}
+            {getCategoryLabel(category, locale)}
           </label>
           {hasChildren && (
             <Button
@@ -416,7 +427,7 @@ export function ProductFilters({
         )}
       </div>
     )
-  }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading])
+  }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading, locale])
 
   // Auto-expand parents so selected categories (e.g., 23/27) are visible & checked.
   const autoExpanded = useMemo(() => {

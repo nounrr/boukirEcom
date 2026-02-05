@@ -9,6 +9,13 @@ import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
 import { cn } from '@/lib/utils';
 
+function getCategoryLabel(category: { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }, locale: string) {
+  if (locale === 'ar') return category.nom_ar || category.nom;
+  if (locale === 'en') return category.nom_en || category.nom;
+  if (locale === 'zh') return category.nom_zh || category.nom;
+  return category.nom;
+}
+
 export function Footer({
   className,
   variant = 'full',
@@ -159,7 +166,7 @@ export function Footer({
                       href={`/${locale}/shop?category_id=${encodeURIComponent(String(c.id))}`}
                       className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
                     >
-                      {c.nom}
+                      {getCategoryLabel(c, locale)}
                     </Link>
                   </li>
                 ))

@@ -4,7 +4,21 @@ import { ProductCard } from "@/components/shop/product-card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Package } from "lucide-react"
 import { useMemo } from "react"
+import { useLocale } from "next-intl"
 import type { ProductListItem } from "@/types/api/products"
+
+function getCategoryLabel(
+  category:
+    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
+    | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -43,6 +57,8 @@ export function ProductsList({
   isFiltersCollapsed,
 }: ProductsListProps) {
 
+  const locale = useLocale()
+
   // Dynamic grid columns based on filter state and view mode
   const gridColumns = (() => {
     if (viewMode === 'large') {
@@ -70,7 +86,7 @@ export function ProductsList({
         price: currentPrice,
         originalPrice: hasDiscount ? product.prix_vente : undefined,
         image: product.image_url || '',
-        category: product.categorie?.nom || '',
+        category: getCategoryLabel(product.categorie, locale),
         brand: product.brand?.nom,
         unit: product.base_unit,
         stock: product.quantite_disponible,
@@ -93,7 +109,7 @@ export function ProductsList({
         ],
       }
     })
-  }, [products])
+  }, [products, locale])
 
   const wrapperClasses = "flex-1 min-w-0"
 

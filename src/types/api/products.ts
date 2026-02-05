@@ -84,6 +84,9 @@ export interface ProductBrand {
 export interface ProductCategory {
   id: number;
   nom: string;
+  nom_ar?: string | null;
+  nom_en?: string | null;
+  nom_zh?: string | null;
   parent_id?: number | null;
   children?: ProductCategory[];
 }
@@ -114,6 +117,9 @@ export interface ProductListItem {
   categorie: {
     id: number;
     nom: string;
+    nom_ar?: string | null;
+    nom_en?: string | null;
+    nom_zh?: string | null;
   };
   is_wishlisted?: boolean;
 }
