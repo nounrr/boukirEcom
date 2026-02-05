@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
@@ -25,11 +25,13 @@ import type { Brand } from '@/types/brand'
 type BrandShape = 'rounded' | 'circle'
 
 function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
-  if (!imageUrl) return null
-  if (/^https?:\/\//i.test(imageUrl)) return imageUrl
+  const raw = String(imageUrl ?? '').trim()
+  if (!raw) return null
+  if (raw === 'null' || raw === 'undefined') return null
+  if (/^https?:\/\//i.test(raw)) return raw
 
   const base = (API_CONFIG.BASE_URL || '').replace(/\/+$/, '')
-  const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
+  const path = raw.startsWith('/') ? raw : `/${raw}`
 
   return base ? `${base}${path}` : path
 }
@@ -51,19 +53,14 @@ function BrandCard({
   return (
     <Link href={href} className="group block">
       <div className="relative">
-        {/* Glow effect on hover */}
-        <div className="absolute inset-0 bg-linear-to-br from-amber-400/0 via-orange-400/0 to-red-400/0 group-hover:from-amber-400/20 group-hover:via-orange-400/20 group-hover:to-red-400/20 rounded-full blur-xl transition-all duration-500" />
-        
-        {/* Brand logo container - MUCH LARGER */}
+        {/* Brand container */}
         <div
           className={cn(
             'relative overflow-hidden bg-white dark:bg-gray-900',
-            'border-2 border-amber-100 dark:border-amber-900/50',
             'transition-all duration-300',
-            'group-hover:border-amber-300 dark:group-hover:border-amber-700',
-            'group-hover:shadow-xl group-hover:shadow-amber-500/20',
-            'aspect-square w-full max-w-40 mx-auto',
-            isCircle ? 'rounded-full' : 'rounded-2xl'
+            'group-hover:shadow-md group-hover:shadow-gray-500/40 dark:group-hover:shadow-black/40',
+            'aspect-square w-full max-w-24 mx-auto',
+            isCircle ? 'rounded-full' : 'rounded-xl'
           )}
         >
           {imageSrc ? (
@@ -71,13 +68,13 @@ function BrandCard({
               src={imageSrc}
               alt={brand.nom}
               fill
-              sizes="(min-width: 1024px) 160px, (min-width: 768px) 140px, 120px"
+              sizes="(min-width: 1024px) 96px, (min-width: 768px) 88px, 80px"
               unoptimized={/^https?:\/\//i.test(imageSrc)}
-              className="object-contain p-5 transition-transform duration-300 group-hover:scale-110"
+              className="object-cover transition-transform duration-300 group-hover:scale-125"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
-              <span className="text-4xl font-bold text-amber-600 dark:text-amber-400">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20">
+              <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">
                 {brandInitial}
               </span>
             </div>
@@ -86,8 +83,8 @@ function BrandCard({
       </div>
 
       {/* Brand name */}
-      <div className="mt-3 text-center">
-        <p className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+      <div className="mt-2 text-center">
+        <p className="text-xs font-medium text-foreground line-clamp-2 transition-all duration-300 group-hover:text-primary group-hover:scale-105">
           {brand.nom}
         </p>
       </div>
@@ -125,7 +122,7 @@ export function HomeBrandsCarousel({
   useEffect(() => {
     if (!api) return
     if (isPaused) return
-    if (items.length <= 5) return
+    if (items.length <= 6) return
 
     const id = window.setInterval(() => {
       api.scrollNext()
@@ -135,49 +132,11 @@ export function HomeBrandsCarousel({
   }, [api, isPaused, items.length])
 
   return (
-    <section className={cn('relative py-20 overflow-hidden', className)}>
-      {/* Moroccan-inspired gradient background */}
-      <div className="absolute inset-0 bg-linear-to-br from-amber-50/60 via-orange-50/40 to-red-50/60 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-red-950/30" />
-      
-      {/* Moroccan zellige pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.015]">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="moroccan-pattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M30 0L35 10L45 15L35 20L30 30L25 20L15 15L25 10Z" fill="currentColor" />
-              <circle cx="30" cy="30" r="3" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#moroccan-pattern)" />
-        </svg>
-      </div>
-
-      <div className="relative container mx-auto px-6 sm:px-8 lg:px-16">
-        {/* Moroccan-style header */}
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-linear-to-br from-amber-500 to-orange-500 rounded-xl blur-md opacity-50" />
-              <div className="relative bg-linear-to-br from-amber-500 to-orange-500 p-2.5 rounded-xl shadow-lg">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
-                {t('brandsTitle')}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-0.5">{t('brandsDesc')}</p>
-            </div>
-          </div>
-          <Link href={`/${activeLocale}/shop`}>
-            <Button
-              variant="outline"
-              className="gap-2 border-amber-200 hover:bg-amber-50 hover:border-amber-300 dark:border-amber-800 dark:hover:bg-amber-950/50"
-            >
-              {t('viewAll')}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+    <section className={cn('py-20', className)}>
+      <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-primary">{t('brandsTitle')}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{t('brandsDesc')}</p>
         </div>
 
         {isLoading ? (
@@ -186,7 +145,7 @@ export function HomeBrandsCarousel({
               <div key={i} className="flex flex-col items-center gap-3">
                 <Skeleton
                   className={cn(
-                    'aspect-square w-full max-w-40',
+                    'aspect-square w-full max-w-24',
                     shape === 'circle' ? 'rounded-full' : 'rounded-2xl'
                   )}
                 />
@@ -200,42 +159,48 @@ export function HomeBrandsCarousel({
           </div>
         ) : (
           <div
+            className="mx-auto"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             onFocusCapture={() => setIsPaused(true)}
             onBlurCapture={() => setIsPaused(false)}
           >
             <Carousel
-              className="relative"
+              className="relative mx-auto"
               opts={{
-                loop: items.length > 5,
-                align: 'start',
+                loop: items.length > 6,
+                align: 'center',
                 slidesToScroll: 1,
               }}
               setApi={(a) => setApi(a)}
             >
-              <CarouselContent className="-ml-6 md:-ml-8">
+              <CarouselContent className="justify-center">
                 {items.map((b) => (
                   <CarouselItem
                     key={b.id}
-                    className="pl-6 md:pl-8 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                    className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8 xl:basis-1/10"
                   >
                     <BrandCard brand={b} locale={activeLocale} shape={shape} />
                   </CarouselItem>
                 ))}
               </CarouselContent>
 
-              {items.length > 5 && (
+              {items.length > 6 && (
                 <>
-                  <CarouselPrevious
-                    className="-left-4 bg-white/95 dark:bg-gray-900/95 border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 shadow-lg"
-                  />
-                  <CarouselNext
-                    className="-right-4 bg-white/95 dark:bg-gray-900/95 border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 shadow-lg"
-                  />
+                  <CarouselPrevious className="-left-4" />
+                  <CarouselNext className="-right-4" />
                 </>
               )}
             </Carousel>
+
+            <div className="mt-6 flex justify-center">
+              <Link href={`/${activeLocale}/shop`}>
+                <Button variant="outline" className="gap-2">
+                  {t('viewAll')}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
