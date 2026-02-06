@@ -7,6 +7,19 @@ import { useMemo } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
 
+function getCategoryLabel(
+  category:
+    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
+    | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
 interface ProductsListProps {
   products: ProductListItem[]
   isLoading: boolean
@@ -90,7 +103,7 @@ export function ProductsList({
         price: currentPrice,
         originalPrice: hasDiscount ? product.prix_vente : undefined,
         image: product.image_url || '',
-        category: product.categorie?.nom || '',
+        category: getCategoryLabel(product.categorie, locale),
         brand: product.brand?.nom,
         unit: product.base_unit,
         stock: product.quantite_disponible,
@@ -139,13 +152,13 @@ export function ProductsList({
             <Package className="w-8 h-8 text-destructive" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">
-              {t('errorTitle')}
+            {t('errorTitle')}
           </h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-              {t('errorDescription')}
+            {t('errorDescription')}
           </p>
           <Button onClick={() => window.location.reload()} className="shadow-md">
-              {t('retry')}
+            {t('retry')}
           </Button>
         </div>
       ) : transformedProducts.length === 0 ? (
@@ -154,14 +167,14 @@ export function ProductsList({
             <Package className="w-8 h-8 text-muted-foreground" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">
-                {t('emptyTitle')}
+            {t('emptyTitle')}
           </h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-                {t('emptyDescription')}
+            {t('emptyDescription')}
           </p>
         </div>
       ) : (
-              <div className={`grid ${viewMode === 'large' ? 'gap-6' : 'gap-5'} ${gridColumns}`}>
+        <div className={`grid ${viewMode === 'large' ? 'gap-6' : 'gap-5'} ${gridColumns}`}>
           {transformedProducts.map((product) => (
             <ProductCard
               key={product.id}

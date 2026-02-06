@@ -1,7 +1,21 @@
 'use client'
 
 import { Sparkles } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { ProductCard } from './product-card'
+
+function getCategoryLabel(
+  category:
+    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
+    | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
 
 interface ProductSuggestion {
   id: number
@@ -18,6 +32,9 @@ interface ProductSuggestion {
   categorie: {
     id: number
     nom: string
+    nom_ar?: string | null
+    nom_en?: string | null
+    nom_zh?: string | null
   }
   is_wishlisted?: boolean
 }
@@ -33,6 +50,7 @@ export function ProductSuggestions({
   title = "Vous pourriez aimer",
   description = "Découvrez nos suggestions pour vous"
 }: ProductSuggestionsProps) {
+  const locale = useLocale()
   // Ensure products is always an array
   const productList = Array.isArray(products) ? products : []
   
@@ -62,7 +80,7 @@ export function ProductSuggestions({
               price: product.prix_promo || product.prix_vente,
               originalPrice: product.prix_promo ? product.prix_vente : undefined,
               image: product.image_url || '',
-              category: product.categorie?.nom || '',
+              category: getCategoryLabel(product.categorie, locale),
               stock: product.quantite_disponible,
               is_wishlisted: product.is_wishlisted,
               sale: product.pourcentage_promo ? {

@@ -14,7 +14,20 @@ import {
 import type { ProductListItem } from '@/types/api/products'
 import { normalizeLocale } from '@/i18n/locale'
 
-function toProductCardModel(product: ProductListItem) {
+function getCategoryLabel(
+  category:
+    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
+    | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
+function toProductCardModel(product: ProductListItem, locale: string) {
   const currentPrice = product.prix_promo || product.prix_vente
   const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
 
@@ -25,7 +38,7 @@ function toProductCardModel(product: ProductListItem) {
     price: currentPrice,
     originalPrice: hasDiscount ? product.prix_vente : undefined,
     image: product.image_url || '',
-    category: product.categorie?.nom || '',
+    category: getCategoryLabel(product.categorie, locale),
     brand: product.brand?.nom,
     unit: product.base_unit,
     stock: product.quantite_disponible,
@@ -58,14 +71,16 @@ function ProductRail({
   href,
   products,
   isLoading,
+  locale,
 }: {
   title: string
   description?: string
   href: string
   products: ProductListItem[]
   isLoading: boolean
+  locale: string
 }) {
-  const cardProducts = useMemo(() => products.map(toProductCardModel), [products])
+  const cardProducts = useMemo(() => products.map((p) => toProductCardModel(p, locale)), [products, locale])
 
   return (
     <section className="py-10">
@@ -154,6 +169,7 @@ export function HomeProductSections({
         href={`/${activeLocale}/shop?sort=promo`}
         products={featured ?? []}
         isLoading={isFeaturedLoading}
+        locale={activeLocale}
       />
       <ProductRail
         title={newArrivalsTitle}
@@ -161,6 +177,7 @@ export function HomeProductSections({
         href={`/${activeLocale}/shop?sort=newest`}
         products={newArrivals ?? []}
         isLoading={isNewLoading}
+        locale={activeLocale}
       />
     </div>
   )

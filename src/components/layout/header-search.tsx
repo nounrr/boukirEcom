@@ -50,6 +50,19 @@ function clampIndex(index: number, length: number) {
   return Math.max(0, Math.min(index, length - 1))
 }
 
+function getCategoryLabel(
+  category:
+    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
+    | undefined,
+  locale: string
+) {
+  if (!category) return undefined
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
 function useRecentSearches(locale: string) {
   const [recent, setRecent] = useState<string[]>([])
 
@@ -334,7 +347,7 @@ export function HeaderSearch({
           id: p.id,
           label: p.designation,
           imageUrl: p.image_url,
-          category: p.categorie?.nom,
+          category: getCategoryLabel(p.categorie, locale),
           brand: p.brand?.nom,
         })
       }

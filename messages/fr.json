@@ -609,6 +609,7 @@
   },
   "header": {
     "home": "Accueil",
+    "categories": "Catégories",
     "shop": "Boutique",
     "products": "Produits",
     "searchPlaceholder": "Rechercher des produits...",

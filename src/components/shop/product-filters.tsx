@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { X, ChevronDown, ChevronRight, Tag, Package, DollarSign, Palette, Search, SlidersHorizontal, Ruler, ChevronLeft, ArrowUpDown } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -13,6 +14,13 @@ import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
 import { useTranslations } from 'next-intl'
+
+function getCategoryLabel(category: ProductCategory, locale: string) {
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
 
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterState) => void
@@ -28,8 +36,8 @@ interface ProductFiltersProps {
   onCollapsedChange?: (collapsed: boolean) => void
 }
 
-export function ProductFilters({ 
-  onFilterChange, 
+export function ProductFilters({
+  onFilterChange,
   initialFilters,
   categories = [],
   brands = [],
@@ -43,6 +51,7 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   const t = useTranslations('productFilters')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false)
   const isCollapsed = typeof controlledCollapsed === 'boolean' ? controlledCollapsed : uncontrolledCollapsed
@@ -76,7 +85,7 @@ export function ProductFilters({
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(() =>
     (initialFilters?.priceRange as [number, number] | undefined) ?? [minPrice, maxPrice]
   )
-  
+
   // Refs for optimization
   const isInitialMount = useRef(true)
   const previousFilters = useRef<FilterState>(filters)
@@ -156,7 +165,7 @@ export function ProductFilters({
   // Update search in filters when debounced
   useEffect(() => {
     if (isInitialMount.current) return
-    
+
     setFilters(prev => {
       const updated = { ...prev, search: debouncedSearch, page: 1 }
       notifyParent(updated)
@@ -371,14 +380,16 @@ export function ProductFilters({
   const quickCategories = useMemo(() => {
     const leaves = flattenCategories(categories)
     const filtered = debouncedCategorySearch
-      ? leaves.filter(c => c.nom.toLowerCase().includes(debouncedCategorySearch.toLowerCase()))
+      ? leaves.filter((c) =>
+        getCategoryLabel(c, locale).toLowerCase().includes(debouncedCategorySearch.toLowerCase())
+      )
       : leaves
     return filtered.slice(0, visibleCategoryCount)
-  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories])
+  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories, locale])
 
   const renderCategoryTree = useCallback((category: ProductCategory) => {
     const hasChildren = category.children && category.children.length > 0
-    
+
     return (
       <div key={category.id} className="space-y-2">
         <div className="flex items-center gap-2">
@@ -393,7 +404,7 @@ export function ProductFilters({
             htmlFor={`category-${category.id}`}
             className="flex-1 text-sm cursor-pointer hover:text-foreground transition-colors"
           >
-            {category.nom}
+            {getCategoryLabel(category, locale)}
           </label>
           {hasChildren && (
             <Button
@@ -419,7 +430,7 @@ export function ProductFilters({
         )}
       </div>
     )
-  }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading])
+  }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading, locale])
 
   // Auto-expand parents so selected categories (e.g., 23/27) are visible & checked.
   const autoExpanded = useMemo(() => {
@@ -784,7 +795,7 @@ export function ProductFilters({
 
       {/* Desktop Sidebar */}
       <div className={cn("hidden lg:block relative", isCollapsed ? "shrink-0" : "shrink-0")}>
-        <div 
+        <div
           className={cn(
             // Clean container: no border, no shadow
             "sticky top-20 bg-background rounded-2xl transition-all duration-300 ease-in-out",
