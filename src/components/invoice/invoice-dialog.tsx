@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from "react"
 import { Download, Receipt } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
 
 import type { Order } from "@/types/order"
 import type { User } from "@/state/slices/user-slice"
@@ -17,16 +18,22 @@ export function InvoiceDialog({
   order,
   user,
   triggerVariant = "outline",
-  triggerText = "Voir facture",
+  triggerText,
 }: {
   order: Order
   user?: User | null
   triggerVariant?: "default" | "outline" | "ghost" | "secondary" | "link"
   triggerText?: string
 }) {
+  const locale = useLocale()
+  const t = useTranslations("invoice")
   const toast = useToast()
   const [open, setOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const invoiceLocale = locale === "ar" ? "fr" : locale
+  const invoiceDir: "ltr" | "rtl" = locale === "ar" ? "ltr" : "ltr"
+  const invoiceLang = locale === "ar" ? "fr" : locale
 
   const buyer = useMemo(() => {
     const isCompany = !!user?.is_company
@@ -51,21 +58,21 @@ export function InvoiceDialog({
   const fileName = useMemo(() => {
     const d = new Date(order.createdAt)
     const datePart = Number.isNaN(d.getTime()) ? "" : `_${d.toISOString().slice(0, 10)}`
-    return `Facture_${order.orderNumber}${datePart}.pdf`
+    return `${t("fileNamePrefix")}${order.orderNumber}${datePart}.pdf`
   }, [order.createdAt, order.orderNumber])
 
   const onDownload = async () => {
     try {
       setIsGenerating(true)
       await downloadPdfFromReactElement({
-        element: <InvoicePrintTemplate order={order} buyer={buyer} />,
+        element: <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />,
         fileName,
         paper: "a4",
       })
     } catch (e: any) {
       console.error("Invoice PDF generation failed", e)
-      toast.error("Erreur lors de la génération", {
-        description: e?.message || "Impossible de générer la facture PDF.",
+      toast.error(t("toast.errorTitle"), {
+        description: e?.message || t("toast.errorDesc"),
       })
     } finally {
       setIsGenerating(false)
@@ -77,23 +84,27 @@ export function InvoiceDialog({
       <DialogTrigger asChild>
         <Button variant={triggerVariant} size="sm" className="gap-2">
           <Receipt className="w-4 h-4" />
-          {triggerText}
+          {triggerText ?? t("actions.viewInvoice")}
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="p-0 sm:max-w-5xl max-h-[calc(100dvh-1.5rem)] overflow-hidden">
+      <DialogContent
+        className="p-0 sm:max-w-5xl max-h-[calc(100dvh-1.5rem)] overflow-hidden"
+        dir={invoiceDir}
+        lang={invoiceLang}
+      >
         <div className="p-4 sm:p-5 border-b border-border/60">
           <DialogHeader className="gap-1">
-            <DialogTitle>Facture • Commande #{order.orderNumber}</DialogTitle>
+            <DialogTitle>{t("dialog.title", { orderNumber: order.orderNumber })}</DialogTitle>
             <DialogDescription>
-              Vérifiez les informations avant de télécharger le PDF.
+              {t("dialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="mt-4 flex items-center justify-end gap-2">
             <Button onClick={onDownload} disabled={isGenerating} className="gap-2">
               <Download className="w-4 h-4" />
-              {isGenerating ? "Génération..." : "Télécharger PDF"}
+              {isGenerating ? t("actions.generating") : t("actions.downloadPdf")}
             </Button>
           </div>
         </div>
@@ -101,7 +112,7 @@ export function InvoiceDialog({
         <ScrollArea className="bg-muted/30 max-h-[calc(100dvh-240px)]">
           <div className="p-4 sm:p-6 flex items-start justify-center">
             <div className="shadow-lg bg-white" style={{ width: "min(210mm, 100%)" }}>
-              <InvoicePrintTemplate order={order} buyer={buyer} />
+              <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />
             </div>
           </div>
         </ScrollArea>

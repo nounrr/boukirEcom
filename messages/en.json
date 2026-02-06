@@ -179,6 +179,7 @@
     }
   },
   "orderDetailsPage": {
+    "placeholder": "—",
     "pageTitle": "Order details",
     "subtitle": "Order #{orderNumber} • {count, plural, one {# item} other {# items}}",
     "toast": {
@@ -260,6 +261,8 @@
     "itemsTab": {
       "title": "Items",
       "count": "{count, plural, one {# item} other {# items}}",
+      "variantType": "Variant",
+      "variantLine": "{type}: {name}",
       "qty": "Qty: {quantity}",
       "unitPrice": "Unit price: {price}",
       "subtotal": "Subtotal: {subtotal}"
@@ -307,8 +310,111 @@
     "history": {
       "title": "Status history",
       "empty": "No history available at the moment.",
-      "changedBy": "{who}"
+      "changedBy": "Changed by {who}",
+      "actor": {
+        "customer": "Customer",
+        "admin": "Admin"
+      }
     }
+  },
+  "invoice": {
+    "placeholder": "—",
+    "currency": "MAD",
+    "money": {
+      "dh": "DH"
+    },
+    "fileNamePrefix": "Invoice_",
+    "toast": {
+      "errorTitle": "Invoice generation failed",
+      "errorDesc": "Unable to generate the invoice PDF."
+    },
+    "actions": {
+      "viewInvoice": "View invoice",
+      "downloadPdf": "Download PDF",
+      "generating": "Generating...",
+      "invoicePdf": "Invoice PDF"
+    },
+    "dialog": {
+      "title": "Invoice • Order #{orderNumber}",
+      "description": "Check the information before downloading the PDF."
+    },
+    "contact": {
+      "title": "Contact:",
+      "name": "Name:",
+      "serviceCharge": "Customer service:",
+      "email": "Email:",
+      "phone": "Phone:",
+      "address": "Address:",
+      "ice": "Customer ICE:"
+    },
+    "meta": {
+      "invoice": "Invoice:",
+      "invoiceNumber": "INV-{orderNumber}",
+      "date": "Date:"
+    },
+    "table": {
+      "code": "CODE",
+      "article": "Item",
+      "qty": "Qty",
+      "unitPrice": "Unit ({currency})",
+      "total": "Total ({currency})",
+      "lineDiscount": "Line discount:",
+      "empty": "No items available."
+    },
+    "totals": {
+      "grandTotal": "GRAND TOTAL:"
+    },
+    "details": {
+      "title": "Order details",
+      "subtotal": "Subtotal:",
+      "shipping": "Shipping:",
+      "tax": "Tax:",
+      "promoDiscount": "Promo / discount:",
+      "remiseUsed": "Discount used:",
+      "amountToPay": "Amount to pay:",
+      "payment": "Payment:",
+      "delivery": "Delivery:"
+    },
+    "delivery": {
+      "pickup": "Pickup",
+      "delivery": "Home"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "Cash on delivery",
+      "pay_in_store": "Pay in store",
+      "card": "Card",
+      "bank_transfer": "Bank transfer",
+      "mobile_payment": "Mobile payment",
+      "solde": "Deferred payment"
+    },
+    "footer": {
+      "emailLabel": "EMAIL:",
+      "serviceChargeLabel": "Customer service:"
+    }
+  },
+  "notFound": {
+    "product": {
+      "title": "Product not found",
+      "description": "This product doesn't exist or is no longer available.",
+      "primaryLabel": "Back to shop"
+    },
+    "order": {
+      "title": "Order not found",
+      "description": "This order doesn't exist or you don't have access.",
+      "primaryLabel": "View my orders"
+    },
+    "default": {
+      "title": "Page not found",
+      "description": "The address is incorrect or the page has moved.",
+      "primaryLabel": "Back to home"
+    },
+    "back": "Back"
   },
   "shop": {
     "filters": "Filters",

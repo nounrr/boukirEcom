@@ -15,7 +15,7 @@ import { clearAuth } from "@/state/slices/user-slice"
 import { CartPopover } from "./cart-popover"
 import { WishlistIcon } from "./wishlist-icon"
 import { useCart } from "./cart-context-provider"
-import { Menu, ChevronDown, Package, Store, Home, LogOut, Settings, UserCircle2 } from "lucide-react"
+import { Menu, ChevronDown, Package, Store, Home, LogOut, UserCircle2 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
@@ -300,15 +300,7 @@ export function Header() {
                         </div>
                         <span className="text-sm font-medium text-foreground/90">{t('orders')}</span>
                       </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/${locale}/settings`} className="cursor-pointer flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-muted/50 transition-all duration-200 group">
-                        <div className="w-7 h-7 rounded-md bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors duration-200">
-                          <Settings className="w-3.5 h-3.5 text-foreground/70" />
-                        </div>
-                        <span className="text-sm font-medium text-foreground/90">{t('settings')}</span>
-                      </Link>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
                     <DropdownMenuSeparator className="my-1" />
                     <DropdownMenuItem asChild>
                       <button

@@ -40,8 +40,8 @@ import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
 
-function formatDate(locale: string, value?: string | null) {
-  if (!value) return "—"
+function formatDate(locale: string, value?: string | null, emptyPlaceholder = "—") {
+  if (!value) return emptyPlaceholder
   try {
     return new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" }).format(new Date(value))
   } catch {
@@ -49,8 +49,8 @@ function formatDate(locale: string, value?: string | null) {
   }
 }
 
-function formatDateTime(locale: string, value?: string | null) {
-  if (!value) return "—"
+function formatDateTime(locale: string, value?: string | null, emptyPlaceholder = "—") {
+  if (!value) return emptyPlaceholder
   try {
     return new Intl.DateTimeFormat(locale, {
       year: "numeric",
@@ -111,7 +111,16 @@ function getPaymentMethodLabel(t: ReturnType<typeof useTranslations>, method?: s
     case "solde":
       return t("paymentMethod.solde")
     default:
-      return method ? String(method) : "—"
+      return method ? String(method) : t("placeholder")
+  }
+}
+
+function getHistoryActorLabel(t: ReturnType<typeof useTranslations>, type: "customer" | "admin") {
+  switch (type) {
+    case "customer":
+      return t("history.actor.customer")
+    case "admin":
+      return t("history.actor.admin")
   }
 }
 
@@ -255,6 +264,7 @@ function OrderProgressHeader({ order }: { order: Order }) {
   const t = useTranslations("orderDetailsPage")
   const tCommon = useTranslations("common")
   const currency = tCommon("currency")
+  const empty = t("placeholder")
 
   const fulfillmentSteps: Step[] = [
     { key: "pending", label: t("steps.pending"), icon: Clock },
@@ -307,7 +317,7 @@ function OrderProgressHeader({ order }: { order: Order }) {
             <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
-                {formatDateTime(locale, order.createdAt)}
+                {formatDateTime(locale, order.createdAt, empty)}
               </span>
               <span className="inline-flex items-center gap-1">
                 <Receipt className="w-3.5 h-3.5" />
@@ -543,6 +553,7 @@ function ShippingCard({ order }: { order: Order }) {
   const t = useTranslations("orderDetailsPage")
   const addr = order.shippingAddress
   const isPickup = order.deliveryMethod === "pickup"
+  const empty = t("placeholder")
 
   return (
     <Card className="p-4 border-border/50">
@@ -599,7 +610,7 @@ function ShippingCard({ order }: { order: Order }) {
             </div>
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-muted-foreground" />
-              <span className="text-muted-foreground text-sm">{order.customerPhone || "—"}</span>
+              <span className="text-muted-foreground text-sm">{order.customerPhone || empty}</span>
             </div>
           </div>
         </div>
@@ -630,7 +641,7 @@ function ShippingCard({ order }: { order: Order }) {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{order.customerPhone || "—"}</span>
+                <span className="text-muted-foreground">{order.customerPhone || empty}</span>
               </div>
             </div>
           </div>
@@ -642,6 +653,7 @@ function ShippingCard({ order }: { order: Order }) {
 function HistoryTimeline({ order }: { order: Order }) {
   const locale = useLocale()
   const t = useTranslations("orderDetailsPage")
+  const empty = t("placeholder")
   const history = order.statusHistory ?? []
   if (!history.length) {
     return (
@@ -664,12 +676,14 @@ function HistoryTimeline({ order }: { order: Order }) {
                   <Badge variant="outline" className="text-xs">
                     {getOrderStatusLabel(t, entry.newStatus)}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">• {t("history.changedBy", { who: entry.changedByType })}</span>
+                  <span className="text-xs text-muted-foreground">
+                    • {t("history.changedBy", { who: getHistoryActorLabel(t, entry.changedByType) })}
+                  </span>
                 </div>
                 {entry.notes && <p className="text-sm mt-1">{entry.notes}</p>}
               </div>
               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {formatDateTime(locale, entry.timestamp)}
+                {formatDateTime(locale, entry.timestamp, empty)}
               </span>
             </div>
           </Card>
@@ -683,6 +697,7 @@ export default function OrderDetailsPage() {
   const t = useTranslations("orderDetailsPage")
   const tCommon = useTranslations("common")
   const currency = tCommon("currency")
+  const empty = t("placeholder")
 
   const router = useRouter()
   const routeParams = useParams<{ id?: string | string[] }>()
@@ -865,7 +880,7 @@ export default function OrderDetailsPage() {
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-muted-foreground">{t("overview.date")}</p>
-                      <p className="font-medium">{formatDateTime(locale, order.createdAt)}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.createdAt, empty)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">{t("overview.status")}</p>
@@ -958,7 +973,10 @@ export default function OrderDetailsPage() {
                       <p className="text-sm font-medium line-clamp-2">{item.productName}</p>
                       {item.variantName && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {item.variantType}: {item.variantName}
+                          {t("itemsTab.variantLine", {
+                            type: item.variantType ?? t("itemsTab.variantType"),
+                            name: item.variantName,
+                          })}
                         </p>
                       )}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
@@ -1008,19 +1026,19 @@ export default function OrderDetailsPage() {
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-muted-foreground">{t("shippingDates.confirmed")}</p>
-                      <p className="font-medium">{formatDateTime(locale, order.confirmedAt)}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.confirmedAt, empty)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">{t("shippingDates.shipped")}</p>
-                      <p className="font-medium">{formatDateTime(locale, order.shippedAt)}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.shippedAt, empty)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">{t("shippingDates.delivered")}</p>
-                      <p className="font-medium">{formatDateTime(locale, order.deliveredAt)}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.deliveredAt, empty)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">{t("shippingDates.cancelled")}</p>
-                      <p className="font-medium">{formatDateTime(locale, order.cancelledAt)}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.cancelledAt, empty)}</p>
                     </div>
                   </div>
                 </Card>

@@ -179,6 +179,7 @@
     }
   },
   "orderDetailsPage": {
+    "placeholder": "—",
     "pageTitle": "تفاصيل الطلب",
     "subtitle": "طلب رقم {orderNumber} • {count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
     "toast": {
@@ -260,6 +261,8 @@
     "itemsTab": {
       "title": "العناصر",
       "count": "{count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
+      "variantType": "الخيار",
+      "variantLine": "{type}: {name}",
       "qty": "الكمية: {quantity}",
       "unitPrice": "سعر الوحدة: {price}",
       "subtotal": "الإجمالي الفرعي: {subtotal}"
@@ -307,8 +310,111 @@
     "history": {
       "title": "سجل الحالة",
       "empty": "لا يوجد سجل متاح حالياً.",
-      "changedBy": "{who}"
+      "changedBy": "تم التغيير بواسطة {who}",
+      "actor": {
+        "customer": "العميل",
+        "admin": "الإدارة"
+      }
     }
+  },
+  "invoice": {
+    "placeholder": "—",
+    "currency": "MAD",
+    "money": {
+      "dh": "DH"
+    },
+    "fileNamePrefix": "Facture_",
+    "toast": {
+      "errorTitle": "Erreur lors de la génération",
+      "errorDesc": "Impossible de générer la facture PDF."
+    },
+    "actions": {
+      "viewInvoice": "Voir facture",
+      "downloadPdf": "Télécharger PDF",
+      "generating": "Génération...",
+      "invoicePdf": "Facture PDF"
+    },
+    "dialog": {
+      "title": "Facture • Commande #{orderNumber}",
+      "description": "Vérifiez les informations avant de télécharger le PDF."
+    },
+    "contact": {
+      "title": "Contact :",
+      "name": "Nom:",
+      "serviceCharge": "Service de charge:",
+      "email": "Email:",
+      "phone": "Tél:",
+      "address": "Adresse:",
+      "ice": "ICE client:"
+    },
+    "meta": {
+      "invoice": "Facture:",
+      "invoiceNumber": "FAC-{orderNumber}",
+      "date": "Date:"
+    },
+    "table": {
+      "code": "CODE",
+      "article": "Article",
+      "qty": "Qté",
+      "unitPrice": "P.A ({currency})",
+      "total": "Total ({currency})",
+      "lineDiscount": "Remise ligne:",
+      "empty": "Aucun article disponible."
+    },
+    "totals": {
+      "grandTotal": "TOTAL GÉNÉRAL:"
+    },
+    "details": {
+      "title": "Détails commande",
+      "subtotal": "Sous-total:",
+      "shipping": "Livraison:",
+      "tax": "TVA:",
+      "promoDiscount": "Promo / réduction:",
+      "remiseUsed": "Remise utilisée:",
+      "amountToPay": "Montant à payer:",
+      "payment": "Paiement:",
+      "delivery": "Livraison:"
+    },
+    "delivery": {
+      "pickup": "Retrait",
+      "delivery": "Domicile"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "Paiement à la livraison",
+      "pay_in_store": "Paiement en boutique",
+      "card": "Carte bancaire",
+      "bank_transfer": "Virement bancaire",
+      "mobile_payment": "Paiement mobile",
+      "solde": "Paiement différé"
+    },
+    "footer": {
+      "emailLabel": "EMAIL:",
+      "serviceChargeLabel": "Service de charge:"
+    }
+  },
+  "notFound": {
+    "product": {
+      "title": "المنتج غير موجود",
+      "description": "هذا المنتج غير موجود أو لم يعد متاحاً.",
+      "primaryLabel": "العودة إلى المتجر"
+    },
+    "order": {
+      "title": "الطلب غير موجود",
+      "description": "هذا الطلب غير موجود أو ليس لديك صلاحية الوصول إليه.",
+      "primaryLabel": "عرض طلباتي"
+    },
+    "default": {
+      "title": "الصفحة غير موجودة",
+      "description": "العنوان غير صحيح أو تم نقل الصفحة.",
+      "primaryLabel": "العودة إلى الرئيسية"
+    },
+    "back": "رجوع"
   },
   "shop": {
     "filters": "الفلاتر",

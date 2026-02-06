@@ -56,6 +56,7 @@ export function HomeHero({
   const t = useTranslations('home')
   const detectedLocale = useLocale()
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
+  const heroApiLocale: 'fr' | 'ar' = activeLocale === 'ar' ? 'ar' : 'fr'
 
   const {
     data: apiSlides,
@@ -63,7 +64,7 @@ export function HomeHero({
     isFetching,
     isError,
   } = useGetHeroSlidesQuery(
-    { locale: activeLocale, limit: 4 },
+    { locale: heroApiLocale, limit: 4 },
     { skip: !!(slides && slides.length > 0) }
   )
 

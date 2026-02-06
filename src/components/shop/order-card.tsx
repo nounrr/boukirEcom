@@ -73,7 +73,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   }, [displayOrder.items, displayOrder.itemsCount])
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return null
+    if (!dateString) return "—"
     const date = new Date(dateString)
     return new Intl.DateTimeFormat(locale, {
       day: 'numeric',
@@ -82,8 +82,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
     }).format(date)
   }
 
-  const formatShortDate = (dateString: string | null) => {
-    if (!dateString) return null
+  const formatShortDate = (dateString: string) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat(locale, {
       day: 'numeric',

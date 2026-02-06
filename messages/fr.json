@@ -179,6 +179,7 @@
     }
   },
   "orderDetailsPage": {
+    "placeholder": "—",
     "pageTitle": "Détails de la commande",
     "subtitle": "Commande #{orderNumber} • {count, plural, one {# article} other {# articles}}",
     "toast": {
@@ -260,6 +261,8 @@
     "itemsTab": {
       "title": "Articles",
       "count": "{count, plural, one {# article} other {# articles}}",
+      "variantType": "Variante",
+      "variantLine": "{type} : {name}",
       "qty": "Qté: {quantity}",
       "unitPrice": "PU: {price}",
       "subtotal": "Sous-total: {subtotal}"
@@ -307,8 +310,111 @@
     "history": {
       "title": "Historique de statut",
       "empty": "Aucun historique disponible pour le moment.",
-      "changedBy": "{who}"
+      "changedBy": "Modifié par {who}",
+      "actor": {
+        "customer": "Client",
+        "admin": "Admin"
+      }
     }
+  },
+  "invoice": {
+    "placeholder": "—",
+    "currency": "MAD",
+    "money": {
+      "dh": "DH"
+    },
+    "fileNamePrefix": "Facture_",
+    "toast": {
+      "errorTitle": "Erreur lors de la génération",
+      "errorDesc": "Impossible de générer la facture PDF."
+    },
+    "actions": {
+      "viewInvoice": "Voir facture",
+      "downloadPdf": "Télécharger PDF",
+      "generating": "Génération...",
+      "invoicePdf": "Facture PDF"
+    },
+    "dialog": {
+      "title": "Facture • Commande #{orderNumber}",
+      "description": "Vérifiez les informations avant de télécharger le PDF."
+    },
+    "contact": {
+      "title": "Contact :",
+      "name": "Nom:",
+      "serviceCharge": "Service de charge:",
+      "email": "Email:",
+      "phone": "Tél:",
+      "address": "Adresse:",
+      "ice": "ICE client:"
+    },
+    "meta": {
+      "invoice": "Facture:",
+      "invoiceNumber": "FAC-{orderNumber}",
+      "date": "Date:"
+    },
+    "table": {
+      "code": "CODE",
+      "article": "Article",
+      "qty": "Qté",
+      "unitPrice": "P.A ({currency})",
+      "total": "Total ({currency})",
+      "lineDiscount": "Remise ligne:",
+      "empty": "Aucun article disponible."
+    },
+    "totals": {
+      "grandTotal": "TOTAL GÉNÉRAL:"
+    },
+    "details": {
+      "title": "Détails commande",
+      "subtotal": "Sous-total:",
+      "shipping": "Livraison:",
+      "tax": "TVA:",
+      "promoDiscount": "Promo / réduction:",
+      "remiseUsed": "Remise utilisée:",
+      "amountToPay": "Montant à payer:",
+      "payment": "Paiement:",
+      "delivery": "Livraison:"
+    },
+    "delivery": {
+      "pickup": "Retrait",
+      "delivery": "Domicile"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "Paiement à la livraison",
+      "pay_in_store": "Paiement en boutique",
+      "card": "Carte bancaire",
+      "bank_transfer": "Virement bancaire",
+      "mobile_payment": "Paiement mobile",
+      "solde": "Paiement différé"
+    },
+    "footer": {
+      "emailLabel": "EMAIL:",
+      "serviceChargeLabel": "Service de charge:"
+    }
+  },
+  "notFound": {
+    "product": {
+      "title": "Produit introuvable",
+      "description": "Ce produit n'existe pas ou n'est plus disponible.",
+      "primaryLabel": "Retour à la boutique"
+    },
+    "order": {
+      "title": "Commande introuvable",
+      "description": "Cette commande n'existe pas, ou vous n'y avez pas accès.",
+      "primaryLabel": "Voir mes commandes"
+    },
+    "default": {
+      "title": "Page introuvable",
+      "description": "L'adresse saisie est incorrecte, ou la page a été déplacée.",
+      "primaryLabel": "Retour à l'accueil"
+    },
+    "back": "Revenir"
   },
   "shop": {
     "filters": "Filtres",

@@ -179,6 +179,7 @@
     }
   },
   "orderDetailsPage": {
+    "placeholder": "—",
     "pageTitle": "订单详情",
     "subtitle": "订单 #{orderNumber} • {count} 件商品",
     "toast": {
@@ -260,6 +261,8 @@
     "itemsTab": {
       "title": "商品",
       "count": "{count} 件商品",
+      "variantType": "规格",
+      "variantLine": "{type}：{name}",
       "qty": "数量：{quantity}",
       "unitPrice": "单价：{price}",
       "subtotal": "小计：{subtotal}"
@@ -307,8 +310,111 @@
     "history": {
       "title": "状态记录",
       "empty": "暂无记录。",
-      "changedBy": "{who}"
+      "changedBy": "由{who}更改",
+      "actor": {
+        "customer": "客户",
+        "admin": "管理员"
+      }
     }
+  },
+  "invoice": {
+    "placeholder": "—",
+    "currency": "MAD",
+    "money": {
+      "dh": "DH"
+    },
+    "fileNamePrefix": "发票_",
+    "toast": {
+      "errorTitle": "生成发票失败",
+      "errorDesc": "无法生成发票 PDF。"
+    },
+    "actions": {
+      "viewInvoice": "查看发票",
+      "downloadPdf": "下载 PDF",
+      "generating": "生成中...",
+      "invoicePdf": "发票 PDF"
+    },
+    "dialog": {
+      "title": "发票 • 订单 #{orderNumber}",
+      "description": "下载前请核对信息。"
+    },
+    "contact": {
+      "title": "联系方式：",
+      "name": "姓名：",
+      "serviceCharge": "客服：",
+      "email": "邮箱：",
+      "phone": "电话：",
+      "address": "地址：",
+      "ice": "客户 ICE："
+    },
+    "meta": {
+      "invoice": "发票：",
+      "invoiceNumber": "FAC-{orderNumber}",
+      "date": "日期："
+    },
+    "table": {
+      "code": "编码",
+      "article": "商品",
+      "qty": "数量",
+      "unitPrice": "单价（{currency}）",
+      "total": "合计（{currency}）",
+      "lineDiscount": "行折扣：",
+      "empty": "暂无商品。"
+    },
+    "totals": {
+      "grandTotal": "总计："
+    },
+    "details": {
+      "title": "订单详情",
+      "subtotal": "小计：",
+      "shipping": "运费：",
+      "tax": "税费：",
+      "promoDiscount": "优惠/折扣：",
+      "remiseUsed": "已用折扣：",
+      "amountToPay": "应付金额：",
+      "payment": "支付：",
+      "delivery": "配送："
+    },
+    "delivery": {
+      "pickup": "自提",
+      "delivery": "送货上门"
+    },
+    "paymentStatus": {
+      "pending": "待处理",
+      "paid": "已支付",
+      "failed": "失败",
+      "refunded": "已退款"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "货到付款",
+      "pay_in_store": "到店支付",
+      "card": "银行卡",
+      "bank_transfer": "银行转账",
+      "mobile_payment": "移动支付",
+      "solde": "延期支付"
+    },
+    "footer": {
+      "emailLabel": "邮箱：",
+      "serviceChargeLabel": "客服："
+    }
+  },
+  "notFound": {
+    "product": {
+      "title": "未找到商品",
+      "description": "该商品不存在或已下架。",
+      "primaryLabel": "返回店铺"
+    },
+    "order": {
+      "title": "未找到订单",
+      "description": "该订单不存在，或你无权访问。",
+      "primaryLabel": "查看我的订单"
+    },
+    "default": {
+      "title": "未找到页面",
+      "description": "地址不正确或页面已移动。",
+      "primaryLabel": "返回首页"
+    },
+    "back": "返回"
   },
   "shop": {
     "filters": "筛选",

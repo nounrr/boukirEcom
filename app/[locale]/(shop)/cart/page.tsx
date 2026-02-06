@@ -232,14 +232,25 @@ export default function CartPage() {
                         {item.category}
                       </p>
                     )}
-                    {(item as LocalCartItem).variantName || (item as LocalCartItem).unitName ? (
-                      <p className="text-[11px] text-muted-foreground mb-2">
-                        {[
-                          (item as LocalCartItem).variantName ? t("labels.variant", { value: (item as LocalCartItem).variantName }) : null,
-                          (item as LocalCartItem).unitName ? t("labels.unit", { value: (item as LocalCartItem).unitName }) : null,
-                        ].filter(Boolean).join(t("labels.separator"))}
-                      </p>
-                    ) : null}
+                    {(() => {
+                      const variantName = (item as LocalCartItem).variantName;
+                      const unitName = (item as LocalCartItem).unitName;
+
+                      if (!variantName && !unitName) return null;
+
+                      return (
+                        <p className="text-[11px] text-muted-foreground mb-2">
+                          {[
+                            variantName
+                              ? t("labels.variant", { value: variantName })
+                              : null,
+                            unitName ? t("labels.unit", { value: unitName }) : null,
+                          ]
+                            .filter(Boolean)
+                            .join(t("labels.separator"))}
+                        </p>
+                      );
+                    })()}
 
                     {/* Price & Quantity Controls */}
                     <div className="flex items-center justify-between">

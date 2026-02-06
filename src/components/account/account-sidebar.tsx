@@ -85,13 +85,13 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             <Heart className="w-4 h-4" />
             {t("wishlist")}
           </Link>
-          <Link
+          {/* <Link
             href={`/${locale}/settings`}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "settings" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
           >
             <Settings className="w-4 h-4" />
             {t("settings")}
-          </Link>
+          </Link> */}
         </div>
       </div>
     </aside>

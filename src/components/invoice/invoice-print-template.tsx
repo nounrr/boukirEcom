@@ -1,4 +1,7 @@
+"use client"
+
 import React, { useMemo } from "react"
+import { useTranslations } from "next-intl"
 
 import type { Order, OrderItem } from "@/types/order"
 
@@ -16,19 +19,15 @@ export type InvoiceBuyerInfo = {
   country?: string
 }
 
-function formatMoneyMAD(value: number) {
+function formatMoney(value: number, currency: string) {
   const amount = Number.isFinite(Number(value)) ? Number(value) : 0
-  return `${amount.toFixed(2)} MAD`
+  return `${amount.toFixed(2)} ${currency}`
 }
 
-function formatDateFR(value?: string | null) {
+function formatDate(locale: string, value?: string | null) {
   if (!value) return "—"
   try {
-    return new Date(value).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
+    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value))
   } catch {
     return value
   }
@@ -39,21 +38,71 @@ function safeText(value?: string | null) {
   return v.length > 0 ? v : "—"
 }
 
-function lineDiscountLabel(item: OrderItem) {
+function formatAmount(value: number) {
+  const amount = Number.isFinite(Number(value)) ? Number(value) : 0
+  return amount.toFixed(2)
+}
+
+function lineDiscountLabel(item: OrderItem, currency: string) {
   const pct = item.discountPercentage != null ? Number(item.discountPercentage) : 0
   const amt = item.discountAmount != null ? Number(item.discountAmount) : 0
   if (pct > 0) return `-${pct}%`
-  if (amt > 0) return `-${formatMoneyMAD(amt)}`
+  if (amt > 0) return `-${formatMoney(amt, currency)}`
   return "—"
+}
+
+function getPaymentStatusLabel(t: (key: string) => string, status?: string | null) {
+  switch (status) {
+    case "pending":
+      return t("paymentStatus.pending")
+    case "paid":
+      return t("paymentStatus.paid")
+    case "failed":
+      return t("paymentStatus.failed")
+    case "refunded":
+      return t("paymentStatus.refunded")
+    default:
+      return status ? String(status) : "—"
+  }
+}
+
+function getPaymentMethodLabel(t: (key: string) => string, method?: string | null) {
+  switch (method) {
+    case "cash_on_delivery":
+      return t("paymentMethod.cash_on_delivery")
+    case "pay_in_store":
+      return t("paymentMethod.pay_in_store")
+    case "card":
+      return t("paymentMethod.card")
+    case "bank_transfer":
+      return t("paymentMethod.bank_transfer")
+    case "mobile_payment":
+      return t("paymentMethod.mobile_payment")
+    case "solde":
+      return t("paymentMethod.solde")
+    default:
+      return method ? String(method) : "—"
+  }
 }
 
 export function InvoicePrintTemplate({
   order,
   buyer,
+  locale = "fr",
+  dir = "ltr",
+  lang,
 }: {
   order: Order
   buyer?: InvoiceBuyerInfo
+  locale?: string
+  dir?: "ltr" | "rtl"
+  lang?: string
 }) {
+  const t = useTranslations("invoice")
+  const currency = t("currency")
+  const dh = t("money.dh")
+  const placeholder = t("placeholder")
+
   const seller = {
     name: "BOUKIR DIAMOND",
     subtitle: "CONSTRUCTION STORE",
@@ -66,12 +115,12 @@ export function InvoicePrintTemplate({
 
   const invoiceDate = useMemo(() => {
     const d = new Date(order.createdAt)
-    if (Number.isNaN(d.getTime())) return formatDateFR(order.createdAt)
+    if (Number.isNaN(d.getTime())) return formatDate(locale, order.createdAt)
     const yyyy = d.getFullYear()
     const mm = String(d.getMonth() + 1).padStart(2, "0")
     const dd = String(d.getDate()).padStart(2, "0")
     return `${dd}/${mm}/${yyyy}`
-  }, [order.createdAt])
+  }, [locale, order.createdAt])
 
   const remiseUsed = Number((order as any).remiseUsedAmount || 0)
   const soldeAmount = Number((order as any).soldeAmount || 0)
@@ -82,6 +131,10 @@ export function InvoicePrintTemplate({
   }, [order.paymentMethod, order.totalAmount, remiseUsed, soldeAmount])
 
   const items = order.items ?? []
+
+  const paymentMethodLabel = getPaymentMethodLabel(t as any, order.paymentMethod)
+  const paymentStatusLabel = getPaymentStatusLabel(t as any, order.paymentStatus)
+  const deliveryLabel = order.deliveryMethod === "pickup" ? t("delivery.pickup") : t("delivery.delivery")
 
   // IMPORTANT: html2canvas currently does not support parsing `oklch()` color values.
   // Tailwind v4 uses OKLCH for many palette colors, so this template intentionally
@@ -141,7 +194,7 @@ export function InvoicePrintTemplate({
   `
 
   return (
-    <div className="inv-page">
+    <div className="inv-page" dir={dir} lang={lang ?? locale}>
       <style>{css}</style>
       <div className="inv-pad">
         {/* Header (match provided screenshot) */}
@@ -162,27 +215,27 @@ export function InvoicePrintTemplate({
         {/* Contact + Meta */}
         <div className="inv-contactRow">
           <div className="inv-contactWrap">
-            <div className="inv-contactLabel">Contact :</div>
+            <div className="inv-contactLabel">{t("contact.title")}</div>
             <div className="inv-contactBox">
               <div className="inv-contactGrid">
                 <div className="inv-field">
-                  <span className="inv-fieldK">Nom:</span>
+                  <span className="inv-fieldK">{t("contact.name")}</span>
                   <span className="inv-fieldV">{safeText(buyer?.isCompany ? buyer.companyName ?? buyer.fullName : buyer?.fullName ?? order.customerName)}</span>
                 </div>
                 <div className="inv-field">
-                  <span className="inv-fieldK">Service de charge:</span>
+                  <span className="inv-fieldK">{t("contact.serviceCharge")}</span>
                   <span className="inv-fieldV">{seller.serviceCharge}</span>
                 </div>
                 <div className="inv-field">
-                  <span className="inv-fieldK">Email:</span>
+                  <span className="inv-fieldK">{t("contact.email")}</span>
                   <span className="inv-fieldV">{safeText(buyer?.email ?? order.customerEmail)}</span>
                 </div>
                 <div className="inv-field">
-                  <span className="inv-fieldK">Tél:</span>
+                  <span className="inv-fieldK">{t("contact.phone")}</span>
                   <span className="inv-fieldV">{safeText(buyer?.phone ?? order.customerPhone ?? null)}</span>
                 </div>
                 <div className="inv-field" style={{ gridColumn: "1 / span 2" }}>
-                  <span className="inv-fieldK">Adresse:</span>
+                  <span className="inv-fieldK">{t("contact.address")}</span>
                   <span className="inv-fieldV">
                     {[
                       buyer?.addressLine1 ?? order.shippingAddress?.line1,
@@ -191,12 +244,12 @@ export function InvoicePrintTemplate({
                       buyer?.postalCode ?? order.shippingAddress?.postalCode,
                     ]
                       .filter(Boolean)
-                      .join(" • ") || "—"}
+                      .join(" • ") || placeholder}
                   </span>
                 </div>
                 {buyer?.isCompany ? (
                   <div className="inv-field" style={{ gridColumn: "1 / span 2" }}>
-                    <span className="inv-fieldK">ICE client:</span>
+                    <span className="inv-fieldK">{t("contact.ice")}</span>
                     <span className="inv-fieldV">{safeText(buyer.ice)}</span>
                   </div>
                 ) : null}
@@ -205,8 +258,8 @@ export function InvoicePrintTemplate({
           </div>
 
           <div className="inv-metaSimple">
-            <div><span className="k">Facture:</span> <span className="v">FAC-{order.orderNumber}</span></div>
-            <div><span className="k">Date:</span> <span className="v">{invoiceDate}</span></div>
+            <div><span className="k">{t("meta.invoice")}</span> <span className="v">{t("meta.invoiceNumber", { orderNumber: order.orderNumber })}</span></div>
+            <div><span className="k">{t("meta.date")}</span> <span className="v">{invoiceDate}</span></div>
           </div>
         </div>
 
@@ -216,17 +269,17 @@ export function InvoicePrintTemplate({
             <thead>
               <tr>
                 <th className="inv-th" style={{ width: 70 }}>
-                  CODE
+                  {t("table.code")}
                 </th>
-                <th className="inv-th">Article</th>
+                <th className="inv-th">{t("table.article")}</th>
                 <th className="inv-th" style={{ width: 80 }}>
-                  Qté
+                  {t("table.qty")}
                 </th>
                 <th className="inv-th" style={{ width: 120, textAlign: "right" }}>
-                  P.A (DH)
+                  {t("table.unitPrice", { currency: dh })}
                 </th>
                 <th className="inv-th" style={{ width: 130, textAlign: "right" }}>
-                  Total (DH)
+                  {t("table.total", { currency: dh })}
                 </th>
               </tr>
             </thead>
@@ -242,13 +295,13 @@ export function InvoicePrintTemplate({
                       <div className="inv-tdStrong">{articleLine}</div>
                       {(item.discountPercentage && item.discountPercentage > 0) || (item.discountAmount && item.discountAmount > 0) ? (
                         <div className="inv-tdMuted" style={{ marginTop: 3 }}>
-                          Remise ligne: {lineDiscountLabel(item)}
+                          {t("table.lineDiscount")} {lineDiscountLabel(item, currency)}
                         </div>
                       ) : null}
                     </td>
                     <td className="inv-td">{item.quantity}</td>
-                    <td className="inv-td" style={{ textAlign: "right" }}>{formatMoneyMAD(item.unitPrice).replace(" MAD", "")}</td>
-                    <td className="inv-td inv-tdStrong" style={{ textAlign: "right" }}>{formatMoneyMAD(item.subtotal).replace(" MAD", "")}</td>
+                    <td className="inv-td" style={{ textAlign: "right" }}>{formatAmount(item.unitPrice)}</td>
+                    <td className="inv-td inv-tdStrong" style={{ textAlign: "right" }}>{formatAmount(item.subtotal)}</td>
                   </tr>
                 )
               })}
@@ -256,7 +309,7 @@ export function InvoicePrintTemplate({
               {items.length === 0 ? (
                 <tr>
                   <td className="inv-td" style={{ textAlign: "center" }} colSpan={5}>
-                    Aucun article disponible.
+                    {t("table.empty")}
                   </td>
                 </tr>
               ) : null}
@@ -267,23 +320,23 @@ export function InvoicePrintTemplate({
         {/* Total général (like backoffice) */}
         <div className="inv-totalsRow">
           <div className="inv-totalGeneral">
-            <span className="inv-totalGeneralLabel">TOTAL GÉNÉRAL:</span>
-            <span className="inv-totalGeneralValue">{formatMoneyMAD(order.totalAmount).replace(" MAD", " DH")}</span>
+            <span className="inv-totalGeneralLabel">{t("totals.grandTotal")}</span>
+            <span className="inv-totalGeneralValue">{formatAmount(order.totalAmount)} {dh}</span>
           </div>
         </div>
 
         {/* Details block (more ecommerce details) */}
         <div className="inv-details">
-          <div className="inv-detailsTitle">Détails commande</div>
+          <div className="inv-detailsTitle">{t("details.title")}</div>
           <div className="inv-detailsGrid">
-            <div><span className="k">Sous-total:</span> <span className="v">{formatMoneyMAD(order.subtotal)}</span></div>
-            <div><span className="k">Livraison:</span> <span className="v">{formatMoneyMAD(order.shippingCost)}</span></div>
-            <div><span className="k">TVA:</span> <span className="v">{formatMoneyMAD(order.taxAmount)}</span></div>
-            <div><span className="k">Promo / réduction:</span> <span className="v">{order.discountAmount > 0 ? `- ${formatMoneyMAD(order.discountAmount)}` : "—"}</span></div>
-            <div><span className="k">Remise utilisée:</span> <span className="v">{remiseUsed > 0 ? `- ${formatMoneyMAD(remiseUsed)}` : "—"}</span></div>
-            <div><span className="k">Montant à payer:</span> <span className="v">{formatMoneyMAD(amountToPay)}</span></div>
-            <div><span className="k">Paiement:</span> <span className="v">{order.paymentMethod} • {order.paymentStatus}</span></div>
-            <div><span className="k">Livraison:</span> <span className="v">{order.deliveryMethod === "pickup" ? "Retrait" : "Domicile"}</span></div>
+            <div><span className="k">{t("details.subtotal")}</span> <span className="v">{formatMoney(order.subtotal, currency)}</span></div>
+            <div><span className="k">{t("details.shipping")}</span> <span className="v">{formatMoney(order.shippingCost, currency)}</span></div>
+            <div><span className="k">{t("details.tax")}</span> <span className="v">{formatMoney(order.taxAmount, currency)}</span></div>
+            <div><span className="k">{t("details.promoDiscount")}</span> <span className="v">{order.discountAmount > 0 ? `- ${formatMoney(order.discountAmount, currency)}` : placeholder}</span></div>
+            <div><span className="k">{t("details.remiseUsed")}</span> <span className="v">{remiseUsed > 0 ? `- ${formatMoney(remiseUsed, currency)}` : placeholder}</span></div>
+            <div><span className="k">{t("details.amountToPay")}</span> <span className="v">{formatMoney(amountToPay, currency)}</span></div>
+            <div><span className="k">{t("details.payment")}</span> <span className="v">{paymentMethodLabel} • {paymentStatusLabel}</span></div>
+            <div><span className="k">{t("details.delivery")}</span> <span className="v">{deliveryLabel}</span></div>
           </div>
         </div>
 
@@ -292,8 +345,8 @@ export function InvoicePrintTemplate({
       {/* Footer pinned to bottom */}
       <div className="inv-footer">
         <div className="inv-footerLine">{seller.address}</div>
-        <div className="inv-footerLine2">{seller.phones} | EMAIL: {seller.email}</div>
-        <div className="inv-footerLine3">Service de charge: {seller.serviceCharge}</div>
+        <div className="inv-footerLine2">{seller.phones} | {t("footer.emailLabel")} {seller.email}</div>
+        <div className="inv-footerLine3">{t("footer.serviceChargeLabel")} {seller.serviceCharge}</div>
       </div>
     </div>
   )

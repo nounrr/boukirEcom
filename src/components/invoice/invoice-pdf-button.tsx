@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react"
 import { Download } from "lucide-react"
 import type { VariantProps } from "class-variance-authority"
+import { useLocale, useTranslations } from "next-intl"
 
 import type { Order } from "@/types/order"
 import type { User } from "@/state/slices/user-slice"
@@ -28,8 +29,14 @@ export function InvoicePdfButton({
   size?: ButtonSize
   className?: string
 }) {
+  const locale = useLocale()
+  const t = useTranslations("invoice")
   const toast = useToast()
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const invoiceLocale = locale === "ar" ? "fr" : locale
+  const invoiceDir: "ltr" | "rtl" = locale === "ar" ? "ltr" : "ltr"
+  const invoiceLang = locale === "ar" ? "fr" : locale
 
   const buyer = useMemo(() => {
     const isCompany = !!user?.is_company
@@ -53,7 +60,7 @@ export function InvoicePdfButton({
   const fileName = useMemo(() => {
     const d = new Date(order.createdAt)
     const datePart = Number.isNaN(d.getTime()) ? "" : `_${d.toISOString().slice(0, 10)}`
-    return `Facture_${order.orderNumber}${datePart}.pdf`
+    return `${t("fileNamePrefix")}${order.orderNumber}${datePart}.pdf`
   }, [order.createdAt, order.orderNumber])
 
   const onDownload = async () => {
@@ -61,14 +68,14 @@ export function InvoicePdfButton({
       setIsGenerating(true)
 
       await downloadPdfFromReactElement({
-        element: <InvoicePrintTemplate order={order} buyer={buyer} />,
+        element: <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />,
         fileName,
         paper: "a4",
       })
     } catch (e: any) {
       console.error("Invoice PDF generation failed", e)
-      toast.error("Erreur lors de la génération", {
-        description: e?.message || "Impossible de générer la facture PDF.",
+      toast.error(t("toast.errorTitle"), {
+        description: e?.message || t("toast.errorDesc"),
       })
     } finally {
       setIsGenerating(false)
@@ -84,7 +91,7 @@ export function InvoicePdfButton({
       className={className}
     >
       <Download className="w-4 h-4 mr-2" />
-      {isGenerating ? "Génération..." : "Facture PDF"}
+      {isGenerating ? t("actions.generating") : t("actions.invoicePdf")}
     </Button>
   )
 }
