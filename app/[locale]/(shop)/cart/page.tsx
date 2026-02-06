@@ -4,7 +4,7 @@ import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Package, Trash2, Plus, Minus } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useGetCartQuery, useUpdateCartItemMutation, useRemoveFromCartMutation, useGetCartSuggestionsQuery } from "@/state/api/cart-api-slice"
 import { useAppSelector } from "@/state/hooks"
@@ -38,6 +38,9 @@ export default function CartPage() {
   const router = useRouter()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const toast = useToast()
+  const t = useTranslations("cartPage")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
   
   // State for localStorage cart (guest users)
   const [localCart, setLocalCart] = useState<LocalCartItem[]>([])
@@ -109,9 +112,9 @@ export default function CartPage() {
     // API update for authenticated users
       try {
         await updateCartItem({ id: itemId, quantity: newQuantity }).unwrap()
-        toast.success("Quantité mise à jour", { description: productName })
+        toast.success(t("toast.quantityUpdatedTitle"), { description: productName })
       } catch (error) {
-        toast.error("Erreur", { description: "Impossible de mettre à jour la quantité" })
+        toast.error(tCommon("error"), { description: t("toast.quantityUpdateFailedDesc") })
       }
     } else {
       // localStorage update for guests
@@ -120,7 +123,7 @@ export default function CartPage() {
           ? { ...item, quantity: newQuantity }
           : item
       ))
-      toast.success("Quantité mise à jour", { description: productName })
+      toast.success(t("toast.quantityUpdatedTitle"), { description: productName })
     }
   }
 
@@ -129,24 +132,24 @@ export default function CartPage() {
     // API remove for authenticated users
       try {
         await removeFromCart({ id: itemId }).unwrap()
-        toast.success("Retiré du panier", { description: productName })
+        toast.success(t("toast.removedTitle"), { description: productName })
       } catch (error) {
-        toast.error("Erreur", { description: "Impossible de retirer le produit" })
+        toast.error(tCommon("error"), { description: t("toast.removeFailedDesc") })
       }
     } else {
       // localStorage remove for guests
       setLocalCart(prev => prev.filter(item =>
         itemKey ? getCartItemKey(item) !== itemKey : item.productId !== itemId
       ))
-      toast.success("Retiré du panier", { description: productName })
+      toast.success(t("toast.removedTitle"), { description: productName })
     }
   }
 
   if (isLoading) {
     return (
       <ShopPageLayout
-        title="Mon Panier"
-        subtitle="Chargement..."
+        title={t("title")}
+        subtitle={tCommon("loading")}
         icon="cart"
       >
         <div className="space-y-4">
@@ -169,16 +172,16 @@ export default function CartPage() {
 
   return (
     <ShopPageLayout
-      title="Mon Panier"
-      subtitle="Vérifiez vos articles avant de passer commande"
+      title={t("title")}
+      subtitle={t("subtitle")}
       icon="cart"
       itemCount={cartItems.length}
       isEmpty={isEmpty}
       emptyState={{
         icon: <ShoppingCart className="w-10 h-10 text-muted-foreground" />,
-        title: "Votre panier est vide",
-        description: "Parcourez nos produits et ajoutez-les à votre panier pour commencer vos achats.",
-        actionLabel: "Découvrir les produits",
+        title: t("empty.title"),
+        description: t("empty.description"),
+        actionLabel: t("empty.actionLabel"),
         actionHref: `/${locale}/shop`,
       }}
     >
@@ -231,9 +234,10 @@ export default function CartPage() {
                     )}
                     {(item as LocalCartItem).variantName || (item as LocalCartItem).unitName ? (
                       <p className="text-[11px] text-muted-foreground mb-2">
-                        {(item as LocalCartItem).variantName ? `Variante: ${(item as LocalCartItem).variantName}` : null}
-                        {(item as LocalCartItem).variantName && (item as LocalCartItem).unitName ? ' · ' : null}
-                        {(item as LocalCartItem).unitName ? `Unité: ${(item as LocalCartItem).unitName}` : null}
+                        {[
+                          (item as LocalCartItem).variantName ? t("labels.variant", { value: (item as LocalCartItem).variantName }) : null,
+                          (item as LocalCartItem).unitName ? t("labels.unit", { value: (item as LocalCartItem).unitName }) : null,
+                        ].filter(Boolean).join(t("labels.separator"))}
                       </p>
                     ) : null}
 
@@ -251,7 +255,7 @@ export default function CartPage() {
                           >
                             <Minus className="w-3 h-3" />
                           </Button>
-                          <span className="px-3 text-sm font-medium min-w-[2rem] text-center">
+                          <span className="px-3 text-sm font-medium min-w-8 text-center">
                             {item.quantity}
                           </span>
                           <Button
@@ -268,7 +272,7 @@ export default function CartPage() {
                         {/* Stock Warning */}
                         {item.stock && item.stock <= 5 && (
                           <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
-                            Plus que {item.stock} en stock
+                            {t("lowStockWarning", { count: item.stock })}
                           </Badge>
                         )}
                       </div>
@@ -276,10 +280,10 @@ export default function CartPage() {
                       {/* Price */}
                       <div className="text-right">
                         <div className="text-lg font-bold text-foreground">
-                          {(item.price * item.quantity).toFixed(2)} MAD
+                          {t("price", { price: (item.price * item.quantity).toFixed(2), currency })}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.price.toFixed(2)} MAD / unité
+                          {t("pricePerUnit", { price: item.price.toFixed(2), currency })}
                         </div>
                       </div>
                     </div>
@@ -290,6 +294,7 @@ export default function CartPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      aria-label={t("aria.removeItem")}
                       onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                       disabled={isRemoving}
                       className="hover:bg-destructive/10 hover:text-destructive"
@@ -306,20 +311,20 @@ export default function CartPage() {
           {!isEmpty && (
             <div className="lg:col-span-1">
               <div className="bg-card border border-border rounded-xl p-6 sticky top-24">
-                <h3 className="text-lg font-semibold mb-4">Résumé de la commande</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("summary.title")}</h3>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Sous-total</span>
-                    <span className="font-medium">{cartTotal.toFixed(2)} MAD</span>
+                    <span className="text-muted-foreground">{t("summary.subtotal")}</span>
+                    <span className="font-medium">{t("price", { price: cartTotal.toFixed(2), currency })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Livraison</span>
-                    <span className="font-medium">À calculer</span>
+                    <span className="text-muted-foreground">{t("summary.delivery")}</span>
+                    <span className="font-medium">{t("summary.deliveryToCalculate")}</span>
                   </div>
                   <div className="border-t pt-3 flex justify-between">
-                    <span className="font-semibold">Total</span>
-                    <span className="text-xl font-bold text-primary">{cartTotal.toFixed(2)} MAD</span>
+                    <span className="font-semibold">{t("summary.total")}</span>
+                    <span className="text-xl font-bold text-primary">{t("price", { price: cartTotal.toFixed(2), currency })}</span>
                   </div>
                 </div>
 
@@ -328,12 +333,12 @@ export default function CartPage() {
                   size="lg"
                   onClick={() => router.push(`/${locale}/checkout`)}
                 >
-                  Passer la commande
+                  {t("summary.checkout")}
                 </Button>
 
                 {/* Items Count */}
                 <div className="mt-4 text-center text-sm text-muted-foreground">
-                  {cartItems.length} article{cartItems.length > 1 ? 's' : ''} dans votre panier
+                  {t("itemsCount", { count: cartItems.length })}
                 </div>
               </div>
             </div>

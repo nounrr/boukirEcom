@@ -27,6 +27,289 @@
     "previous": "السابق",
     "viewAll": "عرض الكل"
   },
+  "authDialog": {
+    "wishlistTitle": "سجّل الدخول لحفظ منتجاتك المفضلة",
+    "wishlistSubtitle": "اطّلع على قائمة المفضلة وتتبّع طلباتك."
+  },
+  "ordersPage": {
+    "toast": {
+      "addedToCartTitle": "تمت الإضافة إلى السلة"
+    },
+    "title": {
+      "orders": "طلباتي",
+      "solde": "كشف الرصيد"
+    },
+    "loading": "جاري التحميل...",
+    "tabs": {
+      "orders": "الطلبات",
+      "solde": "سجل الرصيد"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "تم التأكيد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغى"
+    },
+    "paymentStatus": {
+      "pending": "قيد الانتظار",
+      "paid": "مدفوع",
+      "failed": "فشل",
+      "refunded": "تم الاسترجاع"
+    },
+    "subtitle": {
+      "ordersIntro": "تتبّع حالة طلباتك.",
+      "soldeIntro": "اطّلع على حركة الرصيد وكشف الحساب.",
+      "noResultsFilters": "لا توجد نتائج مطابقة للفلاتر.",
+      "noResultsPeriod": "لا توجد نتائج لهذه الفترة.",
+      "ordersWithCount": "{count, plural, zero {لا توجد طلبات} one {لديك طلب واحد} two {لديك طلبان} few {لديك # طلبات} many {لديك # طلبًا} other {لديك # طلب}}{hasPagination, select, yes { • الصفحة {page} من {totalPages}} other {}}",
+      "soldeWithCount": "{count, plural, zero {لا توجد حركات} one {حركة واحدة} two {حركتان} few {# حركات} many {# حركة} other {# حركة}}"
+    },
+    "ordersCountInline": "{count, plural, zero {لا توجد طلبات} one {طلب واحد} two {طلبان} few {# طلبات} many {# طلبًا} other {# طلب}}{hasPagination, select, yes { • الصفحة {page} / {totalPages}} other {}}",
+    "soldeMovementsInline": "{count, plural, zero {لا توجد حركات} one {حركة واحدة} two {حركتان} few {# حركات} many {# حركة} other {# حركة}}",
+    "soldeStatementHint": "اطّلع على كشف الحساب وحركة الرصيد.",
+    "filters": {
+      "period": {
+        "placeholder": "كل الفترات",
+        "all": "كل الفترات",
+        "thisWeek": "هذا الأسبوع",
+        "thisMonth": "هذا الشهر",
+        "custom": "فترة مخصصة"
+      },
+      "status": {
+        "placeholder": "الحالة",
+        "all": "كل الحالات"
+      },
+      "paymentStatus": {
+        "placeholder": "الدفع",
+        "all": "كل حالات الدفع"
+      },
+      "paymentMethod": {
+        "placeholder": "الطريقة",
+        "all": "كل الطرق",
+        "cashOnDelivery": "الدفع عند الاستلام",
+        "card": "بطاقة بنكية",
+        "payInStore": "الدفع في المتجر",
+        "solde": "دفع مؤجل"
+      },
+      "deliveryMethod": {
+        "placeholder": "التوصيل",
+        "all": "الكل",
+        "delivery": "توصيل للمنزل",
+        "pickup": "استلام من المتجر"
+      },
+      "dateRange": {
+        "placeholder": "اختر فترة"
+      },
+      "reset": "إعادة ضبط الفلاتر"
+    },
+    "empty": {
+      "filtered": {
+        "title": "لا توجد نتائج",
+        "descSolde": "جرّب تغيير الفترة لعرض الحركات.",
+        "descOrders": "جرّب تغيير الفلاتر لعرض الطلبات.",
+        "resetCta": "إعادة الضبط",
+        "discoverCta": "اكتشف المنتجات"
+      },
+      "none": {
+        "soldeTitle": "لا توجد حركات رصيد",
+        "ordersTitle": "لا توجد طلبات بعد",
+        "soldeDesc": "ستظهر حركات رصيدك هنا.",
+        "ordersDesc": "ستظهر طلباتك هنا بعد إتمام عملية شراء.",
+        "discoverCta": "اكتشف المنتجات"
+      }
+    },
+    "soldeNotAllowed": {
+      "title": "غير مسموح",
+      "desc": "حسابك غير مؤهل للدفع المؤجل."
+    },
+    "soldeEmpty": {
+      "title": "لا يوجد كشف",
+      "desc": "لم يتم العثور على كشف رصيد للفترة المحددة."
+    }
+  },
+  "orderCard": {
+    "meta": {
+      "order": "الطلب",
+      "total": "الإجمالي",
+      "shipTo": "التسليم إلى",
+      "orderNumber": "رقم {number}"
+    },
+    "itemsCount": "{count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
+    "actions": {
+      "details": "التفاصيل",
+      "invoice": "الفاتورة",
+      "buyAgain": "اشترِ مرة أخرى",
+      "viewProduct": "عرض المنتج",
+      "trackPackage": "تتبع الشحنة",
+      "collapseAria": "طي الطلب",
+      "expandAria": "عرض العناصر"
+    },
+    "loadingDetails": "جارٍ تحميل التفاصيل...",
+    "address": {
+      "deliveryTitle": "عنوان التوصيل"
+    },
+    "item": {
+      "qty": "الكمية: {quantity}"
+    },
+    "deliveryStatus": {
+      "deliveredOn": "تم التسليم {date}",
+      "shippedOn": "تم الشحن {date}",
+      "confirmedOn": "تم التأكيد {date}",
+      "cancelled": "ملغى",
+      "pending": "قيد الانتظار",
+      "packageDelivered": "تم تسليم الطرد."
+    },
+    "deliveryMethod": {
+      "pickup": "استلام من المتجر",
+      "delivery": "توصيل للمنزل"
+    },
+    "paymentMethod": {
+      "solde": "دفع مؤجل",
+      "pay_in_store": "الدفع في المتجر",
+      "cash_on_delivery": "الدفع عند الاستلام",
+      "card": "بطاقة بنكية",
+      "unknown": "{method}"
+    },
+    "payment": {
+      "remiseInline": "خصم: -{amount}",
+      "toPayWithSoldeInline": "المتبقي على الرصيد: {amount} {currency}",
+      "toPayInline": "المتبقي للدفع: {amount} {currency}",
+      "remisePlus": "خصم + {method}"
+    }
+  },
+  "orderDetailsPage": {
+    "pageTitle": "تفاصيل الطلب",
+    "subtitle": "طلب رقم {orderNumber} • {count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
+    "toast": {
+      "addedToCartTitle": "تمت الإضافة إلى السلة"
+    },
+    "authRequired": {
+      "title": "جلسة مطلوبة",
+      "subtitle": "سجّل الدخول لعرض طلبك",
+      "description": "يرجى تسجيل الدخول للوصول إلى تفاصيل طلبك."
+    },
+    "error": {
+      "title": "تعذر تحميل الطلب",
+      "subtitle": "تعذر تحميل الطلب",
+      "description": "يرجى المحاولة بعد قليل."
+    },
+    "actions": {
+      "backToOrders": "العودة إلى الطلبات",
+      "invoice": "الفاتورة",
+      "refresh": "تحديث",
+      "buyAgain": "اشترِ مرة أخرى",
+      "viewProduct": "عرض المنتج"
+    },
+    "tabs": {
+      "overview": "ملخص",
+      "items": "العناصر",
+      "shipping": "الشحن",
+      "payment": "الدفع",
+      "history": "السجل"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "تم التأكيد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغى"
+    },
+    "paymentStatus": {
+      "pending": "قيد الانتظار",
+      "paid": "مدفوع",
+      "failed": "فشل",
+      "refunded": "تم الاسترجاع"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "الدفع عند الاستلام",
+      "pay_in_store": "الدفع في المتجر",
+      "card": "بطاقة بنكية",
+      "bank_transfer": "تحويل بنكي",
+      "mobile_payment": "دفع عبر الهاتف",
+      "solde": "دفع مؤجل"
+    },
+    "header": {
+      "orderNumber": "طلب #{number}"
+    },
+    "steps": {
+      "pending": "الطلب",
+      "confirmed": "تم التأكيد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم"
+    },
+    "cancelledNotice": "تم إلغاء هذا الطلب.",
+    "progress": {
+      "title": "حالة الطلب",
+      "status": "الحالة: {status}"
+    },
+    "overview": {
+      "orderLabel": "الطلب",
+      "viewListCta": "عرض القائمة",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "payment": "الدفع",
+      "total": "الإجمالي"
+    },
+    "itemsPreview": {
+      "title": "العناصر",
+      "line": "الكمية: {quantity} • {subtotal}",
+      "more": "+ {count} عناصر أخرى",
+      "viewAll": "عرض كل العناصر"
+    },
+    "itemsTab": {
+      "title": "العناصر",
+      "count": "{count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
+      "qty": "الكمية: {quantity}",
+      "unitPrice": "سعر الوحدة: {price}",
+      "subtotal": "الإجمالي الفرعي: {subtotal}"
+    },
+    "shipping": {
+      "pickupTitle": "استلام من المتجر",
+      "deliveryTitle": "التوصيل"
+    },
+    "shippingDates": {
+      "title": "التواريخ",
+      "confirmed": "تم التأكيد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغى"
+    },
+    "notes": {
+      "title": "ملاحظات",
+      "customer": "العميل",
+      "admin": "الإدارة"
+    },
+    "totals": {
+      "title": "الملخص",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "taxes": "الضرائب",
+      "discount": "الخصم",
+      "total": "الإجمالي",
+      "mixedPayment": "دفع مختلط",
+      "discountBalanceUsed": "رصيد الخصم المستخدم",
+      "remainingToPay": "المتبقي للدفع"
+    },
+    "payment": {
+      "title": "الدفع",
+      "discountChip": "خصم",
+      "statusLabel": "الحالة",
+      "discountUsed": "الخصم المستخدم",
+      "toPay": "المتبقي ({method})",
+      "note": "ملاحظة: {note}"
+    },
+    "paymentDetails": {
+      "title": "تفاصيل الدفع",
+      "method": "الطريقة",
+      "status": "الحالة"
+    },
+    "history": {
+      "title": "سجل الحالة",
+      "empty": "لا يوجد سجل متاح حالياً.",
+      "changedBy": "{who}"
+    }
+  },
   "shop": {
     "filters": "الفلاتر",
     "productsLabel": "منتجات",
@@ -35,7 +318,152 @@
     "featuredTitle": "عروض مميزة",
     "featuredDesc": "أفضل العروض المختارة لك",
     "newArrivalsTitle": "وصل حديثاً",
-    "newArrivalsDesc": "أحدث المنتجات المضافة للمتجر"
+    "newArrivalsDesc": "أحدث المنتجات المضافة للمتجر",
+    "heroDescription": "اكتشف منتجاتنا واعثر بسرعة على ما تحتاجه عبر البحث أعلى الصفحة.",
+    "featureDeliveryTitle": "توصيل سريع",
+    "featureDeliveryDesc": "خيارات مناسبة لمنطقتك.",
+    "featureSecurePaymentTitle": "دفع آمن",
+    "featureSecurePaymentDesc": "معاملات محمية وموثوقة.",
+    "featureQualityTitle": "جودة وتنوع",
+    "featureQualityDesc": "تشكيلة مختارة للمحترفين."
+  },
+  "productsList": {
+    "errorTitle": "تعذر تحميل المنتجات",
+    "errorDescription": "حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة لاحقاً.",
+    "retry": "إعادة المحاولة",
+    "emptyTitle": "لم يتم العثور على منتجات",
+    "emptyDescription": "جرّب تعديل الفلاتر أو البحث لاكتشاف منتجاتنا.",
+    "previous": "السابق",
+    "next": "التالي",
+    "badges": {
+      "new": "جديد",
+      "promo": "عرض"
+    }
+  },
+  "productCard": {
+    "quickView": "عرض سريع",
+    "addToCart": "أضف إلى السلة",
+    "outOfStock": "نفد من المخزون",
+    "addToWishlist": "أضف إلى المفضلة",
+    "removeFromWishlist": "إزالة من المفضلة",
+    "wishlistAddedTitle": "تمت الإضافة إلى المفضلة",
+    "wishlistRemovedTitle": "تمت الإزالة من المفضلة",
+    "genericErrorTitle": "حدث خطأ",
+    "wishlistUpdateFailedDesc": "تعذر تحديث المفضلة",
+    "variantRequiredTitle": "يرجى اختيار نوع",
+    "variantRequiredDesc": "هذا الاختيار مطلوب.",
+    "variantLabelFallback": "نوع",
+    "lowStock": "متبقي {count} فقط"
+  },
+  "productPage": {
+    "inStock": "متوفر",
+    "colorLabel": "اللون",
+    "sizeLabel": "المقاس",
+    "optionsLabel": "خيارات",
+    "unitLabel": "الوحدة",
+    "quantityLabel": "الكمية",
+    "totalLabel": "الإجمالي",
+    "descriptionHeading": "الوصف",
+    "addedToCartTitle": "تمت الإضافة إلى السلة",
+    "addedToCartDesc": "{quantity} × {name}",
+    "linkCopiedTitle": "تم نسخ الرابط",
+    "linkCopiedDesc": "تم نسخ الرابط إلى الحافظة.",
+    "loadErrorTitle": "تعذر تحميل المنتج",
+    "loadErrorDesc": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "similarTitle": "منتجات مشابهة",
+    "similarDesc": "اكتشف منتجات أخرى قد تعجبك",
+    "categoryFallback": "منتج"
+  },
+  "productFilters": {
+    "title": "الفلاتر",
+    "clear": "مسح",
+    "sortBy": "ترتيب حسب",
+    "selectPlaceholder": "اختر...",
+    "searchTitle": "بحث",
+    "searchPlaceholder": "ابحث عن منتج...",
+    "categories": "الفئات",
+    "brands": "العلامات",
+    "price": "السعر",
+    "colors": "الألوان",
+    "units": "الوحدات",
+    "inStockOnly": "المتوفر فقط",
+    "sort": {
+      "newest": "الأحدث",
+      "priceAsc": "السعر: من الأقل للأعلى",
+      "priceDesc": "السعر: من الأعلى للأقل",
+      "bestPromos": "أفضل العروض",
+      "popular": "الأكثر شعبية"
+    }
+  },
+  "cartPage": {
+    "title": "سلة التسوق",
+    "subtitle": "راجع عناصر سلتك قبل إتمام الطلب",
+    "empty": {
+      "title": "سلتك فارغة",
+      "description": "تصفح منتجاتنا وأضفها إلى سلتك لبدء التسوق.",
+      "actionLabel": "اكتشف المنتجات"
+    },
+    "toast": {
+      "quantityUpdatedTitle": "تم تحديث الكمية",
+      "quantityUpdateFailedDesc": "تعذر تحديث الكمية",
+      "removedTitle": "تمت الإزالة من السلة",
+      "removeFailedDesc": "تعذر إزالة المنتج"
+    },
+    "labels": {
+      "variant": "النوع: {value}",
+      "unit": "الوحدة: {value}",
+      "separator": " · "
+    },
+    "lowStockWarning": "متبقي {count} فقط في المخزون",
+    "price": "{price} {currency}",
+    "pricePerUnit": "{price} {currency} / وحدة",
+    "aria": {
+      "removeItem": "إزالة من السلة"
+    },
+    "summary": {
+      "title": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "delivery": "التوصيل",
+      "deliveryToCalculate": "يُحسب لاحقاً",
+      "total": "الإجمالي",
+      "checkout": "إتمام الطلب"
+    },
+    "itemsCount": "{count, plural, one {# عنصر في سلتك} other {# عناصر في سلتك}}"
+  },
+  "wishlistPage": {
+    "title": "المفضلة",
+    "subtitle": "كل منتجاتك المفضلة في مكان واحد",
+    "empty": {
+      "title": "قائمة المفضلة فارغة",
+      "description": "استكشف منتجاتنا وأضف المفضلة لديك لتجدها بسهولة لاحقاً.",
+      "actionLabel": "اكتشف المنتجات"
+    },
+    "toast": {
+      "removedTitle": "تمت الإزالة من المفضلة",
+      "removeFailedDesc": "تعذر إزالة المنتج",
+      "notFoundDesc": "لم يتم العثور على المنتج في المفضلة",
+      "addedToCartTitle": "تمت الإضافة إلى السلة",
+      "addToCartFailedDesc": "تعذر الإضافة إلى السلة"
+    },
+    "viewProduct": "عرض المنتج",
+    "saveAmount": "وفّر {amount} {currency}",
+    "inStock": "متوفر",
+    "outOfStock": "نفد من المخزون",
+    "lowStock": "متبقي {count} فقط",
+    "aria": {
+      "remove": "إزالة من المفضلة",
+      "addToCart": "أضف إلى السلة"
+    },
+    "removeShort": "إزالة",
+    "addToCart": "أضف إلى السلة"
+  },
+  "accountSidebar": {
+    "activeAccount": "حساب نشط",
+    "profile": "ملفي الشخصي",
+    "orders": "طلباتي",
+    "soldeHistory": "سجل الرصيد",
+    "wishlist": "المفضلة",
+    "settings": "الإعدادات"
   },
   "home": {
     "heroKicker": "متجرك للعدد واللوازم",
@@ -225,14 +653,19 @@
     "continueToCheckout": "متابعة الدفع",
     "continueShopping": "متابعة التسوق",
     "removeItem": "إزالة المنتج",
-    "updateCart": "تحديث السلة"
+    "updateCart": "تحديث السلة",
+    "itemsCount": "{count, plural, =0 {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}}",
+    "emptyHint": "أضف منتجات لبدء التسوق",
+    "browseProducts": "تصفح المنتجات",
+    "variantLabel": "النوع",
+    "unitLabel": "الوحدة",
+    "viewCart": "عرض السلة"
   },
   "checkout": {
     "title": "إتمام الطلب",
     "shippingAddress": "عنوان الشحن",
     "billingAddress": "عنوان الفواتير",
     "paymentMethod": "طريقة الدفع",
-    "orderSummary": "ملخص الطلب",
     "placeOrder": "تأكيد الطلب",
     "cashOnDelivery": "الدفع عند الاستلام",
     "creditCard": "بطاقة بنكية",
@@ -261,7 +694,223 @@
     "postalCode": "الرمز البريدي",
     "cityPlaceholder": "الدار البيضاء، الرباط...",
     "postalCodePlaceholder": "20000",
-    "deliveryNotes": "ملاحظات التسليم"
+    "deliveryNotes": "ملاحظات التسليم",
+    "wizard": {
+      "steps": {
+        "shipping": {
+          "title": "التوصيل",
+          "description": "المعلومات"
+        },
+        "payment": {
+          "title": "الدفع",
+          "description": "الطريقة"
+        },
+        "confirmation": {
+          "title": "التأكيد",
+          "description": "مراجعة"
+        }
+      }
+    },
+    "navigation": {
+      "previous": "السابق",
+      "next": "التالي",
+      "back": "رجوع"
+    },
+    "page": {
+      "subtitle": "أكمل طلبك بأمان",
+      "taxIncludedNote": "جميع المبالغ المعروضة شاملة للضريبة (VAT)."
+    },
+    "loading": {
+      "title": "جاري التحميل...",
+      "subtitle": "جاري جلب سلة التسوق"
+    },
+    "emptyCart": {
+      "title": "سلة التسوق فارغة",
+      "subtitle": "أضف منتجات إلى سلة التسوق قبل إتمام الطلب.",
+      "backToShop": "العودة إلى المتجر"
+    },
+    "validation": {
+      "deliveryMethodRequired": "يرجى اختيار طريقة التوصيل",
+      "paymentMethodRequired": "يرجى اختيار طريقة الدفع",
+      "pickupLocationRequired": "يرجى اختيار نقطة الاستلام",
+      "firstNameMin": "يجب أن يحتوي الاسم الأول على حرفين على الأقل",
+      "lastNameMin": "يجب أن يحتوي اسم العائلة على حرفين على الأقل",
+      "phoneInvalid": "رقم الهاتف غير صالح",
+      "phoneTooLong": "رقم الهاتف طويل جداً",
+      "cardholderNameRequired": "اسم حامل البطاقة مطلوب",
+      "cardNumberInvalid": "رقم البطاقة غير صالح",
+      "cardExpiryRequired": "تاريخ انتهاء الصلاحية مطلوب",
+      "cardCvvInvalid": "CVV غير صالح",
+      "emailInvalid": "البريد الإلكتروني غير صالح",
+      "invalidAmount": "مبلغ غير صالح",
+      "addressMin": "يجب أن يحتوي العنوان على 5 أحرف على الأقل",
+      "cityMin": "يجب أن تحتوي المدينة على حرفين على الأقل",
+      "codNotAvailablePickup": "الدفع عند الاستلام غير متاح للاستلام من المتجر"
+    },
+    "errors": {
+      "authRequiredForSolde": "يلزم تسجيل الدخول للدفع عبر السولد",
+      "soldeNotAllowed": "حسابك غير مخول للدفع عبر السولد",
+      "soldeLimitExceeded": "تم تجاوز حد السولد. المتاح: {available} {currency}، المطلوب: {requested} {currency}.",
+      "soldePlafondExceeded": "تم تجاوز سقف السولد{plafond, select, none {} other { (السقف {plafond} {currency})}}",
+      "orderCreateFailed": "تعذر إنشاء الطلب. يرجى المحاولة مرة أخرى."
+    },
+    "info": {
+      "soldePlafondDetails": "السقف: {plafond} {currency} • الحالي: {current} {currency} • +{amount} {currency} = {projected} {currency}"
+    },
+    "promo": {
+      "placeholder": "رمز ترويجي",
+      "apply": "تطبيق",
+      "remove": "إزالة",
+      "invalid": "غير صالح",
+      "appliedSuccess": "تم تطبيق الرمز الترويجي بنجاح!"
+    },
+    "cartSummary": {
+      "heading": {
+        "confirm": "طلبك",
+        "details": "تفاصيل الطلب"
+      },
+      "itemsCount": "{count, plural, =0 {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}}",
+      "categoryFallback": "منتج",
+      "subtotalWithCount": "المجموع الفرعي ({count, plural, =0 {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}})",
+      "discount": "خصم",
+      "shipping": "رسوم الشحن",
+      "free": "مجاني",
+      "total": "الإجمالي",
+      "taxIncluded": "شامل الضريبة",
+      "confirmProcessing": "جارٍ المعالجة...",
+      "confirmCta": "تأكيد • {total} {currency} (شامل الضريبة)",
+      "secureTransaction": "عملية آمنة 100%",
+      "termsPrefix": "بالتأكيد، أنت توافق على",
+      "termsLink": "الشروط والأحكام"
+    },
+    "payment": {
+      "recommended": "موصى به",
+      "methods": {
+        "title": "طريقة الدفع",
+        "otherTitle": "أو اختر طريقة دفع أخرى",
+        "subtitle": "اختر كيف تريد الدفع",
+        "cash_on_delivery": {
+          "label": "الدفع عند الاستلام",
+          "description": "ادفع نقداً عند استلام الطلب"
+        },
+        "pay_in_store": {
+          "label": "الدفع في المتجر",
+          "description": "ادفع عند استلام الطلب من المتجر"
+        },
+        "card": {
+          "label": "بطاقة بنكية",
+          "description": "Visa, Mastercard, American Express"
+        },
+        "solde": {
+          "label": "دفع مؤجل (Solde)",
+          "description": "اشترِ الآن وادفع لاحقاً"
+        },
+        "bank_transfer": {
+          "label": "تحويل بنكي",
+          "description": "تحويل بنكي آمن"
+        },
+        "mobile_payment": {
+          "label": "دفع عبر الهاتف",
+          "description": "الدفع عبر تطبيق الهاتف"
+        }
+      },
+      "remise": {
+        "title": "رصيد الخصم",
+        "subtitle": "استخدم خصمك لدفع كل الطلب أو جزء منه",
+        "loginToUse": "سجّل الدخول لاستخدام رصيد الخصم.",
+        "availableLabel": "المتاح:",
+        "maxLabel": "الحد الأقصى: {amount} {currency}",
+        "useMyRemise": "استخدام الخصم",
+        "coversAll": "يغطي الكل",
+        "deductUpTo": "خصم حتى {amount} {currency}",
+        "amountToUse": "المبلغ المستخدم",
+        "maxButton": "الحد الأقصى",
+        "total": "الإجمالي",
+        "discount": "الخصم",
+        "remaining": "المتبقي",
+        "coveredByRemise": "مغطى بالخصم",
+        "insufficient": "الرصيد غير كافٍ لهذه السلة."
+      },
+      "solde": {
+        "title": "Solde — اشترِ الآن وادفع لاحقاً",
+        "badgeExclusive": "حصري",
+        "eligibleSubtitle": "أنت مؤهل للدفع المؤجل",
+        "plafond": "السقف",
+        "notLimited": "غير محدود",
+        "cumulated": "المتراكم",
+        "available": "المتاح",
+        "usage": "الاستخدام",
+        "limitExceededTitle": "حد السولد غير كافٍ",
+        "limitExceededDesc": "السولد المتاح لديك هو {available} {currency}. قلّل السلة أو اختر طريقة دفع أخرى.",
+        "payLaterLabel": "الدفع لاحقاً (Solde)",
+        "remaining": "المتبقي: {amount} {currency}",
+        "payLaterDesc": "استلم طلبك الآن وادفع لاحقاً",
+        "verifiedAccount": "حساب موثّق",
+        "noFees": "بدون رسوم",
+        "amountDueLater": "المبلغ المستحق لاحقاً",
+        "amountDueLaterDesc": "سيتم معالجة طلبك بعد الموافقة. الدفع حسب الشروط المتفق عليها."
+      },
+      "notes": {
+        "title": "ملاحظات التوصيل",
+        "subtitle": "معلومات إضافية للتوصيل",
+        "label": "تعليمات خاصة",
+        "placeholder": "مثال: اتصل بي قبل 30 دقيقة، الطابق الثالث، الرمز: 1234..."
+      }
+    },
+    "card": {
+      "header": {
+        "title": "تفاصيل البطاقة",
+        "subtitle": "دفع آمن عبر SSL 256-bit"
+      },
+      "preview": {
+        "cardNumber": "رقم البطاقة",
+        "cardholder": "حامل البطاقة",
+        "cardholderPlaceholder": "اسم حامل البطاقة",
+        "expires": "الانتهاء",
+        "expiresPlaceholder": "MM/YY"
+      },
+      "form": {
+        "cardholderName": "اسم حامل البطاقة",
+        "cardholderPlaceholder": "محمد علي (كما هو مكتوب على البطاقة)",
+        "cardholderHelp": "أدخل الاسم تماماً كما يظهر على البطاقة",
+        "cardNumber": "رقم البطاقة",
+        "cardNumberHelp": "أدخل الأرقام (بدون مسافات)",
+        "expiryMonth": "الشهر",
+        "monthPlaceholder": "الشهر",
+        "expiryYear": "السنة",
+        "yearPlaceholder": "السنة",
+        "cvv": "CVV",
+        "showCvv": "إظهار CVV",
+        "hideCvv": "إخفاء CVV",
+        "cvvHelp": "3 أرقام خلف البطاقة (4 لـ Amex)",
+        "detectedVisa": "تم اكتشاف Visa",
+        "detectedMastercard": "تم اكتشاف Mastercard",
+        "detectedAmex": "تم اكتشاف American Express",
+        "securityNotice": "بياناتك مشفرة وآمنة. نحن لا نخزن معلومات بطاقتك أبداً.",
+        "processing": "جارٍ المعالجة...",
+        "confirmPayment": "تأكيد الدفع"
+      }
+    },
+    "orderSummary": {
+      "badge": {
+        "pickup": "استلام",
+        "delivery": "توصيل"
+      },
+      "pickupSelected": "نقطة الاستلام المختارة",
+      "pickedUpBy": "سيستلمها",
+      "address": "العنوان",
+      "contact": "التواصل",
+      "paymentMethod": "طريقة الدفع",
+      "specialInstructions": "تعليمات خاصة",
+      "trust": {
+        "securePaymentTitle": "دفع آمن",
+        "securePaymentDesc": "حماية SSL",
+        "returnsTitle": "إرجاع خلال 14 يوماً",
+        "returnsDesc": "استرجاع أو تعويض",
+        "supportTitle": "دعم 24/7",
+        "supportDesc": "مساعدة مخصصة"
+      }
+    }
   },
   "subscription": {
     "title": "برنامج الولاء",
@@ -300,7 +949,38 @@
     "newsletter": "النشرة الإخبارية",
     "subscribeNewsletter": "اشترك في نشرتنا الإخبارية",
     "emailPlaceholder": "بريدك الإلكتروني",
-    "subscribe": "اشترك"
+    "subscribe": "اشترك",
+    "shopLink": "المتجر",
+    "ordersLink": "طلباتي",
+    "rightsInline": "© {year} Boukir • جميع الحقوق محفوظة.",
+    "commitmentsTitle": "التزاماتنا",
+    "commitmentsSubtitle": "توصيل سريع، دفع آمن، وخدمة عملاء متجاوبة.",
+    "commitmentDeliveryTitle": "توصيل لجميع أنحاء المغرب",
+    "commitmentDeliveryDesc": "تتبع للطلب ودعم عملاء سريع.",
+    "commitmentSecurePaymentTitle": "دفع آمن",
+    "commitmentSecurePaymentDesc": "معاملات محمية وموثوقة.",
+    "commitmentPaymentMethodsTitle": "طرق دفع متعددة",
+    "commitmentPaymentMethodsDesc": "بطاقة، تحويل بنكي، الدفع عند الاستلام.",
+    "acceptedPayments": "طرق الدفع المقبولة",
+    "categoriesTitle": "الفئات",
+    "brandsTitle": "العلامات التجارية",
+    "customerServiceTitle": "خدمة العملاء",
+    "deliveryPaymentTitle": "التوصيل والدفع",
+    "emptyCategories": "لا توجد فئات",
+    "emptyBrands": "لا توجد علامات",
+    "viewShop": "اذهب للمتجر",
+    "viewAllBrands": "عرض كل العلامات",
+    "trackOrders": "تتبع طلباتي",
+    "helpFaq": "مساعدة وأسئلة شائعة",
+    "returnsRefunds": "الإرجاع والاسترداد",
+    "termsAndConditions": "الشروط والأحكام",
+    "privacyPolicy": "سياسة الخصوصية",
+    "deliveryAllMorocco": "توصيل لجميع أنحاء المغرب",
+    "securePaymentSsl": "دفع آمن (SSL)",
+    "paymentMethodsList": "بطاقة، تحويل بنكي، الدفع عند الاستلام",
+    "copyrightLine": "© {year} Boukir",
+    "rightsReserved": "جميع الحقوق محفوظة.",
+    "bottomTagline": "سوق مغربي • توصيل سريع • دفع آمن"
   },
   "toast": {
     "auth": {

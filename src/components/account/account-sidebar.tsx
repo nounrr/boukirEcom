@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { useAppSelector } from "@/state/hooks"
 import { Heart, Package, Settings, UserCircle2, Wallet } from "lucide-react"
 import Link from "next/link"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
@@ -13,13 +13,14 @@ interface AccountSidebarProps {
 
 export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
   const locale = useLocale()
+  const t = useTranslations("accountSidebar")
   const { user, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
   const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
 
   return (
     <aside className="lg:col-span-1">
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+      <div className="bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-sm">
         {isAuthLoading ? (
           <div className="flex flex-col items-center gap-3">
             <div className="h-20 w-20 rounded-full bg-muted animate-pulse" />
@@ -42,11 +43,13 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
                 </div>
               )}
             </div>
-            <p className="mt-3 text-base font-semibold text-foreground">
+              <p className="mt-3 text-base font-semibold text-foreground max-w-full wrap-break-word">
               {user?.prenom} {user?.nom}
             </p>
             <p className="text-xs text-muted-foreground break-all">{user?.email}</p>
-            <Badge className="mt-3" variant="secondary">Compte actif</Badge>
+              <Badge className="mt-3 text-xs px-2 py-0.5 max-w-full text-center" variant="secondary">
+                {t("activeAccount")}
+              </Badge>
           </div>
         )}
 
@@ -56,14 +59,14 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "profile" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
           >
             <UserCircle2 className="w-4 h-4" />
-            Mon profil
+            {t("profile")}
           </Link>
           <Link
             href={`/${locale}/orders`}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "orders" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
           >
             <Package className="w-4 h-4" />
-            Mes commandes
+            {t("orders")}
           </Link>
 
           {canUseSolde && (
@@ -72,7 +75,7 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
               className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "solde" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
             >
               <Wallet className="w-4 h-4" />
-              Solde historique
+              {t("soldeHistory")}
             </Link>
           )}
           <Link
@@ -80,14 +83,14 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "wishlist" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
           >
             <Heart className="w-4 h-4" />
-            Favoris
+            {t("wishlist")}
           </Link>
           <Link
             href={`/${locale}/settings`}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "settings" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
           >
             <Settings className="w-4 h-4" />
-            Paramètres
+            {t("settings")}
           </Link>
         </div>
       </div>

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
+import { useTranslations } from 'next-intl'
 
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterState) => void
@@ -40,6 +41,8 @@ export function ProductFilters({
   isCollapsed: controlledCollapsed,
   onCollapsedChange,
 }: ProductFiltersProps) {
+  const t = useTranslations('productFilters')
+  const tCommon = useTranslations('common')
   const [isOpen, setIsOpen] = useState(false)
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false)
   const isCollapsed = typeof controlledCollapsed === 'boolean' ? controlledCollapsed : uncontrolledCollapsed
@@ -82,11 +85,11 @@ export function ProductFilters({
 
   // Sort options with labels
   const sortOptions: Array<{ value: SortOption; label: string }> = [
-    { value: 'newest', label: 'Plus récents' },
-    { value: 'price_asc', label: 'Prix croissant' },
-    { value: 'price_desc', label: 'Prix décroissant' },
-    { value: 'promo', label: 'Meilleures promos' },
-    { value: 'popular', label: 'Les plus populaires' },
+    { value: 'newest', label: t('sort.newest') },
+    { value: 'price_asc', label: t('sort.priceAsc') },
+    { value: 'price_desc', label: t('sort.priceDesc') },
+    { value: 'promo', label: t('sort.bestPromos') },
+    { value: 'popular', label: t('sort.popular') },
   ]
 
   // Helper to check if filters actually changed (deep equality for arrays)
@@ -483,7 +486,7 @@ export function ProductFilters({
       <div className="flex items-center justify-between pb-4 border-b border-border/40">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Filtres</h2>
+          <h2 className="text-lg font-semibold">{t('title')}</h2>
           {activeFiltersCount > 0 && (
             <Badge variant="default" className="h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary">
               {activeFiltersCount}
@@ -499,7 +502,7 @@ export function ProductFilters({
             className="h-8 text-xs text-muted-foreground hover:text-destructive"
           >
             <X className="w-3.5 h-3.5 mr-1" />
-            Effacer
+            {t('clear')}
           </Button>
         )}
       </div>
@@ -510,11 +513,11 @@ export function ProductFilters({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Trier par</span>
+            <span className="text-sm font-medium">{t('sortBy')}</span>
           </div>
           <Select value={filters.sort} onValueChange={handleSortChange} disabled={isLoading}>
             <SelectTrigger className="h-9 text-sm w-full bg-background/80 backdrop-blur-sm border-border/60 hover:border-primary/40 transition-colors">
-              <SelectValue placeholder="Sélectionner..." />
+              <SelectValue placeholder={t('selectPlaceholder')} />
             </SelectTrigger>
             <SelectContent className="bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
               {sortOptions.map((option) => (
@@ -530,11 +533,11 @@ export function ProductFilters({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Search className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Rechercher</span>
+            <span className="text-sm font-medium">{t('searchTitle')}</span>
           </div>
           <Input
             type="search"
-            placeholder="Rechercher un produit..."
+            placeholder={t('searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             disabled={isLoading}
@@ -552,7 +555,7 @@ export function ProductFilters({
             >
               <div className="flex items-center gap-2">
                 <Tag className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Catégories</span>
+                <span className="text-sm font-medium">{t('categories')}</span>
               </div>
               <ChevronDown
                 className={cn(
@@ -581,7 +584,7 @@ export function ProductFilters({
             >
               <div className="flex items-center gap-2">
                 <Package className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Marques</span>
+                <span className="text-sm font-medium">{t('brands')}</span>
               </div>
               <ChevronDown
                 className={cn(
@@ -623,7 +626,7 @@ export function ProductFilters({
           >
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Prix</span>
+              <span className="text-sm font-medium">{t('price')}</span>
             </div>
             <ChevronDown
               className={cn(
@@ -645,8 +648,8 @@ export function ProductFilters({
                 className="w-full"
               />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{localPriceRange[0]} MAD</span>
-                <span className="text-muted-foreground">{localPriceRange[1]} MAD</span>
+                <span className="text-muted-foreground">{localPriceRange[0]} {tCommon('currency')}</span>
+                <span className="text-muted-foreground">{localPriceRange[1]} {tCommon('currency')}</span>
               </div>
             </div>
           )}
@@ -661,7 +664,7 @@ export function ProductFilters({
             >
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Couleurs</span>
+                <span className="text-sm font-medium">{t('colors')}</span>
               </div>
               <ChevronDown
                 className={cn(
@@ -709,7 +712,7 @@ export function ProductFilters({
             >
               <div className="flex items-center gap-2">
                 <Ruler className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Unités de mesure</span>
+                <span className="text-sm font-medium">{t('units')}</span>
               </div>
               <ChevronDown
                 className={cn(
@@ -752,7 +755,7 @@ export function ProductFilters({
             htmlFor="in-stock"
             className="text-sm cursor-pointer hover:text-foreground transition-colors"
           >
-            En stock uniquement
+            {t('inStockOnly')}
           </label>
         </div>
       </div>
@@ -766,7 +769,7 @@ export function ProductFilters({
         <SheetTrigger asChild className="lg:hidden">
           <Button variant="outline" className="gap-2 relative">
             <SlidersHorizontal className="w-4 h-4" />
-            Filtres
+            {t('title')}
             {activeFiltersCount > 0 && (
               <Badge variant="default" className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary">
                 {activeFiltersCount}

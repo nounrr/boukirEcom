@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Facebook, Instagram, Youtube, Truck, CreditCard, ShieldCheck } from 'lucide-react';
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
@@ -17,6 +17,8 @@ export function Footer({
   variant?: 'full' | 'compact';
 }) {
   const locale = useLocale();
+  const t = useTranslations('footer');
+  const tCommon = useTranslations('common');
   const isCompact = variant === 'compact';
 
   const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery(undefined, {
@@ -46,17 +48,17 @@ export function Footer({
                 href={`/${locale}/shop`}
                 className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
               >
-                Boutique
+                {t('shopLink')}
               </Link>
               <Link
                 href={`/${locale}/orders`}
                 className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
               >
-                Mes commandes
+                {t('ordersLink')}
               </Link>
             </div>
           </div>
-          <div className="mt-2 text-xs text-white/70">© {new Date().getFullYear()} Boukir • Tous droits réservés.</div>
+          <div className="mt-2 text-xs text-white/70">{t('rightsInline', { year: new Date().getFullYear() })}</div>
         </div>
       </footer>
     );
@@ -77,8 +79,8 @@ export function Footer({
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-12">
         {/* Nos engagements */}
         <div className="mb-10 rounded-2xl border border-white/15 bg-white/5 p-6">
-          <h2 className="text-lg font-extrabold tracking-tight">Nos engagements</h2>
-          <p className="mt-1 text-sm text-white/80">Livraison rapide, paiement sécurisé et service client à l’écoute.</p>
+          <h2 className="text-lg font-extrabold tracking-tight">{t('commitmentsTitle')}</h2>
+          <p className="mt-1 text-sm text-white/80">{t('commitmentsSubtitle')}</p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="flex items-start gap-3">
@@ -86,8 +88,8 @@ export function Footer({
                 <Truck className="h-5 w-5 text-white" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Livraison partout au Maroc</div>
-                <div className="mt-1 text-xs text-white/75">Suivi et service client réactif.</div>
+                <div className="text-sm font-semibold">{t('commitmentDeliveryTitle')}</div>
+                <div className="mt-1 text-xs text-white/75">{t('commitmentDeliveryDesc')}</div>
               </div>
             </div>
 
@@ -96,8 +98,8 @@ export function Footer({
                 <ShieldCheck className="h-5 w-5 text-white" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Paiement sécurisé</div>
-                <div className="mt-1 text-xs text-white/75">Transactions protégées et fiables.</div>
+                <div className="text-sm font-semibold">{t('commitmentSecurePaymentTitle')}</div>
+                <div className="mt-1 text-xs text-white/75">{t('commitmentSecurePaymentDesc')}</div>
               </div>
             </div>
 
@@ -106,15 +108,15 @@ export function Footer({
                 <CreditCard className="h-5 w-5 text-white" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Plusieurs modes de paiement</div>
-                <div className="mt-1 text-xs text-white/75">Carte, virement, paiement à la livraison.</div>
+                <div className="text-sm font-semibold">{t('commitmentPaymentMethodsTitle')}</div>
+                <div className="mt-1 text-xs text-white/75">{t('commitmentPaymentMethodsDesc')}</div>
               </div>
             </div>
           </div>
 
           {/* Payment visuals */}
           <div className="mt-6">
-            <div className="text-sm font-semibold">Paiements acceptés</div>
+            <div className="text-sm font-semibold">{t('acceptedPayments')}</div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Image
                 src="/payments/visa.svg"
@@ -146,12 +148,12 @@ export function Footer({
 
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h3 className="text-base font-bold tracking-tight">Catégories</h3>
+            <h3 className="text-base font-bold tracking-tight">{t('categoriesTitle')}</h3>
             <ul className="mt-4 space-y-2 text-sm text-white/90">
               {isCategoriesLoading ? (
-                <li className="opacity-80">Chargement…</li>
+                <li className="opacity-80">{tCommon('loading')}</li>
               ) : topCategories.length === 0 ? (
-                <li className="opacity-80">Aucune catégorie</li>
+                  <li className="opacity-80">{t('emptyCategories')}</li>
               ) : (
                 topCategories.map((c) => (
                   <li key={c.id}>
@@ -169,19 +171,19 @@ export function Footer({
                   href={`/${locale}/shop`}
                   className="text-white font-semibold hover:underline underline-offset-4 transition-colors duration-200"
                 >
-                  Voir la boutique
+                  {t('viewShop')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-base font-bold tracking-tight">Marques</h3>
+            <h3 className="text-base font-bold tracking-tight">{t('brandsTitle')}</h3>
             <ul className="mt-4 space-y-2 text-sm text-white/90">
               {isBrandsLoading ? (
-                <li className="opacity-80">Chargement…</li>
+                <li className="opacity-80">{tCommon('loading')}</li>
               ) : topBrands.length === 0 ? (
-                <li className="opacity-80">Aucune marque</li>
+                  <li className="opacity-80">{t('emptyBrands')}</li>
               ) : (
                 topBrands.map((b) => (
                   <li key={b.id}>
@@ -199,65 +201,65 @@ export function Footer({
                   href={`/${locale}/shop`}
                   className="text-white font-semibold hover:underline underline-offset-4 transition-colors duration-200"
                 >
-                  Voir toutes les marques
+                  {t('viewAllBrands')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-base font-bold tracking-tight">Service client</h3>
+            <h3 className="text-base font-bold tracking-tight">{t('customerServiceTitle')}</h3>
             <ul className="mt-4 space-y-2 text-sm text-white/90">
               <li>
                 <Link
                   href={`/${locale}/orders`}
                   className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
                 >
-                  Suivre mes commandes
+                  {t('trackOrders')}
                 </Link>
               </li>
               <li>
                 <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
-                  Aide & FAQ
+                  {t('helpFaq')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
-                  Retours & remboursements
+                  {t('returnsRefunds')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
-                  Conditions générales (CGV)
+                  {t('termsAndConditions')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
-                  Politique de confidentialité
+                  {t('privacyPolicy')}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-base font-bold tracking-tight">Livraison & paiement</h3>
+            <h3 className="text-base font-bold tracking-tight">{t('deliveryPaymentTitle')}</h3>
             <ul className="mt-4 space-y-3 text-sm text-white/90">
               <li className="flex items-start gap-2">
                 <Truck className="mt-0.5 h-4 w-4" />
-                <span>Livraison partout au Maroc</span>
+                <span>{t('deliveryAllMorocco')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <ShieldCheck className="mt-0.5 h-4 w-4" />
-                <span>Paiement sécurisé (SSL)</span>
+                <span>{t('securePaymentSsl')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <CreditCard className="mt-0.5 h-4 w-4" />
-                <span>Carte bancaire, virement, paiement à la livraison</span>
+                <span>{t('paymentMethodsList')}</span>
               </li>
             </ul>
 
             <div className="mt-6">
-              <div className="text-sm font-bold tracking-tight">Suivez-nous</div>
+              <div className="text-sm font-bold tracking-tight">{t('followUs')}</div>
               <div className="mt-3 flex items-center gap-3">
                 <a
                   href="https://www.facebook.com/"
@@ -290,27 +292,27 @@ export function Footer({
             </div>
 
             <div className="mt-6 text-xs text-white/80">
-              <div>© {new Date().getFullYear()} Boukir</div>
-              <div className="mt-1">Tous droits réservés.</div>
+              <div>{t('copyrightLine', { year: new Date().getFullYear() })}</div>
+              <div className="mt-1">{t('rightsReserved')}</div>
             </div>
           </div>
         </div>
 
         <div className="mt-10 border-t border-white/15 pt-6 text-xs text-white/70">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>Marketplace marocaine • Livraison rapide • Paiement sécurisé</div>
+            <div>{t('bottomTagline')}</div>
             <div className="flex items-center gap-4">
               <Link
                 href={`/${locale}/shop`}
                 className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
               >
-                Boutique
+                {t('shopLink')}
               </Link>
               <Link
                 href={`/${locale}/orders`}
                 className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
               >
-                Mes commandes
+                {t('ordersLink')}
               </Link>
             </div>
           </div>

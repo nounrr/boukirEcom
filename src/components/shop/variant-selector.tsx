@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface ApiVariant {
   id: number
@@ -50,12 +51,14 @@ function getForeground(hex: string): string {
 }
 
 export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVariants = [], selectedId, onChange, onPreviewImage, style = 'circle' }: VariantSelectorProps) {
+  const t = useTranslations("productPage")
+
   return (
     <div className="space-y-4">
       {colorVariants.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Couleur</label>
+            <label className="text-sm font-medium">{t("colorLabel")}</label>
           </div>
           <div className="flex flex-wrap gap-2">
             {colorVariants.map((variant) => {
@@ -118,7 +121,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
       {sizeVariants.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Taille</label>
+            <label className="text-sm font-medium">{t("sizeLabel")}</label>
           </div>
           <div className="grid grid-cols-6 gap-2">
             {sizeVariants.map((variant) => (
@@ -141,7 +144,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
 
       {otherVariants.length > 0 && (
         <div className="space-y-2">
-          <label className="text-sm font-medium">Options</label>
+          <label className="text-sm font-medium">{t("optionsLabel")}</label>
           <div className="flex flex-wrap gap-2">
             {otherVariants.map((variant) => (
               <button

@@ -1,6 +1,7 @@
 "use client"
 
 import { memo } from "react"
+import { useTranslations } from "next-intl"
 import { MapPin, Mail, CreditCard, FileText, ShieldCheck, RefreshCw, MessageCircle, Truck, Banknote, Clock, Building2, Smartphone, Store } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -26,68 +27,70 @@ interface OrderSummaryStepProps {
   }
 }
 
-const PAYMENT_METHODS_CONFIG: Record<string, {
-  label: string
+const PAYMENT_METHODS_CONFIG: Record<
+  string,
+  {
+    labelKey: string
   icon: any
   iconBg: string
   iconColor: string
   cardBg: string
   borderColor: string
-  description: string
+    descriptionKey: string
 }> = {
   cash_on_delivery: {
-    label: "Paiement à la livraison",
+    labelKey: "payment.methods.cash_on_delivery.label",
     icon: Banknote,
     iconBg: "bg-amber-100 dark:bg-amber-900/40",
     iconColor: "text-amber-600 dark:text-amber-400",
     cardBg: "bg-linear-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/20",
     borderColor: "border-amber-200/60 dark:border-amber-800/40",
-    description: "Payez en espèces à la réception",
+    descriptionKey: "payment.methods.cash_on_delivery.description",
   },
   pay_in_store: {
-    label: "Paiement en boutique",
+    labelKey: "payment.methods.pay_in_store.label",
     icon: Store,
     iconBg: "bg-violet-100 dark:bg-violet-900/40",
     iconColor: "text-violet-600 dark:text-violet-400",
     cardBg: "bg-linear-to-br from-violet-50 to-purple-50/50 dark:from-violet-950/30 dark:to-purple-950/20",
     borderColor: "border-violet-200/60 dark:border-violet-800/40",
-    description: "Payez lors du retrait de votre commande",
+    descriptionKey: "payment.methods.pay_in_store.description",
   },
   card: {
-    label: "Carte bancaire",
+    labelKey: "payment.methods.card.label",
     icon: CreditCard,
     iconBg: "bg-blue-100 dark:bg-blue-900/40",
     iconColor: "text-blue-600 dark:text-blue-400",
     cardBg: "bg-linear-to-br from-blue-50 to-indigo-50/50 dark:from-blue-950/30 dark:to-indigo-950/20",
     borderColor: "border-blue-200/60 dark:border-blue-800/40",
-    description: "Visa, Mastercard, American Express",
+    descriptionKey: "payment.methods.card.description",
   },
   solde: {
-    label: "Paiement différé (Solde)",
+    labelKey: "payment.methods.solde.label",
     icon: Clock,
     iconBg: "bg-violet-100 dark:bg-violet-900/40",
     iconColor: "text-violet-600 dark:text-violet-400",
     cardBg: "bg-linear-to-br from-violet-50 to-purple-50/50 dark:from-violet-950/30 dark:to-purple-950/20",
     borderColor: "border-violet-200/60 dark:border-violet-800/40",
-    description: "Achetez maintenant, payez plus tard",
+    descriptionKey: "payment.methods.solde.description",
   },
   bank_transfer: {
-    label: "Virement bancaire",
+    labelKey: "payment.methods.bank_transfer.label",
     icon: Building2,
     iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
     iconColor: "text-emerald-600 dark:text-emerald-400",
     cardBg: "bg-linear-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/30 dark:to-teal-950/20",
     borderColor: "border-emerald-200/60 dark:border-emerald-800/40",
-    description: "Transfert bancaire sécurisé",
+    descriptionKey: "payment.methods.bank_transfer.description",
   },
   mobile_payment: {
-    label: "Paiement mobile",
+    labelKey: "payment.methods.mobile_payment.label",
     icon: Smartphone,
     iconBg: "bg-pink-100 dark:bg-pink-900/40",
     iconColor: "text-pink-600 dark:text-pink-400",
     cardBg: "bg-linear-to-br from-pink-50 to-rose-50/50 dark:from-pink-950/30 dark:to-rose-950/20",
     borderColor: "border-pink-200/60 dark:border-pink-800/40",
-    description: "Paiement via application mobile",
+    descriptionKey: "payment.methods.mobile_payment.description",
   },
 }
 
@@ -98,6 +101,8 @@ const maskCardNumber = (cardNumber: string): string => {
 }
 
 export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
+  const t = useTranslations("checkout")
+
   const { deliveryMethod, pickupLocationId, shippingAddress, email, paymentMethod, notes, cardholderName, cardNumber } = formValues
   const isPickup = deliveryMethod === "pickup"
 
@@ -125,7 +130,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
           </div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-foreground">
-              {isPickup ? "Retrait en boutique" : "Livraison à domicile"}
+              {isPickup ? t("storePickup") : t("homeDelivery")}
             </h3>
             <span className={cn(
               "px-2 py-0.5 rounded-full text-[10px] font-medium",
@@ -133,7 +138,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                 ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400"
                 : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
             )}>
-              {isPickup ? "Pickup" : "Delivery"}
+              {isPickup ? t("orderSummary.badge.pickup") : t("orderSummary.badge.delivery")}
             </span>
           </div>
         </div>
@@ -167,20 +172,20 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Point de retrait sélectionné</p>
+                <p className="text-sm text-muted-foreground">{t("orderSummary.pickupSelected")}</p>
             )}
 
             {/* Customer Contact for Pickup */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-border/40">
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Récupéré par</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("orderSummary.pickedUpBy")}</p>
                 <p className="text-sm font-semibold text-foreground">
                   {shippingAddress.firstName} {shippingAddress.lastName}
                 </p>
                 <p className="text-xs text-muted-foreground">{shippingAddress.phone}</p>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("orderSummary.contact")}</p>
                 <p className="text-sm text-foreground break-all">{email}</p>
               </div>
             </div>
@@ -192,7 +197,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 mb-1">
                   <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Adresse</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("orderSummary.address")}</p>
                 </div>
                 <p className="text-sm font-semibold text-foreground">
                   {shippingAddress.firstName} {shippingAddress.lastName}
@@ -210,7 +215,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 mb-1">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Contact</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("orderSummary.contact")}</p>
                 </div>
                 <p className="text-sm text-foreground break-all">{email}</p>
               </div>
@@ -224,7 +229,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
           <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
             <CreditCard className="w-4 h-4 text-blue-600" />
           </div>
-          <h3 className="text-base font-semibold text-foreground">Méthode de paiement</h3>
+          <h3 className="text-base font-semibold text-foreground">{t("orderSummary.paymentMethod")}</h3>
         </div>
 
         {(() => {
@@ -250,8 +255,8 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                   <Icon className={cn("w-6 h-6", config.iconColor)} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{config.label}</p>
-                  <p className="text-xs text-muted-foreground">{config.description}</p>
+                  <p className="text-sm font-semibold text-foreground">{t(config.labelKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t(config.descriptionKey)}</p>
                 </div>
                 {/* Show card brand icons for card payment */}
                 {paymentMethod === "card" && (
@@ -263,7 +268,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                 {/* Show solde badge */}
                 {paymentMethod === "solde" && (
                   <span className="px-2 py-1 rounded-full text-[10px] font-semibold bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
-                    Exclusif
+                    {t("payment.solde.badgeExclusive")}
                   </span>
                 )}
               </div>
@@ -290,7 +295,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                 <div className="flex items-center gap-2 p-2.5 rounded-lg bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40">
                   <ShieldCheck className="w-4 h-4 text-violet-600 dark:text-violet-400 shrink-0" />
                   <p className="text-xs text-violet-700 dark:text-violet-300">
-                    Votre commande sera traitée après validation. Paiement selon conditions convenues.
+                    {t("payment.solde.amountDueLaterDesc")}
                   </p>
                 </div>
               )}
@@ -306,7 +311,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <FileText className="w-4 h-4 text-primary" />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Instructions spéciales</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("orderSummary.specialInstructions")}</h3>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">{notes}</p>
         </div>
@@ -320,8 +325,8 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
               <ShieldCheck className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-semibold text-foreground">Paiement sécurisé</p>
-              <p className="text-xs text-muted-foreground">Protection SSL</p>
+              <p className="text-sm font-semibold text-foreground">{t("orderSummary.trust.securePaymentTitle")}</p>
+              <p className="text-xs text-muted-foreground">{t("orderSummary.trust.securePaymentDesc")}</p>
             </div>
           </div>
 
@@ -330,8 +335,8 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
               <RefreshCw className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-semibold text-foreground">Retour 14 jours</p>
-              <p className="text-xs text-muted-foreground">Satisfait ou remboursé</p>
+              <p className="text-sm font-semibold text-foreground">{t("orderSummary.trust.returnsTitle")}</p>
+              <p className="text-xs text-muted-foreground">{t("orderSummary.trust.returnsDesc")}</p>
             </div>
           </div>
 
@@ -340,8 +345,8 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
               <MessageCircle className="w-4 h-4 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-semibold text-foreground">Support 24/7</p>
-              <p className="text-xs text-muted-foreground">Assistance dédiée</p>
+              <p className="text-sm font-semibold text-foreground">{t("orderSummary.trust.supportTitle")}</p>
+              <p className="text-xs text-muted-foreground">{t("orderSummary.trust.supportDesc")}</p>
             </div>
           </div>
         </div>

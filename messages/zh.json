@@ -27,6 +27,289 @@
     "previous": "上一步",
     "viewAll": "查看全部"
   },
+  "authDialog": {
+    "wishlistTitle": "登录以保存你喜欢的商品",
+    "wishlistSubtitle": "访问心愿单并跟踪订单。"
+  },
+  "ordersPage": {
+    "toast": {
+      "addedToCartTitle": "已加入购物车"
+    },
+    "title": {
+      "orders": "我的订单",
+      "solde": "余额对账单"
+    },
+    "loading": "加载中...",
+    "tabs": {
+      "orders": "订单",
+      "solde": "余额记录"
+    },
+    "status": {
+      "pending": "待处理",
+      "confirmed": "已确认",
+      "shipped": "已发货",
+      "delivered": "已送达",
+      "cancelled": "已取消"
+    },
+    "paymentStatus": {
+      "pending": "待支付",
+      "paid": "已支付",
+      "failed": "支付失败",
+      "refunded": "已退款"
+    },
+    "subtitle": {
+      "ordersIntro": "在这里跟踪你的订单状态。",
+      "soldeIntro": "查看余额变动与对账单。",
+      "noResultsFilters": "没有符合筛选条件的结果。",
+      "noResultsPeriod": "该时间段内没有结果。",
+      "ordersWithCount": "共 {count} 笔订单{hasPagination, select, yes { • 第 {page} / {totalPages} 页} other {}}",
+      "soldeWithCount": "{count} 条记录"
+    },
+    "ordersCountInline": "{count} 笔订单{hasPagination, select, yes { • 第 {page} / {totalPages} 页} other {}}",
+    "soldeMovementsInline": "{count} 条记录",
+    "soldeStatementHint": "查看对账单与余额变动。",
+    "filters": {
+      "period": {
+        "placeholder": "全部时间",
+        "all": "全部时间",
+        "thisWeek": "本周",
+        "thisMonth": "本月",
+        "custom": "自定义"
+      },
+      "status": {
+        "placeholder": "订单状态",
+        "all": "全部状态"
+      },
+      "paymentStatus": {
+        "placeholder": "支付状态",
+        "all": "全部支付状态"
+      },
+      "paymentMethod": {
+        "placeholder": "支付方式",
+        "all": "全部方式",
+        "cashOnDelivery": "货到付款",
+        "card": "银行卡",
+        "payInStore": "到店支付",
+        "solde": "延期支付"
+      },
+      "deliveryMethod": {
+        "placeholder": "配送方式",
+        "all": "全部",
+        "delivery": "送货上门",
+        "pickup": "到店自提"
+      },
+      "dateRange": {
+        "placeholder": "选择时间范围"
+      },
+      "reset": "重置筛选"
+    },
+    "empty": {
+      "filtered": {
+        "title": "没有结果",
+        "descSolde": "尝试更改时间段以查看记录。",
+        "descOrders": "尝试更改筛选条件以查看订单。",
+        "resetCta": "重置筛选",
+        "discoverCta": "去逛逛"
+      },
+      "none": {
+        "soldeTitle": "暂无余额记录",
+        "ordersTitle": "暂无订单",
+        "soldeDesc": "你的余额记录会显示在这里。",
+        "ordersDesc": "下单后你的订单会显示在这里。",
+        "discoverCta": "去逛逛"
+      }
+    },
+    "soldeNotAllowed": {
+      "title": "无法访问",
+      "desc": "你的账户不支持延期支付。"
+    },
+    "soldeEmpty": {
+      "title": "暂无对账单",
+      "desc": "所选时间段内未找到余额对账单。"
+    }
+  },
+  "orderCard": {
+    "meta": {
+      "order": "订单",
+      "total": "合计",
+      "shipTo": "收货人",
+      "orderNumber": "编号 {number}"
+    },
+    "itemsCount": "{count} 件商品",
+    "actions": {
+      "details": "详情",
+      "invoice": "发票",
+      "buyAgain": "再次购买",
+      "viewProduct": "查看商品",
+      "trackPackage": "跟踪包裹",
+      "collapseAria": "收起订单",
+      "expandAria": "显示商品"
+    },
+    "loadingDetails": "加载详情中...",
+    "address": {
+      "deliveryTitle": "收货地址"
+    },
+    "item": {
+      "qty": "数量：{quantity}"
+    },
+    "deliveryStatus": {
+      "deliveredOn": "已送达 {date}",
+      "shippedOn": "已发货 {date}",
+      "confirmedOn": "已确认 {date}",
+      "cancelled": "已取消",
+      "pending": "待处理",
+      "packageDelivered": "包裹已送达。"
+    },
+    "deliveryMethod": {
+      "pickup": "到店自提",
+      "delivery": "送货上门"
+    },
+    "paymentMethod": {
+      "solde": "延期支付",
+      "pay_in_store": "到店支付",
+      "cash_on_delivery": "货到付款",
+      "card": "银行卡",
+      "unknown": "{method}"
+    },
+    "payment": {
+      "remiseInline": "折扣：-{amount}",
+      "toPayWithSoldeInline": "余额支付：{amount} {currency}",
+      "toPayInline": "需支付：{amount} {currency}",
+      "remisePlus": "折扣 + {method}"
+    }
+  },
+  "orderDetailsPage": {
+    "pageTitle": "订单详情",
+    "subtitle": "订单 #{orderNumber} • {count} 件商品",
+    "toast": {
+      "addedToCartTitle": "已加入购物车"
+    },
+    "authRequired": {
+      "title": "需要登录",
+      "subtitle": "登录后查看你的订单",
+      "description": "请登录以访问订单详情。"
+    },
+    "error": {
+      "title": "无法加载订单",
+      "subtitle": "无法加载订单",
+      "description": "请稍后再试。"
+    },
+    "actions": {
+      "backToOrders": "返回订单列表",
+      "invoice": "发票",
+      "refresh": "刷新",
+      "buyAgain": "再次购买",
+      "viewProduct": "查看商品"
+    },
+    "tabs": {
+      "overview": "概览",
+      "items": "商品",
+      "shipping": "配送",
+      "payment": "支付",
+      "history": "记录"
+    },
+    "status": {
+      "pending": "待处理",
+      "confirmed": "已确认",
+      "shipped": "已发货",
+      "delivered": "已送达",
+      "cancelled": "已取消"
+    },
+    "paymentStatus": {
+      "pending": "待支付",
+      "paid": "已支付",
+      "failed": "支付失败",
+      "refunded": "已退款"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "货到付款",
+      "pay_in_store": "到店支付",
+      "card": "银行卡",
+      "bank_transfer": "银行转账",
+      "mobile_payment": "移动支付",
+      "solde": "延期支付"
+    },
+    "header": {
+      "orderNumber": "订单 #{number}"
+    },
+    "steps": {
+      "pending": "下单",
+      "confirmed": "已确认",
+      "shipped": "已发货",
+      "delivered": "已送达"
+    },
+    "cancelledNotice": "该订单已取消。",
+    "progress": {
+      "title": "订单进度",
+      "status": "状态：{status}"
+    },
+    "overview": {
+      "orderLabel": "订单",
+      "viewListCta": "查看列表",
+      "date": "日期",
+      "status": "状态",
+      "payment": "支付",
+      "total": "合计"
+    },
+    "itemsPreview": {
+      "title": "商品",
+      "line": "数量：{quantity} • {subtotal}",
+      "more": "+ 另外 {count} 件",
+      "viewAll": "查看全部商品"
+    },
+    "itemsTab": {
+      "title": "商品",
+      "count": "{count} 件商品",
+      "qty": "数量：{quantity}",
+      "unitPrice": "单价：{price}",
+      "subtotal": "小计：{subtotal}"
+    },
+    "shipping": {
+      "pickupTitle": "到店自提",
+      "deliveryTitle": "配送"
+    },
+    "shippingDates": {
+      "title": "日期",
+      "confirmed": "已确认",
+      "shipped": "已发货",
+      "delivered": "已送达",
+      "cancelled": "已取消"
+    },
+    "notes": {
+      "title": "备注",
+      "customer": "客户",
+      "admin": "管理员"
+    },
+    "totals": {
+      "title": "汇总",
+      "subtotal": "小计",
+      "shipping": "运费",
+      "taxes": "税费",
+      "discount": "折扣",
+      "total": "合计",
+      "mixedPayment": "混合支付",
+      "discountBalanceUsed": "已使用折扣余额",
+      "remainingToPay": "待支付"
+    },
+    "payment": {
+      "title": "支付",
+      "discountChip": "折扣",
+      "statusLabel": "状态",
+      "discountUsed": "已使用折扣",
+      "toPay": "待支付（{method}）",
+      "note": "备注：{note}"
+    },
+    "paymentDetails": {
+      "title": "支付详情",
+      "method": "方式",
+      "status": "状态"
+    },
+    "history": {
+      "title": "状态记录",
+      "empty": "暂无记录。",
+      "changedBy": "{who}"
+    }
+  },
   "shop": {
     "filters": "筛选",
     "productsLabel": "件商品",
@@ -35,7 +318,152 @@
     "featuredTitle": "当前优惠",
     "featuredDesc": "为你精选的最佳优惠",
     "newArrivalsTitle": "新品上架",
-    "newArrivalsDesc": "最新加入店铺的产品"
+    "newArrivalsDesc": "最新加入店铺的产品",
+    "heroDescription": "探索我们的产品，通过页面顶部的搜索快速找到你需要的商品。",
+    "featureDeliveryTitle": "快速配送",
+    "featureDeliveryDesc": "提供适合你所在地区的配送选项。",
+    "featureSecurePaymentTitle": "安全支付",
+    "featureSecurePaymentDesc": "交易安全可靠。",
+    "featureQualityTitle": "品质与选择",
+    "featureQualityDesc": "为专业人士精心挑选的产品。"
+  },
+  "productsList": {
+    "errorTitle": "无法加载商品",
+    "errorDescription": "加载商品时发生错误，请稍后再试。",
+    "retry": "重试",
+    "emptyTitle": "未找到商品",
+    "emptyDescription": "尝试调整筛选条件或搜索关键词来发现更多商品。",
+    "previous": "上一页",
+    "next": "下一页",
+    "badges": {
+      "new": "新品",
+      "promo": "优惠"
+    }
+  },
+  "productCard": {
+    "quickView": "快速查看",
+    "addToCart": "加入购物车",
+    "outOfStock": "缺货",
+    "addToWishlist": "加入心愿单",
+    "removeFromWishlist": "从心愿单移除",
+    "wishlistAddedTitle": "已加入心愿单",
+    "wishlistRemovedTitle": "已从心愿单移除",
+    "genericErrorTitle": "发生错误",
+    "wishlistUpdateFailedDesc": "无法更新心愿单",
+    "variantRequiredTitle": "请选择规格",
+    "variantRequiredDesc": "该规格为必选项。",
+    "variantLabelFallback": "规格",
+    "lowStock": "仅剩 {count} 件"
+  },
+  "productPage": {
+    "inStock": "有货",
+    "colorLabel": "颜色",
+    "sizeLabel": "尺寸",
+    "optionsLabel": "选项",
+    "unitLabel": "单位",
+    "quantityLabel": "数量",
+    "totalLabel": "合计",
+    "descriptionHeading": "商品描述",
+    "addedToCartTitle": "已加入购物车",
+    "addedToCartDesc": "{quantity} × {name}",
+    "linkCopiedTitle": "链接已复制",
+    "linkCopiedDesc": "链接已复制到剪贴板。",
+    "loadErrorTitle": "无法加载商品",
+    "loadErrorDesc": "发生错误，请稍后再试。",
+    "similarTitle": "相似商品",
+    "similarDesc": "发现你可能喜欢的其他商品",
+    "categoryFallback": "商品"
+  },
+  "productFilters": {
+    "title": "筛选",
+    "clear": "清除",
+    "sortBy": "排序",
+    "selectPlaceholder": "请选择...",
+    "searchTitle": "搜索",
+    "searchPlaceholder": "搜索商品...",
+    "categories": "分类",
+    "brands": "品牌",
+    "price": "价格",
+    "colors": "颜色",
+    "units": "单位",
+    "inStockOnly": "仅显示有货",
+    "sort": {
+      "newest": "最新",
+      "priceAsc": "价格从低到高",
+      "priceDesc": "价格从高到低",
+      "bestPromos": "最佳优惠",
+      "popular": "最受欢迎"
+    }
+  },
+  "cartPage": {
+    "title": "购物车",
+    "subtitle": "结算前请确认你的商品",
+    "empty": {
+      "title": "你的购物车为空",
+      "description": "浏览我们的商品并加入购物车开始购物。",
+      "actionLabel": "去逛逛"
+    },
+    "toast": {
+      "quantityUpdatedTitle": "数量已更新",
+      "quantityUpdateFailedDesc": "无法更新数量",
+      "removedTitle": "已从购物车移除",
+      "removeFailedDesc": "无法移除商品"
+    },
+    "labels": {
+      "variant": "规格：{value}",
+      "unit": "单位：{value}",
+      "separator": " · "
+    },
+    "lowStockWarning": "仅剩 {count} 件库存",
+    "price": "{price} {currency}",
+    "pricePerUnit": "{price} {currency} / 单位",
+    "aria": {
+      "removeItem": "从购物车移除"
+    },
+    "summary": {
+      "title": "订单摘要",
+      "subtotal": "小计",
+      "delivery": "运费",
+      "deliveryToCalculate": "待计算",
+      "total": "合计",
+      "checkout": "去结算"
+    },
+    "itemsCount": "购物车中有 {count} 件商品"
+  },
+  "wishlistPage": {
+    "title": "心愿单",
+    "subtitle": "你喜欢的商品都在这里",
+    "empty": {
+      "title": "你的心愿单为空",
+      "description": "探索我们的商品并将喜欢的商品加入心愿单，方便下次快速找到。",
+      "actionLabel": "去逛逛"
+    },
+    "toast": {
+      "removedTitle": "已从心愿单移除",
+      "removeFailedDesc": "无法移除商品",
+      "notFoundDesc": "心愿单中未找到该商品",
+      "addedToCartTitle": "已加入购物车",
+      "addToCartFailedDesc": "无法加入购物车"
+    },
+    "viewProduct": "查看商品",
+    "saveAmount": "立省 {amount} {currency}",
+    "inStock": "有货",
+    "outOfStock": "缺货",
+    "lowStock": "仅剩 {count} 件",
+    "aria": {
+      "remove": "从心愿单移除",
+      "addToCart": "加入购物车"
+    },
+    "removeShort": "移除",
+    "addToCart": "加入购物车"
+  },
+  "accountSidebar": {
+    "activeAccount": "账号已激活",
+    "profile": "我的资料",
+    "orders": "我的订单",
+    "soldeHistory": "余额记录",
+    "wishlist": "心愿单",
+    "settings": "设置"
   },
   "home": {
     "heroKicker": "你的在线五金与日用品商店",
@@ -225,14 +653,19 @@
     "continueToCheckout": "去结算",
     "continueShopping": "继续购物",
     "removeItem": "移除商品",
-    "updateCart": "更新购物车"
+    "updateCart": "更新购物车",
+    "itemsCount": "{count} 件商品",
+    "emptyHint": "添加商品开始购物",
+    "browseProducts": "浏览商品",
+    "variantLabel": "规格",
+    "unitLabel": "单位",
+    "viewCart": "查看购物车"
   },
   "checkout": {
     "title": "结算",
     "shippingAddress": "收货地址",
     "billingAddress": "账单地址",
     "paymentMethod": "支付方式",
-    "orderSummary": "订单摘要",
     "placeOrder": "提交订单",
     "cashOnDelivery": "货到付款",
     "creditCard": "信用卡",
@@ -261,6 +694,265 @@
     "postalCode": "邮编",
     "cityPlaceholder": "卡萨布兰卡、拉巴特...",
     "postalCodePlaceholder": "20000",
-    "deliveryNotes": "配送备注"
+    "deliveryNotes": "配送备注",
+    "wizard": {
+      "steps": {
+        "shipping": {
+          "title": "配送",
+          "description": "信息"
+        },
+        "payment": {
+          "title": "支付",
+          "description": "方式"
+        },
+        "confirmation": {
+          "title": "确认",
+          "description": "核对"
+        }
+      }
+    },
+    "navigation": {
+      "previous": "上一步",
+      "next": "下一步",
+      "back": "返回"
+    },
+    "page": {
+      "subtitle": "安全完成下单",
+      "taxIncludedNote": "所有显示金额均含税（VAT）。"
+    },
+    "loading": {
+      "title": "加载中...",
+      "subtitle": "正在获取购物车"
+    },
+    "emptyCart": {
+      "title": "购物车为空",
+      "subtitle": "请先将商品加入购物车再结算。",
+      "backToShop": "返回商店"
+    },
+    "validation": {
+      "deliveryMethodRequired": "请选择配送方式",
+      "paymentMethodRequired": "请选择支付方式",
+      "pickupLocationRequired": "请选择自取点",
+      "firstNameMin": "名字至少需要 2 个字符",
+      "lastNameMin": "姓氏至少需要 2 个字符",
+      "phoneInvalid": "手机号无效",
+      "phoneTooLong": "手机号过长",
+      "cardholderNameRequired": "持卡人姓名为必填项",
+      "cardNumberInvalid": "银行卡号无效",
+      "cardExpiryRequired": "有效期为必填项",
+      "cardCvvInvalid": "CVV 无效",
+      "emailInvalid": "邮箱无效",
+      "invalidAmount": "金额无效",
+      "addressMin": "地址至少需要 5 个字符",
+      "cityMin": "城市至少需要 2 个字符",
+      "codNotAvailablePickup": "到店自取不支持货到付款"
+    },
+    "errors": {
+      "authRequiredForSolde": "使用 Solde 支付需要先登录",
+      "soldeNotAllowed": "你的账户不允许使用 Solde 支付",
+      "soldeLimitExceeded": "Solde 额度不足。可用：{available} {currency}，需要：{requested} {currency}。",
+      "soldePlafondExceeded": "Solde 超出上限{plafond, select, none {} other {（上限 {plafond} {currency}）}}",
+      "orderCreateFailed": "创建订单失败，请重试。"
+    },
+    "info": {
+      "soldePlafondDetails": "上限：{plafond} {currency} • 当前：{current} {currency} • +{amount} {currency} = {projected} {currency}"
+    },
+    "promo": {
+      "placeholder": "优惠码",
+      "apply": "使用",
+      "remove": "移除",
+      "invalid": "无效",
+      "appliedSuccess": "优惠码已成功使用！"
+    },
+    "cartSummary": {
+      "heading": {
+        "confirm": "你的订单",
+        "details": "订单明细"
+      },
+      "itemsCount": "{count} 件商品",
+      "categoryFallback": "商品",
+      "subtotalWithCount": "小计（{count} 件）",
+      "discount": "折扣",
+      "shipping": "配送费",
+      "free": "免费",
+      "total": "合计",
+      "taxIncluded": "含税",
+      "confirmProcessing": "处理中...",
+      "confirmCta": "确认 • {total} {currency}（含税）",
+      "secureTransaction": "100% 安全交易",
+      "termsPrefix": "确认即表示你同意我们的",
+      "termsLink": "服务条款"
+    },
+    "payment": {
+      "recommended": "推荐",
+      "methods": {
+        "title": "支付方式",
+        "otherTitle": "或选择其他支付方式",
+        "subtitle": "请选择你的支付方式",
+        "cash_on_delivery": {
+          "label": "货到付款",
+          "description": "收货时现金支付"
+        },
+        "pay_in_store": {
+          "label": "到店支付",
+          "description": "到店自取时支付"
+        },
+        "card": {
+          "label": "银行卡",
+          "description": "Visa, Mastercard, American Express"
+        },
+        "solde": {
+          "label": "延期支付（Solde）",
+          "description": "先买后付"
+        },
+        "bank_transfer": {
+          "label": "银行转账",
+          "description": "安全转账"
+        },
+        "mobile_payment": {
+          "label": "手机支付",
+          "description": "通过手机应用支付"
+        }
+      },
+      "remise": {
+        "title": "折扣余额",
+        "subtitle": "使用折扣余额支付全部或部分订单",
+        "loginToUse": "登录后可使用折扣余额。",
+        "availableLabel": "可用：",
+        "maxLabel": "最高：{amount} {currency}",
+        "useMyRemise": "使用折扣余额",
+        "coversAll": "可覆盖全部",
+        "deductUpTo": "最多抵扣 {amount} {currency}",
+        "amountToUse": "使用金额",
+        "maxButton": "最大",
+        "total": "合计",
+        "discount": "折扣",
+        "remaining": "待支付",
+        "coveredByRemise": "已由折扣余额覆盖",
+        "insufficient": "余额不足以覆盖该购物车。"
+      },
+      "solde": {
+        "title": "Solde — 先买后付",
+        "badgeExclusive": "专属",
+        "eligibleSubtitle": "你符合延期支付资格",
+        "plafond": "上限",
+        "notLimited": "不限",
+        "cumulated": "已使用",
+        "available": "可用",
+        "usage": "使用情况",
+        "limitExceededTitle": "Solde 额度不足",
+        "limitExceededDesc": "你的可用 Solde 为 {available} {currency}。请减少商品或选择其他支付方式。",
+        "payLaterLabel": "稍后支付（Solde）",
+        "remaining": "剩余：{amount} {currency}",
+        "payLaterDesc": "立即收货，稍后付款",
+        "verifiedAccount": "已验证账户",
+        "noFees": "无手续费",
+        "amountDueLater": "稍后应付金额",
+        "amountDueLaterDesc": "订单将在审核后处理，付款按约定条件执行。"
+      },
+      "notes": {
+        "title": "配送备注",
+        "subtitle": "用于配送的补充信息",
+        "label": "特别说明",
+        "placeholder": "例如：提前 30 分钟联系我，3 楼，门禁码：1234..."
+      }
+    },
+    "card": {
+      "header": {
+        "title": "卡片信息",
+        "subtitle": "256-bit SSL 安全支付"
+      },
+      "preview": {
+        "cardNumber": "卡号",
+        "cardholder": "持卡人",
+        "cardholderPlaceholder": "持卡人姓名",
+        "expires": "有效期",
+        "expiresPlaceholder": "MM/YY"
+      },
+      "form": {
+        "cardholderName": "持卡人姓名",
+        "cardholderPlaceholder": "ZHANG SAN（以卡片为准）",
+        "cardholderHelp": "请输入与卡片一致的姓名",
+        "cardNumber": "银行卡号",
+        "cardNumberHelp": "请输入数字（不含空格）",
+        "expiryMonth": "月",
+        "monthPlaceholder": "月",
+        "expiryYear": "年",
+        "yearPlaceholder": "年",
+        "cvv": "CVV",
+        "showCvv": "显示 CVV",
+        "hideCvv": "隐藏 CVV",
+        "cvvHelp": "背面 3 位数字（Amex 为 4 位）",
+        "detectedVisa": "已识别 Visa",
+        "detectedMastercard": "已识别 Mastercard",
+        "detectedAmex": "已识别 American Express",
+        "securityNotice": "你的数据已加密并安全传输。我们不会保存你的银行卡信息。",
+        "processing": "处理中...",
+        "confirmPayment": "确认支付"
+      }
+    },
+    "orderSummary": {
+      "badge": {
+        "pickup": "自取",
+        "delivery": "配送"
+      },
+      "pickupSelected": "已选择自取点",
+      "pickedUpBy": "取货人",
+      "address": "地址",
+      "contact": "联系方式",
+      "paymentMethod": "支付方式",
+      "specialInstructions": "特别说明",
+      "trust": {
+        "securePaymentTitle": "安全支付",
+        "securePaymentDesc": "SSL 保护",
+        "returnsTitle": "14 天退货",
+        "returnsDesc": "不满意可退款",
+        "supportTitle": "24/7 客服",
+        "supportDesc": "专属协助"
+      }
+    }
+  },
+  "footer": {
+    "about": "关于我们",
+    "contact": "联系我们",
+    "terms": "使用条款",
+    "privacy": "隐私政策",
+    "faq": "常见问题",
+    "followUs": "关注我们",
+    "newsletter": "订阅",
+    "subscribeNewsletter": "订阅我们的新闻通讯",
+    "emailPlaceholder": "你的邮箱",
+    "subscribe": "订阅",
+    "shopLink": "商店",
+    "ordersLink": "我的订单",
+    "rightsInline": "© {year} Boukir • 保留所有权利。",
+    "commitmentsTitle": "我们的承诺",
+    "commitmentsSubtitle": "快速配送、安全支付、贴心客服。",
+    "commitmentDeliveryTitle": "摩洛哥全境配送",
+    "commitmentDeliveryDesc": "订单追踪与快速客服支持。",
+    "commitmentSecurePaymentTitle": "安全支付",
+    "commitmentSecurePaymentDesc": "交易安全可靠。",
+    "commitmentPaymentMethodsTitle": "多种支付方式",
+    "commitmentPaymentMethodsDesc": "银行卡、转账、货到付款。",
+    "acceptedPayments": "支持的支付方式",
+    "categoriesTitle": "分类",
+    "brandsTitle": "品牌",
+    "customerServiceTitle": "客户服务",
+    "deliveryPaymentTitle": "配送与支付",
+    "emptyCategories": "暂无分类",
+    "emptyBrands": "暂无品牌",
+    "viewShop": "进入商店",
+    "viewAllBrands": "查看全部品牌",
+    "trackOrders": "查看我的订单",
+    "helpFaq": "帮助与常见问题",
+    "returnsRefunds": "退货与退款",
+    "termsAndConditions": "服务条款",
+    "privacyPolicy": "隐私政策",
+    "deliveryAllMorocco": "摩洛哥全境配送",
+    "securePaymentSsl": "安全支付（SSL）",
+    "paymentMethodsList": "银行卡、转账、货到付款",
+    "copyrightLine": "© {year} Boukir",
+    "rightsReserved": "保留所有权利。",
+    "bottomTagline": "摩洛哥电商平台 • 快速配送 • 安全支付"
   }
 }

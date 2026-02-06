@@ -36,6 +36,7 @@ export interface CartPopoverRef {
 
 export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPrimary" }>((props, ref) => {
   const t = useTranslations('cart')
+  const tCommon = useTranslations('common')
   const locale = useLocale()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const [isOpen, setIsOpen] = useState(false)
@@ -56,16 +57,10 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
   const items = isAuthenticated ? (backendCart?.items || []) : localItems
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
-  
-  // Debug: Log component mount
-  useEffect(() => {
-    console.log('🎨 CartPopover component mounted')
-  }, [])
 
   // Refetch cart when popover opens (for authenticated users)
   useEffect(() => {
     if (isOpen && isAuthenticated) {
-      console.log('🔄 Cart popover opened, refetching cart data...')
       refetchCart()
     }
   }, [isOpen, isAuthenticated, refetchCart])
@@ -77,7 +72,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         const stored = localStorage.getItem(CART_STORAGE_KEY)
         if (stored) {
           setLocalItems(JSON.parse(stored))
-          console.log('👤 Loaded cart from localStorage')
         }
       } catch (error) {
         console.error('Error loading cart from localStorage:', error)
@@ -113,7 +107,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
   
   // Expose methods via ref
   useImperativeHandle(ref, () => {
-    console.log('🔧 CartPopover ref initialized')
     return {
       open: () => setIsOpen(true),
       close: () => setIsOpen(false),
@@ -127,7 +120,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
               unitId: item.unitId,
               quantity: item.quantity,
             }).unwrap()
-            console.log('🔐 Item added to backend cart')
             await refetchCart()
           } catch (error) {
             console.error('❌ Failed to add to backend cart:', error)
@@ -146,7 +138,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
               return [...prev, item]
             }
           })
-          console.log('👤 Item added to localStorage cart')
         }
       },
     }
@@ -160,7 +151,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           return
         }
         await removeFromCartApi({ id: item.id }).unwrap()
-        console.log('🔐 Item removed from backend')
         refetchCart()
       } catch (error) {
         console.error('❌ Failed to remove from backend:', error)
@@ -170,7 +160,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         const itemKey = getCartItemKey(item)
         return prev.filter(i => getCartItemKey(i) !== itemKey)
       })
-      console.log('👤 Item removed from localStorage')
     }
   }
   
@@ -187,7 +176,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           return
         }
         await updateCartApi({ id: item.id, quantity }).unwrap()
-        console.log('🔐 Quantity updated in backend')
         refetchCart()
       } catch (error) {
         console.error('❌ Failed to update backend:', error)
@@ -202,7 +190,6 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           return i
         })
       })
-      console.log('👤 Quantity updated in localStorage')
     }
   }
 
@@ -246,16 +233,16 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
                   <ShoppingBag className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-semibold text-foreground">Panier</p>
+                  <p className="text-sm font-semibold text-foreground">{t('title')}</p>
                   <p className="text-[11px] text-muted-foreground">
-                    {itemCount} article{itemCount !== 1 ? 's' : ''}
+                    {t('itemsCount', { count: itemCount })}
                   </p>
                 </div>
               </div>
               {itemCount > 0 && (
                 <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Total</p>
-                  <p className="text-lg font-bold text-foreground">{total.toFixed(2)} MAD</p>
+                  <p className="text-xs text-muted-foreground">{t('total')}</p>
+                  <p className="text-lg font-bold text-foreground">{total.toFixed(2)} {tCommon('currency')}</p>
                 </div>
               )}
             </div>
@@ -267,11 +254,11 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
               <Package2 className="w-8 h-8 text-muted-foreground/50" />
             </div>
-            <p className="text-sm font-medium text-foreground mb-1">Votre panier est vide</p>
-            <p className="text-xs text-muted-foreground mb-4">Ajoutez des articles pour commencer vos achats</p>
+            <p className="text-sm font-medium text-foreground mb-1">{t('empty')}</p>
+            <p className="text-xs text-muted-foreground mb-4">{t('emptyHint')}</p>
             <Link href={`/${locale}/shop`}>
               <Button size="sm" className="bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15">
-                Parcourir les produits
+                {t('browseProducts')}
               </Button>
             </Link>
           </div>
@@ -307,13 +294,13 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
                       </h4>
                       {(item.variantName || item.unitName) && (
                         <p className="text-[11px] text-muted-foreground mb-1">
-                          {item.variantName ? `Variante: ${item.variantName}` : null}
+                          {item.variantName ? `${t('variantLabel')}: ${item.variantName}` : null}
                           {item.variantName && item.unitName ? ' · ' : null}
-                          {item.unitName ? `Unité: ${item.unitName}` : null}
+                          {item.unitName ? `${t('unitLabel')}: ${item.unitName}` : null}
                         </p>
                       )}
                       <p className="text-xs font-semibold text-primary mb-2">
-                        {item.price.toFixed(2)} MAD
+                        {item.price.toFixed(2)} {tCommon('currency')}
                       </p>
 
                       {/* Quantity Controls */}
@@ -356,7 +343,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
                       <p className="text-sm font-semibold text-foreground">
                         {(item.price * item.quantity).toFixed(2)}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">MAD</p>
+                      <p className="text-[10px] text-muted-foreground">{tCommon('currency')}</p>
                     </div>
                   </div>
                 ))}
@@ -368,19 +355,19 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             {/* Cart Actions */}
             <div className="p-3 space-y-2">
               <div className="flex items-center justify-between px-2 py-1.5 bg-muted/30 rounded-md">
-                <span className="text-sm font-medium text-foreground">Total</span>
-                <span className="text-lg font-bold text-foreground">{total.toFixed(2)} MAD</span>
+                  <span className="text-sm font-medium text-foreground">{t('total')}</span>
+                  <span className="text-lg font-bold text-foreground">{total.toFixed(2)} {tCommon('currency')}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <Link href={`/${locale}/cart`} className="w-full">
                   <Button variant="outline" className="w-full border-border/60 hover:bg-muted/50 transition-all duration-200">
-                    Voir le panier
+                      {t('viewCart')}
                   </Button>
                 </Link>
                 <Link href={`/${locale}/checkout`} className="w-full">
                     <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
-                    Commander
+                      {tCommon('checkout')}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>
                 </Link>

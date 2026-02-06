@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { LoginForm } from "@/components/auth/login-form"
 import { RegisterForm } from "@/components/auth/register-form"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Heart } from "lucide-react"
 import { useAppDispatch } from "@/state/hooks"
 import { productsApi } from "@/state/api/products-api-slice"
@@ -22,6 +22,7 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onOpenChange, defaultMode = "login" }: AuthDialogProps) {
   const locale = useLocale()
   const isArabic = locale === "ar"
+  const t = useTranslations("authDialog")
   const dispatch = useAppDispatch()
 
   const handleAuthSuccess = () => {
@@ -47,10 +48,10 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "login" }: AuthDi
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-base sm:text-lg font-semibold text-foreground leading-tight">
-                  Connectez-vous pour sauvegarder vos produits préférés
+                  {t("wishlistTitle")}
                 </p>
                 <p className="text-[12px] sm:text-sm text-muted-foreground mt-1">
-                  Accédez à votre wishlist et suivez vos commandes.
+                  {t("wishlistSubtitle")}
                 </p>
               </div>
             </div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Package } from "lucide-react"
 import { useMemo } from "react"
 import type { ProductListItem } from "@/types/api/products"
+import { useLocale, useTranslations } from "next-intl"
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -42,6 +43,8 @@ export function ProductsList({
   viewMode,
   isFiltersCollapsed,
 }: ProductsListProps) {
+  const locale = useLocale()
+  const t = useTranslations('productsList')
 
   // Dynamic grid columns based on filter state and view mode
   const gridColumns = (() => {
@@ -57,6 +60,23 @@ export function ProductsList({
       : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
   })()
 
+  const getLocalizedDesignation = (product: ProductListItem): string => {
+    const data = product as any
+    const fallback = (data?.designation ?? data?.name ?? '').toString()
+
+    const candidate =
+      locale === 'ar'
+        ? data?.designation_ar
+        : locale === 'en'
+          ? data?.designation_en
+          : locale === 'zh'
+            ? data?.designation_zh
+            : data?.designation
+
+    const value = (candidate ?? '').toString().trim()
+    return value || fallback
+  }
+
   // Transform API products to ProductCard format (memoized for performance)
   const transformedProducts = useMemo(() => {
     return products.map((product) => {
@@ -65,7 +85,7 @@ export function ProductsList({
 
       return {
         id: product.id,
-        name: product.designation,
+        name: getLocalizedDesignation(product),
         description: '',
         price: currentPrice,
         originalPrice: hasDiscount ? product.prix_vente : undefined,
@@ -88,12 +108,12 @@ export function ProductsList({
         is_wishlisted: product.is_wishlisted || false,
         sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
         badges: [
-          ...(product.has_promo ? [{ text: "NOUVEAU", variant: "new" as const }] : []),
-          ...(product.pourcentage_promo > 0 ? [{ text: "PROMO", variant: "promo" as const }] : []),
+          ...(product.has_promo ? [{ text: t('badges.new'), variant: "new" as const }] : []),
+          ...(product.pourcentage_promo > 0 ? [{ text: t('badges.promo'), variant: "promo" as const }] : []),
         ],
       }
     })
-  }, [products])
+  }, [products, t, locale])
 
   const wrapperClasses = "flex-1 min-w-0"
 
@@ -119,13 +139,13 @@ export function ProductsList({
             <Package className="w-8 h-8 text-destructive" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">
-            Impossible de charger les produits
+              {t('errorTitle')}
           </h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-            Une erreur s'est produite lors du chargement des produits. Veuillez réessayer plus tard.
+              {t('errorDescription')}
           </p>
           <Button onClick={() => window.location.reload()} className="shadow-md">
-            Réessayer
+              {t('retry')}
           </Button>
         </div>
       ) : transformedProducts.length === 0 ? (
@@ -134,10 +154,10 @@ export function ProductsList({
             <Package className="w-8 h-8 text-muted-foreground" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">
-            Aucun produit trouvé
+                {t('emptyTitle')}
           </h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-            Essayez de modifier vos filtres ou votre recherche pour découvrir nos produits.
+                {t('emptyDescription')}
           </p>
         </div>
       ) : (
@@ -168,7 +188,7 @@ export function ProductsList({
               className="h-9 px-3"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
-              Précédent
+              {t('previous')}
             </Button>
 
             <div className="flex items-center gap-1">
@@ -206,7 +226,7 @@ export function ProductsList({
               onClick={() => onPageChange(pagination.current_page + 1)}
               className="h-9 px-3"
             >
-              Suivant
+              {t('next')}
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>

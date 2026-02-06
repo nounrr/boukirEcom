@@ -7,20 +7,19 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock,
-  Coins,
   CreditCard,
   Mail,
   MapPin,
   Package,
   Phone,
-  Receipt,
+  Receipt, 
   RefreshCw,
   Store,
   Truck,
   Wallet,
-  XCircle,
+  XCircle
 } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound, useParams, useRouter } from "next/navigation"
@@ -33,68 +32,87 @@ import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { useCart } from "@/components/layout/cart-context-provider"
 import { InvoiceDialog } from "@/components/invoice/invoice-dialog"
+import { useCart } from "@/components/layout/cart-context-provider"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
 
-const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: "En attente",
-  confirmed: "Confirmée",
-  shipped: "Expédiée",
-  delivered: "Livrée",
-  cancelled: "Annulée",
-}
-
-const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  pending: "En attente",
-  paid: "Payé",
-  failed: "Échoué",
-  refunded: "Remboursé",
-}
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  cash_on_delivery: "Paiement à la livraison",
-  pay_in_store: "Paiement en boutique",
-  card: "Carte bancaire",
-  bank_transfer: "Virement bancaire",
-  mobile_payment: "Paiement mobile",
-  solde: "Paiement différé (Solde)",
-}
-
-function formatDate(value?: string | null) {
+function formatDate(locale: string, value?: string | null) {
   if (!value) return "—"
   try {
-    return new Date(value).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
+    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" }).format(new Date(value))
   } catch {
     return value
   }
 }
 
-function formatDateTime(value?: string | null) {
+function formatDateTime(locale: string, value?: string | null) {
   if (!value) return "—"
   try {
-    return new Date(value).toLocaleString("fr-FR", {
+    return new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    })
+    }).format(new Date(value))
   } catch {
     return value
   }
 }
 
-function moneyMAD(value: number) {
-  return `${Number(value || 0).toFixed(2)} MAD`
+function formatMoney(value: number, currency: string) {
+  return `${Number(value || 0).toFixed(2)} ${currency}`
+}
+
+function getOrderStatusLabel(t: ReturnType<typeof useTranslations>, status: OrderStatus) {
+  switch (status) {
+    case "pending":
+      return t("status.pending")
+    case "confirmed":
+      return t("status.confirmed")
+    case "shipped":
+      return t("status.shipped")
+    case "delivered":
+      return t("status.delivered")
+    case "cancelled":
+      return t("status.cancelled")
+  }
+}
+
+function getPaymentStatusLabel(t: ReturnType<typeof useTranslations>, status: PaymentStatus) {
+  switch (status) {
+    case "pending":
+      return t("paymentStatus.pending")
+    case "paid":
+      return t("paymentStatus.paid")
+    case "failed":
+      return t("paymentStatus.failed")
+    case "refunded":
+      return t("paymentStatus.refunded")
+  }
+}
+
+function getPaymentMethodLabel(t: ReturnType<typeof useTranslations>, method?: string | null) {
+  switch (method) {
+    case "cash_on_delivery":
+      return t("paymentMethod.cash_on_delivery")
+    case "pay_in_store":
+      return t("paymentMethod.pay_in_store")
+    case "card":
+      return t("paymentMethod.card")
+    case "bank_transfer":
+      return t("paymentMethod.bank_transfer")
+    case "mobile_payment":
+      return t("paymentMethod.mobile_payment")
+    case "solde":
+      return t("paymentMethod.solde")
+    default:
+      return method ? String(method) : "—"
+  }
 }
 
 function getStepIndex(status: OrderStatus) {
@@ -195,6 +213,7 @@ function Stepper({
 }
 
 function StatusPill({ order }: { order: Order }) {
+  const t = useTranslations("orderDetailsPage")
   const status = order.status
   const paymentStatus = order.paymentStatus
 
@@ -221,22 +240,27 @@ function StatusPill({ order }: { order: Order }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Badge variant="outline" className={cn("text-xs", statusTone)}>
-        {ORDER_STATUS_LABELS[status]}
+        {getOrderStatusLabel(t, status)}
       </Badge>
       <span className="text-xs text-muted-foreground">•</span>
       <span className={cn("text-xs font-medium", paymentTone)}>
-        {PAYMENT_STATUS_LABELS[paymentStatus]}
+        {getPaymentStatusLabel(t, paymentStatus)}
       </span>
     </div>
   )
 }
 
 function OrderProgressHeader({ order }: { order: Order }) {
+  const locale = useLocale()
+  const t = useTranslations("orderDetailsPage")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   const fulfillmentSteps: Step[] = [
-    { key: "pending", label: "Commande", icon: Clock },
-    { key: "confirmed", label: "Confirmée", icon: CheckCircle2 },
-    { key: "shipped", label: "Expédiée", icon: Truck },
-    { key: "delivered", label: "Livrée", icon: Package },
+    { key: "pending", label: t("steps.pending"), icon: Clock },
+    { key: "confirmed", label: t("steps.confirmed"), icon: CheckCircle2 },
+    { key: "shipped", label: t("steps.shipped"), icon: Truck },
+    { key: "delivered", label: t("steps.delivered"), icon: Package },
   ]
 
   const fulfillmentIndex = getStepIndex(order.status)
@@ -276,18 +300,18 @@ function OrderProgressHeader({ order }: { order: Order }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
-                Commande #{order.orderNumber}
+                {t("header.orderNumber", { number: order.orderNumber })}
               </h2>
               <StatusPill order={order} />
             </div>
             <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
-                {formatDateTime(order.createdAt)}
+                {formatDateTime(locale, order.createdAt)}
               </span>
               <span className="inline-flex items-center gap-1">
                 <Receipt className="w-3.5 h-3.5" />
-                {moneyMAD(order.totalAmount)}
+                {formatMoney(order.totalAmount, currency)}
               </span>
             </div>
           </div>
@@ -295,13 +319,13 @@ function OrderProgressHeader({ order }: { order: Order }) {
 
         {isCancelled ? (
           <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
-            Cette commande a été annulée.
+            {t("cancelledNotice")}
           </div>
         ) : (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-foreground">Fulfillment</p>
-              <span className="text-xs text-muted-foreground">Statut: {ORDER_STATUS_LABELS[order.status]}</span>
+              <p className="text-sm font-semibold text-foreground">{t("progress.title")}</p>
+              <span className="text-xs text-muted-foreground">{t("progress.status", { status: getOrderStatusLabel(t, order.status) })}</span>
             </div>
             <Stepper
               steps={fulfillmentSteps}
@@ -317,6 +341,10 @@ function OrderProgressHeader({ order }: { order: Order }) {
 }
 
 function TotalsCard({ order }: { order: Order }) {
+  const t = useTranslations("orderDetailsPage")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   const remiseUsed = Number((order as any).remiseUsedAmount || 0)
   const amountToPay = Math.max(0, Number(order.totalAmount || 0) - remiseUsed)
 
@@ -324,31 +352,31 @@ function TotalsCard({ order }: { order: Order }) {
     <Card className="p-4 border-border/50">
       <div className="flex items-center gap-2 mb-3">
         <Receipt className="w-4 h-4 text-primary" />
-        <h3 className="font-semibold">Récapitulatif</h3>
+        <h3 className="font-semibold">{t("totals.title")}</h3>
       </div>
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Sous-total</span>
-          <span className="font-medium">{moneyMAD(order.subtotal)}</span>
+          <span className="text-muted-foreground">{t("totals.subtotal")}</span>
+          <span className="font-medium">{formatMoney(order.subtotal, currency)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Livraison</span>
-          <span className="font-medium">{moneyMAD(order.shippingCost)}</span>
+          <span className="text-muted-foreground">{t("totals.shipping")}</span>
+          <span className="font-medium">{formatMoney(order.shippingCost, currency)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Taxes</span>
-          <span className="font-medium">{moneyMAD(order.taxAmount)}</span>
+          <span className="text-muted-foreground">{t("totals.taxes")}</span>
+          <span className="font-medium">{formatMoney(order.taxAmount, currency)}</span>
         </div>
         {order.discountAmount > 0 && (
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Remise</span>
-            <span className="font-medium text-green-700 dark:text-green-400">- {moneyMAD(order.discountAmount)}</span>
+            <span className="text-muted-foreground">{t("totals.discount")}</span>
+            <span className="font-medium text-green-700 dark:text-green-400">- {formatMoney(order.discountAmount, currency)}</span>
           </div>
         )}
         <Separator />
         <div className="flex items-center justify-between">
-          <span className="font-semibold">Total</span>
-          <span className="font-bold text-foreground">{moneyMAD(order.totalAmount)}</span>
+          <span className="font-semibold">{t("totals.total")}</span>
+          <span className="font-bold text-foreground">{formatMoney(order.totalAmount, currency)}</span>
         </div>
 
         {remiseUsed > 0 && (
@@ -357,18 +385,18 @@ function TotalsCard({ order }: { order: Order }) {
             <div className="rounded-lg border border-emerald-200/60 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-950/20 p-3 space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <CreditCard className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-xs font-semibold text-emerald-900 dark:text-emerald-100">Paiement mixte</span>
+                <span className="text-xs font-semibold text-emerald-900 dark:text-emerald-100">{t("totals.mixedPayment")}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <Wallet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-emerald-700/80 dark:text-emerald-300/80">Solde remise utilisé</span>
+                  <span className="text-emerald-700/80 dark:text-emerald-300/80">{t("totals.discountBalanceUsed")}</span>
                 </div>
-                <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{moneyMAD(remiseUsed)}</span>
+                <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{formatMoney(remiseUsed, currency)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">Reste à payer</span>
-                <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{moneyMAD(amountToPay)}</span>
+                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{t("totals.remainingToPay")}</span>
+                <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{formatMoney(amountToPay, currency)}</span>
               </div>
             </div>
           </>
@@ -379,7 +407,11 @@ function TotalsCard({ order }: { order: Order }) {
 }
 
 function PaymentCard({ order }: { order: Order }) {
-  const methodLabel = PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod
+  const t = useTranslations("orderDetailsPage")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
+  const methodLabel = getPaymentMethodLabel(t, order.paymentMethod)
   const remiseUsed = Number((order as any).remiseUsedAmount || 0)
   const amountToPay = Math.max(0, Number(order.totalAmount || 0) - remiseUsed)
 
@@ -431,12 +463,12 @@ function PaymentCard({ order }: { order: Order }) {
         <div className="flex items-center gap-2 min-w-0">
           <CreditCard className="w-4 h-4 text-primary" />
           <div className="min-w-0">
-            <p className="text-sm font-semibold truncate">Paiement</p>
+            <p className="text-sm font-semibold truncate">{t("payment.title")}</p>
             {remiseUsed > 0 ? (
               <div className="flex items-center gap-1.5 mt-1">
                 <div className="inline-flex items-center gap-1 text-[10px] font-medium rounded-full px-2 py-0.5 border bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/40">
                   <Wallet className="w-3 h-3" />
-                  <span>Remise</span>
+                  <span>{t("payment.discountChip")}</span>
                 </div>
                 <span className="text-xs text-muted-foreground">+</span>
                 <div className={cn("inline-flex items-center gap-1 text-[10px] font-medium rounded-full px-2 py-0.5 border", paymentConfig.bg, paymentConfig.color, paymentConfig.border)}>
@@ -454,9 +486,9 @@ function PaymentCard({ order }: { order: Order }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Statut</span>
+          <span className="text-xs text-muted-foreground">{t("payment.statusLabel")}</span>
           <Badge variant="secondary" className="text-xs">
-            {PAYMENT_STATUS_LABELS[order.paymentStatus]}
+            {getPaymentStatusLabel(t, order.paymentStatus)}
           </Badge>
         </div>
       </div>
@@ -483,21 +515,21 @@ function PaymentCard({ order }: { order: Order }) {
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5">
                 <Wallet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-emerald-700/80 dark:text-emerald-300/80">Remise utilisée</span>
+                <span className="text-emerald-700/80 dark:text-emerald-300/80">{t("payment.discountUsed")}</span>
               </div>
-              <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{moneyMAD(remiseUsed)}</span>
+              <span className="font-semibold text-emerald-900 dark:text-emerald-100">-{formatMoney(remiseUsed, currency)}</span>
             </div>
             <Separator className="bg-emerald-200/40 dark:bg-emerald-800/40" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <paymentConfig.icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">À payer ({methodLabel})</span>
+                <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{t("payment.toPay", { method: methodLabel })}</span>
               </div>
-              <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{moneyMAD(amountToPay)}</span>
+              <span className="text-base font-bold text-emerald-700 dark:text-emerald-300">{formatMoney(amountToPay, currency)}</span>
             </div>
             {order.customerNotes && (
               <div className="pt-2 border-t border-emerald-200/40 dark:border-emerald-800/40">
-                <p className="text-[10px] text-emerald-700/70 dark:text-emerald-300/70 italic">Note: {order.customerNotes}</p>
+                <p className="text-[10px] text-emerald-700/70 dark:text-emerald-300/70 italic">{t("payment.note", { note: order.customerNotes })}</p>
               </div>
             )}
           </div>
@@ -508,6 +540,7 @@ function PaymentCard({ order }: { order: Order }) {
 }
 
 function ShippingCard({ order }: { order: Order }) {
+  const t = useTranslations("orderDetailsPage")
   const addr = order.shippingAddress
   const isPickup = order.deliveryMethod === "pickup"
 
@@ -517,12 +550,12 @@ function ShippingCard({ order }: { order: Order }) {
         {isPickup ? (
           <>
             <Store className="w-4 h-4 text-violet-600" />
-            <h3 className="font-semibold">Retrait en boutique</h3>
+            <h3 className="font-semibold">{t("shipping.pickupTitle")}</h3>
           </>
         ) : (
           <>
             <MapPin className="w-4 h-4 text-emerald-600" />
-            <h3 className="font-semibold">Livraison</h3>
+            <h3 className="font-semibold">{t("shipping.deliveryTitle")}</h3>
           </>
         )}
       </div>
@@ -607,11 +640,13 @@ function ShippingCard({ order }: { order: Order }) {
 }
 
 function HistoryTimeline({ order }: { order: Order }) {
+  const locale = useLocale()
+  const t = useTranslations("orderDetailsPage")
   const history = order.statusHistory ?? []
   if (!history.length) {
     return (
       <div className="text-sm text-muted-foreground">
-        Aucun historique disponible pour le moment.
+        {t("history.empty")}
       </div>
     )
   }
@@ -627,14 +662,14 @@ function HistoryTimeline({ order }: { order: Order }) {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">
-                    {ORDER_STATUS_LABELS[entry.newStatus]}
+                    {getOrderStatusLabel(t, entry.newStatus)}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">• {entry.changedByType}</span>
+                  <span className="text-xs text-muted-foreground">• {t("history.changedBy", { who: entry.changedByType })}</span>
                 </div>
                 {entry.notes && <p className="text-sm mt-1">{entry.notes}</p>}
               </div>
               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {formatDateTime(entry.timestamp)}
+                {formatDateTime(locale, entry.timestamp)}
               </span>
             </div>
           </Card>
@@ -645,6 +680,10 @@ function HistoryTimeline({ order }: { order: Order }) {
 
 export default function OrderDetailsPage() {
   const locale = useLocale()
+  const t = useTranslations("orderDetailsPage")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   const router = useRouter()
   const routeParams = useParams<{ id?: string | string[] }>()
   const { isAuthenticated, user } = useAppSelector((state) => state.user)
@@ -682,7 +721,7 @@ export default function OrderDetailsPage() {
       stock: 999,
     })
 
-    toast.success("Ajouté au panier", { description: item.productName })
+    toast.success(t("toast.addedToCartTitle"), { description: item.productName })
 
     setTimeout(() => {
       cartRef.current?.open()
@@ -691,19 +730,19 @@ export default function OrderDetailsPage() {
 
   if (!isAuthenticated) {
     return (
-      <ShopPageLayout title="Détails de la commande" subtitle="Connectez-vous pour consulter votre commande" icon="cart">
+      <ShopPageLayout title={t("pageTitle")} subtitle={t("authRequired.subtitle")} icon="cart">
         <Card className="p-6 border-border/50">
           <div className="flex items-start gap-3">
             <XCircle className="w-5 h-5 text-muted-foreground mt-0.5" />
             <div className="space-y-2">
-              <p className="font-semibold">Session requise</p>
+              <p className="font-semibold">{t("authRequired.title")}</p>
               <p className="text-sm text-muted-foreground">
-                Veuillez vous connecter pour accéder aux détails de votre commande.
+                {t("authRequired.description")}
               </p>
               <div className="flex gap-2">
-                <Button onClick={() => router.push(`/${locale}/login`)}>Se connecter</Button>
+                <Button onClick={() => router.push(`/${locale}/login`)}>{tCommon("login")}</Button>
                 <Button variant="outline" onClick={() => router.push(`/${locale}/orders`)}>
-                  Retour
+                  {tCommon("back")}
                 </Button>
               </div>
             </div>
@@ -715,7 +754,7 @@ export default function OrderDetailsPage() {
 
   if (isLoading) {
     return (
-      <ShopPageLayout title="Détails de la commande" subtitle="Chargement..." icon="cart">
+      <ShopPageLayout title={t("pageTitle")} subtitle={tCommon("loading")} icon="cart">
         <div className="space-y-4">
           <div className="bg-card border border-border rounded-xl p-5 animate-pulse">
             <div className="h-4 bg-muted rounded w-1/3" />
@@ -742,16 +781,16 @@ export default function OrderDetailsPage() {
       notFound()
     }
     return (
-      <ShopPageLayout title="Détails de la commande" subtitle="Impossible de charger la commande" icon="cart">
+      <ShopPageLayout title={t("pageTitle")} subtitle={t("error.subtitle")} icon="cart">
         <Card className="p-6 border-border/50">
           <div className="flex items-start gap-3">
             <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
             <div className="space-y-2">
-              <p className="font-semibold">Impossible de charger la commande</p>
-              <p className="text-sm text-muted-foreground">Veuillez réessayer dans quelques instants.</p>
+              <p className="font-semibold">{t("error.title")}</p>
+              <p className="text-sm text-muted-foreground">{t("error.description")}</p>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => router.push(`/${locale}/orders`)}>
-                  Retour à mes commandes
+                  {t("actions.backToOrders")}
                 </Button>
               </div>
             </div>
@@ -767,8 +806,8 @@ export default function OrderDetailsPage() {
 
   return (
     <ShopPageLayout
-      title="Détails de la commande"
-      subtitle={`Commande #${order.orderNumber} • ${itemsCount} article${itemsCount > 1 ? "s" : ""}`}
+      title={t("pageTitle")}
+      subtitle={t("subtitle", { orderNumber: order.orderNumber, count: itemsCount })}
       icon="cart"
     >
       <div className="space-y-4">
@@ -776,16 +815,16 @@ export default function OrderDetailsPage() {
           <Link href={`/${locale}/orders`} className="inline-flex">
             <Button variant="outline" size="sm" className="gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Mes commandes
+              {t("actions.backToOrders")}
             </Button>
           </Link>
 
           <div className="flex items-center gap-2">
-            <InvoiceDialog order={order} user={user} triggerText="Facture" />
+            <InvoiceDialog order={order} user={user} triggerText={t("actions.invoice")} />
 
             <Button variant="ghost" size="sm" onClick={() => router.refresh()} className="gap-2">
               <RefreshCw className="w-4 h-4" />
-              Actualiser
+              {t("actions.refresh")}
             </Button>
           </div>
         </div>
@@ -794,11 +833,11 @@ export default function OrderDetailsPage() {
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="w-full justify-start overflow-x-auto">
-            <TabsTrigger value="overview">Résumé</TabsTrigger>
-            <TabsTrigger value="items">Articles</TabsTrigger>
-            <TabsTrigger value="shipping">Livraison</TabsTrigger>
-            <TabsTrigger value="payment">Paiement</TabsTrigger>
-            <TabsTrigger value="history">Historique</TabsTrigger>
+            <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
+            <TabsTrigger value="items">{t("tabs.items")}</TabsTrigger>
+            <TabsTrigger value="shipping">{t("tabs.shipping")}</TabsTrigger>
+            <TabsTrigger value="payment">{t("tabs.payment")}</TabsTrigger>
+            <TabsTrigger value="history">{t("tabs.history")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-3">
@@ -807,7 +846,7 @@ export default function OrderDetailsPage() {
                 <Card className="p-4 border-border/50">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm text-muted-foreground">Commande</p>
+                      <p className="text-sm text-muted-foreground">{t("overview.orderLabel")}</p>
                       <p className="font-semibold truncate">#{order.orderNumber}</p>
                     </div>
                     <Button
@@ -816,7 +855,7 @@ export default function OrderDetailsPage() {
                       onClick={() => router.push(`/${locale}/orders`)}
                       className="gap-2"
                     >
-                      Voir la liste
+                      {t("overview.viewListCta")}
                       <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -825,20 +864,20 @@ export default function OrderDetailsPage() {
 
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Date</p>
-                      <p className="font-medium">{formatDateTime(order.createdAt)}</p>
+                      <p className="text-muted-foreground">{t("overview.date")}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.createdAt)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Statut</p>
-                      <p className="font-medium">{ORDER_STATUS_LABELS[order.status]}</p>
+                      <p className="text-muted-foreground">{t("overview.status")}</p>
+                      <p className="font-medium">{getOrderStatusLabel(t, order.status)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Paiement</p>
-                      <p className="font-medium">{PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</p>
+                      <p className="text-muted-foreground">{t("overview.payment")}</p>
+                      <p className="font-medium">{getPaymentMethodLabel(t, order.paymentMethod)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Total</p>
-                      <p className="font-semibold">{moneyMAD(order.totalAmount)}</p>
+                      <p className="text-muted-foreground">{t("overview.total")}</p>
+                      <p className="font-semibold">{formatMoney(order.totalAmount, currency)}</p>
                     </div>
                   </div>
                 </Card>
@@ -846,7 +885,7 @@ export default function OrderDetailsPage() {
                 <Card className="p-4 border-border/50">
                   <div className="flex items-center gap-2 mb-3">
                     <Package className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold">Articles</h3>
+                    <h3 className="font-semibold">{t("itemsPreview.title")}</h3>
                   </div>
 
                   <div className="space-y-3">
@@ -864,7 +903,7 @@ export default function OrderDetailsPage() {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{item.productName}</p>
                           <p className="text-xs text-muted-foreground">
-                            Qté: {item.quantity} • {moneyMAD(item.subtotal)}
+                            {t("itemsPreview.line", { quantity: item.quantity, subtotal: formatMoney(item.subtotal, currency) })}
                           </p>
                         </div>
                       </div>
@@ -872,13 +911,13 @@ export default function OrderDetailsPage() {
 
                     {(order.items?.length ?? 0) > 3 && (
                       <p className="text-xs text-muted-foreground">
-                        + {(order.items?.length ?? 0) - 3} autre(s) article(s)
+                        {t("itemsPreview.more", { count: (order.items?.length ?? 0) - 3 })}
                       </p>
                     )}
 
                     <div>
                       <Button variant="outline" size="sm" onClick={() => setTab("items")}>
-                        Voir tous les articles
+                        {t("itemsPreview.viewAll")}
                       </Button>
                     </div>
                   </div>
@@ -897,8 +936,8 @@ export default function OrderDetailsPage() {
             <Card className="p-4 border-border/50">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="min-w-0">
-                  <h3 className="font-semibold">Articles</h3>
-                  <p className="text-sm text-muted-foreground">{itemsCount} article(s)</p>
+                  <h3 className="font-semibold">{t("itemsTab.title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("itemsTab.count", { count: itemsCount })}</p>
                 </div>
               </div>
 
@@ -923,9 +962,9 @@ export default function OrderDetailsPage() {
                         </p>
                       )}
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                        <span>Qté: {item.quantity}</span>
-                        <span>PU: {moneyMAD(item.unitPrice)}</span>
-                        <span className="text-foreground font-semibold">Sous-total: {moneyMAD(item.subtotal)}</span>
+                        <span>{t("itemsTab.qty", { quantity: item.quantity })}</span>
+                        <span>{t("itemsTab.unitPrice", { price: formatMoney(item.unitPrice, currency) })}</span>
+                        <span className="text-foreground font-semibold">{t("itemsTab.subtotal", { subtotal: formatMoney(item.subtotal, currency) })}</span>
                       </div>
 
                       <div className="flex flex-wrap gap-2 mt-3">
@@ -936,7 +975,7 @@ export default function OrderDetailsPage() {
                           className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
-                          Acheter à nouveau
+                          {t("actions.buyAgain")}
                         </Button>
                         <Button
                           variant="outline"
@@ -944,7 +983,7 @@ export default function OrderDetailsPage() {
                           onClick={() => router.push(`/${locale}/product/${item.productId}`)}
                           className="h-8 text-xs gap-1.5"
                         >
-                          Voir le produit
+                          {t("actions.viewProduct")}
                           <ChevronRight className="w-3.5 h-3.5" />
                         </Button>
                       </div>
@@ -963,25 +1002,25 @@ export default function OrderDetailsPage() {
                 <Card className="p-4 border-border/50">
                   <div className="flex items-center gap-2 mb-3">
                     <Truck className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold">Dates</h3>
+                    <h3 className="font-semibold">{t("shippingDates.title")}</h3>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Confirmée</p>
-                      <p className="font-medium">{formatDateTime(order.confirmedAt)}</p>
+                      <p className="text-muted-foreground">{t("shippingDates.confirmed")}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.confirmedAt)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Expédiée</p>
-                      <p className="font-medium">{formatDateTime(order.shippedAt)}</p>
+                      <p className="text-muted-foreground">{t("shippingDates.shipped")}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.shippedAt)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Livrée</p>
-                      <p className="font-medium">{formatDateTime(order.deliveredAt)}</p>
+                      <p className="text-muted-foreground">{t("shippingDates.delivered")}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.deliveredAt)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Annulée</p>
-                      <p className="font-medium">{formatDateTime(order.cancelledAt)}</p>
+                      <p className="text-muted-foreground">{t("shippingDates.cancelled")}</p>
+                      <p className="font-medium">{formatDateTime(locale, order.cancelledAt)}</p>
                     </div>
                   </div>
                 </Card>
@@ -990,18 +1029,18 @@ export default function OrderDetailsPage() {
                   <Card className="p-4 border-border/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Mail className="w-4 h-4 text-primary" />
-                      <h3 className="font-semibold">Notes</h3>
+                      <h3 className="font-semibold">{t("notes.title")}</h3>
                     </div>
                     <div className="space-y-3 text-sm">
                       {order.customerNotes && (
                         <div>
-                          <p className="text-muted-foreground">Client</p>
+                          <p className="text-muted-foreground">{t("notes.customer")}</p>
                           <p className="font-medium">{order.customerNotes}</p>
                         </div>
                       )}
                       {order.adminNotes && (
                         <div>
-                          <p className="text-muted-foreground">Admin</p>
+                          <p className="text-muted-foreground">{t("notes.admin")}</p>
                           <p className="font-medium">{order.adminNotes}</p>
                         </div>
                       )}
@@ -1024,17 +1063,17 @@ export default function OrderDetailsPage() {
                 <Card className="p-4 border-border/50">
                   <div className="flex items-center gap-2 mb-3">
                     <CreditCard className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold">Détails du paiement</h3>
+                    <h3 className="font-semibold">{t("paymentDetails.title")}</h3>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Méthode</p>
-                      <p className="font-medium">{PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</p>
+                      <p className="text-muted-foreground">{t("paymentDetails.method")}</p>
+                      <p className="font-medium">{getPaymentMethodLabel(t, order.paymentMethod)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Statut</p>
-                      <p className="font-medium">{PAYMENT_STATUS_LABELS[order.paymentStatus]}</p>
+                      <p className="text-muted-foreground">{t("paymentDetails.status")}</p>
+                      <p className="font-medium">{getPaymentStatusLabel(t, order.paymentStatus)}</p>
                     </div>
                   </div>
                 </Card>
@@ -1050,7 +1089,7 @@ export default function OrderDetailsPage() {
             <Card className="p-4 border-border/50">
               <div className="flex items-center gap-2 mb-3">
                 <Clock className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold">Historique de statut</h3>
+                <h3 className="font-semibold">{t("history.title")}</h3>
               </div>
               <HistoryTimeline order={order} />
             </Card>

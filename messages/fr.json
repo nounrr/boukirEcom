@@ -27,6 +27,289 @@
     "previous": "Précédent",
     "viewAll": "Voir tout"
   },
+  "authDialog": {
+    "wishlistTitle": "Connectez-vous pour sauvegarder vos produits préférés",
+    "wishlistSubtitle": "Accédez à votre wishlist et suivez vos commandes."
+  },
+  "ordersPage": {
+    "toast": {
+      "addedToCartTitle": "Ajouté au panier"
+    },
+    "title": {
+      "orders": "Mes commandes",
+      "solde": "Historique du solde"
+    },
+    "loading": "Chargement...",
+    "tabs": {
+      "orders": "Commandes",
+      "solde": "Historique solde"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "subtitle": {
+      "ordersIntro": "Suivez l’état de vos commandes.",
+      "soldeIntro": "Consultez vos mouvements et votre relevé de solde.",
+      "noResultsFilters": "Aucun résultat ne correspond à vos filtres.",
+      "noResultsPeriod": "Aucun résultat pour cette période.",
+      "ordersWithCount": "{count, plural, one {Vous avez # commande} other {Vous avez # commandes}}{hasPagination, select, yes { • Page {page} sur {totalPages}} other {}}",
+      "soldeWithCount": "{count, plural, one {# mouvement} other {# mouvements}}"
+    },
+    "ordersCountInline": "{count, plural, one {# commande} other {# commandes}}{hasPagination, select, yes { • Page {page} / {totalPages}} other {}}",
+    "soldeMovementsInline": "{count, plural, one {# mouvement} other {# mouvements}}",
+    "soldeStatementHint": "Consultez votre relevé et vos mouvements de solde.",
+    "filters": {
+      "period": {
+        "placeholder": "Toutes les périodes",
+        "all": "Toutes les périodes",
+        "thisWeek": "Cette semaine",
+        "thisMonth": "Ce mois",
+        "custom": "Période personnalisée"
+      },
+      "status": {
+        "placeholder": "Statut",
+        "all": "Tous les statuts"
+      },
+      "paymentStatus": {
+        "placeholder": "Paiement",
+        "all": "Tous les paiements"
+      },
+      "paymentMethod": {
+        "placeholder": "Méthode",
+        "all": "Toutes les méthodes",
+        "cashOnDelivery": "Paiement à la livraison",
+        "card": "Carte bancaire",
+        "payInStore": "Paiement en boutique",
+        "solde": "Paiement différé"
+      },
+      "deliveryMethod": {
+        "placeholder": "Livraison",
+        "all": "Toutes",
+        "delivery": "Livraison à domicile",
+        "pickup": "Retrait en boutique"
+      },
+      "dateRange": {
+        "placeholder": "Sélectionner une période"
+      },
+      "reset": "Réinitialiser les filtres"
+    },
+    "empty": {
+      "filtered": {
+        "title": "Aucun résultat",
+        "descSolde": "Essayez de modifier la période pour afficher des mouvements.",
+        "descOrders": "Essayez de modifier vos filtres pour afficher des commandes.",
+        "resetCta": "Réinitialiser",
+        "discoverCta": "Découvrir les produits"
+      },
+      "none": {
+        "soldeTitle": "Aucun mouvement",
+        "ordersTitle": "Aucune commande",
+        "soldeDesc": "Vos mouvements de solde apparaîtront ici.",
+        "ordersDesc": "Vos commandes apparaîtront ici après un achat.",
+        "discoverCta": "Découvrir les produits"
+      }
+    },
+    "soldeNotAllowed": {
+      "title": "Accès non autorisé",
+      "desc": "Votre compte n’est pas éligible au paiement différé."
+    },
+    "soldeEmpty": {
+      "title": "Aucun relevé",
+      "desc": "Aucun relevé de solde trouvé pour la période sélectionnée."
+    }
+  },
+  "orderCard": {
+    "meta": {
+      "order": "Commande",
+      "total": "Total",
+      "shipTo": "Livrer à",
+      "orderNumber": "N° {number}"
+    },
+    "itemsCount": "{count, plural, one {# article} other {# articles}}",
+    "actions": {
+      "details": "Détails",
+      "invoice": "Facture",
+      "buyAgain": "Acheter à nouveau",
+      "viewProduct": "Voir le produit",
+      "trackPackage": "Suivre le colis",
+      "collapseAria": "Réduire la commande",
+      "expandAria": "Afficher les articles"
+    },
+    "loadingDetails": "Chargement des détails...",
+    "address": {
+      "deliveryTitle": "Adresse de livraison"
+    },
+    "item": {
+      "qty": "Qté: {quantity}"
+    },
+    "deliveryStatus": {
+      "deliveredOn": "Livrée {date}",
+      "shippedOn": "Expédiée {date}",
+      "confirmedOn": "Confirmée {date}",
+      "cancelled": "Annulée",
+      "pending": "En attente",
+      "packageDelivered": "Colis livré."
+    },
+    "deliveryMethod": {
+      "pickup": "Retrait en boutique",
+      "delivery": "Livraison à domicile"
+    },
+    "paymentMethod": {
+      "solde": "Paiement différé",
+      "pay_in_store": "Paiement en boutique",
+      "cash_on_delivery": "Paiement à la livraison",
+      "card": "Carte bancaire",
+      "unknown": "{method}"
+    },
+    "payment": {
+      "remiseInline": "Remise: -{amount}",
+      "toPayWithSoldeInline": "À payer en solde: {amount} {currency}",
+      "toPayInline": "À payer: {amount} {currency}",
+      "remisePlus": "Remise + {method}"
+    }
+  },
+  "orderDetailsPage": {
+    "pageTitle": "Détails de la commande",
+    "subtitle": "Commande #{orderNumber} • {count, plural, one {# article} other {# articles}}",
+    "toast": {
+      "addedToCartTitle": "Ajouté au panier"
+    },
+    "authRequired": {
+      "title": "Session requise",
+      "subtitle": "Connectez-vous pour consulter votre commande",
+      "description": "Veuillez vous connecter pour accéder aux détails de votre commande."
+    },
+    "error": {
+      "title": "Impossible de charger la commande",
+      "subtitle": "Impossible de charger la commande",
+      "description": "Veuillez réessayer dans quelques instants."
+    },
+    "actions": {
+      "backToOrders": "Retour à mes commandes",
+      "invoice": "Facture",
+      "refresh": "Actualiser",
+      "buyAgain": "Acheter à nouveau",
+      "viewProduct": "Voir le produit"
+    },
+    "tabs": {
+      "overview": "Résumé",
+      "items": "Articles",
+      "shipping": "Livraison",
+      "payment": "Paiement",
+      "history": "Historique"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "Paiement à la livraison",
+      "pay_in_store": "Paiement en boutique",
+      "card": "Carte bancaire",
+      "bank_transfer": "Virement bancaire",
+      "mobile_payment": "Paiement mobile",
+      "solde": "Paiement différé"
+    },
+    "header": {
+      "orderNumber": "Commande #{number}"
+    },
+    "steps": {
+      "pending": "Commande",
+      "confirmed": "Confirmée",
+      "shipped": "Expédiée",
+      "delivered": "Livrée"
+    },
+    "cancelledNotice": "Cette commande a été annulée.",
+    "progress": {
+      "title": "Suivi",
+      "status": "Statut: {status}"
+    },
+    "overview": {
+      "orderLabel": "Commande",
+      "viewListCta": "Voir la liste",
+      "date": "Date",
+      "status": "Statut",
+      "payment": "Paiement",
+      "total": "Total"
+    },
+    "itemsPreview": {
+      "title": "Articles",
+      "line": "Qté: {quantity} • {subtotal}",
+      "more": "+ {count} autre(s)",
+      "viewAll": "Voir tous les articles"
+    },
+    "itemsTab": {
+      "title": "Articles",
+      "count": "{count, plural, one {# article} other {# articles}}",
+      "qty": "Qté: {quantity}",
+      "unitPrice": "PU: {price}",
+      "subtotal": "Sous-total: {subtotal}"
+    },
+    "shipping": {
+      "pickupTitle": "Retrait en boutique",
+      "deliveryTitle": "Livraison"
+    },
+    "shippingDates": {
+      "title": "Dates",
+      "confirmed": "Confirmée",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    },
+    "notes": {
+      "title": "Notes",
+      "customer": "Client",
+      "admin": "Admin"
+    },
+    "totals": {
+      "title": "Récapitulatif",
+      "subtotal": "Sous-total",
+      "shipping": "Livraison",
+      "taxes": "Taxes",
+      "discount": "Remise",
+      "total": "Total",
+      "mixedPayment": "Paiement mixte",
+      "discountBalanceUsed": "Solde remise utilisé",
+      "remainingToPay": "Reste à payer"
+    },
+    "payment": {
+      "title": "Paiement",
+      "discountChip": "Remise",
+      "statusLabel": "Statut",
+      "discountUsed": "Remise utilisée",
+      "toPay": "À payer ({method})",
+      "note": "Note: {note}"
+    },
+    "paymentDetails": {
+      "title": "Détails du paiement",
+      "method": "Méthode",
+      "status": "Statut"
+    },
+    "history": {
+      "title": "Historique de statut",
+      "empty": "Aucun historique disponible pour le moment.",
+      "changedBy": "{who}"
+    }
+  },
   "shop": {
     "filters": "Filtres",
     "productsLabel": "produits",
@@ -35,7 +318,152 @@
     "featuredTitle": "Promotions du moment",
     "featuredDesc": "Nos meilleures offres sélectionnées pour vous",
     "newArrivalsTitle": "Nouveautés",
-    "newArrivalsDesc": "Les derniers produits ajoutés à la boutique"
+    "newArrivalsDesc": "Les derniers produits ajoutés à la boutique",
+    "heroDescription": "Découvrez nos produits et trouvez rapidement ce qu’il vous faut grâce à la recherche en haut de page.",
+    "featureDeliveryTitle": "Livraison rapide",
+    "featureDeliveryDesc": "Des options adaptées à votre région.",
+    "featureSecurePaymentTitle": "Paiement sécurisé",
+    "featureSecurePaymentDesc": "Transactions protégées et fiables.",
+    "featureQualityTitle": "Qualité & choix",
+    "featureQualityDesc": "Une sélection pensée pour les pros."
+  },
+  "productsList": {
+    "errorTitle": "Impossible de charger les produits",
+    "errorDescription": "Une erreur s'est produite lors du chargement des produits. Veuillez réessayer plus tard.",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucun produit trouvé",
+    "emptyDescription": "Essayez de modifier vos filtres ou votre recherche pour découvrir nos produits.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "badges": {
+      "new": "NOUVEAU",
+      "promo": "PROMO"
+    }
+  },
+  "productCard": {
+    "quickView": "Aperçu rapide",
+    "addToCart": "Ajouter au panier",
+    "outOfStock": "Rupture de stock",
+    "addToWishlist": "Ajouter aux favoris",
+    "removeFromWishlist": "Retirer des favoris",
+    "wishlistAddedTitle": "Ajouté aux favoris",
+    "wishlistRemovedTitle": "Retiré des favoris",
+    "genericErrorTitle": "Une erreur est survenue",
+    "wishlistUpdateFailedDesc": "Impossible de mettre à jour les favoris",
+    "variantRequiredTitle": "Veuillez sélectionner une variante",
+    "variantRequiredDesc": "Cette variante est obligatoire.",
+    "variantLabelFallback": "Variante",
+    "lowStock": "Plus que {count, plural, one {# en stock} other {# en stock}}"
+  },
+  "productPage": {
+    "inStock": "En stock",
+    "colorLabel": "Couleur",
+    "sizeLabel": "Taille",
+    "optionsLabel": "Options",
+    "unitLabel": "Unité",
+    "quantityLabel": "Quantité",
+    "totalLabel": "Total",
+    "descriptionHeading": "Description",
+    "addedToCartTitle": "Ajouté au panier",
+    "addedToCartDesc": "{quantity} × {name}",
+    "linkCopiedTitle": "Lien copié",
+    "linkCopiedDesc": "Le lien a été copié dans le presse-papiers.",
+    "loadErrorTitle": "Impossible de charger le produit",
+    "loadErrorDesc": "Une erreur est survenue. Veuillez réessayer.",
+    "similarTitle": "Produits similaires",
+    "similarDesc": "Découvrez d'autres produits qui pourraient vous intéresser",
+    "categoryFallback": "Produit"
+  },
+  "productFilters": {
+    "title": "Filtres",
+    "clear": "Effacer",
+    "sortBy": "Trier par",
+    "selectPlaceholder": "Sélectionner...",
+    "searchTitle": "Rechercher",
+    "searchPlaceholder": "Rechercher un produit...",
+    "categories": "Catégories",
+    "brands": "Marques",
+    "price": "Prix",
+    "colors": "Couleurs",
+    "units": "Unités de mesure",
+    "inStockOnly": "En stock uniquement",
+    "sort": {
+      "newest": "Plus récents",
+      "priceAsc": "Prix croissant",
+      "priceDesc": "Prix décroissant",
+      "bestPromos": "Meilleures promos",
+      "popular": "Les plus populaires"
+    }
+  },
+  "cartPage": {
+    "title": "Mon Panier",
+    "subtitle": "Vérifiez vos articles avant de passer commande",
+    "empty": {
+      "title": "Votre panier est vide",
+      "description": "Parcourez nos produits et ajoutez-les à votre panier pour commencer vos achats.",
+      "actionLabel": "Découvrir les produits"
+    },
+    "toast": {
+      "quantityUpdatedTitle": "Quantité mise à jour",
+      "quantityUpdateFailedDesc": "Impossible de mettre à jour la quantité",
+      "removedTitle": "Retiré du panier",
+      "removeFailedDesc": "Impossible de retirer le produit"
+    },
+    "labels": {
+      "variant": "Variante: {value}",
+      "unit": "Unité: {value}",
+      "separator": " · "
+    },
+    "lowStockWarning": "Plus que {count} en stock",
+    "price": "{price} {currency}",
+    "pricePerUnit": "{price} {currency} / unité",
+    "aria": {
+      "removeItem": "Retirer du panier"
+    },
+    "summary": {
+      "title": "Résumé de la commande",
+      "subtotal": "Sous-total",
+      "delivery": "Livraison",
+      "deliveryToCalculate": "À calculer",
+      "total": "Total",
+      "checkout": "Passer la commande"
+    },
+    "itemsCount": "{count, plural, one {# article dans votre panier} other {# articles dans votre panier}}"
+  },
+  "wishlistPage": {
+    "title": "Mes Favoris",
+    "subtitle": "Tous vos produits préférés en un seul endroit",
+    "empty": {
+      "title": "Votre liste de favoris est vide",
+      "description": "Explorez nos produits et ajoutez vos préférés à votre liste pour les retrouver facilement.",
+      "actionLabel": "Découvrir les produits"
+    },
+    "toast": {
+      "removedTitle": "Retiré de vos favoris",
+      "removeFailedDesc": "Impossible de retirer le produit",
+      "notFoundDesc": "Produit introuvable dans les favoris",
+      "addedToCartTitle": "Ajouté au panier",
+      "addToCartFailedDesc": "Impossible d'ajouter au panier"
+    },
+    "viewProduct": "Voir le produit",
+    "saveAmount": "Économisez {amount} {currency}",
+    "inStock": "En stock",
+    "outOfStock": "Rupture de stock",
+    "lowStock": "Plus que {count} disponibles",
+    "aria": {
+      "remove": "Retirer des favoris",
+      "addToCart": "Ajouter au panier"
+    },
+    "removeShort": "Retirer",
+    "addToCart": "Ajouter au panier"
+  },
+  "accountSidebar": {
+    "activeAccount": "Compte actif",
+    "profile": "Mon profil",
+    "orders": "Mes commandes",
+    "soldeHistory": "Solde historique",
+    "wishlist": "Favoris",
+    "settings": "Paramètres"
   },
   "home": {
     "heroKicker": "Votre quincaillerie en ligne",
@@ -225,14 +653,19 @@
     "continueToCheckout": "Passer à la commande",
     "continueShopping": "Continuer vos achats",
     "removeItem": "Retirer l'article",
-    "updateCart": "Mettre à jour le panier"
+    "updateCart": "Mettre à jour le panier",
+    "itemsCount": "{count, plural, one {# article} other {# articles}}",
+    "emptyHint": "Ajoutez des articles pour commencer vos achats",
+    "browseProducts": "Parcourir les produits",
+    "variantLabel": "Variante",
+    "unitLabel": "Unité",
+    "viewCart": "Voir le panier"
   },
   "checkout": {
     "title": "Finaliser la commande",
     "shippingAddress": "Adresse de livraison",
     "billingAddress": "Adresse de facturation",
     "paymentMethod": "Mode de paiement",
-    "orderSummary": "Résumé de la commande",
     "placeOrder": "Valider la commande",
     "cashOnDelivery": "Paiement à la livraison",
     "creditCard": "Carte bancaire",
@@ -261,7 +694,223 @@
     "postalCode": "Code postal",
     "cityPlaceholder": "Casablanca, Rabat...",
     "postalCodePlaceholder": "20000",
-    "deliveryNotes": "Notes de livraison"
+    "deliveryNotes": "Notes de livraison",
+    "wizard": {
+      "steps": {
+        "shipping": {
+          "title": "Livraison",
+          "description": "Informations"
+        },
+        "payment": {
+          "title": "Paiement",
+          "description": "Méthode"
+        },
+        "confirmation": {
+          "title": "Confirmation",
+          "description": "Vérification"
+        }
+      }
+    },
+    "navigation": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "back": "Retour"
+    },
+    "page": {
+      "subtitle": "Finalisez votre commande en toute sécurité",
+      "taxIncludedNote": "Tous les montants affichés sont TTC (TVA incluse)."
+    },
+    "loading": {
+      "title": "Chargement...",
+      "subtitle": "Récupération de votre panier"
+    },
+    "emptyCart": {
+      "title": "Votre panier est vide",
+      "subtitle": "Ajoutez des produits à votre panier avant de passer à la commande.",
+      "backToShop": "Revenir à la boutique"
+    },
+    "validation": {
+      "deliveryMethodRequired": "Veuillez sélectionner un mode de livraison",
+      "paymentMethodRequired": "Veuillez sélectionner une méthode de paiement",
+      "pickupLocationRequired": "Veuillez sélectionner un point de retrait",
+      "firstNameMin": "Le prénom doit contenir au moins 2 caractères",
+      "lastNameMin": "Le nom doit contenir au moins 2 caractères",
+      "phoneInvalid": "Numéro de téléphone invalide",
+      "phoneTooLong": "Numéro de téléphone trop long",
+      "cardholderNameRequired": "Le nom du titulaire est requis",
+      "cardNumberInvalid": "Numéro de carte invalide",
+      "cardExpiryRequired": "Date d'expiration requise",
+      "cardCvvInvalid": "CVV invalide",
+      "emailInvalid": "Email invalide",
+      "invalidAmount": "Montant invalide",
+      "addressMin": "L'adresse doit contenir au moins 5 caractères",
+      "cityMin": "La ville doit contenir au moins 2 caractères",
+      "codNotAvailablePickup": "Le paiement à la livraison n'est pas disponible pour le retrait en boutique"
+    },
+    "errors": {
+      "authRequiredForSolde": "Authentification requise pour payer en solde",
+      "soldeNotAllowed": "Votre compte n'est pas autorisé à payer en solde",
+      "soldeLimitExceeded": "Plafond solde dépassé. Disponible: {available} {currency}, demandé: {requested} {currency}.",
+      "soldePlafondExceeded": "Plafond solde dépassé{plafond, select, none {} other { (Plafond {plafond} {currency})}}",
+      "orderCreateFailed": "Échec de la création de la commande. Veuillez réessayer."
+    },
+    "info": {
+      "soldePlafondDetails": "Plafond: {plafond} {currency} • Actuel: {current} {currency} • +{amount} {currency} = {projected} {currency}"
+    },
+    "promo": {
+      "placeholder": "Code promo",
+      "apply": "Appliquer",
+      "remove": "Retirer",
+      "invalid": "Invalide",
+      "appliedSuccess": "Code promo appliqué avec succès !"
+    },
+    "cartSummary": {
+      "heading": {
+        "confirm": "Votre commande",
+        "details": "Détails commande"
+      },
+      "itemsCount": "{count, plural, one {# article} other {# articles}}",
+      "categoryFallback": "Produit",
+      "subtotalWithCount": "Sous-total ({count, plural, one {# article} other {# articles}})",
+      "discount": "Remise",
+      "shipping": "Frais de livraison",
+      "free": "Gratuit",
+      "total": "Total TTC",
+      "taxIncluded": "TVA incluse",
+      "confirmProcessing": "Traitement en cours...",
+      "confirmCta": "Confirmer • {total} {currency} TTC",
+      "secureTransaction": "Transaction 100% sécurisée",
+      "termsPrefix": "En confirmant, vous acceptez nos",
+      "termsLink": "CGV"
+    },
+    "payment": {
+      "recommended": "Recommandé",
+      "methods": {
+        "title": "Méthode de paiement",
+        "otherTitle": "Ou choisissez un autre mode de paiement",
+        "subtitle": "Choisissez comment vous souhaitez régler",
+        "cash_on_delivery": {
+          "label": "Paiement à la livraison",
+          "description": "Payez en espèces lors de la réception"
+        },
+        "pay_in_store": {
+          "label": "Paiement en boutique",
+          "description": "Payez lors du retrait de votre commande"
+        },
+        "card": {
+          "label": "Carte bancaire",
+          "description": "Visa, Mastercard, American Express"
+        },
+        "solde": {
+          "label": "Paiement différé (Solde)",
+          "description": "Achetez maintenant, payez plus tard"
+        },
+        "bank_transfer": {
+          "label": "Virement bancaire",
+          "description": "Transfert bancaire sécurisé"
+        },
+        "mobile_payment": {
+          "label": "Paiement mobile",
+          "description": "Paiement via application mobile"
+        }
+      },
+      "remise": {
+        "title": "Solde remise",
+        "subtitle": "Utilisez votre remise pour payer tout ou une partie",
+        "loginToUse": "Connectez-vous pour utiliser votre solde remise.",
+        "availableLabel": "Disponible:",
+        "maxLabel": "Max: {amount} {currency}",
+        "useMyRemise": "Utiliser ma remise",
+        "coversAll": "Couvre tout",
+        "deductUpTo": "Déduire jusqu'à {amount} {currency}",
+        "amountToUse": "Montant à utiliser",
+        "maxButton": "Max",
+        "total": "Total",
+        "discount": "Remise",
+        "remaining": "Reste",
+        "coveredByRemise": "Couvert par remise",
+        "insufficient": "Solde insuffisant pour ce panier."
+      },
+      "solde": {
+        "title": "Solde — Achetez maintenant, payez plus tard",
+        "badgeExclusive": "Exclusif",
+        "eligibleSubtitle": "Vous êtes éligible au paiement différé",
+        "plafond": "Plafond",
+        "notLimited": "Non limité",
+        "cumulated": "Solde cumulé",
+        "available": "Disponible",
+        "usage": "Utilisation",
+        "limitExceededTitle": "Plafond solde insuffisant",
+        "limitExceededDesc": "Votre solde disponible est de {available} {currency}. Réduisez le panier ou choisissez un autre mode de paiement.",
+        "payLaterLabel": "Payer plus tard (Solde)",
+        "remaining": "Restant: {amount} {currency}",
+        "payLaterDesc": "Recevez votre commande maintenant et payez ultérieurement",
+        "verifiedAccount": "Compte vérifié",
+        "noFees": "Sans frais",
+        "amountDueLater": "Montant à régler ultérieurement",
+        "amountDueLaterDesc": "Votre commande sera traitée après validation. Paiement selon conditions convenues."
+      },
+      "notes": {
+        "title": "Notes de livraison",
+        "subtitle": "Informations complémentaires pour la livraison",
+        "label": "Messages spéciaux",
+        "placeholder": "Ex: Appelez-moi 30 min avant, 3ème étage, code: 1234..."
+      }
+    },
+    "card": {
+      "header": {
+        "title": "Détails de la carte",
+        "subtitle": "Paiement sécurisé par SSL 256-bit"
+      },
+      "preview": {
+        "cardNumber": "NUMÉRO DE CARTE",
+        "cardholder": "TITULAIRE",
+        "cardholderPlaceholder": "NOM DU TITULAIRE",
+        "expires": "EXPIRATION",
+        "expiresPlaceholder": "MM/AA"
+      },
+      "form": {
+        "cardholderName": "Nom du titulaire",
+        "cardholderPlaceholder": "JEAN DUPONT (comme indiqué sur la carte)",
+        "cardholderHelp": "Entrez le nom exactement comme il apparaît sur votre carte",
+        "cardNumber": "Numéro de carte",
+        "cardNumberHelp": "Entrez les chiffres sans espaces",
+        "expiryMonth": "Mois",
+        "monthPlaceholder": "Mois",
+        "expiryYear": "Année",
+        "yearPlaceholder": "Année",
+        "cvv": "CVV",
+        "showCvv": "Afficher CVV",
+        "hideCvv": "Masquer CVV",
+        "cvvHelp": "3 chiffres au dos (4 pour Amex)",
+        "detectedVisa": "Visa détectée",
+        "detectedMastercard": "Mastercard détectée",
+        "detectedAmex": "American Express détectée",
+        "securityNotice": "Vos données sont chiffrées et sécurisées. Nous ne stockons jamais vos informations de carte.",
+        "processing": "Traitement en cours...",
+        "confirmPayment": "Confirmer le paiement"
+      }
+    },
+    "orderSummary": {
+      "badge": {
+        "pickup": "Pickup",
+        "delivery": "Delivery"
+      },
+      "pickupSelected": "Point de retrait sélectionné",
+      "pickedUpBy": "Récupéré par",
+      "address": "Adresse",
+      "contact": "Contact",
+      "paymentMethod": "Méthode de paiement",
+      "specialInstructions": "Instructions spéciales",
+      "trust": {
+        "securePaymentTitle": "Paiement sécurisé",
+        "securePaymentDesc": "Protection SSL",
+        "returnsTitle": "Retour 14 jours",
+        "returnsDesc": "Satisfait ou remboursé",
+        "supportTitle": "Support 24/7",
+        "supportDesc": "Assistance dédiée"
+      }
+    }
   },
   "subscription": {
     "title": "Programme de fidélité",
@@ -300,7 +949,38 @@
     "newsletter": "Newsletter",
     "subscribeNewsletter": "Abonnez-vous à notre newsletter",
     "emailPlaceholder": "Votre email",
-    "subscribe": "S'abonner"
+    "subscribe": "S'abonner",
+    "shopLink": "Boutique",
+    "ordersLink": "Mes commandes",
+    "rightsInline": "© {year} Boukir • Tous droits réservés.",
+    "commitmentsTitle": "Nos engagements",
+    "commitmentsSubtitle": "Livraison rapide, paiement sécurisé et service client à l’écoute.",
+    "commitmentDeliveryTitle": "Livraison partout au Maroc",
+    "commitmentDeliveryDesc": "Suivi et service client réactif.",
+    "commitmentSecurePaymentTitle": "Paiement sécurisé",
+    "commitmentSecurePaymentDesc": "Transactions protégées et fiables.",
+    "commitmentPaymentMethodsTitle": "Plusieurs modes de paiement",
+    "commitmentPaymentMethodsDesc": "Carte, virement, paiement à la livraison.",
+    "acceptedPayments": "Paiements acceptés",
+    "categoriesTitle": "Catégories",
+    "brandsTitle": "Marques",
+    "customerServiceTitle": "Service client",
+    "deliveryPaymentTitle": "Livraison & paiement",
+    "emptyCategories": "Aucune catégorie",
+    "emptyBrands": "Aucune marque",
+    "viewShop": "Voir la boutique",
+    "viewAllBrands": "Voir toutes les marques",
+    "trackOrders": "Suivre mes commandes",
+    "helpFaq": "Aide & FAQ",
+    "returnsRefunds": "Retours & remboursements",
+    "termsAndConditions": "Conditions générales (CGV)",
+    "privacyPolicy": "Politique de confidentialité",
+    "deliveryAllMorocco": "Livraison partout au Maroc",
+    "securePaymentSsl": "Paiement sécurisé (SSL)",
+    "paymentMethodsList": "Carte bancaire, virement, paiement à la livraison",
+    "copyrightLine": "© {year} Boukir",
+    "rightsReserved": "Tous droits réservés.",
+    "bottomTagline": "Marketplace marocaine • Livraison rapide • Paiement sécurisé"
   },
   "toast": {
     "auth": {

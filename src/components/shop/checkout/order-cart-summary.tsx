@@ -2,6 +2,7 @@
 
 import { memo } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Package, Lock, ShieldCheck } from "lucide-react"
 import { PromoCodeInput } from "./promo-code-input"
@@ -32,18 +33,22 @@ export function OrderCartSummary({
   onPromoApplied,
   onPromoRemoved,
 }: OrderCartSummaryProps) {
+  const t = useTranslations("checkout")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   return (
-    <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm sticky top-24">
+    <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm lg:sticky lg:top-24">
       <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/50">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
           <Package className="w-5 h-5 text-primary" />
         </div>
         <div>
           <h3 className="text-base font-semibold text-foreground">
-            {showConfirmButton ? "Votre commande" : "Détails commande"}
+            {showConfirmButton ? t("cartSummary.heading.confirm") : t("cartSummary.heading.details")}
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {items.length} article{items.length > 1 ? "s" : ""}
+            {t("cartSummary.itemsCount", { count: items.length })}
           </p>
         </div>
       </div>
@@ -70,10 +75,14 @@ export function OrderCartSummary({
                   </span>
                 )}
               </div>
-              {!showConfirmButton && <p className="text-xs text-muted-foreground mb-2">{item.category || "Produit"}</p>}
+              {!showConfirmButton && (
+                <p className="text-xs text-muted-foreground mb-2">{item.category || t("cartSummary.categoryFallback")}</p>
+              )}
               <div className="flex items-center justify-between">
                 {!showConfirmButton && <span className="text-xs font-medium text-muted-foreground">x{item.quantity}</span>}
-                <p className="text-sm font-semibold text-primary">{(item.price * item.quantity).toFixed(2)} MAD</p>
+                <p className="text-sm font-semibold text-primary">
+                  {(item.price * item.quantity).toFixed(2)} {currency}
+                </p>
               </div>
             </div>
           </div>
@@ -93,28 +102,30 @@ export function OrderCartSummary({
       <div className="mt-6 pt-4 border-t border-border/50 flex flex-col gap-3">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">
-            Sous-total ({items.length} article{items.length > 1 ? "s" : ""})
+            {t("cartSummary.subtotalWithCount", { count: items.length })}
           </span>
-          <span className="font-medium">{subtotal.toFixed(2)} MAD</span>
+          <span className="font-medium">{subtotal.toFixed(2)} {currency}</span>
         </div>
         {discount > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Remise</span>
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">-{discount.toFixed(2)} MAD</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">{t("cartSummary.discount")}</span>
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+              -{discount.toFixed(2)} {currency}
+            </span>
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Frais de livraison</span>
+          <span className="text-muted-foreground">{t("cartSummary.shipping")}</span>
           <span className="font-medium text-emerald-600">
-            {shippingCost === 0 ? "Gratuit" : `${shippingCost.toFixed(2)} MAD`}
+            {shippingCost === 0 ? t("cartSummary.free") : `${shippingCost.toFixed(2)} ${currency}`}
           </span>
         </div>
         <div className="flex justify-between items-center pt-3 border-t border-border/50">
           <div className="flex flex-col">
-            <span className="text-base font-semibold text-foreground">Total TTC</span>
-            <span className="text-[11px] text-muted-foreground">TVA incluse</span>
+            <span className="text-base font-semibold text-foreground">{t("cartSummary.total")}</span>
+            <span className="text-[11px] text-muted-foreground">{t("cartSummary.taxIncluded")}</span>
           </div>
-          <span className="text-2xl font-bold text-primary">{total.toFixed(2)} MAD</span>
+          <span className="text-2xl font-bold text-primary">{total.toFixed(2)} {currency}</span>
         </div>
       </div>
 
@@ -130,19 +141,19 @@ export function OrderCartSummary({
             {isPending ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                Traitement en cours...
+                {t("cartSummary.confirmProcessing")}
               </>
             ) : (
               <>
                 <Lock className="w-4 h-4 mr-2" />
-                  Confirmer • {total.toFixed(2)} MAD TTC
+                  {t("cartSummary.confirmCta", { total: total.toFixed(2), currency })}
               </>
             )}
           </Button>
 
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-3">
             <ShieldCheck className="w-4 h-4" />
-            <span>Transaction 100% sécurisée</span>
+            <span>{t("cartSummary.secureTransaction")}</span>
           </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
@@ -174,9 +185,9 @@ export function OrderCartSummary({
 
           <div className="bg-muted/30 border border-border/30 rounded-lg p-3 mt-3">
             <p className="text-xs text-muted-foreground leading-relaxed text-center">
-              En confirmant, vous acceptez nos{" "}
+              {t("cartSummary.termsPrefix")}{" "}
               <a href="#" className="text-primary hover:underline font-medium">
-                CGV
+                {t("cartSummary.termsLink")}
               </a>
             </p>
           </div>

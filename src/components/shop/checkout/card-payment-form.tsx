@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -87,6 +88,8 @@ export function CardPaymentForm({
   onSubmit,
   isPending = false 
 }: CardPaymentFormProps) {
+  const t = useTranslations("checkout")
+
   const cardNumber = watch("cardNumber") || ""
   const [showCVV, setShowCVV] = useState(false)
   const [expiryMonth, setExpiryMonth] = useState("")
@@ -122,8 +125,8 @@ export function CardPaymentForm({
           <CreditCard className="w-5 h-5 text-blue-600" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <h3 className="text-base font-semibold text-foreground">Détails de la carte</h3>
-          <p className="text-xs text-muted-foreground">Paiement sécurisé par SSL 256-bit</p>
+          <h3 className="text-base font-semibold text-foreground">{t("card.header.title")}</h3>
+          <p className="text-xs text-muted-foreground">{t("card.header.subtitle")}</p>
         </div>
         <div className="ml-auto flex items-center gap-2 opacity-95">
           <Image src="/payments/visa.svg" alt="Visa" width={44} height={28} sizes="44px" className="h-5 w-auto" />
@@ -145,7 +148,7 @@ export function CardPaymentForm({
 
             <div className="flex justify-between items-start mb-12 relative z-10">
               <div>
-                <p className="text-xs font-semibold text-white/60 mb-1">CARD NUMBER</p>
+            <p className="text-xs font-semibold text-white/60 mb-1">{t("card.preview.cardNumber")}</p>
                 <p className="text-lg font-mono tracking-widest">
                   {cardNumber ? formatCardNumber(cardNumber).padEnd(19, "•") : "•••• •••• •••• ••••"}
                 </p>
@@ -161,14 +164,14 @@ export function CardPaymentForm({
 
             <div className="flex justify-between items-end relative z-10">
               <div>
-                <p className="text-xs font-semibold text-white/60 mb-1">CARDHOLDER</p>
+            <p className="text-xs font-semibold text-white/60 mb-1">{t("card.preview.cardholder")}</p>
                 <p className="text-sm font-mono uppercase tracking-wider">
-                  {watch("cardholderName")?.toUpperCase() || "CARDHOLDER NAME"}
+              {watch("cardholderName")?.toUpperCase() || t("card.preview.cardholderPlaceholder")}
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-white/60 mb-1">EXPIRES</p>
-                <p className="text-sm font-mono">{watch("cardExpiry") || "MM/YY"}</p>
+            <p className="text-xs font-semibold text-white/60 mb-1">{t("card.preview.expires")}</p>
+            <p className="text-sm font-mono">{watch("cardExpiry") || t("card.preview.expiresPlaceholder")}</p>
               </div>
             </div>
           </div>
@@ -178,26 +181,26 @@ export function CardPaymentForm({
             {/* Cardholder Name */}
             <div className="flex flex-col gap-2">
               <Label htmlFor="cardholderName" className="text-sm font-medium text-foreground">
-                Nom du titulaire <span className="text-destructive">*</span>
+            {t("card.form.cardholderName")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="cardholderName"
                 type="text"
-                placeholder="JEAN DUPONT (comme indiqué sur la carte)"
+            placeholder={t("card.form.cardholderPlaceholder")}
                 {...register("cardholderName")}
                 Icon={User}
                 error={errors.cardholderName?.message as string}
                 className="h-11 uppercase"
               />
-              <p className="text-xs text-muted-foreground">Entrez le nom exactement comme il apparaît sur votre carte</p>
+          <p className="text-xs text-muted-foreground">{t("card.form.cardholderHelp")}</p>
             </div>
 
             {/* Expiry & CVV Row - 3 Column Grid */}
-            <div className="grid grid-cols-[1fr_100px_100px_1fr] gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Card Number */}
-              <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-2">
                 <Label htmlFor="cardNumber" className="text-sm font-medium text-foreground">
-                  Numéro de carte <span className="text-destructive">*</span>
+              {t("card.form.cardNumber")} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="cardNumber"
@@ -212,27 +215,27 @@ export function CardPaymentForm({
                 {!errors.cardNumber && cardType && (
                   <p className="text-xs text-emerald-600 font-medium flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5" />
-                    {cardType === "visa" && "Visa détectée"}
-                    {cardType === "mastercard" && "Mastercard détectée"}
-                    {cardType === "amex" && "American Express détectée"}
+                {cardType === "visa" && t("card.form.detectedVisa")}
+                {cardType === "mastercard" && t("card.form.detectedMastercard")}
+                {cardType === "amex" && t("card.form.detectedAmex")}
                   </p>
                 )}
                 {!errors.cardNumber && !cardType && (
-                  <p className="text-xs text-muted-foreground">Entrez les 16 chiffres sans espaces</p>
+              <p className="text-xs text-muted-foreground">{t("card.form.cardNumberHelp")}</p>
                 )}
               </div>
 
               <div className="flex flex-col gap-2">
                 <Label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Mois <span className="text-destructive">*</span>
+              {t("card.form.expiryMonth")} <span className="text-destructive">*</span>
                 </Label>
                 <Select value={expiryMonth} onValueChange={setExpiryMonth}>
                   <SelectTrigger className={cn(
                     "h-[43px]! w-full bg-background border-input",
                     errors.cardExpiry && "border-destructive"
                   )}>
-                    <SelectValue placeholder="Mois" />
+                <SelectValue placeholder={t("card.form.monthPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent className="bg-background max-h-[300px]">
                     {MONTHS.map((month) => (
@@ -252,14 +255,14 @@ export function CardPaymentForm({
 
               <div className="flex flex-col gap-2">
                 <Label className="text-sm font-medium text-foreground">
-                  Année <span className="text-destructive">*</span>
+              {t("card.form.expiryYear")} <span className="text-destructive">*</span>
                 </Label>
                 <Select value={expiryYear} onValueChange={setExpiryYear}>
                   <SelectTrigger className={cn(
                     "h-[43px]! w-full bg-background border-input",
                     errors.cardExpiry && "border-destructive"
                   )}>
-                    <SelectValue placeholder="Année" />
+                <SelectValue placeholder={t("card.form.yearPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent className="bg-background max-h-[300px]">
                     {YEARS.map((year) => (
@@ -273,7 +276,7 @@ export function CardPaymentForm({
 
               <div className="flex flex-col gap-2">
                 <Label htmlFor="cardCVV" className="text-sm font-medium text-foreground">
-                  CVV <span className="text-destructive">*</span>
+              {t("card.form.cvv")} <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -290,13 +293,13 @@ export function CardPaymentForm({
                     type="button"
                     onClick={() => setShowCVV(!showCVV)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors z-10"
-                    aria-label={showCVV ? "Masquer CVV" : "Afficher CVV"}
+                aria-label={showCVV ? t("card.form.hideCvv") : t("card.form.showCvv")}
                   >
                     {showCVV ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {!errors.cardCVV && (
-                  <p className="text-xs text-muted-foreground">3 chiffres au dos (4 pour Amex)</p>
+              <p className="text-xs text-muted-foreground">{t("card.form.cvvHelp")}</p>
                 )}
               </div>
 
@@ -311,7 +314,7 @@ export function CardPaymentForm({
           <Lock className="w-3 h-3 text-white" />
         </div>
         <p className="text-xs text-emerald-700 dark:text-emerald-300">
-          Vos données sont chiffrées et sécurisées. Nous ne stockons jamais vos informations de carte.
+          {t("card.form.securityNotice")}
         </p>
       </div>
 
@@ -326,12 +329,12 @@ export function CardPaymentForm({
           {isPending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              Traitement en cours...
+              {t("card.form.processing")}
             </>
           ) : (
             <>
               <Lock className="w-4 h-4 mr-2" />
-              Confirmer le paiement
+                {t("card.form.confirmPayment")}
             </>
           )}
         </Button>

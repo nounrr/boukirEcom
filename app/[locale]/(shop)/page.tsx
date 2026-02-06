@@ -16,18 +16,33 @@ export async function generateMetadata({
   const { locale: rawLocale } = await params
   const locale = normalizeLocale(rawLocale)
 
+  const titleByLocale: Record<string, string> = {
+    fr: 'Accueil',
+    ar: 'الرئيسية',
+    en: 'Home',
+    zh: '首页',
+  }
+
+  const descriptionByLocale: Record<string, string> = {
+    fr: 'Boukir Diamond — droguerie & produits d’entretien au Maroc. Découvrez nos nouveautés et promotions avec livraison partout au Maroc.',
+    ar: 'بوكِير دايموند — دروجري ومواد تنظيف بالمغرب. اكتشف العروض والجديد مع توصيل إلى جميع مدن المغرب.',
+    en: 'Boukir Diamond — hardware & home care products in Morocco. Discover new arrivals and deals with fast delivery across Morocco.',
+    zh: 'Boukir Diamond——摩洛哥五金与家居清洁用品商城。发现新品与优惠，摩洛哥全境快速配送。',
+  }
+
+  const keywordsByLocale: Record<string, string[]> = {
+    fr: ['droguerie', "produits d'entretien", 'produits ménagers', 'Maroc', 'livraison Maroc', 'Boukir Diamond'],
+    ar: ['دروجري', 'مواد التنظيف', 'منتجات منزلية', 'المغرب', 'توصيل بالمغرب', 'Boukir Diamond'],
+    en: ['hardware', 'home care', 'cleaning products', 'Morocco', 'delivery Morocco', 'Boukir Diamond'],
+    zh: ['五金', '清洁用品', '家居用品', '摩洛哥', '配送', 'Boukir Diamond'],
+  }
+
   return buildPageMetadata({
     locale,
     path: '/',
-    title: locale === 'ar' ? 'الرئيسية' : 'Accueil',
-    description:
-      locale === 'ar'
-        ? 'بوكِير دايموند — دروجري ومواد تنظيف بالمغرب. اكتشف العروض والجديد مع توصيل إلى جميع مدن المغرب.'
-        : 'Boukir Diamond — droguerie & produits d’entretien au Maroc. Découvrez nos nouveautés et promotions avec livraison partout au Maroc.',
-    keywords:
-      locale === 'ar'
-        ? ['دروجري', 'مواد التنظيف', 'منتجات منزلية', 'المغرب', 'توصيل بالمغرب', 'Boukir Diamond']
-        : ['droguerie', 'produits d\'entretien', 'produits ménagers', 'Maroc', 'livraison Maroc', 'Boukir Diamond'],
+    title: titleByLocale[locale] ?? titleByLocale.fr,
+    description: descriptionByLocale[locale] ?? descriptionByLocale.fr,
+    keywords: keywordsByLocale[locale] ?? keywordsByLocale.fr,
     indexable: true,
   })
 }
@@ -57,7 +72,7 @@ export default async function HomePage({
               <span className="text-primary"> Boukir</span>
             </h1>
             <p className="mt-4 text-base md:text-lg text-muted-foreground">
-              Découvrez nos produits et trouvez rapidement ce qu’il vous faut grâce à la recherche en haut de page.
+              {tShop('heroDescription')}
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
@@ -81,22 +96,22 @@ export default async function HomePage({
               <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Truck className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="mt-3 font-semibold text-foreground">Livraison rapide</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Des options adaptées à votre région.</p>
+              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureDeliveryTitle')}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureDeliveryDesc')}</p>
             </div>
             <div className="rounded-2xl border border-border/40 bg-card p-5">
               <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
                 <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="mt-3 font-semibold text-foreground">Paiement sécurisé</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Transactions protégées et fiables.</p>
+              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureSecurePaymentTitle')}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureSecurePaymentDesc')}</p>
             </div>
             <div className="rounded-2xl border border-border/40 bg-card p-5">
               <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
                 <BadgeCheck className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="mt-3 font-semibold text-foreground">Qualité & choix</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Une sélection pensée pour les pros.</p>
+              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureQualityTitle')}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureQualityDesc')}</p>
             </div>
           </div>
         </div>

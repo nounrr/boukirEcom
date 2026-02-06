@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
+import { useTranslations } from "next-intl"
 import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form"
 import { Label } from "@/components/ui/label"
 import { CreditCard, Wallet, Check, AlertCircle, Coins, Sparkles, Clock, ShieldCheck, Store } from "lucide-react"
@@ -25,31 +26,43 @@ interface PaymentStepProps {
   isPending?: boolean
 }
 
-const PAYMENT_METHODS = [
+type PaymentMethodOption = {
+  value: string
+  labelKey: string
+  descriptionKey: string
+  icon: any
+  iconColor: string
+  iconBg: string
+  recommended: boolean
+  deliveryOnly?: boolean
+  pickupOnly?: boolean
+}
+
+const PAYMENT_METHODS: PaymentMethodOption[] = [
   {
     value: "cash_on_delivery",
-    label: "Paiement à la livraison",
-    description: "Payez en espèces lors de la réception",
+    labelKey: "payment.methods.cash_on_delivery.label",
+    descriptionKey: "payment.methods.cash_on_delivery.description",
     icon: Wallet,
     iconColor: "text-emerald-600",
     iconBg: "bg-emerald-50 dark:bg-emerald-950/30",
     recommended: true,
-    deliveryOnly: true, // Only available for delivery
+    deliveryOnly: true,
   },
   {
     value: "pay_in_store",
-    label: "Paiement en boutique",
-    description: "Payez lors du retrait de votre commande",
+    labelKey: "payment.methods.pay_in_store.label",
+    descriptionKey: "payment.methods.pay_in_store.description",
     icon: Store,
     iconColor: "text-violet-600",
     iconBg: "bg-violet-50 dark:bg-violet-950/30",
     recommended: true,
-    pickupOnly: true, // Only available for pickup
+    pickupOnly: true,
   },
   {
     value: "card",
-    label: "Carte bancaire",
-    description: "Visa, Mastercard, American Express",
+    labelKey: "payment.methods.card.label",
+    descriptionKey: "payment.methods.card.description",
     icon: CreditCard,
     iconColor: "text-blue-600",
     iconBg: "bg-blue-50 dark:bg-blue-950/30",
@@ -74,6 +87,10 @@ export function PaymentStep({
   onSubmitPayment,
   isPending = false
 }: PaymentStepProps) {
+  const t = useTranslations("checkout")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   const paymentMethod = paymentMethodProp || watch("paymentMethod")
   const deliveryMethod = deliveryMethodProp || watch("deliveryMethod") || "delivery"
   const isPickup = deliveryMethod === "pickup"
@@ -110,11 +127,19 @@ export function PaymentStep({
   }, [isPickup, isSoldeLimitExceeded, paymentMethod, setValue])
 
   // Filter payment methods based on delivery method
-  const availablePaymentMethods = PAYMENT_METHODS.filter((method) => {
-    if (isPickup && (method as any).deliveryOnly) return false
-    if (!isPickup && (method as any).pickupOnly) return false
-    return true
-  })
+  const availablePaymentMethods = useMemo(() => {
+    return PAYMENT_METHODS
+      .filter((method) => {
+        if (isPickup && method.deliveryOnly) return false
+        if (!isPickup && method.pickupOnly) return false
+        return true
+      })
+      .map((method) => ({
+        ...method,
+        label: t(method.labelKey),
+        description: t(method.descriptionKey),
+      }))
+  }, [isPickup, t])
 
   // Auto-switch payment method when switching delivery method
   useEffect(() => {
@@ -164,23 +189,23 @@ export function PaymentStep({
             <Coins className="w-3.5 h-3.5 text-primary" />
           </div>
           <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-foreground">Solde remise</h3>
-            <p className="text-[11px] text-muted-foreground">Utilisez votre remise pour payer tout ou une partie</p>
+            <h3 className="text-sm font-semibold text-foreground">{t("payment.remise.title")}</h3>
+            <p className="text-[11px] text-muted-foreground">{t("payment.remise.subtitle")}</p>
           </div>
         </div>
 
         {!isAuthenticated ? (
           <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <p className="text-sm text-muted-foreground">Connectez-vous pour utiliser votre solde remise.</p>
+            <p className="text-sm text-muted-foreground">{t("payment.remise.loginToUse")}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-muted-foreground">Disponible:</span>
-                <span className="text-sm font-semibold text-foreground">{Number(remiseBalance || 0).toFixed(2)} DH</span>
+                  <span className="text-[11px] text-muted-foreground">{t("payment.remise.availableLabel")}</span>
+                  <span className="text-sm font-semibold text-foreground">{Number(remiseBalance || 0).toFixed(2)} {currency}</span>
               </div>
-              <span className="text-[11px] text-muted-foreground">Max: {maxRemiseToUse.toFixed(2)} DH</span>
+                <span className="text-[11px] text-muted-foreground">{t("payment.remise.maxLabel", { amount: maxRemiseToUse.toFixed(2), currency })}</span>
             </div>
 
             {/* Remise Toggle Card - styled like payment methods */}
@@ -209,15 +234,15 @@ export function PaymentStep({
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="font-semibold text-sm text-foreground">Utiliser ma remise</p>
+                      <p className="font-semibold text-sm text-foreground">{t("payment.remise.useMyRemise")}</p>
                     {canUseRemise && maxRemiseToUse >= Number(orderTotal || 0) && (
                       <span className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
-                        Couvre tout
+                          {t("payment.remise.coversAll")}
                       </span>
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Déduire jusqu'à {maxRemiseToUse.toFixed(2)} DH
+                      {t("payment.remise.deductUpTo", { amount: maxRemiseToUse.toFixed(2), currency })}
                   </p>
                 </div>
 
@@ -242,7 +267,7 @@ export function PaymentStep({
                 <div className="flex flex-col gap-1 rounded-lg border border-border/60 bg-muted/20 p-2.5">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="remiseToUse" className="text-xs font-medium text-foreground">
-                      Montant à utiliser
+                        {t("payment.remise.amountToUse")}
                     </Label>
                     <button
                       type="button"
@@ -252,7 +277,7 @@ export function PaymentStep({
                         setValue("remiseToUse", maxRemiseToUse, { shouldValidate: true, shouldDirty: true })
                       }}
                     >
-                      Max
+                        {t("payment.remise.maxButton")}
                     </button>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -306,23 +331,23 @@ export function PaymentStep({
 
                 <div className="flex flex-col justify-center gap-1.5 rounded-lg border border-border/60 bg-linear-to-br from-emerald-50/50 to-emerald-100/30 dark:from-emerald-950/20 dark:to-emerald-900/10 p-2.5">
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>Total</span>
-                    <span className="font-semibold text-foreground">{Number(orderTotal || 0).toFixed(2)} DH</span>
+                      <span>{t("payment.remise.total")}</span>
+                      <span className="font-semibold text-foreground">{Number(orderTotal || 0).toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-emerald-700 dark:text-emerald-400">
-                    <span>Remise</span>
-                    <span className="font-semibold">-{effectiveRemise.toFixed(2)} DH</span>
+                      <span>{t("payment.remise.discount")}</span>
+                      <span className="font-semibold">-{effectiveRemise.toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm pt-1.5 border-t border-border/40">
-                    <span className="font-medium text-foreground">Reste</span>
+                      <span className="font-medium text-foreground">{t("payment.remise.remaining")}</span>
                     <span className={cn("font-bold", remainingToPay === 0 ? "text-emerald-600" : "text-foreground")}>
-                      {remainingToPay.toFixed(2)} DH
+                        {remainingToPay.toFixed(2)} {currency}
                     </span>
                   </div>
                   {remainingToPay === 0 && (
                     <div className="flex items-center justify-center gap-1.5 text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/30 rounded py-1">
                       <Check className="w-3 h-3" />
-                      <span className="font-medium">Couvert par remise</span>
+                        <span className="font-medium">{t("payment.remise.coveredByRemise")}</span>
                     </div>
                   )}
                 </div>
@@ -330,7 +355,7 @@ export function PaymentStep({
             )}
 
             {!canUseRemise && (
-              <p className="text-xs text-muted-foreground">Solde insuffisant pour ce panier.</p>
+                <p className="text-xs text-muted-foreground">{t("payment.remise.insufficient")}</p>
             )}
           </div>
         )}
@@ -345,31 +370,31 @@ export function PaymentStep({
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-semibold text-foreground">Solde — Achetez maintenant, payez plus tard</h3>
+                <h3 className="text-sm font-semibold text-foreground">{t("payment.solde.title")}</h3>
                 <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
-                  Exclusif
+                  {t("payment.solde.badgeExclusive")}
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground">Vous êtes éligible au paiement différé</p>
+              <p className="text-[11px] text-muted-foreground">{t("payment.solde.eligibleSubtitle")}</p>
             </div>
           </div>
 
           {/* Plafond / available summary */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
-              <p className="text-[10px] text-muted-foreground">Plafond</p>
+              <p className="text-[10px] text-muted-foreground">{t("payment.solde.plafond")}</p>
               <p className="text-sm font-bold text-foreground">
-                {hasPlafond ? `${plafond.toFixed(2)} DH` : "Non limité"}
+                {hasPlafond ? `${plafond.toFixed(2)} ${currency}` : t("payment.solde.notLimited")}
               </p>
             </div>
             <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
-              <p className="text-[10px] text-muted-foreground">Solde cumulé</p>
-              <p className="text-sm font-bold text-foreground">{Number(soldeCumule || 0).toFixed(2)} DH</p>
+              <p className="text-[10px] text-muted-foreground">{t("payment.solde.cumulated")}</p>
+              <p className="text-sm font-bold text-foreground">{Number(soldeCumule || 0).toFixed(2)} {currency}</p>
             </div>
             <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/80 p-2.5">
-              <p className="text-[10px] text-muted-foreground">Disponible</p>
+              <p className="text-[10px] text-muted-foreground">{t("payment.solde.available")}</p>
               <p className={cn("text-sm font-bold", soldeRemaining !== null && soldeRemaining <= 0 ? "text-destructive" : "text-foreground")}>
-                {soldeRemaining === null ? "—" : `${soldeRemaining.toFixed(2)} DH`}
+                {soldeRemaining === null ? "—" : `${soldeRemaining.toFixed(2)} ${currency}`}
               </p>
             </div>
           </div>
@@ -377,7 +402,7 @@ export function PaymentStep({
           {hasPlafond && (
             <div className="rounded-lg border border-violet-200/60 dark:border-violet-800/40 bg-background/70 p-2.5">
               <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-                <span>Utilisation</span>
+                <span>{t("payment.solde.usage")}</span>
                 <span className="font-semibold text-foreground">{soldeProgressPct.toFixed(0)}%</span>
               </div>
               <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
@@ -393,10 +418,10 @@ export function PaymentStep({
                 <AlertCircle className="w-3.5 h-3.5 text-destructive" />
               </div>
               <div className="flex-1">
-                <p className="text-xs font-medium text-destructive">Plafond solde insuffisant</p>
-                <p className="text-xl font-bold text-destructive">{remainingToPay.toFixed(2)} DH</p>
+                <p className="text-xs font-medium text-destructive">{t("payment.solde.limitExceededTitle")}</p>
+                <p className="text-xl font-bold text-destructive">{remainingToPay.toFixed(2)} {currency}</p>
                 <p className="text-[11px] text-destructive/90 mt-1">
-                  Votre solde disponible est de {soldeRemaining?.toFixed(2)} DH. Réduisez le panier ou choisissez un autre mode de paiement.
+                  {t("payment.solde.limitExceededDesc", { available: soldeRemaining?.toFixed(2) ?? "0.00", currency })}
                 </p>
               </div>
             </div>
@@ -425,24 +450,24 @@ export function PaymentStep({
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="font-semibold text-sm text-foreground">Payer plus tard (Solde)</p>
+                        <p className="font-semibold text-sm text-foreground">{t("payment.solde.payLaterLabel")}</p>
                         {soldeRemaining !== null && (
                           <span className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold border bg-violet-100/70 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-200/70 dark:border-violet-700/50">
-                            Restant: {soldeRemaining.toFixed(2)} DH
+                            {t("payment.solde.remaining", { amount: soldeRemaining.toFixed(2), currency })}
                           </span>
                         )}
                       </div>
                       <p className="text-[11px] text-muted-foreground mb-1">
-                        Recevez votre commande maintenant et payez ultérieurement
+                        {t("payment.solde.payLaterDesc")}
                       </p>
                       <div className="flex items-center gap-2 text-[10px]">
                         <span className="flex items-center gap-0.5 text-violet-600 dark:text-violet-400">
                           <ShieldCheck className="w-3 h-3" />
-                          Compte vérifié
+                          {t("payment.solde.verifiedAccount")}
                         </span>
                         <span className="flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
                           <Check className="w-3 h-3" />
-                          Sans frais
+                          {t("payment.solde.noFees")}
                         </span>
                       </div>
                     </div>
@@ -470,13 +495,13 @@ export function PaymentStep({
                     </div>
                     <div className="flex-1">
                       <p className="text-xs font-medium text-violet-900 dark:text-violet-100">
-                        Montant à régler ultérieurement
+                        {t("payment.solde.amountDueLater")}
                       </p>
                       <p className="text-xl font-bold text-violet-700 dark:text-violet-300">
-                        {remainingToPay.toFixed(2)} DH
+                        {remainingToPay.toFixed(2)} {currency}
                       </p>
                       <p className="text-[11px] text-violet-600/80 dark:text-violet-400/80 mt-1">
-                        Votre commande sera traitée après validation. Paiement selon conditions convenues.
+                        {t("payment.solde.amountDueLaterDesc")}
                       </p>
                     </div>
                   </div>
@@ -494,9 +519,9 @@ export function PaymentStep({
           </div>
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold text-foreground">
-              {isSoldeEligible ? "Ou choisissez un autre mode de paiement" : "Méthode de paiement"}
+              {isSoldeEligible ? t("payment.methods.otherTitle") : t("payment.methods.title")}
             </h3>
-            <p className="text-[11px] text-muted-foreground">Choisissez comment vous souhaitez régler</p>
+            <p className="text-[11px] text-muted-foreground">{t("payment.methods.subtitle")}</p>
           </div>
         </div>
 
@@ -534,7 +559,7 @@ export function PaymentStep({
                       <p className="font-semibold text-sm text-foreground">{method.label}</p>
                       {method.recommended && (
                         <span className="px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-primary/10 text-primary">
-                          Recommandé
+                          {t("payment.recommended")}
                         </span>
                       )}
                     </div>
@@ -572,15 +597,16 @@ export function PaymentStep({
           </div>
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold text-foreground">
-              Notes de livraison <span className="text-[11px] font-normal text-muted-foreground">(optionnel)</span>
+              {t("payment.notes.title")}{" "}
+              <span className="text-[11px] font-normal text-muted-foreground">({t("optional")})</span>
             </h3>
-            <p className="text-[11px] text-muted-foreground">Informations complémentaires pour la livraison</p>
+            <p className="text-[11px] text-muted-foreground">{t("payment.notes.subtitle")}</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="notes" className="text-xs font-medium text-foreground">
-            Messages spéciaux
+            {t("payment.notes.label")}
           </Label>
           <textarea
             id="notes"
@@ -590,7 +616,7 @@ export function PaymentStep({
               "w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-transparent resize-none transition-all",
               errors.notes && "border-destructive focus-visible:ring-destructive/50",
             )}
-            placeholder="Ex: Appelez-moi 30 min avant, 3ème étage, code: 1234..."
+            placeholder={t("payment.notes.placeholder")}
           />
           {errors.notes && (
             <div className="flex items-center gap-1.5">

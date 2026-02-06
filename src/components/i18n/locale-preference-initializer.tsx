@@ -22,8 +22,8 @@ function stripLocalePrefix(pathname: string): string {
 }
 
 function buildLocalizedHref(nextLocale: SupportedLocale, basePath: string, queryString: string) {
-  const prefix = nextLocale === "fr" ? "" : `/${nextLocale}`
-  const path = basePath === "/" ? `${prefix || "/"}` : `${prefix}${basePath}`
+  const prefix = `/${nextLocale}`
+  const path = basePath === "/" ? prefix : `${prefix}${basePath}`
   return queryString ? `${path}?${queryString}` : path
 }
 

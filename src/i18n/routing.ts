@@ -10,7 +10,7 @@ export const routing = defineRouting({
 
   // The `pathnames` configuration is used to match incoming
   // requests to specific pathnames based on the active locale
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 // Lightweight wrappers around Next.js' navigation APIs

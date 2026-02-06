@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form"
@@ -24,92 +24,119 @@ import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
 
-// Validation schema
-const checkoutSchema = z.object({
-  // Delivery method - delivery or pickup
-  deliveryMethod: z.enum(["delivery", "pickup"], {
-    message: "Veuillez sélectionner un mode de livraison",
-  }),
-  pickupLocationId: z.number().optional(),
-  shippingAddress: z.object({
-    firstName: z.string().min(2, { message: "Le prénom doit contenir au moins 2 caractères" }),
-    lastName: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
-    phone: z
-      .string()
-      .min(10, { message: "Numéro de téléphone invalide" })
-      .max(20, { message: "Numéro de téléphone trop long" }),
-    address: z.string().optional(),
-    city: z.string().optional(),
-    postalCode: z.string().optional(),
-  }),
-  billingAddress: z
-    .object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      phone: z.string().optional(),
-      address: z.string().optional(),
-      city: z.string().optional(),
-      postalCode: z.string().optional(),
-    })
-    .optional(),
-  paymentMethod: z.enum(["cash_on_delivery", "card", "bank_transfer", "mobile_payment", "solde", "pay_in_store"], {
-    message: "Veuillez sélectionner une méthode de paiement",
-  }),
-  // Card payment fields
-  cardholderName: z.string().min(3, { message: "Le nom du titulaire est requis" }).optional().or(z.literal("")),
-  cardNumber: z.string().min(13, { message: "Numéro de carte invalide" }).optional().or(z.literal("")),
-  cardExpiry: z.string().min(5, { message: "Date d'expiration requise" }).optional().or(z.literal("")),
-  cardCVV: z.string().min(3, { message: "CVV invalide" }).max(4).optional().or(z.literal("")),
-  notes: z.string().optional(),
-  email: z.string().email({ message: "Email invalide" }),
-  useRemiseBalance: z.coerce.boolean().optional().default(false),
-  remiseToUse: z
-    .union([z.coerce.number(), z.literal(""), z.undefined(), z.null()])
-    .optional()
-    .transform((v) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined))
-    .refine((v) => v === undefined || v >= 0, { message: "Montant invalide" }),
-}).superRefine((data, ctx) => {
-  // Require address fields for delivery method
-  if (data.deliveryMethod === "delivery") {
-    if (!data.shippingAddress.address || data.shippingAddress.address.length < 5) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "L'adresse doit contenir au moins 5 caractères",
-        path: ["shippingAddress", "address"],
-      })
-    }
-    if (!data.shippingAddress.city || data.shippingAddress.city.length < 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "La ville doit contenir au moins 2 caractères",
-        path: ["shippingAddress", "city"],
-      })
-    }
-  }
-  // Require pickup location for pickup method
-  if (data.deliveryMethod === "pickup" && !data.pickupLocationId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Veuillez sélectionner un point de retrait",
-      path: ["pickupLocationId"],
-    })
-  }
-  // Disallow cash_on_delivery for pickup
-  if (data.deliveryMethod === "pickup" && data.paymentMethod === "cash_on_delivery") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Le paiement à la livraison n'est pas disponible pour le retrait en boutique",
-      path: ["paymentMethod"],
-    })
-  }
-})
+type Translator = (key: string, values?: Record<string, any>) => string
 
-type CheckoutFormValues = z.infer<typeof checkoutSchema>
+const buildCheckoutSchema = (t: Translator) =>
+  z
+    .object({
+      // Delivery method - delivery or pickup
+      deliveryMethod: z.enum(["delivery", "pickup"], {
+        message: t("validation.deliveryMethodRequired"),
+      }),
+      pickupLocationId: z.number().optional(),
+      shippingAddress: z.object({
+        firstName: z.string().min(2, { message: t("validation.firstNameMin") }),
+        lastName: z.string().min(2, { message: t("validation.lastNameMin") }),
+        phone: z
+          .string()
+          .min(10, { message: t("validation.phoneInvalid") })
+          .max(20, { message: t("validation.phoneTooLong") }),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        postalCode: z.string().optional(),
+      }),
+      billingAddress: z
+        .object({
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          phone: z.string().optional(),
+          address: z.string().optional(),
+          city: z.string().optional(),
+          postalCode: z.string().optional(),
+        })
+        .optional(),
+      paymentMethod: z.enum(["cash_on_delivery", "card", "bank_transfer", "mobile_payment", "solde", "pay_in_store"], {
+        message: t("validation.paymentMethodRequired"),
+      }),
+      // Card payment fields
+      cardholderName: z
+        .string()
+        .min(3, { message: t("validation.cardholderNameRequired") })
+        .optional()
+        .or(z.literal("")),
+      cardNumber: z
+        .string()
+        .min(13, { message: t("validation.cardNumberInvalid") })
+        .optional()
+        .or(z.literal("")),
+      cardExpiry: z
+        .string()
+        .min(5, { message: t("validation.cardExpiryRequired") })
+        .optional()
+        .or(z.literal("")),
+      cardCVV: z
+        .string()
+        .min(3, { message: t("validation.cardCvvInvalid") })
+        .max(4)
+        .optional()
+        .or(z.literal("")),
+      notes: z.string().optional(),
+      email: z.string().email({ message: t("validation.emailInvalid") }),
+      useRemiseBalance: z.coerce.boolean().optional().default(false),
+      remiseToUse: z
+        .union([z.coerce.number(), z.literal(""), z.undefined(), z.null()])
+        .optional()
+        .transform((v) => (typeof v === "number" && Number.isFinite(v) ? v : undefined))
+        .refine((v) => v === undefined || v >= 0, { message: t("validation.invalidAmount") }),
+    })
+    .superRefine((data, ctx) => {
+      // Require address fields for delivery method
+      if (data.deliveryMethod === "delivery") {
+        if (!data.shippingAddress.address || data.shippingAddress.address.length < 5) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("validation.addressMin"),
+            path: ["shippingAddress", "address"],
+          })
+        }
+        if (!data.shippingAddress.city || data.shippingAddress.city.length < 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("validation.cityMin"),
+            path: ["shippingAddress", "city"],
+          })
+        }
+      }
+      // Require pickup location for pickup method
+      if (data.deliveryMethod === "pickup" && !data.pickupLocationId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("validation.pickupLocationRequired"),
+          path: ["pickupLocationId"],
+        })
+      }
+      // Disallow cash_on_delivery for pickup
+      if (data.deliveryMethod === "pickup" && data.paymentMethod === "cash_on_delivery") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("validation.codNotAvailablePickup"),
+          path: ["paymentMethod"],
+        })
+      }
+    })
+
+type CheckoutFormValues = z.infer<ReturnType<typeof buildCheckoutSchema>>
 
 export default function CheckoutPage() {
   const locale = useLocale()
+  const t = useTranslations("checkout")
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const dispatch = useAppDispatch()
+
+  const currency = tCommon("currency")
+
+  const checkoutSchema = useMemo(() => buildCheckoutSchema(t), [t])
 
   // Get user state
   const user = useAppSelector((state) => state.user.user)
@@ -132,11 +159,14 @@ export default function CheckoutPage() {
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoCodeValue, setPromoCodeValue] = useState("")
 
-  const wizardSteps = useMemo(() => [
-    { id: 1, title: "Livraison", description: "Informations" },
-    { id: 2, title: "Paiement", description: "Méthode" },
-    { id: 3, title: "Confirmation", description: "Vérification" },
-  ], [])
+  const wizardSteps = useMemo(
+    () => [
+      { id: 1, title: t("wizard.steps.shipping.title"), description: t("wizard.steps.shipping.description") },
+      { id: 2, title: t("wizard.steps.payment.title"), description: t("wizard.steps.payment.description") },
+      { id: 3, title: t("wizard.steps.confirmation.title"), description: t("wizard.steps.confirmation.description") },
+    ],
+    [t]
+  )
 
   // Transform cart items - use API cart for authenticated users, localStorage for guests
   const items: APICartItem[] = useMemo(() => {
@@ -341,16 +371,18 @@ export default function CheckoutPage() {
     // Prevent invalid Solde requests (backend still enforces, but we avoid unnecessary calls)
     if (values.paymentMethod === "solde") {
       if (!isAuthenticated) {
-        toast.error("Authentification requise pour payer en solde")
+        toast.error(t("errors.authRequiredForSolde"))
         const next = encodeURIComponent(`/${locale}/checkout`)
         router.push(`/${locale}/login?next=${next}`)
         return
       }
 
       if (remainingToPay > 0 && soldeAvailable !== null && remainingToPay > soldeAvailable) {
-        toast.error(
-          `Plafond solde dépassé. Disponible: ${soldeAvailable.toFixed(2)} DH, demandé: ${remainingToPay.toFixed(2)} DH.`
-        )
+        toast.error(t("errors.soldeLimitExceeded", {
+          available: soldeAvailable.toFixed(2),
+          requested: remainingToPay.toFixed(2),
+          currency,
+        }))
         return
       }
     }
@@ -446,14 +478,14 @@ export default function CheckoutPage() {
 
         const errorType = error?.data?.error_type
         if (errorType === "SOLDE_AUTH_REQUIRED") {
-          toast.error(error?.data?.message || "Authentification requise pour payer en solde")
+          toast.error(error?.data?.message || t("errors.authRequiredForSolde"))
           const next = encodeURIComponent(`/${locale}/checkout`)
           router.push(`/${locale}/login?next=${next}`)
           return
         }
 
         if (errorType === "SOLDE_NOT_ALLOWED") {
-          toast.error(error?.data?.message || "Votre compte n'est pas autorisé à payer en solde")
+          toast.error(error?.data?.message || t("errors.soldeNotAllowed"))
           return
         }
 
@@ -465,7 +497,10 @@ export default function CheckoutPage() {
 
           toast.error(
             error?.data?.message ||
-            `Plafond solde dépassé${plafondValue ? ` (Plafond ${plafondValue} DH)` : ""}`
+            t("errors.soldePlafondExceeded", {
+              plafond: plafondValue ? plafondValue.toString() : "none",
+              currency,
+            })
           )
 
           if (
@@ -475,7 +510,13 @@ export default function CheckoutPage() {
             projectedValue !== undefined
           ) {
             toast.info(
-              `Plafond: ${plafondValue.toFixed(2)} DH • Actuel: ${cumuleValue.toFixed(2)} DH • +${amountValue.toFixed(2)} DH = ${projectedValue.toFixed(2)} DH`
+              t("info.soldePlafondDetails", {
+                plafond: plafondValue.toFixed(2),
+                current: cumuleValue.toFixed(2),
+                amount: amountValue.toFixed(2),
+                projected: projectedValue.toFixed(2),
+                currency,
+              })
             )
           }
 
@@ -488,10 +529,10 @@ export default function CheckoutPage() {
           return
         }
 
-        toast.error(error?.data?.message || "Échec de la création de la commande. Veuillez réessayer.")
+        toast.error(error?.data?.message || t("errors.orderCreateFailed"))
       }
     })
-  }, [items, remiseBalance, total, soldeAvailable, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi, refetchMe])
+  }, [items, remiseBalance, total, soldeAvailable, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi, refetchMe, t, currency])
 
   // Navigate between steps with validation
   const goToNextStep = useCallback(async () => {
@@ -527,9 +568,11 @@ export default function CheckoutPage() {
         const remainingToPay = Math.max(0, Number(total || 0) - effectiveRemise)
 
         if (remainingToPay > 0 && soldeAvailable !== null && remainingToPay > soldeAvailable) {
-          toast.error(
-            `Plafond solde dépassé. Disponible: ${soldeAvailable.toFixed(2)} DH, demandé: ${remainingToPay.toFixed(2)} DH.`
-          )
+          toast.error(t("errors.soldeLimitExceeded", {
+            available: soldeAvailable.toFixed(2),
+            requested: remainingToPay.toFixed(2),
+            currency,
+          }))
           return
         }
       }
@@ -554,8 +597,8 @@ export default function CheckoutPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center animate-pulse">
             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Chargement...</h2>
-          <p className="text-sm text-muted-foreground">Récupération de votre panier</p>
+          <h2 className="text-xl font-bold mb-2">{t("loading.title")}</h2>
+          <p className="text-sm text-muted-foreground">{t("loading.subtitle")}</p>
         </div>
       )}
 
@@ -565,11 +608,9 @@ export default function CheckoutPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Votre panier est vide</h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            Ajoutez des produits à votre panier avant de passer à la commande.
-          </p>
-          <Button onClick={() => router.push(`/${locale}/shop`)}>Revenir à la boutique</Button>
+          <h2 className="text-xl font-bold mb-2">{t("emptyCart.title")}</h2>
+          <p className="text-sm text-muted-foreground mb-6">{t("emptyCart.subtitle")}</p>
+          <Button onClick={() => router.push(`/${locale}/shop`)}>{t("emptyCart.backToShop")}</Button>
         </div>
       )}
 
@@ -578,9 +619,9 @@ export default function CheckoutPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title - Compact */}
           <div className="text-center mb-5">
-            <h1 className="text-2xl font-bold text-foreground mb-1">Checkout</h1>
-            <p className="text-sm text-muted-foreground">Finalisez votre commande en toute sécurité</p>
-            <p className="text-xs text-muted-foreground mt-1">Tous les montants affichés sont TTC (TVA incluse).</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">{t("title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("page.subtitle")}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("page.taxIncludedNote")}</p>
           </div>
 
           {/* Timeline */}
@@ -651,7 +692,7 @@ export default function CheckoutPage() {
                       className="flex-1 h-11 border-border/60 hover:bg-muted/50 disabled:opacity-50"
                     >
                       <ChevronLeft className="w-4 h-4 mr-2" />
-                      Précédent
+                      {t("navigation.previous")}
                     </Button>
 
                     <Button
@@ -659,7 +700,7 @@ export default function CheckoutPage() {
                       onClick={goToNextStep}
                       className="text-white flex-1 h-11 bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md hover:shadow-lg transition-all"
                     >
-                      Suivant
+                      {t("navigation.next")}
                       <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -677,7 +718,7 @@ export default function CheckoutPage() {
                       className="flex-1 h-11 border-border/60 hover:bg-muted/50"
                     >
                       <ChevronLeft className="w-4 h-4 mr-2" />
-                      Retour
+                      {t("navigation.back")}
                     </Button>
                   </div>
                 </div>

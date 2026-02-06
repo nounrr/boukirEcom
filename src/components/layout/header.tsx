@@ -33,6 +33,7 @@ import {
 
 export function Header() {
   const t = useTranslations('header')
+  const tCommon = useTranslations('common')
   const locale = useLocale()
   const isArabic = locale === 'ar'
   const router = useRouter()
@@ -63,8 +64,8 @@ export function Header() {
   const buildLocalizedHref = (nextLocale: SupportedLocale) => {
     const basePath = stripLocalePrefix(pathname)
     const queryString = searchParams?.toString?.() ?? ""
-    const prefix = nextLocale === "fr" ? "" : `/${nextLocale}`
-    const path = basePath === "/" ? `${prefix || "/"}` : `${prefix}${basePath}`
+    const prefix = `/${nextLocale}`
+    const path = basePath === "/" ? prefix : `${prefix}${basePath}`
     return queryString ? `${path}?${queryString}` : path
   }
 
@@ -167,7 +168,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   className="hidden lg:flex items-center gap-2 h-9 px-3 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 text-white"
-                  aria-label="Language"
+                  aria-label={tCommon('language')}
                 >
                   <img
                     src={`https://flagcdn.com/w20/${languageMeta[(locale as SupportedLocale) || "fr"]?.flagCode ?? "un"}.png`}
@@ -185,7 +186,7 @@ export function Header() {
                 align={isArabic ? "start" : "end"}
                 className="w-56 p-1 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10"
               >
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Langue</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">{tCommon('language')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {supportedLocales.map((l) => (
                   <DropdownMenuItem

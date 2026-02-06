@@ -18,17 +18,41 @@ import {
 } from "@/state/api/wishlist-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import { Heart, Minus, Package, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { notFound, useParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 export default function ProductPage() {
   const params = useParams()
   const locale = useLocale()
+  const t = useTranslations("productPage")
+  const tCommon = useTranslations("common")
+  const tProductCard = useTranslations("productCard")
   const toast = useToast()
   const { cartRef } = useCart()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const { openAuthDialog } = useAuthDialog()
+
+  const currency = tCommon("currency")
+  const isArabic = locale === "ar"
+
+  const getLocalizedDesignation = useMemo(() => {
+    return (data: any): string => {
+      const fallback = (data?.designation ?? data?.name ?? "").toString()
+
+      const candidate =
+        locale === "ar"
+          ? data?.designation_ar
+          : locale === "en"
+            ? data?.designation_en
+            : locale === "zh"
+              ? data?.designation_zh
+              : data?.designation
+
+      const value = (candidate ?? "").toString().trim()
+      return value || fallback
+    }
+  }, [locale])
 
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
@@ -136,15 +160,18 @@ export default function ProductPage() {
 
     const isVariantRequired = (product as any).is_obligatoire_variant || (product as any).isObligatoireVariant
     if (isVariantRequired && !selectedVariant) {
-      toast.error('Veuillez sélectionner une variante', { description: 'Cette variante est obligatoire.' })
+      toast.error(tProductCard("variantRequiredTitle"), {
+        description: tProductCard("variantRequiredDesc"),
+      })
       return
     }
 
     setIsAddingToCart(true)
+    const baseName = getLocalizedDesignation(product)
     const variantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
     const unitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
     const suffixParts = [variantLabel, unitLabel].filter(Boolean)
-    const displayName = suffixParts.length > 0 ? `${product.designation} • ${suffixParts.join(' · ')}` : product.designation
+    const displayName = suffixParts.length > 0 ? `${baseName} • ${suffixParts.join(' · ')}` : baseName
     const cartItem = {
       productId: product.id,
       variantId: selectedVariant || undefined,
@@ -155,13 +182,15 @@ export default function ProductPage() {
       price: currentPrice,
       quantity,
       image: product.image_url,
-      category: product.categorie?.nom || 'Produit',
+      category: product.categorie?.nom || t("categoryFallback"),
       stock: product.quantite_disponible,
     }
 
     if (cartRef?.current) {
       cartRef.current.addItem(cartItem)
-      toast.success("Ajouté au panier", { description: `${quantity} x ${product.designation}` })
+      toast.success(t("addedToCartTitle"), {
+        description: t("addedToCartDesc", { quantity, name: baseName }),
+      })
       
       setTimeout(() => {
         cartRef.current?.open()
@@ -180,27 +209,32 @@ export default function ProductPage() {
     }
 
     try {
+      const baseName = getLocalizedDesignation(product)
       if (isInWishlist) {
         await removeFromWishlistApi({ productId: product.id }).unwrap()
-        toast.success('Retiré des favoris', { description: product.designation })
+        toast.success(tProductCard("wishlistRemovedTitle"), { description: baseName })
       } else {
         await addToWishlistApi({ productId: product.id }).unwrap()
-        toast.success('Ajouté aux favoris', { description: product.designation })
+        toast.success(tProductCard("wishlistAddedTitle"), { description: baseName })
       }
       // Immediately refresh product to reflect wishlist state
       await refetch()
     } catch (error) {
-      toast.error('Une erreur est survenue', { description: 'Impossible de mettre à jour les favoris' })
+      toast.error(tProductCard("genericErrorTitle"), {
+        description: tProductCard("wishlistUpdateFailedDesc"),
+      })
     }
   }
 
   const handleShare = async () => {
     if (!product) return
+
+    const baseName = getLocalizedDesignation(product)
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: product.designation,
+          title: baseName,
           text: product.description,
           url: window.location.href,
         })
@@ -209,7 +243,7 @@ export default function ProductPage() {
       }
     } else {
       navigator.clipboard.writeText(window.location.href)
-      toast.success('Lien copié', { description: 'Le lien a été copié dans le presse-papier' })
+      toast.success(t("linkCopiedTitle"), { description: t("linkCopiedDesc") })
     }
   }
 
@@ -239,8 +273,8 @@ export default function ProductPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center space-y-4">
           <Package className="w-16 h-16 mx-auto text-muted-foreground" />
-          <h1 className="text-2xl font-bold">Impossible de charger le produit</h1>
-          <p className="text-muted-foreground">Une erreur est survenue. Veuillez réessayer.</p>
+          <h1 className="text-2xl font-bold">{t("loadErrorTitle")}</h1>
+          <p className="text-muted-foreground">{t("loadErrorDesc")}</p>
         </div>
       </div>
     )
@@ -328,12 +362,13 @@ export default function ProductPage() {
 
 
 
+  const baseDesignation = getLocalizedDesignation(product)
   const titleVariantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
   const titleUnitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
   const titleSuffixParts = [titleVariantLabel, titleUnitLabel].filter(Boolean)
   const titleDisplayName = titleSuffixParts.length > 0
-    ? `${product.designation} • ${titleSuffixParts.join(' · ')}`
-    : product.designation
+    ? `${baseDesignation} • ${titleSuffixParts.join(' · ')}`
+    : baseDesignation
 
   return (
     <div className="bg-background">
@@ -347,12 +382,12 @@ export default function ProductPage() {
               onSelectedChange={setSelectedImage}
               promoPercent={hasDiscount ? product.pourcentage_promo : null}
               className=""
-              altText={product.designation}
+              altText={baseDesignation}
               onMainClick={() => goNextImage()}
               showIndex
               maxHeight={520}
               thumbSize={72}
-              thumbsOnLeft
+              thumbsOnLeft={!isArabic}
             />
           </div>
 
@@ -381,7 +416,7 @@ export default function ProductPage() {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-foreground">
-                  {currentPrice.toFixed(2)} MAD
+                  {currentPrice.toFixed(2)} {currency}
                 </span>
                 {hasDiscount && product.pourcentage_promo && (
                   <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-0.5 h-6 font-bold">
@@ -391,7 +426,7 @@ export default function ProductPage() {
               </div>
               {hasDiscount && (
                 <span className="text-base text-muted-foreground line-through">
-                  {Number(baseUnitPrice).toFixed(2)} MAD
+                  {Number(baseUnitPrice).toFixed(2)} {currency}
                 </span>
               )}
             </div>
@@ -401,14 +436,14 @@ export default function ProductPage() {
               {product.quantite_disponible > 0 ? (
                 <>
                   <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
-                    En stock
+                    {t("inStock")}
                   </Badge>
                   {/* <span className="text-xs text-muted-foreground">
                     {product.quantite_disponible} unités disponibles
                   </span> */}
                 </>
               ) : (
-                <Badge variant="destructive" className="text-xs">Rupture de stock</Badge>
+                  <Badge variant="destructive" className="text-xs">{tProductCard("outOfStock")}</Badge>
               )}
             </div>
             <Separator />
@@ -437,7 +472,7 @@ export default function ProductPage() {
             {(product.units && product.units.length > 0) && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Unité</label>
+                  <label className="text-sm font-medium">{t("unitLabel")}</label>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.units.map((u: any) => (
@@ -452,9 +487,9 @@ export default function ProductPage() {
                       )}
                       title={u.unit_name || u.name}
                     >
-                      <span className="mr-2">{u.unit_name || u.name}</span>
+                      <span className="mr-2 rtl:mr-0 rtl:ml-2">{u.unit_name || u.name}</span>
                       {typeof u.prix_vente === 'number' && (
-                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} MAD</span>
+                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} {currency}</span>
                       )}
                     </button>
                   ))}
@@ -466,7 +501,7 @@ export default function ProductPage() {
 
             {/* Quantity Selector */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Quantité</label>
+              <label className="text-sm font-medium">{t("quantityLabel")}</label>
               <div className="flex items-center gap-3">
                 <div className="flex items-center border border-border rounded-md">
                   <Button
@@ -492,7 +527,7 @@ export default function ProductPage() {
                   </Button>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  Total: <span className="font-semibold text-foreground">{(currentPrice * quantity).toFixed(2)} MAD</span>
+                  {t("totalLabel")}: <span className="font-semibold text-foreground">{(currentPrice * quantity).toFixed(2)} {currency}</span>
                 </span>
               </div>
             </div>
@@ -505,8 +540,8 @@ export default function ProductPage() {
                 onClick={handleAddToCart}
                 disabled={isAddingToCart || product.quantite_disponible === 0}
               >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Ajouter au panier
+                <ShoppingCart className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                {tProductCard("addToCart")}
               </Button>
               <Button
                 size="lg"
@@ -538,7 +573,7 @@ export default function ProductPage() {
             {/* Description */}
             {product.description && (
               <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Description</h3>
+                <h3 className="text-sm font-semibold">{t("descriptionHeading")}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {product.description}
                 </p>
@@ -561,8 +596,8 @@ export default function ProductPage() {
           <div className="container mx-auto px-6 sm:px-8 lg:px-16">
             <ProductSuggestions
               products={similarProducts}
-              title="Produits similaires"
-              description="Découvrez d'autres produits qui pourraient vous intéresser"
+              title={t("similarTitle")}
+              description={t("similarDesc")}
             />
           </div>
         </div>

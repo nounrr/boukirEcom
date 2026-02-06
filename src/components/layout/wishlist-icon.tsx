@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useGetWishlistQuery } from "@/state/api/wishlist-api-slice"
 import { Heart } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useAppSelector } from "@/state/hooks"
 import { useEffect, useState } from "react"
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 
 export function WishlistIcon({ tone = "default" }: { tone?: "default" | "onPrimary" }) {
   const locale = useLocale()
+  const tCommon = useTranslations('common')
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const [prevCount, setPrevCount] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -45,6 +46,7 @@ export function WishlistIcon({ tone = "default" }: { tone?: "default" | "onPrima
           "relative transition-all duration-200 h-9 w-9",
           tone === "onPrimary" ? "hover:bg-white/10" : "hover:bg-muted/50",
         )}
+        aria-label={tCommon('wishlist')}
       >
         <Heart
           className={cn(

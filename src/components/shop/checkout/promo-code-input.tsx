@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, memo, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tag, Check, AlertCircle } from "lucide-react"
@@ -13,6 +14,10 @@ interface PromoCodeInputProps {
 }
 
 export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: PromoCodeInputProps) {
+  const t = useTranslations("checkout")
+  const tCommon = useTranslations("common")
+  const currency = tCommon("currency")
+
   const [promoCode, setPromoCode] = useState("")
   const [appliedCode, setAppliedCode] = useState("")
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
@@ -52,7 +57,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
   const handleApply = async () => {
     if (!promoCode.trim()) {
       setStatus("error")
-      setMessage("Invalide")
+      setMessage(t("promo.invalid"))
       return
     }
 
@@ -67,7 +72,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
 
       if (result.valid) {
         setStatus("success")
-        setMessage(result.message || "Code promo appliqué avec succès!")
+        setMessage(t("promo.appliedSuccess"))
         setAppliedCode(promoCode.trim())
         setDiscountAmount(result.discount_amount || 0)
         
@@ -76,13 +81,13 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
         }
       } else {
         setStatus("error")
-        setMessage("Invalide")
+        setMessage(t("promo.invalid"))
         setAppliedCode("")
         setDiscountAmount(0)
       }
     } catch (error: any) {
       setStatus("error")
-      setMessage("Invalide")
+      setMessage(t("promo.invalid"))
       setAppliedCode("")
       setDiscountAmount(0)
     }
@@ -111,7 +116,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
         <div className="relative flex-1">
           <Input
             type="text"
-            placeholder="Code promo"
+            placeholder={t("promo.placeholder")}
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
             onKeyPress={handleKeyPress}
@@ -131,7 +136,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
             variant="outline"
             className="px-6 h-10"
           >
-            Retirer
+            {t("promo.remove")}
           </Button>
         ) : (
           <Button
@@ -143,7 +148,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
             {isLoading ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              "Appliquer"
+                  t("promo.apply")
             )}
           </Button>
         )}
@@ -159,14 +164,14 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
           }`}
         >
           {status === "success" ? (
-            <Tag className="w-3.5 h-3.5 flex-shrink-0" />
+            <Tag className="w-3.5 h-3.5 shrink-0" />
           ) : (
-            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           )}
           <span className="font-medium">{message}</span>
           {status === "success" && discountAmount > 0 && (
             <span className="ml-auto font-bold text-emerald-700 dark:text-emerald-400">
-              -{discountAmount.toFixed(2)} MAD
+              -{discountAmount.toFixed(2)} {currency}
             </span>
           )}
         </div>

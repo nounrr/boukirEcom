@@ -10,6 +10,7 @@ import type { Order, OrderStatus, PaymentStatus, PaymentMethod } from "@/types/o
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { useMemo, useState } from "react"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
+import { useTranslations } from "next-intl"
 
 interface OrderCardProps {
   order: Order
@@ -31,6 +32,10 @@ interface OrderCardProps {
 export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStatusConfig }: OrderCardProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const t = useTranslations("orderCard")
+  const tCommon = useTranslations("common")
+
+  const currency = tCommon("currency")
 
   const hasId = typeof order.id === "number" ? order.id > 0 : Boolean(order.id)
   const shouldFetchDetails = open && hasId && !(order.items && order.items.length > 0)
@@ -53,10 +58,6 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
     return Number.isFinite(parsed) ? parsed : 0
   }, [displayOrder])
 
-  const isSolde = useMemo(() => {
-    return (displayOrder as any)?.isSolde === true || (displayOrder as any)?.isSolde === 1
-  }, [displayOrder])
-
   const amountToPay = useMemo(() => {
     // For solde orders, show solde_amount as the amount to pay
     if (displayOrder.paymentMethod === 'solde' && soldeAmount > 0) {
@@ -74,7 +75,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
     const date = new Date(dateString)
-    return new Intl.DateTimeFormat('fr-FR', {
+    return new Intl.DateTimeFormat(locale, {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -84,7 +85,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const formatShortDate = (dateString: string | null) => {
     if (!dateString) return null
     const date = new Date(dateString)
-    return new Intl.DateTimeFormat('fr-FR', {
+    return new Intl.DateTimeFormat(locale, {
       day: 'numeric',
       month: 'short',
     }).format(date)
@@ -93,34 +94,34 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const getDeliveryStatus = () => {
     if (displayOrder.status === 'delivered' && displayOrder.deliveredAt) {
       return {
-        label: `Livrée ${formatShortDate(displayOrder.deliveredAt)}`,
+        label: t("deliveryStatus.deliveredOn", { date: formatShortDate(displayOrder.deliveredAt) }),
         color: 'text-green-600',
         bg: 'bg-green-50',
       }
     }
     if (displayOrder.status === 'shipped' && displayOrder.shippedAt) {
       return {
-        label: `Expédiée ${formatShortDate(displayOrder.shippedAt)}`,
+        label: t("deliveryStatus.shippedOn", { date: formatShortDate(displayOrder.shippedAt) }),
         color: 'text-purple-600',
         bg: 'bg-purple-50',
       }
     }
     if (displayOrder.status === 'confirmed' && displayOrder.confirmedAt) {
       return {
-        label: `Confirmée ${formatShortDate(displayOrder.confirmedAt)}`,
+        label: t("deliveryStatus.confirmedOn", { date: formatShortDate(displayOrder.confirmedAt) }),
         color: 'text-blue-600',
         bg: 'bg-blue-50',
       }
     }
     if (displayOrder.status === 'cancelled') {
       return {
-        label: 'Annulée',
+        label: t("deliveryStatus.cancelled"),
         color: 'text-red-600',
         bg: 'bg-red-50',
       }
     }
     return {
-      label: 'En attente',
+      label: t("deliveryStatus.pending"),
       color: 'text-amber-600',
       bg: 'bg-amber-50',
     }
@@ -131,7 +132,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const getDeliveryMethodConfig = () => {
     if (displayOrder.deliveryMethod === "pickup") {
       return {
-        label: "Retrait en boutique",
+        label: t("deliveryMethod.pickup"),
         icon: Store,
         color: "text-violet-700 dark:text-violet-300",
         bg: "bg-violet-50 dark:bg-violet-950/30",
@@ -139,7 +140,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
       }
     }
     return {
-      label: "Livraison à domicile",
+      label: t("deliveryMethod.delivery"),
       icon: Truck,
       color: "text-emerald-700 dark:text-emerald-300",
       bg: "bg-emerald-50 dark:bg-emerald-950/30",
@@ -151,7 +152,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
     switch (displayOrder.paymentMethod) {
       case "solde":
         return {
-          label: "Paiement différé",
+          label: t("paymentMethod.solde"),
           icon: Clock,
           color: "text-violet-700 dark:text-violet-300",
           bg: "bg-violet-50 dark:bg-violet-950/30",
@@ -159,7 +160,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
         }
       case "pay_in_store":
         return {
-          label: "Paiement en boutique",
+          label: t("paymentMethod.pay_in_store"),
           icon: Store,
           color: "text-violet-700 dark:text-violet-300",
           bg: "bg-violet-50 dark:bg-violet-950/30",
@@ -167,7 +168,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
         }
       case "cash_on_delivery":
         return {
-          label: "Paiement à la livraison",
+          label: t("paymentMethod.cash_on_delivery"),
           icon: Wallet,
           color: "text-emerald-700 dark:text-emerald-300",
           bg: "bg-emerald-50 dark:bg-emerald-950/30",
@@ -175,7 +176,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
         }
       case "card":
         return {
-          label: "Carte bancaire",
+          label: t("paymentMethod.card"),
           icon: CreditCard,
           color: "text-blue-700 dark:text-blue-300",
           bg: "bg-blue-50 dark:bg-blue-950/30",
@@ -183,7 +184,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
         }
       default:
         return {
-          label: displayOrder.paymentMethod,
+          label: t("paymentMethod.unknown", { method: String(displayOrder.paymentMethod ?? "") }),
           icon: CreditCard,
           color: "text-muted-foreground",
           bg: "bg-muted/50",
@@ -205,40 +206,40 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
               <div className="flex items-center gap-4">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Commande</span>
+                    <span className="text-xs text-muted-foreground">{t("meta.order")}</span>
                     <span className="text-xs font-medium">{formatDate(order.createdAt)}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">Total</span>
-                    <span className="text-sm font-bold text-foreground">{order.totalAmount.toFixed(2)} MAD</span>
+                    <span className="text-xs text-muted-foreground">{t("meta.total")}</span>
+                    <span className="text-sm font-bold text-foreground">{order.totalAmount.toFixed(2)} {currency}</span>
                     {remiseUsedAmount > 0 && (
                       <span className="text-xs text-emerald-700 dark:text-emerald-400">
-                        • Remise: -{remiseUsedAmount.toFixed(2)}
+                        • {t("payment.remiseInline", { amount: remiseUsedAmount.toFixed(2) })}
                       </span>
                     )}
                     {displayOrder.paymentMethod === 'solde' && soldeAmount > 0 ? (
                       <span className="text-xs text-violet-700 dark:text-violet-400">
-                        • À payer en solde: <span className="font-semibold">{soldeAmount.toFixed(2)} MAD</span>
+                        • {t("payment.toPayWithSoldeInline", { amount: soldeAmount.toFixed(2), currency })}
                       </span>
                     ) : remiseUsedAmount > 0 && (
                       <span className="text-xs text-muted-foreground">
-                        • À payer: <span className="font-semibold text-foreground">{amountToPay.toFixed(2)} MAD</span>
+                          • {t("payment.toPayInline", { amount: amountToPay.toFixed(2), currency })}
                       </span>
                     )}
-                    <span className="text-xs text-muted-foreground">• {itemsCount} article{itemsCount > 1 ? "s" : ""}</span>
+                    <span className="text-xs text-muted-foreground">• {t("itemsCount", { count: itemsCount })}</span>
                   </div>
                 </div>
 
                 <div className="hidden sm:block h-10 w-px bg-border/40" />
 
                 <div className="hidden sm:flex flex-col">
-                  <span className="text-xs text-muted-foreground">Livrer à</span>
+                  <span className="text-xs text-muted-foreground">{t("meta.shipTo")}</span>
                   <span className="text-xs font-medium">{order.customerName}</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between sm:justify-end gap-2">
-                <span className="text-xs text-muted-foreground">N° {displayOrder.orderNumber}</span>
+                <span className="text-xs text-muted-foreground">{t("meta.orderNumber", { number: displayOrder.orderNumber })}</span>
 
                 <div className="flex items-center gap-1">
                   <Button
@@ -250,7 +251,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                     }}
                     className="h-8 text-xs hover:text-primary"
                   >
-                    Détails
+                    {t("actions.details")}
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
 
@@ -259,7 +260,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                       type="button"
                       variant="ghost"
                       size="icon"
-                      aria-label={open ? "Réduire la commande" : "Afficher les articles"}
+                      aria-label={open ? t("actions.collapseAria") : t("actions.expandAria")}
                       className="h-8 w-8 hover:bg-muted/60"
                     >
                       <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", open && "rotate-180")} />
@@ -274,7 +275,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
               <div className="flex items-center gap-2 min-w-0">
                 <p className={cn("text-xs sm:text-sm font-semibold truncate", deliveryStatus.color)}>{deliveryStatus.label}</p>
                 {displayOrder.status === "delivered" && displayOrder.deliveredAt && (
-                  <span className="hidden sm:inline text-xs text-muted-foreground truncate">Colis livré.</span>
+                  <span className="hidden sm:inline text-xs text-muted-foreground truncate">{t("deliveryStatus.packageDelivered")}</span>
                 )}
               </div>
 
@@ -292,7 +293,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   <>
                     <Badge variant="outline" className="text-[10px] gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
                       <CreditCard className="w-3 h-3" />
-                      Remise + {paymentMethodConfig.label}
+                      {t("payment.remisePlus", { method: paymentMethodConfig.label })}
                     </Badge>
                   </>
                 ) : (
@@ -314,7 +315,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   }}
                   className="h-auto p-0 text-xs text-primary hover:underline"
                 >
-                  Facture
+                  {t("actions.invoice")}
                 </Button>
               </div>
             </div>
@@ -325,7 +326,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
         <CollapsibleContent>
           <div className="p-4 sm:p-5 space-y-3">
             {isFetchingDetails && (!displayOrder.items || displayOrder.items.length === 0) ? (
-              <div className="text-sm text-muted-foreground">Chargement des détails...</div>
+              <div className="text-sm text-muted-foreground">{t("loadingDetails")}</div>
             ) : null}
 
             {/* Pickup Location Info */}
@@ -354,7 +355,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                 <div className="flex items-start gap-2">
                   <Home className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">Adresse de livraison</p>
+                    <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{t("address.deliveryTitle")}</p>
                     <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">
                       {displayOrder.shippingAddress.line1}
                       {displayOrder.shippingAddress.line2 && `, ${displayOrder.shippingAddress.line2}`}
@@ -399,8 +400,8 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   )}
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                    <span>Qté: {item.quantity}</span>
-                    <span className="text-foreground font-semibold">{item.subtotal.toFixed(2)} MAD</span>
+                    <span>{t("item.qty", { quantity: item.quantity })}</span>
+                    <span className="text-foreground font-semibold">{item.subtotal.toFixed(2)} {currency}</span>
                   </div>
 
                   {/* Action Buttons */}
@@ -412,7 +413,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                       className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      Acheter à nouveau
+                      {t("actions.buyAgain")}
                     </Button>
                     <Button
                       variant="outline"
@@ -421,7 +422,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                       className="h-8 text-xs gap-1.5"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      Voir le produit
+                      {t("actions.viewProduct")}
                     </Button>
                     {(displayOrder.status === "shipped" || displayOrder.status === "delivered") && (
                       <Button
@@ -431,7 +432,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                         className="h-8 text-xs gap-1.5"
                       >
                         <Truck className="w-3.5 h-3.5" />
-                        Suivre le colis
+                        {t("actions.trackPackage")}
                       </Button>
                     )}
                   </div>

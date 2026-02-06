@@ -27,6 +27,289 @@
     "previous": "Previous",
     "viewAll": "View all"
   },
+  "authDialog": {
+    "wishlistTitle": "Sign in to save your favorite products",
+    "wishlistSubtitle": "Access your wishlist and track your orders."
+  },
+  "ordersPage": {
+    "toast": {
+      "addedToCartTitle": "Added to cart"
+    },
+    "title": {
+      "orders": "My orders",
+      "solde": "Balance statement"
+    },
+    "loading": "Loading...",
+    "tabs": {
+      "orders": "Orders",
+      "solde": "Balance history"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "subtitle": {
+      "ordersIntro": "Track the status of your orders.",
+      "soldeIntro": "Review your balance movements and statement.",
+      "noResultsFilters": "No results match your filters.",
+      "noResultsPeriod": "No results for this period.",
+      "ordersWithCount": "{count, plural, one {You have # order} other {You have # orders}}{hasPagination, select, yes { • Page {page} of {totalPages}} other {}}",
+      "soldeWithCount": "{count, plural, one {# movement} other {# movements}}"
+    },
+    "ordersCountInline": "{count, plural, one {# order} other {# orders}}{hasPagination, select, yes { • Page {page} / {totalPages}} other {}}",
+    "soldeMovementsInline": "{count, plural, one {# movement} other {# movements}}",
+    "soldeStatementHint": "Review your statement and balance movements.",
+    "filters": {
+      "period": {
+        "placeholder": "All periods",
+        "all": "All periods",
+        "thisWeek": "This week",
+        "thisMonth": "This month",
+        "custom": "Custom"
+      },
+      "status": {
+        "placeholder": "Status",
+        "all": "All statuses"
+      },
+      "paymentStatus": {
+        "placeholder": "Payment",
+        "all": "All payments"
+      },
+      "paymentMethod": {
+        "placeholder": "Method",
+        "all": "All methods",
+        "cashOnDelivery": "Cash on delivery",
+        "card": "Credit card",
+        "payInStore": "Pay in store",
+        "solde": "Deferred payment"
+      },
+      "deliveryMethod": {
+        "placeholder": "Delivery",
+        "all": "All",
+        "delivery": "Home delivery",
+        "pickup": "Store pickup"
+      },
+      "dateRange": {
+        "placeholder": "Select a date range"
+      },
+      "reset": "Reset filters"
+    },
+    "empty": {
+      "filtered": {
+        "title": "No results",
+        "descSolde": "Try changing the period to see movements.",
+        "descOrders": "Try changing your filters to see orders.",
+        "resetCta": "Reset filters",
+        "discoverCta": "Discover products"
+      },
+      "none": {
+        "soldeTitle": "No balance movements",
+        "ordersTitle": "No orders yet",
+        "soldeDesc": "Your balance movements will appear here.",
+        "ordersDesc": "Your orders will appear here once you place one.",
+        "discoverCta": "Discover products"
+      }
+    },
+    "soldeNotAllowed": {
+      "title": "Access not allowed",
+      "desc": "Your account is not eligible for deferred payment."
+    },
+    "soldeEmpty": {
+      "title": "No statement available",
+      "desc": "No balance statement was found for the selected period."
+    }
+  },
+  "orderCard": {
+    "meta": {
+      "order": "Order",
+      "total": "Total",
+      "shipTo": "Ship to",
+      "orderNumber": "No. {number}"
+    },
+    "itemsCount": "{count, plural, one {# item} other {# items}}",
+    "actions": {
+      "details": "Details",
+      "invoice": "Invoice",
+      "buyAgain": "Buy again",
+      "viewProduct": "View product",
+      "trackPackage": "Track package",
+      "collapseAria": "Collapse order",
+      "expandAria": "Show items"
+    },
+    "loadingDetails": "Loading details...",
+    "address": {
+      "deliveryTitle": "Delivery address"
+    },
+    "item": {
+      "qty": "Qty: {quantity}"
+    },
+    "deliveryStatus": {
+      "deliveredOn": "Delivered {date}",
+      "shippedOn": "Shipped {date}",
+      "confirmedOn": "Confirmed {date}",
+      "cancelled": "Cancelled",
+      "pending": "Pending",
+      "packageDelivered": "Package delivered."
+    },
+    "deliveryMethod": {
+      "pickup": "Store pickup",
+      "delivery": "Home delivery"
+    },
+    "paymentMethod": {
+      "solde": "Deferred payment",
+      "pay_in_store": "Pay in store",
+      "cash_on_delivery": "Cash on delivery",
+      "card": "Credit card",
+      "unknown": "{method}"
+    },
+    "payment": {
+      "remiseInline": "Discount: -{amount}",
+      "toPayWithSoldeInline": "To pay on balance: {amount} {currency}",
+      "toPayInline": "To pay: {amount} {currency}",
+      "remisePlus": "Discount + {method}"
+    }
+  },
+  "orderDetailsPage": {
+    "pageTitle": "Order details",
+    "subtitle": "Order #{orderNumber} • {count, plural, one {# item} other {# items}}",
+    "toast": {
+      "addedToCartTitle": "Added to cart"
+    },
+    "authRequired": {
+      "title": "Session required",
+      "subtitle": "Sign in to view your order",
+      "description": "Please sign in to access your order details."
+    },
+    "error": {
+      "title": "Unable to load order",
+      "subtitle": "Unable to load the order",
+      "description": "Please try again in a few moments."
+    },
+    "actions": {
+      "backToOrders": "Back to orders",
+      "invoice": "Invoice",
+      "refresh": "Refresh",
+      "buyAgain": "Buy again",
+      "viewProduct": "View product"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "items": "Items",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "history": "History"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "paymentMethod": {
+      "cash_on_delivery": "Cash on delivery",
+      "pay_in_store": "Pay in store",
+      "card": "Credit card",
+      "bank_transfer": "Bank transfer",
+      "mobile_payment": "Mobile payment",
+      "solde": "Deferred payment"
+    },
+    "header": {
+      "orderNumber": "Order #{number}"
+    },
+    "steps": {
+      "pending": "Order",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
+    },
+    "cancelledNotice": "This order has been cancelled.",
+    "progress": {
+      "title": "Fulfillment",
+      "status": "Status: {status}"
+    },
+    "overview": {
+      "orderLabel": "Order",
+      "viewListCta": "View list",
+      "date": "Date",
+      "status": "Status",
+      "payment": "Payment",
+      "total": "Total"
+    },
+    "itemsPreview": {
+      "title": "Items",
+      "line": "Qty: {quantity} • {subtotal}",
+      "more": "+ {count} more",
+      "viewAll": "View all items"
+    },
+    "itemsTab": {
+      "title": "Items",
+      "count": "{count, plural, one {# item} other {# items}}",
+      "qty": "Qty: {quantity}",
+      "unitPrice": "Unit price: {price}",
+      "subtotal": "Subtotal: {subtotal}"
+    },
+    "shipping": {
+      "pickupTitle": "Store pickup",
+      "deliveryTitle": "Delivery"
+    },
+    "shippingDates": {
+      "title": "Dates",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "notes": {
+      "title": "Notes",
+      "customer": "Customer",
+      "admin": "Admin"
+    },
+    "totals": {
+      "title": "Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "taxes": "Taxes",
+      "discount": "Discount",
+      "total": "Total",
+      "mixedPayment": "Mixed payment",
+      "discountBalanceUsed": "Discount balance used",
+      "remainingToPay": "Remaining to pay"
+    },
+    "payment": {
+      "title": "Payment",
+      "discountChip": "Discount",
+      "statusLabel": "Status",
+      "discountUsed": "Discount used",
+      "toPay": "To pay ({method})",
+      "note": "Note: {note}"
+    },
+    "paymentDetails": {
+      "title": "Payment details",
+      "method": "Method",
+      "status": "Status"
+    },
+    "history": {
+      "title": "Status history",
+      "empty": "No history available at the moment.",
+      "changedBy": "{who}"
+    }
+  },
   "shop": {
     "filters": "Filters",
     "productsLabel": "products",
@@ -35,7 +318,152 @@
     "featuredTitle": "Current deals",
     "featuredDesc": "Our best offers selected for you",
     "newArrivalsTitle": "New arrivals",
-    "newArrivalsDesc": "The latest products added to the store"
+    "newArrivalsDesc": "The latest products added to the store",
+    "heroDescription": "Discover our products and quickly find what you need using the search at the top of the page.",
+    "featureDeliveryTitle": "Fast delivery",
+    "featureDeliveryDesc": "Options tailored to your region.",
+    "featureSecurePaymentTitle": "Secure payment",
+    "featureSecurePaymentDesc": "Protected and reliable transactions.",
+    "featureQualityTitle": "Quality & selection",
+    "featureQualityDesc": "A selection built for pros."
+  },
+  "productsList": {
+    "errorTitle": "Unable to load products",
+    "errorDescription": "An error occurred while loading products. Please try again later.",
+    "retry": "Retry",
+    "emptyTitle": "No products found",
+    "emptyDescription": "Try adjusting your filters or search to discover our products.",
+    "previous": "Previous",
+    "next": "Next",
+    "badges": {
+      "new": "NEW",
+      "promo": "DEAL"
+    }
+  },
+  "productCard": {
+    "quickView": "Quick view",
+    "addToCart": "Add to cart",
+    "outOfStock": "Out of stock",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist",
+    "wishlistAddedTitle": "Added to wishlist",
+    "wishlistRemovedTitle": "Removed from wishlist",
+    "genericErrorTitle": "Something went wrong",
+    "wishlistUpdateFailedDesc": "Unable to update wishlist",
+    "variantRequiredTitle": "Please select a variant",
+    "variantRequiredDesc": "This variant is required.",
+    "variantLabelFallback": "Variant",
+    "lowStock": "Only {count} left in stock"
+  },
+  "productPage": {
+    "inStock": "In stock",
+    "colorLabel": "Color",
+    "sizeLabel": "Size",
+    "optionsLabel": "Options",
+    "unitLabel": "Unit",
+    "quantityLabel": "Quantity",
+    "totalLabel": "Total",
+    "descriptionHeading": "Description",
+    "addedToCartTitle": "Added to cart",
+    "addedToCartDesc": "{quantity} × {name}",
+    "linkCopiedTitle": "Link copied",
+    "linkCopiedDesc": "The link has been copied to your clipboard.",
+    "loadErrorTitle": "Unable to load product",
+    "loadErrorDesc": "An error occurred. Please try again.",
+    "similarTitle": "Similar products",
+    "similarDesc": "Discover other products you might like",
+    "categoryFallback": "Product"
+  },
+  "productFilters": {
+    "title": "Filters",
+    "clear": "Clear",
+    "sortBy": "Sort by",
+    "selectPlaceholder": "Select...",
+    "searchTitle": "Search",
+    "searchPlaceholder": "Search for a product...",
+    "categories": "Categories",
+    "brands": "Brands",
+    "price": "Price",
+    "colors": "Colors",
+    "units": "Units",
+    "inStockOnly": "In stock only",
+    "sort": {
+      "newest": "Newest",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "bestPromos": "Best deals",
+      "popular": "Most popular"
+    }
+  },
+  "cartPage": {
+    "title": "My Cart",
+    "subtitle": "Review your items before checkout",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Browse our products and add them to your cart to start shopping.",
+      "actionLabel": "Discover products"
+    },
+    "toast": {
+      "quantityUpdatedTitle": "Quantity updated",
+      "quantityUpdateFailedDesc": "Unable to update the quantity",
+      "removedTitle": "Removed from cart",
+      "removeFailedDesc": "Unable to remove the product"
+    },
+    "labels": {
+      "variant": "Variant: {value}",
+      "unit": "Unit: {value}",
+      "separator": " · "
+    },
+    "lowStockWarning": "Only {count} left in stock",
+    "price": "{price} {currency}",
+    "pricePerUnit": "{price} {currency} / unit",
+    "aria": {
+      "removeItem": "Remove from cart"
+    },
+    "summary": {
+      "title": "Order summary",
+      "subtotal": "Subtotal",
+      "delivery": "Delivery",
+      "deliveryToCalculate": "To be calculated",
+      "total": "Total",
+      "checkout": "Proceed to checkout"
+    },
+    "itemsCount": "{count, plural, one {# item in your cart} other {# items in your cart}}"
+  },
+  "wishlistPage": {
+    "title": "My Wishlist",
+    "subtitle": "All your favorite products in one place",
+    "empty": {
+      "title": "Your wishlist is empty",
+      "description": "Explore our products and add your favorites to find them easily later.",
+      "actionLabel": "Discover products"
+    },
+    "toast": {
+      "removedTitle": "Removed from wishlist",
+      "removeFailedDesc": "Unable to remove the product",
+      "notFoundDesc": "Product not found in wishlist",
+      "addedToCartTitle": "Added to cart",
+      "addToCartFailedDesc": "Unable to add to cart"
+    },
+    "viewProduct": "View product",
+    "saveAmount": "Save {amount} {currency}",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "lowStock": "Only {count} left",
+    "aria": {
+      "remove": "Remove from wishlist",
+      "addToCart": "Add to cart"
+    },
+    "removeShort": "Remove",
+    "addToCart": "Add to cart"
+  },
+  "accountSidebar": {
+    "activeAccount": "Active account",
+    "profile": "My profile",
+    "orders": "My orders",
+    "soldeHistory": "Balance history",
+    "wishlist": "Wishlist",
+    "settings": "Settings"
   },
   "home": {
     "heroKicker": "Your online hardware store",
@@ -225,14 +653,19 @@
     "continueToCheckout": "Proceed to checkout",
     "continueShopping": "Continue shopping",
     "removeItem": "Remove item",
-    "updateCart": "Update cart"
+    "updateCart": "Update cart",
+    "itemsCount": "{count, plural, one {# item} other {# items}}",
+    "emptyHint": "Add items to start shopping",
+    "browseProducts": "Browse products",
+    "variantLabel": "Variant",
+    "unitLabel": "Unit",
+    "viewCart": "View cart"
   },
   "checkout": {
     "title": "Checkout",
     "shippingAddress": "Shipping address",
     "billingAddress": "Billing address",
     "paymentMethod": "Payment method",
-    "orderSummary": "Order summary",
     "placeOrder": "Place order",
     "cashOnDelivery": "Cash on delivery",
     "creditCard": "Credit card",
@@ -261,6 +694,265 @@
     "postalCode": "Postal code",
     "cityPlaceholder": "Casablanca, Rabat...",
     "postalCodePlaceholder": "20000",
-    "deliveryNotes": "Delivery notes"
+    "deliveryNotes": "Delivery notes",
+    "wizard": {
+      "steps": {
+        "shipping": {
+          "title": "Shipping",
+          "description": "Details"
+        },
+        "payment": {
+          "title": "Payment",
+          "description": "Method"
+        },
+        "confirmation": {
+          "title": "Confirm",
+          "description": "Review"
+        }
+      }
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "back": "Back"
+    },
+    "page": {
+      "subtitle": "Complete your order securely",
+      "taxIncludedNote": "All displayed amounts include tax (VAT included)."
+    },
+    "loading": {
+      "title": "Loading...",
+      "subtitle": "Fetching your cart"
+    },
+    "emptyCart": {
+      "title": "Your cart is empty",
+      "subtitle": "Add products to your cart before checking out.",
+      "backToShop": "Back to shop"
+    },
+    "validation": {
+      "deliveryMethodRequired": "Please select a delivery method",
+      "paymentMethodRequired": "Please select a payment method",
+      "pickupLocationRequired": "Please select a pickup point",
+      "firstNameMin": "First name must be at least 2 characters",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "phoneInvalid": "Invalid phone number",
+      "phoneTooLong": "Phone number is too long",
+      "cardholderNameRequired": "Cardholder name is required",
+      "cardNumberInvalid": "Invalid card number",
+      "cardExpiryRequired": "Expiry date is required",
+      "cardCvvInvalid": "Invalid CVV",
+      "emailInvalid": "Invalid email",
+      "invalidAmount": "Invalid amount",
+      "addressMin": "Address must be at least 5 characters",
+      "cityMin": "City must be at least 2 characters",
+      "codNotAvailablePickup": "Cash on delivery is not available for store pickup"
+    },
+    "errors": {
+      "authRequiredForSolde": "Authentication required to pay with Solde",
+      "soldeNotAllowed": "Your account is not allowed to pay with Solde",
+      "soldeLimitExceeded": "Solde limit exceeded. Available: {available} {currency}, requested: {requested} {currency}.",
+      "soldePlafondExceeded": "Solde ceiling exceeded{plafond, select, none {} other { (Ceiling {plafond} {currency})}}",
+      "orderCreateFailed": "Failed to create the order. Please try again."
+    },
+    "info": {
+      "soldePlafondDetails": "Ceiling: {plafond} {currency} • Current: {current} {currency} • +{amount} {currency} = {projected} {currency}"
+    },
+    "promo": {
+      "placeholder": "Promo code",
+      "apply": "Apply",
+      "remove": "Remove",
+      "invalid": "Invalid",
+      "appliedSuccess": "Promo code applied successfully!"
+    },
+    "cartSummary": {
+      "heading": {
+        "confirm": "Your order",
+        "details": "Order details"
+      },
+      "itemsCount": "{count, plural, one {# item} other {# items}}",
+      "categoryFallback": "Product",
+      "subtotalWithCount": "Subtotal ({count, plural, one {# item} other {# items}})",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "free": "Free",
+      "total": "Total",
+      "taxIncluded": "VAT included",
+      "confirmProcessing": "Processing...",
+      "confirmCta": "Confirm • {total} {currency} (incl. VAT)",
+      "secureTransaction": "100% secure transaction",
+      "termsPrefix": "By confirming, you accept our",
+      "termsLink": "Terms & Conditions"
+    },
+    "payment": {
+      "recommended": "Recommended",
+      "methods": {
+        "title": "Payment method",
+        "otherTitle": "Or choose another payment method",
+        "subtitle": "Choose how you'd like to pay",
+        "cash_on_delivery": {
+          "label": "Cash on delivery",
+          "description": "Pay in cash when you receive your order"
+        },
+        "pay_in_store": {
+          "label": "Pay in store",
+          "description": "Pay when you pick up your order"
+        },
+        "card": {
+          "label": "Credit card",
+          "description": "Visa, Mastercard, American Express"
+        },
+        "solde": {
+          "label": "Deferred payment (Solde)",
+          "description": "Buy now, pay later"
+        },
+        "bank_transfer": {
+          "label": "Bank transfer",
+          "description": "Secure bank transfer"
+        },
+        "mobile_payment": {
+          "label": "Mobile payment",
+          "description": "Pay via mobile app"
+        }
+      },
+      "remise": {
+        "title": "Discount balance",
+        "subtitle": "Use your discount to pay all or part of your order",
+        "loginToUse": "Log in to use your discount balance.",
+        "availableLabel": "Available:",
+        "maxLabel": "Max: {amount} {currency}",
+        "useMyRemise": "Use my discount",
+        "coversAll": "Covers all",
+        "deductUpTo": "Deduct up to {amount} {currency}",
+        "amountToUse": "Amount to use",
+        "maxButton": "Max",
+        "total": "Total",
+        "discount": "Discount",
+        "remaining": "Remaining",
+        "coveredByRemise": "Covered by discount",
+        "insufficient": "Insufficient balance for this cart."
+      },
+      "solde": {
+        "title": "Solde — Buy now, pay later",
+        "badgeExclusive": "Exclusive",
+        "eligibleSubtitle": "You are eligible for deferred payment",
+        "plafond": "Ceiling",
+        "notLimited": "No limit",
+        "cumulated": "Cumulated",
+        "available": "Available",
+        "usage": "Usage",
+        "limitExceededTitle": "Insufficient Solde limit",
+        "limitExceededDesc": "Your available Solde is {available} {currency}. Reduce the cart or choose another payment method.",
+        "payLaterLabel": "Pay later (Solde)",
+        "remaining": "Remaining: {amount} {currency}",
+        "payLaterDesc": "Receive your order now and pay later",
+        "verifiedAccount": "Verified account",
+        "noFees": "No fees",
+        "amountDueLater": "Amount due later",
+        "amountDueLaterDesc": "Your order will be processed after approval. Payment according to agreed terms."
+      },
+      "notes": {
+        "title": "Delivery notes",
+        "subtitle": "Additional information for delivery",
+        "label": "Special instructions",
+        "placeholder": "e.g. Call me 30 minutes before, 3rd floor, code: 1234..."
+      }
+    },
+    "card": {
+      "header": {
+        "title": "Card details",
+        "subtitle": "Secure payment via 256-bit SSL"
+      },
+      "preview": {
+        "cardNumber": "CARD NUMBER",
+        "cardholder": "CARDHOLDER",
+        "cardholderPlaceholder": "CARDHOLDER NAME",
+        "expires": "EXPIRES",
+        "expiresPlaceholder": "MM/YY"
+      },
+      "form": {
+        "cardholderName": "Cardholder name",
+        "cardholderPlaceholder": "JOHN DOE (as shown on the card)",
+        "cardholderHelp": "Enter the name exactly as it appears on your card",
+        "cardNumber": "Card number",
+        "cardNumberHelp": "Enter the digits (no spaces)",
+        "expiryMonth": "Month",
+        "monthPlaceholder": "Month",
+        "expiryYear": "Year",
+        "yearPlaceholder": "Year",
+        "cvv": "CVV",
+        "showCvv": "Show CVV",
+        "hideCvv": "Hide CVV",
+        "cvvHelp": "3 digits on the back (4 for Amex)",
+        "detectedVisa": "Visa detected",
+        "detectedMastercard": "Mastercard detected",
+        "detectedAmex": "American Express detected",
+        "securityNotice": "Your data is encrypted and secure. We never store your card details.",
+        "processing": "Processing...",
+        "confirmPayment": "Confirm payment"
+      }
+    },
+    "orderSummary": {
+      "badge": {
+        "pickup": "Pickup",
+        "delivery": "Delivery"
+      },
+      "pickupSelected": "Selected pickup point",
+      "pickedUpBy": "Picked up by",
+      "address": "Address",
+      "contact": "Contact",
+      "paymentMethod": "Payment method",
+      "specialInstructions": "Special instructions",
+      "trust": {
+        "securePaymentTitle": "Secure payment",
+        "securePaymentDesc": "SSL protection",
+        "returnsTitle": "14-day returns",
+        "returnsDesc": "Satisfied or refunded",
+        "supportTitle": "24/7 support",
+        "supportDesc": "Dedicated assistance"
+      }
+    }
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact us",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "faq": "FAQ",
+    "followUs": "Follow us",
+    "newsletter": "Newsletter",
+    "subscribeNewsletter": "Subscribe to our newsletter",
+    "emailPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "shopLink": "Shop",
+    "ordersLink": "My orders",
+    "rightsInline": "© {year} Boukir • All rights reserved.",
+    "commitmentsTitle": "Our commitments",
+    "commitmentsSubtitle": "Fast delivery, secure payment, and responsive customer service.",
+    "commitmentDeliveryTitle": "Delivery across Morocco",
+    "commitmentDeliveryDesc": "Tracking and responsive customer support.",
+    "commitmentSecurePaymentTitle": "Secure payment",
+    "commitmentSecurePaymentDesc": "Protected and reliable transactions.",
+    "commitmentPaymentMethodsTitle": "Multiple payment methods",
+    "commitmentPaymentMethodsDesc": "Card, bank transfer, cash on delivery.",
+    "acceptedPayments": "Accepted payments",
+    "categoriesTitle": "Categories",
+    "brandsTitle": "Brands",
+    "customerServiceTitle": "Customer service",
+    "deliveryPaymentTitle": "Delivery & payment",
+    "emptyCategories": "No categories",
+    "emptyBrands": "No brands",
+    "viewShop": "Go to shop",
+    "viewAllBrands": "View all brands",
+    "trackOrders": "Track my orders",
+    "helpFaq": "Help & FAQ",
+    "returnsRefunds": "Returns & refunds",
+    "termsAndConditions": "Terms & conditions",
+    "privacyPolicy": "Privacy policy",
+    "deliveryAllMorocco": "Delivery across Morocco",
+    "securePaymentSsl": "Secure payment (SSL)",
+    "paymentMethodsList": "Card, bank transfer, cash on delivery",
+    "copyrightLine": "© {year} Boukir",
+    "rightsReserved": "All rights reserved.",
+    "bottomTagline": "Moroccan marketplace • Fast delivery • Secure payment"
   }
 }

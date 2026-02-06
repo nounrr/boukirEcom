@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ProductImageMask } from './product-image-mask'
 import { VariantSwatches, type SimpleVariant } from './variant-swatches'
 import { useAppSelector } from '@/state/hooks'
@@ -82,6 +82,8 @@ export function ProductCard({
   onToggleWishlist,
   onQuickView
 }: ProductCardProps) {
+  const t = useTranslations('productCard')
+  const tCommon = useTranslations('common')
   const normalizeAvailable = useCallback((v: ProductVariant) => {
     const raw = (v as any)?.available
     if (raw === undefined || raw === null) return true
@@ -154,26 +156,26 @@ export function ProductCard({
           productId: product.id,
           variantId: selectedVariant || undefined,
         }).unwrap()
-        toast.success('Retiré des favoris', { description: product.name })
+        toast.success(t('wishlistRemovedTitle'), { description: product.name })
       } else {
         await addToWishlistApi({
           productId: product.id,
           variantId: selectedVariant || undefined,
         }).unwrap()
-        toast.success('Ajouté aux favoris', { description: product.name })
+        toast.success(t('wishlistAddedTitle'), { description: product.name })
       }
       onToggleWishlist?.(product.id)
     } catch (error) {
-      toast.error('Une erreur est survenue', { description: 'Impossible de mettre à jour les favoris' })
+      toast.error(t('genericErrorTitle'), { description: t('wishlistUpdateFailedDesc') })
     }
-  }, [isAuthenticated, isInWishlist, product.id, selectedVariant, addToWishlistApi, removeFromWishlistApi, onToggleWishlist])
+  }, [isAuthenticated, isInWishlist, product.id, product.name, selectedVariant, addToWishlistApi, removeFromWishlistApi, onToggleWishlist, t])
 
   const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
     if (product.isVariantRequired && !selectedVariant) {
-      toast.error('Veuillez sélectionner une variante', { description: 'Cette variante est obligatoire.' })
+      toast.error(t('variantRequiredTitle'), { description: t('variantRequiredDesc') })
       return
     }
 
@@ -223,7 +225,7 @@ export function ProductCard({
 
     // Also call the optional callback
     onAddToCart?.(product.id, selectedVariant || undefined)
-  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, product.variants, selectedVariant, currentImage, onAddToCart])
+  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, product.variants, product.isVariantRequired, selectedVariant, currentImage, onAddToCart, t, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -266,8 +268,8 @@ export function ProductCard({
 
   const getVariantTypeLabel = useCallback((variant: ProductVariant) => {
     const type = variant.name?.toString().trim()
-    return type || 'Variante'
-  }, [])
+    return type || t('variantLabelFallback')
+  }, [t])
 
   const hasVariants = normalizedVariants.length > 0
   const colorVariants = useMemo(() => (product.variants || []).filter(isColorVariant), [product.variants, isColorVariant])
@@ -352,7 +354,7 @@ export function ProductCard({
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
             <Badge variant="destructive" className="text-sm font-bold px-4 py-2">
-              Rupture de stock
+                {t('outOfStock')}
             </Badge>
           </div>
         )}
@@ -365,7 +367,7 @@ export function ProductCard({
               variant="ghost"
               onClick={handleQuickView}
               className="h-8 w-8 rounded-full hover:bg-muted"
-              title="Aperçu rapide"
+                title={t('quickView')}
             >
               <Eye className="w-4 h-4" />
             </Button>
@@ -379,7 +381,7 @@ export function ProductCard({
                   : "bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-500 cursor-pointer",
                 isWishlistLoading && "opacity-50 cursor-not-allowed"
               )}
-              title={isInWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
+                title={isInWishlist ? t('removeFromWishlist') : t('addToWishlist')}
             >
               <Heart className={cn(
                 "w-4 h-4 transition-all duration-300",
@@ -397,7 +399,7 @@ export function ProductCard({
                   ? "bg-primary hover:bg-primary text-primary-foreground"
                   : "hover:bg-muted disabled:opacity-50"
               )}
-              title="Ajouter au panier"
+                title={t('addToCart')}
             >
               {isAddedToCart ? (
                 <Check className="w-4 h-4" />
@@ -456,7 +458,7 @@ export function ProductCard({
               <span className="text-xl font-bold text-foreground">
                 {currentPrice.toFixed(2)}
               </span>
-              <span className="text-xs text-muted-foreground">MAD</span>
+              <span className="text-xs text-muted-foreground">{tCommon('currency')}</span>
             </div>
             {discountPercentage > 0 && (
               <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 h-6 font-bold">
@@ -466,7 +468,7 @@ export function ProductCard({
           </div>
           {currentOriginalPrice && currentOriginalPrice > currentPrice && (
             <span className="text-xs text-muted-foreground line-through">
-              {currentOriginalPrice.toFixed(2)} MAD
+              {currentOriginalPrice.toFixed(2)} {tCommon('currency')}
             </span>
           )}
         </div>
@@ -490,7 +492,7 @@ export function ProductCard({
         {isLowStock && (
           <div className="mt-2">
             <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-[10px] px-2 py-0.5">
-              Plus que {product.stock} en stock
+              {t('lowStock', { count: product.stock })}
             </Badge>
           </div>
         )}
