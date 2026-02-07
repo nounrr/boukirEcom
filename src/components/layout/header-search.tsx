@@ -241,6 +241,7 @@ function SuggestionsPanel({
   onHoverIndex,
   onClearRecent,
   onSubmitSearch,
+  onSelectRecent,
   onPickProduct,
 }: {
   locale: string
@@ -253,6 +254,7 @@ function SuggestionsPanel({
   onHoverIndex: (index: number) => void
   onClearRecent: () => void
   onSubmitSearch: (query: string) => void
+    onSelectRecent: (query: string) => void
   onPickProduct: (id: number) => void
 }) {
   const hasQuery = !!normalizeQuery(query)
@@ -403,7 +405,7 @@ function SuggestionsPanel({
                 <button
                   key={`${item.type}-${item.query}`}
                   type="button"
-                  onClick={() => onSubmitSearch(item.query)}
+                  onClick={() => (item.type === 'recent' ? onSelectRecent(item.query) : onSubmitSearch(item.query))}
                   onMouseEnter={() => onHoverIndex(idx)}
                   className={cn(
                     'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
@@ -560,6 +562,18 @@ export function HeaderSearch({
     setActiveIndex(-1)
   }, [])
 
+  const applyRecentToInput = useCallback(
+    (q: string) => {
+      const normalized = normalizeQuery(q)
+      if (!normalized) return
+      setQuery(normalized)
+      setActiveIndex(-1)
+      setOpen(true)
+      window.setTimeout(() => inputRef.current?.focus(), 0)
+    },
+    []
+  )
+
   const recordTypedQuery = useCallback(() => {
     const normalized = normalizeQuery(query)
     if (!normalized) return
@@ -649,6 +663,7 @@ export function HeaderSearch({
           e.preventDefault()
           const item = suggestions[activeIndex]
           if (item.type === 'product') pickProduct(item.id)
+          else if (item.type === 'recent') applyRecentToInput(item.query)
           else submitSearch(item.query)
           return
         }
@@ -657,7 +672,7 @@ export function HeaderSearch({
         submitSearch(normalized)
       }
     },
-    [activeIndex, close, open, pickProduct, query, submitSearch, suggestions]
+    [activeIndex, applyRecentToInput, close, open, pickProduct, query, submitSearch, suggestions]
   )
 
   const inputEl = (
@@ -692,6 +707,7 @@ export function HeaderSearch({
       onHoverIndex={(idx) => setActiveIndex(idx)}
       onClearRecent={clearRecent}
       onSubmitSearch={submitSearch}
+      onSelectRecent={applyRecentToInput}
       onPickProduct={pickProduct}
     />
   )

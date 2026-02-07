@@ -5,6 +5,7 @@ import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-rea
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { isOutOfStockLike } from '@/lib/stock'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -50,6 +51,8 @@ interface Product {
   brand?: string
   unit?: string
   stock: number
+  in_stock?: boolean | number | string | null
+  inStock?: boolean | number | string | null
   rating?: number
   reviews?: number
   variants?: ProductVariant[]
@@ -170,9 +173,15 @@ export function ProductCard({
     }
   }, [isAuthenticated, isInWishlist, product.id, product.name, selectedVariant, addToWishlistApi, removeFromWishlistApi, onToggleWishlist, t])
 
-  const handleAddToCart = useCallback((e: React.MouseEvent) => {
+  const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    const outOfStock = isOutOfStockLike({ stock: product.stock, in_stock: (product as any).in_stock, inStock: (product as any).inStock })
+    if (outOfStock) {
+      toast.error(t('genericErrorTitle'), { description: t('outOfStock') })
+      return
+    }
 
     if (product.isVariantRequired && !selectedVariant) {
       toast.error(t('variantRequiredTitle'), { description: t('variantRequiredDesc') })
@@ -211,21 +220,32 @@ export function ProductCard({
 
     // Add item via cart ref (handles API + localStorage automatically)
     if (cartRef?.current) {
-      cartRef.current.addItem(cartItem)
+      try {
+        await cartRef.current.addItem(cartItem)
 
-      // Show success feedback
-      setIsAddedToCart(true)
-      setTimeout(() => setIsAddedToCart(false), 2000)
+        // Show success feedback
+        setIsAddedToCart(true)
+        setTimeout(() => setIsAddedToCart(false), 2000)
 
-      // Open cart with animation
-      setTimeout(() => {
-        cartRef.current?.open()
-      }, 300)
+        // Open cart with animation
+        setTimeout(() => {
+          cartRef.current?.open()
+        }, 300)
+
+        // Also call the optional callback
+        onAddToCart?.(product.id, selectedVariant || undefined)
+      } catch (error) {
+        const data = (error as any)?.data
+        const code = data?.code || data?.error
+        const message = data?.message
+        if (code === 'out_of_stock' || message === 'out_of_stock') {
+          toast.error(t('genericErrorTitle'), { description: t('outOfStock') })
+        } else {
+          toast.error(t('genericErrorTitle'), { description: t('genericErrorDesc') })
+        }
+      }
     }
-
-    // Also call the optional callback
-    onAddToCart?.(product.id, selectedVariant || undefined)
-  }, [cartRef, product.id, product.name, product.price, product.category, product.stock, product.variants, product.isVariantRequired, selectedVariant, currentImage, onAddToCart, t, toast])
+  }, [cartRef, product.category, product.id, product.isVariantRequired, product.name, product.price, product.stock, product.variants, selectedVariant, currentImage, onAddToCart, t, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -296,7 +316,10 @@ export function ProductCard({
   )
 
   const isLowStock = useMemo(() => product.stock > 0 && product.stock <= 5, [product.stock])
-  const isOutOfStock = useMemo(() => product.stock === 0, [product.stock])
+  const isOutOfStock = useMemo(
+    () => isOutOfStockLike({ stock: product.stock, in_stock: (product as any).in_stock, inStock: (product as any).inStock }),
+    [product.stock, (product as any).in_stock, (product as any).inStock]
+  )
 
   // Calculate current price based on selected variant
   const currentPrice = useMemo(() => {

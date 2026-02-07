@@ -31,7 +31,7 @@ const CART_STORAGE_KEY = 'boukir_guest_cart'
 export interface CartPopoverRef {
   open: () => void
   close: () => void
-  addItem: (item: CartItem) => void
+  addItem: (item: CartItem) => Promise<void>
 }
 
 export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPrimary" }>((props, ref) => {
@@ -123,6 +123,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             await refetchCart()
           } catch (error) {
             console.error('❌ Failed to add to backend cart:', error)
+            throw error
           }
         } else {
           // Guest: Update local state + localStorage
