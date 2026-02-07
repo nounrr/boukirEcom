@@ -84,7 +84,7 @@ function BrandCard({
 
       {/* Brand name */}
       <div className="mt-2 text-center">
-        <p className="text-xs font-medium text-foreground line-clamp-2 transition-all duration-300 group-hover:text-primary group-hover:scale-105">
+        <p className="text-xs font-medium text-foreground line-clamp-2 transition-all duration-300 group-hover:text-primary group-hover:scale-105 group-hover:font-bold">
           {brand.nom}
         </p>
       </div>
