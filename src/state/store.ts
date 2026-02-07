@@ -11,6 +11,7 @@ import { cartApi } from './api/cart-api-slice';
 import { wishlistApi } from './api/wishlist-api-slice';
 import { promoApiSlice } from './api/promo-api-slice';
 import { heroSlidesApi } from './api/hero-slides-api-slice';
+import { searchSuggestionsApi } from './api/search-suggestions-api-slice';
 import userReducer from './slices/user-slice';
 import cartReducer from './slices/cart-slice';
 
@@ -29,6 +30,7 @@ export const makeStore = () => {
       [wishlistApi.reducerPath]: wishlistApi.reducer,
       [promoApiSlice.reducerPath]: promoApiSlice.reducer,
       [heroSlidesApi.reducerPath]: heroSlidesApi.reducer,
+      [searchSuggestionsApi.reducerPath]: searchSuggestionsApi.reducer,
       
       // Regular slices
       user: userReducer,
@@ -46,7 +48,8 @@ export const makeStore = () => {
         .concat(cartApi.middleware)
         .concat(wishlistApi.middleware)
         .concat(promoApiSlice.middleware)
-        .concat(heroSlidesApi.middleware),
+        .concat(heroSlidesApi.middleware)
+        .concat(searchSuggestionsApi.middleware),
   });
 
   setupListeners(store.dispatch);

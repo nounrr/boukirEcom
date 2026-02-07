@@ -2,7 +2,7 @@
 
 import { ProductCard } from "@/components/shop/product-card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Package } from "lucide-react"
+import { ChevronLeft, ChevronRight, Package, Tag, Store } from "lucide-react"
 import { useMemo } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
@@ -25,6 +25,8 @@ interface ProductsListProps {
   isLoading: boolean
   isFetching: boolean
   error: any
+  selectedCategoryLabels?: string[]
+  selectedBrandLabels?: string[]
   pagination?: {
     current_page: number
     per_page: number
@@ -48,6 +50,8 @@ export function ProductsList({
   isLoading,
   isFetching,
   error,
+  selectedCategoryLabels,
+  selectedBrandLabels,
   pagination,
   onPageChange,
   onAddToCart,
@@ -130,8 +134,43 @@ export function ProductsList({
 
   const wrapperClasses = "flex-1 min-w-0"
 
+  const hasSelection =
+    (selectedCategoryLabels?.length ?? 0) > 0 || (selectedBrandLabels?.length ?? 0) > 0
+
+  const categoryText = (selectedCategoryLabels ?? []).filter(Boolean).join(', ')
+  const brandText = (selectedBrandLabels ?? []).filter(Boolean).join(', ')
+
   return (
     <div className={wrapperClasses}>
+      {/* Active selection (category / brands) */}
+      {hasSelection ? (
+        <div className="mb-4 rounded-2xl border border-border/40 bg-card/60 px-5 py-4 shadow-sm backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {categoryText ? (
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+                  <Tag className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="truncate text-lg font-extrabold tracking-tight text-foreground">{categoryText}</div>
+                </div>
+              </div>
+            ) : null}
+
+            {brandText ? (
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-muted/40 text-foreground ring-1 ring-border/40">
+                  <Store className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="truncate text-lg font-extrabold tracking-tight text-foreground">{brandText}</div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       {/* Products Grid */}
       {isLoading ? (
         <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>

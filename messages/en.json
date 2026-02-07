@@ -434,6 +434,9 @@
     "featureQualityDesc": "A selection built for pros."
   },
   "productsList": {
+    "filtersSummaryLabel": "Filtered by",
+    "categoryLabel": "Category",
+    "brandLabel": "Brand",
     "errorTitle": "Unable to load products",
     "errorDescription": "An error occurred while loading products. Please try again later.",
     "retry": "Retry",
@@ -629,7 +632,9 @@
     "loading": "Searching…",
     "empty": "No suggestions",
     "recent": "Recent",
-    "noResults": "No product results"
+    "noResults": "No product results",
+    "category": "Category",
+    "brand": "Brand"
   },
   "breadcrumb": {
     "home": "Home",
@@ -1059,6 +1064,10 @@
     "paymentMethodsList": "Card, bank transfer, cash on delivery",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "All rights reserved.",
-    "bottomTagline": "Moroccan marketplace • Fast delivery • Secure payment"
+    "bottomTagline": "Moroccan marketplace • Fast delivery • Secure payment",
+    "storeLocationTitle": "Our store",
+    "storeLocationDesc": "Find our store on Google Maps.",
+    "openInMaps": "Open in Google Maps",
+    "storeLocationUnavailable": "Coordinates coming soon."
   }
 }

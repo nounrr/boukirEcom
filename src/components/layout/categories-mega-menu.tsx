@@ -47,7 +47,13 @@ function getCategoryLabel(category: Category, locale: string) {
   return category.nom
 }
 
-export function CategoriesMegaMenu({ className }: { className?: string }) {
+export function CategoriesMegaMenu({
+  className,
+  tone = 'onPrimary',
+}: {
+  className?: string
+  tone?: 'onPrimary' | 'onSurface'
+}) {
   const t = useTranslations('header')
   const locale = useLocale()
   const isArabic = locale === 'ar'
@@ -110,6 +116,22 @@ export function CategoriesMegaMenu({ className }: { className?: string }) {
 
   const triggerLabel = t('categories')
 
+  const triggerClassName = cn(
+    'h-10 px-3 rounded-xl text-sm font-bold border transition-colors duration-200',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+    tone === 'onPrimary'
+      ? 'text-white/95 bg-white/5 hover:bg-white/10 border-white/15 hover:border-white/25 focus-visible:ring-white/25 focus-visible:ring-offset-primary'
+      : 'text-primary bg-primary/10 hover:bg-primary/15 border-primary/20 hover:border-primary/30 focus-visible:ring-primary/25 focus-visible:ring-offset-background',
+    open && (tone === 'onPrimary' ? 'bg-white/10 border-white/25' : 'bg-primary/15 border-primary/30')
+  )
+
+  const triggerIconWrapClassName = cn(
+    'grid h-7 w-7 place-items-center rounded-lg border transition-colors',
+    tone === 'onPrimary'
+      ? 'bg-white/10 border-white/15'
+      : 'bg-primary/15 border-primary/20'
+  )
+
   return (
     <div
       className={cn('relative hidden lg:block', className)}
@@ -124,15 +146,22 @@ export function CategoriesMegaMenu({ className }: { className?: string }) {
       <Button
         type="button"
         variant="ghost"
-        className={cn(
-          'h-9 px-3 rounded-full text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-200',
-          open && 'bg-white/10 border-white/20'
-        )}
+        className={triggerClassName}
         onFocus={() => setOpen(true)}
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
-        <Menu className="h-4 w-4" />
+        <span className={triggerIconWrapClassName} aria-hidden="true">
+          <Menu className={cn('h-4 w-4', tone === 'onPrimary' ? 'text-white/90' : 'text-primary')} />
+        </span>
         <span className="mx-2">{triggerLabel}</span>
-        <ChevronDown className={cn('h-4 w-4 text-white/75 transition-transform duration-200', open && 'rotate-180')} />
+        <ChevronDown
+          className={cn(
+            'h-4 w-4 transition-transform duration-200',
+            tone === 'onPrimary' ? 'text-white/75' : 'text-primary/70',
+            open && 'rotate-180'
+          )}
+        />
       </Button>
 
       {open && (
@@ -226,10 +255,7 @@ export function CategoriesMegaMenu({ className }: { className?: string }) {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <div className="text-sm font-bold text-foreground truncate">{getCategoryLabel(activeParent, locale)}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {level1.length > 0 ? `${level1.length} sous-catégories` : 'Aucune sous-catégorie'}
-                        </div>
+                            <div className="text-sm font-bold text-foreground truncate">{getCategoryLabel(activeParent, locale)}</div>
                       </div>
                       <Link
                         href={`/${locale}/shop?category_id=${encodeURIComponent(String(activeParent.id))}`}

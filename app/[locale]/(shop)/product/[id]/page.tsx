@@ -443,7 +443,7 @@ export default function ProductPage() {
                   </span> */}
                 </>
               ) : (
-                  <Badge variant="destructive" className="text-xs">{tProductCard("outOfStock")}</Badge>
+                  <Badge variant="destructive" className="text-xs text-white">{tProductCard("outOfStock")}</Badge>
               )}
             </div>
             <Separator />

@@ -8,6 +8,7 @@ import { Facebook, Instagram, Youtube, Truck, CreditCard, ShieldCheck } from 'lu
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
 import { cn } from '@/lib/utils';
+import { FooterStoreMap } from './footer-store-map';
 
 function getCategoryLabel(category: { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }, locale: string) {
   if (locale === 'ar') return category.nom_ar || category.nom;
@@ -303,6 +304,15 @@ export function Footer({
               <div className="mt-1">{t('rightsReserved')}</div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10">
+          <FooterStoreMap
+            title={t('storeLocationTitle')}
+            description={t('storeLocationDesc')}
+            openLabel={t('openInMaps')}
+            unavailableLabel={t('storeLocationUnavailable')}
+          />
         </div>
 
         <div className="mt-10 border-t border-white/15 pt-6 text-xs text-white/70">

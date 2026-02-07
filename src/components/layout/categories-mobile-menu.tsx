@@ -74,16 +74,20 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
         <button
           type="button"
           className={cn(
-            'flex w-full items-center justify-between gap-3 px-3 py-3 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-colors'
+            'flex w-full items-center justify-between gap-3 px-3 py-3 text-sm font-semibold rounded-xl transition-colors',
+            'bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25',
+            'text-white/90 hover:text-white'
           )}
         >
           <span className="flex items-center gap-3 min-w-0">
-            <Menu className="w-4 h-4 shrink-0" />
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/10 border border-white/15" aria-hidden="true">
+              <Menu className="w-4 h-4 text-white/90" />
+            </span>
             <span className="truncate">{t('categories')}</span>
           </span>
           <ChevronDown
             className={cn(
-              'w-4 h-4 shrink-0 text-white/70 transition-transform duration-200',
+              'w-4 h-4 shrink-0 text-white/80 transition-transform duration-200',
               open && 'rotate-180'
             )}
           />

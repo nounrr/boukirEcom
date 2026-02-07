@@ -434,6 +434,9 @@
     "featureQualityDesc": "تشكيلة مختارة للمحترفين."
   },
   "productsList": {
+    "filtersSummaryLabel": "تمت التصفية حسب",
+    "categoryLabel": "الفئة",
+    "brandLabel": "العلامة",
     "errorTitle": "تعذر تحميل المنتجات",
     "errorDescription": "حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة لاحقاً.",
     "retry": "إعادة المحاولة",
@@ -630,7 +633,9 @@
     "loading": "جاري البحث…",
     "empty": "لا توجد اقتراحات",
     "recent": "حديثاً",
-    "noResults": "لا توجد نتائج"
+    "noResults": "لا توجد نتائج",
+    "category": "الفئة",
+    "brand": "العلامة"
   },
   "breadcrumb": {
     "home": "الرئيسية",
@@ -1087,7 +1092,11 @@
     "paymentMethodsList": "بطاقة، تحويل بنكي، الدفع عند الاستلام",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "جميع الحقوق محفوظة.",
-    "bottomTagline": "سوق مغربي • توصيل سريع • دفع آمن"
+    "bottomTagline": "سوق مغربي • توصيل سريع • دفع آمن",
+    "storeLocationTitle": "موقع المتجر",
+    "storeLocationDesc": "اعثر على متجرنا على خرائط Google.",
+    "openInMaps": "فتح في خرائط Google",
+    "storeLocationUnavailable": "سيتم إضافة الإحداثيات قريباً."
   },
   "toast": {
     "auth": {

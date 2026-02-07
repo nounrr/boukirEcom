@@ -434,6 +434,9 @@
     "featureQualityDesc": "Une sélection pensée pour les pros."
   },
   "productsList": {
+    "filtersSummaryLabel": "Filtré par",
+    "categoryLabel": "Catégorie",
+    "brandLabel": "Marque",
     "errorTitle": "Impossible de charger les produits",
     "errorDescription": "Une erreur s'est produite lors du chargement des produits. Veuillez réessayer plus tard.",
     "retry": "Réessayer",
@@ -630,7 +633,9 @@
     "loading": "Recherche…",
     "empty": "Aucune suggestion",
     "recent": "Récent",
-    "noResults": "Aucun résultat produit"
+    "noResults": "Aucun résultat produit",
+    "category": "Catégorie",
+    "brand": "Marque"
   },
   "breadcrumb": {
     "home": "Accueil",
@@ -1087,7 +1092,11 @@
     "paymentMethodsList": "Carte bancaire, virement, paiement à la livraison",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "Tous droits réservés.",
-    "bottomTagline": "Marketplace marocaine • Livraison rapide • Paiement sécurisé"
+    "bottomTagline": "Marketplace marocaine • Livraison rapide • Paiement sécurisé",
+    "storeLocationTitle": "Notre magasin",
+    "storeLocationDesc": "Retrouvez notre boutique sur Google Maps.",
+    "openInMaps": "Ouvrir dans Google Maps",
+    "storeLocationUnavailable": "Coordonnées bientôt disponibles."
   },
   "toast": {
     "auth": {

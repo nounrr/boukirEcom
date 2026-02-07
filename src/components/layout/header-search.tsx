@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
-import { Clock, Search, TrendingUp, X } from 'lucide-react'
+import { Clock, Layers3, Search, Store, TrendingUp, X } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 
@@ -12,13 +11,29 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
-import { useGetProductsQuery } from '@/state/api/products-api-slice'
+import { useGetSearchSuggestionsQuery } from '@/state/api/search-suggestions-api-slice'
+import type { SearchSuggestionCategory, SearchSuggestionProduct } from '@/types/api/search-suggestions'
 
 type Variant = 'inline' | 'icon'
 
 type SuggestionItem =
   | { type: 'search'; label: string; query: string }
   | { type: 'recent'; label: string; query: string }
+  | {
+    type: 'category'
+    id: number
+    label: string
+    query: string
+    imageUrl?: string
+    scopeIds?: number[]
+  }
+  | {
+    type: 'brand'
+    id: number
+    label: string
+    query: string
+    imageUrl?: string
+  }
   | {
       type: 'product'
       id: number
@@ -28,8 +43,14 @@ type SuggestionItem =
       brand?: string
     }
 
+type RecentSearchEntry = { q: string; ts: number }
+
+const RECENT_SEARCHES_VERSION = 'v1'
+const RECENTS_MAX = 10
+const RECENTS_TTL_DAYS = 30
+
 function storageKey(locale: string) {
-  return `boukir_recent_searches_${locale}`
+  return `ecom_recent_searches_${RECENT_SEARCHES_VERSION}_${locale}`
 }
 
 function safeParseJson<T>(value: string | null): T | null {
@@ -50,30 +71,74 @@ function clampIndex(index: number, length: number) {
   return Math.max(0, Math.min(index, length - 1))
 }
 
-function getCategoryLabel(
-  category:
-    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
-    | undefined,
-  locale: string
-) {
-  if (!category) return undefined
+function getSuggestionCategoryLabel(category: SearchSuggestionCategory, locale: string) {
   if (locale === 'ar') return category.nom_ar || category.nom
   if (locale === 'en') return category.nom_en || category.nom
   if (locale === 'zh') return category.nom_zh || category.nom
   return category.nom
 }
 
+function getSuggestionProductLabel(product: SearchSuggestionProduct, locale: string) {
+  if (locale === 'ar') return product.designation_ar || product.designation
+  if (locale === 'en') return product.designation_en || product.designation
+  if (locale === 'zh') return product.designation_zh || product.designation
+  return product.designation
+}
+
+function pruneRecents(entries: RecentSearchEntry[]) {
+  const now = Date.now()
+  const ttlMs = RECENTS_TTL_DAYS * 24 * 60 * 60 * 1000
+
+  const normalized: RecentSearchEntry[] = []
+  const seen = new Set<string>()
+
+  for (const e of entries) {
+    const q = normalizeQuery(e?.q ?? '')
+    if (!q) continue
+    const ts = Number.isFinite(e?.ts) ? e.ts : now
+    if (now - ts > ttlMs) continue
+    const key = q.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    normalized.push({ q, ts })
+  }
+
+  normalized.sort((a, b) => b.ts - a.ts)
+  return normalized.slice(0, RECENTS_MAX)
+}
+
+function migrateRecents(raw: unknown): RecentSearchEntry[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) {
+    // New format
+    if (raw.length === 0 || typeof raw[0] === 'object') {
+      return pruneRecents(raw as RecentSearchEntry[])
+    }
+    // Legacy format: string[]
+    if (typeof raw[0] === 'string') {
+      const now = Date.now()
+      const entries = (raw as string[]).map((q, idx) => ({ q, ts: now - idx }))
+      return pruneRecents(entries)
+    }
+  }
+  return []
+}
+
 function useRecentSearches(locale: string) {
-  const [recent, setRecent] = useState<string[]>([])
+  const [recent, setRecent] = useState<RecentSearchEntry[]>([])
 
   useEffect(() => {
-    const stored = safeParseJson<string[]>(
+    const stored = safeParseJson<unknown>(
       typeof window !== 'undefined' ? window.localStorage.getItem(storageKey(locale)) : null
     )
-    if (stored && Array.isArray(stored)) {
-      setRecent(stored.filter(Boolean).slice(0, 8))
-    } else {
-      setRecent([])
+    const next = migrateRecents(stored)
+    setRecent(next)
+
+    // Best-effort: persist migrated/pruned format
+    try {
+      window.localStorage.setItem(storageKey(locale), JSON.stringify(next))
+    } catch {
+    // ignore
     }
   }, [locale])
 
@@ -83,7 +148,11 @@ function useRecentSearches(locale: string) {
       if (!normalized) return
 
       setRecent((prev) => {
-        const next = [normalized, ...prev.filter((x) => x.toLowerCase() !== normalized.toLowerCase())].slice(0, 8)
+        const now = Date.now()
+        const next = pruneRecents([
+          { q: normalized, ts: now },
+          ...prev.filter((x) => x.q.toLowerCase() !== normalized.toLowerCase()),
+        ])
         try {
           window.localStorage.setItem(storageKey(locale), JSON.stringify(next))
         } catch {
@@ -177,7 +246,7 @@ function SuggestionsPanel({
   locale: string
   t: (key: string, values?: Record<string, any>) => string
   query: string
-  recent: string[]
+    recent: RecentSearchEntry[]
   isFetching: boolean
   suggestions: SuggestionItem[]
   activeIndex: number
@@ -227,6 +296,72 @@ function SuggestionsPanel({
             {suggestions.map((item, idx) => {
               const isActive = idx === activeIndex
 
+              if (item.type === 'category') {
+                return (
+                  <button
+                    key={`c-${item.id}-${item.scopeIds?.length ?? 0}`}
+                    type="button"
+                    onClick={() => onSubmitSearch(item.query)}
+                    onMouseEnter={() => onHoverIndex(idx)}
+                    className={cn(
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      isActive ? 'bg-muted' : 'hover:bg-muted/60'
+                    )}
+                  >
+                    <div className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-md border border-border/40 bg-muted text-foreground">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.label}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <Layers3 className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-semibold text-foreground">{item.label}</div>
+                      <div className="truncate text-xs text-muted-foreground">{t('category')}</div>
+                    </div>
+                  </button>
+                )
+              }
+
+              if (item.type === 'brand') {
+                return (
+                  <button
+                    key={`b-${item.id}`}
+                    type="button"
+                    onClick={() => onSubmitSearch(item.query)}
+                    onMouseEnter={() => onHoverIndex(idx)}
+                    className={cn(
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      isActive ? 'bg-muted' : 'hover:bg-muted/60'
+                    )}
+                  >
+                    <div className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-md border border-border/40 bg-muted text-foreground">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.label}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <Store className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-semibold text-foreground">{item.label}</div>
+                      <div className="truncate text-xs text-muted-foreground">{t('brand')}</div>
+                    </div>
+                  </button>
+                )
+              }
+
               if (item.type === 'product') {
                 return (
                   <button
@@ -235,7 +370,7 @@ function SuggestionsPanel({
                     onClick={() => onPickProduct(item.id)}
                     onMouseEnter={() => onHoverIndex(idx)}
                     className={cn(
-                      'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
                       isActive ? 'bg-muted' : 'hover:bg-muted/60'
                     )}
                   >
@@ -248,7 +383,11 @@ function SuggestionsPanel({
                           sizes="40px"
                           className="object-cover"
                         />
-                      ) : null}
+                      ) : (
+                        <div className="absolute inset-0 grid place-items-center bg-linear-to-br from-muted via-muted/60 to-transparent">
+                          <Search className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium text-foreground">{item.label}</div>
@@ -267,7 +406,7 @@ function SuggestionsPanel({
                   onClick={() => onSubmitSearch(item.query)}
                   onMouseEnter={() => onHoverIndex(idx)}
                   className={cn(
-                    'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                    'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
                     isActive ? 'bg-muted' : 'hover:bg-muted/60'
                   )}
                 >
@@ -327,8 +466,10 @@ export function HeaderSearch({
   }, [autoFocus])
 
   const debouncedQuery = useDebounce(normalizeQuery(query), 250)
-  const productsQueryArgs = debouncedQuery ? ({ search: debouncedQuery, limit: 6 } as const) : skipToken
-  const { data, isFetching } = useGetProductsQuery(productsQueryArgs)
+  const suggestionsArgs = debouncedQuery
+    ? ({ q: debouncedQuery, limit_products: 8, limit_categories: 6, limit_brands: 6, in_stock_only: true } as const)
+    : skipToken
+  const { data, isFetching } = useGetSearchSuggestionsQuery(suggestionsArgs)
 
   const suggestions: SuggestionItem[] = useMemo(() => {
     const normalized = normalizeQuery(query)
@@ -341,13 +482,69 @@ export function HeaderSearch({
         },
       ]
 
+      // Intent-aware quick jump: if backend detects brand/category, prefer those as top picks.
+      const detectedCategory = data?.intent?.detected_category ?? null
+      const detectedBrand = data?.intent?.detected_brand ?? null
+
+      if (detectedCategory) {
+        const label = getSuggestionCategoryLabel(detectedCategory, locale)
+        const scopeIds = detectedCategory.category_ids_scope
+        const queryParam = scopeIds && scopeIds.length > 0 ? scopeIds.join(',') : String(detectedCategory.id)
+        items.push({
+          type: 'category',
+          id: detectedCategory.id,
+          label,
+          imageUrl: detectedCategory.image_url ?? undefined,
+          scopeIds,
+          query: `__category__:${queryParam}`,
+        })
+      }
+
+      if (detectedBrand) {
+        items.push({
+          type: 'brand',
+          id: detectedBrand.id,
+          label: detectedBrand.nom,
+          imageUrl: detectedBrand.image_url ?? undefined,
+          query: `__brand__:${detectedBrand.id}`,
+        })
+      }
+
+      // Also list other matching categories/brands
+      for (const c of data?.categories ?? []) {
+        // avoid duplicates with detected
+        if (detectedCategory && c.id === detectedCategory.id) continue
+        const label = getSuggestionCategoryLabel(c, locale)
+        const scopeIds = c.category_ids_scope
+        const queryParam = scopeIds && scopeIds.length > 0 ? scopeIds.join(',') : String(c.id)
+        items.push({
+          type: 'category',
+          id: c.id,
+          label,
+          imageUrl: c.image_url ?? undefined,
+          scopeIds,
+          query: `__category__:${queryParam}`,
+        })
+      }
+
+      for (const b of data?.brands ?? []) {
+        if (detectedBrand && b.id === detectedBrand.id) continue
+        items.push({
+          type: 'brand',
+          id: b.id,
+          label: b.nom,
+          imageUrl: b.image_url ?? undefined,
+          query: `__brand__:${b.id}`,
+        })
+      }
+
       for (const p of data?.products ?? []) {
         items.push({
           type: 'product',
           id: p.id,
-          label: p.designation,
-          imageUrl: p.image_url,
-          category: getCategoryLabel(p.categorie, locale),
+          label: getSuggestionProductLabel(p, locale),
+          imageUrl: p.image_url ?? undefined,
+          category: getSuggestionCategoryLabel(p.categorie, locale),
           brand: p.brand?.nom,
         })
       }
@@ -355,34 +552,60 @@ export function HeaderSearch({
       return items
     }
 
-    return recent.map((r) => ({ type: 'recent', label: r, query: r }))
-  }, [data?.products, query, recent, t])
+    return recent.map((r) => ({ type: 'recent', label: r.q, query: r.q }))
+  }, [data?.brands, data?.categories, data?.intent, data?.products, locale, query, recent, t])
 
   const close = useCallback(() => {
     setOpen(false)
     setActiveIndex(-1)
   }, [])
 
+  const recordTypedQuery = useCallback(() => {
+    const normalized = normalizeQuery(query)
+    if (!normalized) return
+    saveRecent(normalized)
+  }, [query, saveRecent])
+
   const submitSearch = useCallback(
     (q: string) => {
       const normalized = normalizeQuery(q)
       if (!normalized) return
+
+      // Special internal targets for quick navigation
+      if (normalized.startsWith('__category__:')) {
+        recordTypedQuery()
+        const raw = normalized.slice('__category__:'.length)
+        close()
+        onSearchDone?.()
+        router.push(`/${locale}/shop?category_id=${encodeURIComponent(raw)}`)
+        return
+      }
+
+      if (normalized.startsWith('__brand__:')) {
+        recordTypedQuery()
+        const raw = normalized.slice('__brand__:'.length)
+        close()
+        onSearchDone?.()
+        router.push(`/${locale}/shop?brand_id=${encodeURIComponent(raw)}`)
+        return
+      }
 
       saveRecent(normalized)
       close()
       onSearchDone?.()
       router.push(`/${locale}/shop?search=${encodeURIComponent(normalized)}`)
     },
-    [close, locale, onSearchDone, router, saveRecent]
+    [close, locale, onSearchDone, recordTypedQuery, router, saveRecent]
   )
 
   const pickProduct = useCallback(
     (id: number) => {
+      recordTypedQuery()
       close()
       onSearchDone?.()
       router.push(`/${locale}/product/${id}`)
     },
-    [close, locale, onSearchDone, router]
+    [close, locale, onSearchDone, recordTypedQuery, router]
   )
 
   const handleKeyDown = useCallback(

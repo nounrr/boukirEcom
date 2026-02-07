@@ -434,6 +434,9 @@
     "featureQualityDesc": "为专业人士精心挑选的产品。"
   },
   "productsList": {
+    "filtersSummaryLabel": "筛选条件",
+    "categoryLabel": "分类",
+    "brandLabel": "品牌",
     "errorTitle": "无法加载商品",
     "errorDescription": "加载商品时发生错误，请稍后再试。",
     "retry": "重试",
@@ -629,7 +632,9 @@
     "loading": "搜索中…",
     "empty": "暂无建议",
     "recent": "最近",
-    "noResults": "没有找到相关商品"
+    "noResults": "没有找到相关商品",
+    "category": "分类",
+    "brand": "品牌"
   },
   "breadcrumb": {
     "home": "首页",
@@ -1059,6 +1064,10 @@
     "paymentMethodsList": "银行卡、转账、货到付款",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "保留所有权利。",
-    "bottomTagline": "摩洛哥电商平台 • 快速配送 • 安全支付"
+    "bottomTagline": "摩洛哥电商平台 • 快速配送 • 安全支付",
+    "storeLocationTitle": "门店位置",
+    "storeLocationDesc": "在 Google 地图上查看我们的门店位置。",
+    "openInMaps": "在 Google 地图中打开",
+    "storeLocationUnavailable": "坐标即将提供。"
   }
 }

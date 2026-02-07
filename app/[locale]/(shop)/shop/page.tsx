@@ -10,9 +10,35 @@ import { Button } from "@/components/ui/button"
 import { SlidersHorizontal, Grid3x3, LayoutGrid, Package } from "lucide-react"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useLocale } from "next-intl"
+import type { ProductCategory, ProductBrand } from "@/types/api/products"
+
+function getCategoryLabel(
+  category: ProductCategory | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
+function flattenCategories(categories: ProductCategory[]): ProductCategory[] {
+  const out: ProductCategory[] = []
+  const visit = (node: ProductCategory) => {
+    out.push(node)
+    if (node.children && node.children.length) {
+      for (const child of node.children) visit(child)
+    }
+  }
+  for (const c of categories) visit(c)
+  return out
+}
 
 export default function ShopPage() {
   const t = useTranslations('shop')
+  const locale = useLocale()
 
   const router = useRouter()
   const pathname = usePathname()
@@ -163,6 +189,31 @@ export default function ShopPage() {
   const products = data?.products || []
   const pagination = data?.pagination
 
+  const selectedCategoryLabels = useMemo(() => {
+    if (!filterState.categories.length) return []
+
+    const flat = flattenCategories(categories as ProductCategory[])
+    const map = new Map<number, ProductCategory>()
+    for (const c of flat) map.set(c.id, c)
+
+    return filterState.categories
+      .map((id) => map.get(id))
+      .filter(Boolean)
+      .map((c) => getCategoryLabel(c, locale))
+      .filter(Boolean)
+  }, [categories, filterState.categories, locale])
+
+  const selectedBrandLabels = useMemo(() => {
+    if (!filterState.brands.length) return []
+
+    const map = new Map<number, ProductBrand>()
+    for (const b of brands as ProductBrand[]) map.set(b.id, b)
+
+    return filterState.brands
+      .map((id) => map.get(id)?.nom)
+      .filter(Boolean) as string[]
+  }, [brands, filterState.brands])
+
   const handleFilterChange = useCallback((filters: FilterState) => {
     setFilterState(filters)
   }, [])
@@ -297,6 +348,8 @@ export default function ShopPage() {
               isLoading={isLoading}
               isFetching={isFetching}
               error={error}
+            selectedCategoryLabels={selectedCategoryLabels}
+            selectedBrandLabels={selectedBrandLabels}
               pagination={pagination}
               onPageChange={handlePageChange}
               onAddToCart={handleAddToCart}

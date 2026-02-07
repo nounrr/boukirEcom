@@ -9,34 +9,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearAuth } from "@/state/slices/user-slice"
-import { CartPopover } from "./cart-popover"
-import { WishlistIcon } from "./wishlist-icon"
-import { useCart } from "./cart-context-provider"
-import { Menu, ChevronDown, Package, Store, Home, LogOut, UserCircle2 } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronDown, Home, LogOut, Menu, Package, Store, UserCircle2 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
+import { useCart } from "./cart-context-provider"
+import { CartPopover } from "./cart-popover"
 import { HeaderSearch } from "./header-search"
+import { WishlistIcon } from "./wishlist-icon"
 
 import { CategoriesMegaMenu } from "./categories-mega-menu"
 import { CategoriesMobileMenu } from "./categories-mobile-menu"
 
-import { API_CONFIG } from "@/lib/api-config"
 import {
   getSupportedLocales,
   setPreferredLocale,
   type SupportedLocale,
 } from "@/components/i18n/locale-preference-initializer"
+import { API_CONFIG } from "@/lib/api-config"
 
 export function Header() {
   const t = useTranslations('header')
   const tCommon = useTranslations('common')
+  const tFilters = useTranslations('productFilters')
   const locale = useLocale()
   const isArabic = locale === 'ar'
   const router = useRouter()
@@ -102,16 +102,20 @@ export function Header() {
     { href: `/${locale}/shop`, label: t('shop'), icon: Store },
   ]
 
-  const desktopLinks = [
+  const secondaryLinks = [
     { href: `/${locale}/shop`, label: t('shop') },
+    { href: `/${locale}/shop?sort=promo`, label: tFilters('sort.bestPromos') },
+    { href: `/${locale}/shop?sort=popular`, label: tFilters('sort.popular') },
+    { href: `/${locale}/shop`, label: tFilters('brands') },
     ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/15 bg-primary text-white shadow-xs shadow-black/10 overflow-x-clip">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16">
-        {/* Top Bar */}
-        <div className="flex h-[75px] items-center justify-between gap-3">
+    <header className="sticky top-0 z-50 w-full shadow-xs shadow-black/10 overflow-x-clip">
+      {/* Primary Bar */}
+      <div className="bg-primary text-white border-b border-white/15">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+          <div className="flex h-[75px] items-center justify-between gap-3">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
             <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center shadow-md shadow-black/15 group-hover:shadow-lg group-hover:shadow-black/20 transition-all duration-300 ring-1 ring-black/10 group-hover:ring-black/15">
@@ -121,20 +125,6 @@ export function Header() {
               Boukir
             </span>
           </Link>
-
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 shrink-0">
-            <CategoriesMegaMenu />
-            {desktopLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 rounded-full text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
 
           {/* Desktop Search */}
           <div className="hidden md:flex flex-1 justify-center px-3 lg:px-6">
@@ -344,58 +334,85 @@ export function Header() {
             )}
           </div>
         </div>
+        </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="lg:hidden border-t overflow-hidden"
-            >
-              <div className="py-4">
-                <nav className="flex flex-col gap-2">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-colors capitalize"
-                    >
-                      <link.icon className="w-4 h-4" />
-                      {link.label}
-                    </Link>
-                  ))}
+      {/* Secondary Nav Bar (Desktop) */}
+      <div className="hidden lg:block bg-background text-foreground border-b border-border/40">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+          <div className="flex h-14 items-center gap-3">
+            <CategoriesMegaMenu tone="onSurface" />
+            <nav className="flex items-center gap-1.5 min-w-0">
+              {secondaryLinks.map((link) => (
+                <Link
+                  key={link.href + link.label}
+                  href={link.href}
+                  className={
+                    'px-3 py-2 rounded-full text-sm font-semibold text-foreground/85 hover:text-foreground hover:bg-muted/60 transition-colors'
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
 
-                  <CategoriesMobileMenu onNavigate={() => setIsMobileMenuOpen(false)} />
-                </nav>
+      {/* Mobile Menu (within primary background) */}
+      <div className="bg-primary text-white lg:hidden">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="border-t border-white/15 overflow-hidden"
+              >
+                <div className="py-4">
+                  <nav className="flex flex-col gap-2">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-colors capitalize"
+                      >
+                        <link.icon className="w-4 h-4" />
+                        {link.label}
+                      </Link>
+                    ))}
 
-                {/* Mobile Auth Buttons */}
-                {isAuthLoading ? (
-                  <div className="flex gap-3 mt-4 px-3">
-                    <div className="flex-1 h-10 rounded-md bg-white/15 animate-pulse" />
-                    <div className="flex-1 h-10 rounded-md bg-white/25 animate-pulse" />
-                  </div>
-                ) : !isAuthenticated ? (
-                  <div className="flex gap-3 mt-4 px-3">
-                    <Link href={`/${locale}/login`} className="flex-1">
-                      <Button variant="ghost" className="w-full bg-white/10 text-white hover:bg-white/15">
-                        {t('login')}
-                      </Button>
-                    </Link>
-                    <Link href={`/${locale}/register`} className="flex-1">
-                      <Button className="w-full bg-white text-primary hover:bg-white/90">
-                        {t('register')}
-                      </Button>
-                    </Link>
-                  </div>
-                ) : null}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    <CategoriesMobileMenu onNavigate={() => setIsMobileMenuOpen(false)} />
+                  </nav>
+
+                  {/* Mobile Auth Buttons */}
+                  {isAuthLoading ? (
+                    <div className="flex gap-3 mt-4 px-3">
+                      <div className="flex-1 h-10 rounded-md bg-white/15 animate-pulse" />
+                      <div className="flex-1 h-10 rounded-md bg-white/25 animate-pulse" />
+                    </div>
+                  ) : !isAuthenticated ? (
+                    <div className="flex gap-3 mt-4 px-3">
+                      <Link href={`/${locale}/login`} className="flex-1">
+                        <Button variant="ghost" className="w-full bg-white/10 text-white hover:bg-white/15">
+                          {t('login')}
+                        </Button>
+                      </Link>
+                      <Link href={`/${locale}/register`} className="flex-1">
+                        <Button className="w-full bg-white text-primary hover:bg-white/90">
+                          {t('register')}
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </header>
   )
