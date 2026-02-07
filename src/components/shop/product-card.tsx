@@ -54,6 +54,7 @@ interface Product {
   stock: number
   in_stock?: boolean | number | string | null
   inStock?: boolean | number | string | null
+  purchase_limit?: number
   rating?: number
   reviews?: number
   variants?: ProductVariant[]
@@ -71,8 +72,9 @@ interface Product {
 
 interface ProductCardProps {
   product: Product
-  viewMode?: 'grid' | 'large'
+  viewMode?: 'grid' | 'list'
   isWide?: boolean
+  layout?: 'tile' | 'row'
   onAddToCart?: (productId: number, variantId?: number) => void
   onToggleWishlist?: (productId: number) => void
   onQuickView?: (productId: number) => void
@@ -82,6 +84,7 @@ export function ProductCard({
   product,
   viewMode = 'grid',
   isWide = false,
+  layout = 'tile',
   onAddToCart,
   onToggleWishlist,
   onQuickView
@@ -231,6 +234,7 @@ export function ProductCard({
       image: currentImage,
       category: product.category,
       stock: product.stock,
+      purchase_limit: typeof (product as any).purchase_limit === 'number' ? (product as any).purchase_limit : undefined,
     }
 
     // Add item via cart ref (handles API + localStorage automatically)
@@ -253,7 +257,17 @@ export function ProductCard({
         const data = (error as any)?.data
         const code = data?.code || data?.error
         const message = data?.message
-        if (code === 'out_of_stock' || message === 'out_of_stock') {
+        const normalizedCode = typeof code === 'string' ? code.toLowerCase() : ''
+        const normalizedMessage = typeof message === 'string' ? message.toLowerCase() : ''
+
+        if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
+          toast.error(t('genericErrorTitle'), { description: t('maxQuantityReachedDesc') })
+        } else if (
+          code === 'INSUFFICIENT_STOCK' ||
+          normalizedCode === 'insufficient_stock' ||
+          normalizedCode === 'out_of_stock' ||
+          normalizedMessage === 'out_of_stock'
+        ) {
           toast.error(t('genericErrorTitle'), { description: t('outOfStock') })
         } else {
           toast.error(t('genericErrorTitle'), { description: t('genericErrorDesc') })
@@ -335,7 +349,6 @@ export function ProductCard({
     [product.sale?.discount, product.originalPrice, product.price]
   )
 
-  const isLowStock = useMemo(() => product.stock > 0 && product.stock <= 5, [product.stock])
   const isOutOfStock = useMemo(
     () => isOutOfStockLike({ stock: product.stock, in_stock: (product as any).in_stock, inStock: (product as any).inStock }),
     [product.stock, (product as any).in_stock, (product as any).inStock]
@@ -366,10 +379,169 @@ export function ProductCard({
     return product.originalPrice
   }, [selectedVariant, product.variants, product.originalPrice])
 
+  if (layout === 'row') {
+    return (
+      <div className={cn(
+        "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full",
+        isWide ? "max-w-none" : "max-w-none"
+      )}>
+        <Link href={`/${locale}/product/${product.id}`} className="flex gap-3 p-2.5 sm:p-3">
+          {/* Image */}
+          <div className="relative h-24 w-24 sm:h-28 sm:w-28 shrink-0">
+            <ProductImageMask className="h-full w-full bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
+              <div
+                className="absolute inset-0 pointer-events-none opacity-40"
+                style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }}
+              />
+
+              {currentImage && !imageError ? (
+                <Image
+                  src={currentImage}
+                  alt={product.name}
+                  fill
+                  className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Package className="w-12 h-12 text-muted-foreground/30" />
+                </div>
+              )}
+
+              {isOutOfStock && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
+                  <Badge variant="destructive" className="text-[10px] font-bold px-2 py-1">
+                    {t('outOfStock')}
+                  </Badge>
+                </div>
+              )}
+            </ProductImageMask>
+          </div>
+
+          {/* Content */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                  {product.category}
+                </p>
+                <h3 className="font-semibold text-[13px] sm:text-sm line-clamp-2 leading-snug">
+                  {displayName}
+                </h3>
+              </div>
+
+              {/* Actions */}
+              <div
+                className="flex items-center gap-1 shrink-0"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleQuickView}
+                  className="h-8 w-8 rounded-full hover:bg-muted"
+                  title={t('quickView')}
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
+                <button
+                  onClick={handleToggleWishlist}
+                  disabled={isWishlistLoading}
+                  className={cn(
+                    "h-8 w-8 rounded-full transition-all duration-300 flex items-center justify-center border-0 outline-none focus:outline-none",
+                    isWishlisted
+                      ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30 scale-105 cursor-pointer"
+                      : "bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-500 cursor-pointer",
+                    isWishlistLoading && "opacity-50 cursor-not-allowed"
+                  )}
+                  title={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
+                >
+                  <Heart
+                    className={cn(
+                      "w-4 h-4 transition-all duration-300",
+                      isWishlisted && "fill-current animate-in zoom-in-50"
+                    )}
+                  />
+                </button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}
+                  className={cn(
+                    "h-8 w-8 rounded-full transition-all duration-200",
+                    isAddedToCart
+                      ? "bg-primary hover:bg-primary text-primary-foreground"
+                      : "hover:bg-muted disabled:opacity-50 disabled:pointer-events-auto"
+                  )}
+                  aria-disabled={isOutOfStock}
+                  title={isOutOfStock ? t('outOfStock') : t('addToCart')}
+                >
+                  {isAddedToCart ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <ShoppingCart className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="mt-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg sm:text-xl font-bold text-foreground">
+                    {currentPrice.toFixed(2)}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">{tCommon('currency')}</span>
+                </div>
+                {discountPercentage > 0 && (
+                  <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">
+                    -{discountPercentage}%
+                  </Badge>
+                )}
+              </div>
+              {currentOriginalPrice && currentOriginalPrice > currentPrice && (
+                <span className="block text-[10px] sm:text-xs text-muted-foreground line-through">
+                  {currentOriginalPrice.toFixed(2)} {tCommon('currency')}
+                </span>
+              )}
+            </div>
+
+            {/* Swatches */}
+            {hasVariants && (
+              <div
+                className="mt-2"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <VariantSwatches
+                  variants={swatchVariants}
+                  selectedId={selectedVariant}
+                  onSelect={(variant) => {
+                    handleVariantClick(variant)
+                  }}
+                  max={4}
+                  assumeColor={hasColorVariants}
+                />
+              </div>
+            )}
+
+          </div>
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className={cn(
       "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full mx-auto",
-      isWide ? "max-w-none" : "max-w-[280px]"
+      isWide ? "max-w-none" : "max-w-none sm:max-w-[280px]"
     )}>
       {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
@@ -403,22 +575,28 @@ export function ProductCard({
         )}
 
         {/* Quick Action Dock - Always visible and docked shape */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300" onClick={(e) => e.preventDefault()}>
-          <div className="flex items-center gap-1 bg-white rounded-[18px] px-3 py-2 shadow-md border border-border/20">
+          <div
+            className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+          >
+            <div className="flex items-center gap-1 bg-white rounded-[18px] px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-md border border-border/20">
             <Button
               size="icon"
               variant="ghost"
               onClick={handleQuickView}
-              className="h-8 w-8 rounded-full hover:bg-muted"
+                className="h-7 w-7 sm:h-8 sm:w-8 rounded-full hover:bg-muted"
                 title={t('quickView')}
             >
-              <Eye className="w-4 h-4" />
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Button>
             <button
               onClick={handleToggleWishlist}
               disabled={isWishlistLoading}
               className={cn(
-                "h-8 w-8 rounded-full transition-all duration-300 flex items-center justify-center border-0 outline-none focus:outline-none",
+                "h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all duration-300 flex items-center justify-center border-0 outline-none focus:outline-none",
                 isWishlisted
                   ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30 scale-105 cursor-pointer"
                   : "bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-500 cursor-pointer",
@@ -427,7 +605,7 @@ export function ProductCard({
                 title={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
             >
               <Heart className={cn(
-                "w-4 h-4 transition-all duration-300",
+                "w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300",
                 isWishlisted && "fill-current animate-in zoom-in-50"
               )} />
             </button>
@@ -437,17 +615,18 @@ export function ProductCard({
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               className={cn(
-                "h-8 w-8 rounded-full transition-all duration-200",
+                "h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all duration-200",
                 isAddedToCart
                   ? "bg-primary hover:bg-primary text-primary-foreground"
-                  : "hover:bg-muted disabled:opacity-50"
+                  : "hover:bg-muted disabled:opacity-50 disabled:pointer-events-auto"
               )}
-                title={t('addToCart')}
+                aria-disabled={isOutOfStock}
+                title={isOutOfStock ? t('outOfStock') : t('addToCart')}
             >
               {isAddedToCart ? (
-                <Check className="w-4 h-4" />
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               ) : (
-                  <ShoppingCart className="w-4 h-4" />
+                    <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               )}
             </Button>
           </div>
@@ -456,37 +635,37 @@ export function ProductCard({
       </Link>
 
       {/* Content Section - Compact */}
-      <Link href={`/${locale}/product/${product.id}`} className="block p-3">
+      <Link href={`/${locale}/product/${product.id}`} className="block p-2.5 sm:p-3">
         {/* Category */}
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+        <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 sm:mb-1">
           {product.category}
         </p>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-sm mb-2 line-clamp-2 leading-tight min-h-8">
+        <h3 className="font-semibold text-[13px] sm:text-sm mb-1.5 sm:mb-2 line-clamp-2 leading-snug min-h-7 sm:min-h-8">
           {displayName}
         </h3>
 
         {/* Available Sizes/Variants Info with Icons */}
         {hasVariants && (
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-3 flex-wrap">
             {/* Color variants count */}
             {hasColorVariants && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+              <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 h-4.5 sm:h-5 gap-1 border-border/50">
                   <div className="w-2 h-2 rounded-full bg-linear-to-br from-red-400 via-blue-400 to-green-400" />
                 <span>{colorVariants.length}</span>
                 </Badge>
               )}
             {/* Non-color variants count (size/thickness/etc.) */}
             {nonColorVariants.length > 0 && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+              <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 h-4.5 sm:h-5 gap-1 border-border/50">
                 <Ruler className="w-2.5 h-2.5" />
                 <span>{nonColorVariants.length}</span>
               </Badge>
             )}
             {/* Unit display if available */}
             {product.unit && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 gap-1 border-border/50">
+              <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 h-4.5 sm:h-5 gap-1 border-border/50">
                 <Box className="w-2.5 h-2.5" />
                 <span>{product.unit}</span>
               </Badge>
@@ -498,19 +677,19 @@ export function ProductCard({
         <div className="mb-2">
           <div className="flex items-center gap-2">
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-foreground">
+              <span className="text-lg sm:text-xl font-bold text-foreground">
                 {currentPrice.toFixed(2)}
               </span>
-              <span className="text-xs text-muted-foreground">{tCommon('currency')}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">{tCommon('currency')}</span>
             </div>
             {discountPercentage > 0 && (
-              <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 h-6 font-bold">
+              <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">
                 -{discountPercentage}%
               </Badge>
             )}
           </div>
           {currentOriginalPrice && currentOriginalPrice > currentPrice && (
-            <span className="text-xs text-muted-foreground line-through">
+            <span className="text-[10px] sm:text-xs text-muted-foreground line-through">
               {currentOriginalPrice.toFixed(2)} {tCommon('currency')}
             </span>
           )}
@@ -531,14 +710,6 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Low Stock Warning */}
-        {isLowStock && (
-          <div className="mt-2">
-            <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-[10px] px-2 py-0.5">
-              {t('lowStock', { count: product.stock })}
-            </Badge>
-          </div>
-        )}
       </Link>
     </div>
   )

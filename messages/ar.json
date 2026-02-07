@@ -462,7 +462,8 @@
     "variantRequiredTitle": "يرجى اختيار نوع",
     "variantRequiredDesc": "هذا الاختيار مطلوب.",
     "variantLabelFallback": "نوع",
-    "lowStock": "متبقي {count} فقط"
+    "lowStock": "متبقي {count} فقط",
+    "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية"
   },
   "productPage": {
     "inStock": "متوفر",
@@ -516,6 +517,8 @@
       "quantityUpdatedTitle": "تم تحديث الكمية",
       "quantityUpdateFailedDesc": "تعذر تحديث الكمية",
       "removedTitle": "تمت الإزالة من السلة",
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق",
       "removeFailedDesc": "تعذر إزالة المنتج"
     },
     "labels": {
@@ -552,7 +555,9 @@
       "removeFailedDesc": "تعذر إزالة المنتج",
       "notFoundDesc": "لم يتم العثور على المنتج في المفضلة",
       "addedToCartTitle": "تمت الإضافة إلى السلة",
-      "addToCartFailedDesc": "تعذر الإضافة إلى السلة"
+      "addToCartFailedDesc": "تعذر الإضافة إلى السلة",
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق"
     },
     "viewProduct": "عرض المنتج",
     "saveAmount": "وفّر {amount} {currency}",
@@ -790,7 +795,11 @@
     "browseProducts": "تصفح المنتجات",
     "variantLabel": "النوع",
     "unitLabel": "الوحدة",
-    "viewCart": "عرض السلة"
+    "viewCart": "عرض السلة",
+    "toast": {
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق"
+    }
   },
   "checkout": {
     "title": "إتمام الطلب",

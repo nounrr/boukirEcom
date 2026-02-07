@@ -122,13 +122,28 @@ export default async function ContactPage({
     process.env.NEXT_PUBLIC_STORE_PHONE ||
     DEFAULT_SELLER.phones
   ).trim()
-  const phones = parsePhones(phonesRaw)
+  const phones = (() => {
+    const parsed = parsePhones(phonesRaw)
+    const seen = new Set<string>()
+    return parsed.filter((p) => {
+      const key = normalizePhoneNumber(p.number)
+      if (!key) return false
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  })()
 
   const email = (process.env.NEXT_PUBLIC_STORE_EMAIL || DEFAULT_SELLER.email).trim()
   const address = (process.env.NEXT_PUBLIC_STORE_ADDRESS || DEFAULT_SELLER.address).trim()
   const hours = (process.env.NEXT_PUBLIC_STORE_HOURS || '').trim()
   const serviceCharge = (process.env.NEXT_PUBLIC_STORE_SERVICE_CHARGE || DEFAULT_SELLER.serviceCharge).trim()
   const serviceChargeTel = serviceCharge ? normalizePhoneNumber(serviceCharge) : ''
+  const hasServiceCharge = Boolean(
+    serviceCharge &&
+    serviceChargeTel &&
+    !phones.some((p) => normalizePhoneNumber(p.number) === serviceChargeTel)
+  )
 
   const siteUrl = getSiteUrl()
   const pageUrl = new URL(localizedPath(locale, '/contact'), siteUrl).toString()
@@ -209,92 +224,86 @@ export default async function ContactPage({
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {phones.length > 0 ? (
-                phones.map((p) => (
-                  <a
-                    key={`${p.label}-${p.number}`}
-                    href={`tel:${p.number}`}
-                    aria-label={`${p.label}: ${p.number}`}
-                    className="group flex items-center gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4 transition-colors hover:bg-muted/40 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                  >
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
-                      <Phone className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-muted-foreground">{p.label}</div>
-                      <div className="text-sm font-semibold tracking-tight text-foreground">{p.number}</div>
-                    </div>
-                  </a>
-                ))
+                <div className="grid gap-3 sm:grid-cols-2 sm:col-span-2">
+                  {phones.map((p) => (
+                    <a
+                      key={`${p.label}-${p.number}`}
+                      href={`tel:${p.number}`}
+                      aria-label={`${p.label}: ${p.number}`}
+                      className="group flex items-center gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 text-foreground hover:bg-muted/40 transition-colors outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    >
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
+                        <Phone className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-muted-foreground">{p.label}</div>
+                        <div className="font-semibold tracking-tight text-foreground">{p.number}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
               ) : (
                 <div className="rounded-2xl border border-border/50 bg-background px-4 py-4 text-sm text-muted-foreground">
                   {t('noPhone')}
                 </div>
               )}
 
-              {serviceCharge ? (
-                serviceChargeTel ? (
-                  <a
-                    href={`tel:${serviceChargeTel}`}
-                    aria-label={`${t('serviceChargeLabel')}: ${serviceChargeTel}`}
-                    className="group flex items-center gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4 transition-colors hover:bg-muted/40 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                  >
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
-                      <Phone className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-muted-foreground">{t('serviceChargeLabel')}</div>
-                      <div className="text-sm font-semibold tracking-tight text-foreground">{serviceCharge}</div>
-                    </div>
-                  </a>
-                ) : (
-                  <div className="flex items-center gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
-                      <Phone className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-muted-foreground">{t('serviceChargeLabel')}</div>
-                      <div className="text-sm font-semibold tracking-tight text-foreground">{serviceCharge}</div>
-                    </div>
+              {hasServiceCharge ? (
+                <a
+                  href={`tel:${serviceChargeTel}`}
+                  aria-label={`${t('serviceChargeLabel')}: ${serviceChargeTel}`}
+                  className="group flex items-center gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 text-foreground hover:bg-muted/40 transition-colors outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                >
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
+                    <Phone className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-muted-foreground">{t('serviceChargeLabel')}</div>
+                    <div className="font-semibold tracking-tight text-foreground">{serviceCharge}</div>
                   </div>
-                )
+                </a>
               ) : null}
 
               {email ? (
                 <a
                   href={`mailto:${email}`}
                   aria-label={`${t('emailLabel')}: ${email}`}
-                  className="group flex items-center gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4 transition-colors hover:bg-muted/40 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 text-foreground hover:bg-muted/40 transition-colors outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
                     <Mail className="h-4 w-4" />
                   </span>
-                  <div className="min-w-0">
-                    <div className="text-xs font-semibold text-muted-foreground">{t('emailLabel')}</div>
-                    <div className="text-sm font-semibold tracking-tight text-foreground break-all">{email}</div>
-                  </div>
+                  <span className="text-muted-foreground">{t('emailLabel')}</span>
+                  <span className="font-semibold break-all">{email}</span>
                 </a>
               ) : null}
 
               {address ? (
-                <div className="flex items-start gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4 sm:col-span-2">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
+                <div className="flex items-start gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 sm:col-span-2">
+                  <span
+                    className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                    aria-hidden="true"
+                  >
                     <MapPin className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <div className="text-xs font-semibold text-muted-foreground">{t('addressLabel')}</div>
-                    <div className="text-sm font-semibold tracking-tight text-foreground">{address}</div>
+                    <div className="text-muted-foreground">{t('addressLabel')}</div>
+                    <div className="font-semibold text-foreground">{address}</div>
                   </div>
                 </div>
               ) : null}
 
               {hours ? (
-                <div className="flex items-start gap-3 rounded-2xl border border-border/50 bg-background px-4 py-4 sm:col-span-2">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden="true">
+                <div className="flex items-start gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 sm:col-span-2">
+                  <span
+                    className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                    aria-hidden="true"
+                  >
                     <Clock className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <div className="text-xs font-semibold text-muted-foreground">{t('hoursLabel')}</div>
-                    <div className="text-sm font-semibold tracking-tight text-foreground">{hours}</div>
+                    <div className="text-muted-foreground">{t('hoursLabel')}</div>
+                    <div className="font-semibold text-foreground">{hours}</div>
                   </div>
                 </div>
               ) : null}
@@ -310,7 +319,7 @@ export default async function ContactPage({
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">{t('mapDesc')}</p>
           </div>
-          <div className="h-[320px] sm:h-[420px] md:h-[520px] w-full">
+          <div className="h-80 sm:h-[420px] md:h-[520px] w-full">
             <iframe
               title={t('mapTitle')}
               src={embedUrl}

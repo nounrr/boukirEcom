@@ -462,7 +462,8 @@
     "variantRequiredTitle": "Please select a variant",
     "variantRequiredDesc": "This variant is required.",
     "variantLabelFallback": "Variant",
-    "lowStock": "Only {count} left in stock"
+    "lowStock": "Only {count} left in stock",
+    "maxQuantityReachedDesc": "Max quantity reached"
   },
   "productPage": {
     "inStock": "In stock",
@@ -515,6 +516,8 @@
     "toast": {
       "quantityUpdatedTitle": "Quantity updated",
       "quantityUpdateFailedDesc": "Unable to update the quantity",
+      "maxQuantityReachedDesc": "Max quantity reached",
+      "stockChangedDesc": "Stock changed, update your cart",
       "removedTitle": "Removed from cart",
       "removeFailedDesc": "Unable to remove the product"
     },
@@ -552,7 +555,9 @@
       "removeFailedDesc": "Unable to remove the product",
       "notFoundDesc": "Product not found in wishlist",
       "addedToCartTitle": "Added to cart",
-      "addToCartFailedDesc": "Unable to add to cart"
+      "addToCartFailedDesc": "Unable to add to cart",
+      "maxQuantityReachedDesc": "Max quantity reached",
+      "stockChangedDesc": "Stock changed, update your cart"
     },
     "viewProduct": "View product",
     "saveAmount": "Save {amount} {currency}",
@@ -790,7 +795,11 @@
     "browseProducts": "Browse products",
     "variantLabel": "Variant",
     "unitLabel": "Unit",
-    "viewCart": "View cart"
+    "viewCart": "View cart",
+    "toast": {
+      "maxQuantityReachedDesc": "Max quantity reached",
+      "stockChangedDesc": "Stock changed, update your cart"
+    }
   },
   "checkout": {
     "title": "Checkout",

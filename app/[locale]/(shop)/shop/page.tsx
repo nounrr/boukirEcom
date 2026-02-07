@@ -106,7 +106,7 @@ export default function ShopPage() {
 
   const [filterState, setFilterState] = useState<FilterState>(() => urlFilters)
 
-  const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false)
 
   // Keep state aligned when user uses browser back/forward or manual URL edits
@@ -238,6 +238,36 @@ export default function ShopPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
+  const viewToggle = (
+    <div className="flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-full bg-muted/40 px-1.5 sm:px-2 shadow-sm ring-1 ring-border/30">
+      <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
+      <div className="flex items-center gap-1" aria-label="Mode d'affichage">
+        <Button
+          type="button"
+          variant={viewMode === 'grid' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setViewMode('grid')}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
+          aria-pressed={viewMode === 'grid'}
+          aria-label="Grille compacte"
+        >
+          <Grid3x3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant={viewMode === 'list' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setViewMode('list')}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
+          aria-pressed={viewMode === 'list'}
+          aria-label="Liste"
+        >
+          <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </Button>
+      </div>
+    </div>
+  )
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
@@ -292,35 +322,9 @@ export default function ShopPage() {
               )}
             </div>
 
-            {/* Right: View mode toggle (eye comfort) */}
-            <div className="flex items-center justify-center lg:justify-end">
-              <div className="flex items-center gap-2 rounded-full bg-muted/40 px-2 py-1 shadow-sm ring-1 ring-border/30">
-                <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
-                <div className="flex items-center gap-1" aria-label="Mode d'affichage">
-                  <Button
-                    type="button"
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                    className="h-9 w-9 p-0 rounded-full"
-                    aria-pressed={viewMode === 'grid'}
-                    aria-label="Grille compacte"
-                  >
-                    <Grid3x3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={viewMode === 'large' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('large')}
-                    className="h-9 w-9 p-0 rounded-full"
-                    aria-pressed={viewMode === 'large'}
-                    aria-label="Vue confortable"
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+            {/* Right: View mode toggle (desktop) */}
+            <div className="hidden lg:flex items-center justify-end">
+              {viewToggle}
             </div>
           </div>
         </div>
@@ -340,6 +344,7 @@ export default function ShopPage() {
               isLoading={isLoading || isFetching}
             isCollapsed={isFiltersCollapsed}
             onCollapsedChange={setIsFiltersCollapsed}
+            mobileActionSlot={viewToggle}
             />
 
             {/* Products List */}

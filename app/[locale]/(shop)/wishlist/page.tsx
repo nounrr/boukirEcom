@@ -66,7 +66,25 @@ export default function WishlistPage() {
         cartRef.current?.open()
       }, 300)
     } catch (error) {
-      toast.error(tCommon("error"), { description: t("toast.addToCartFailedDesc") })
+      const data = (error as any)?.data
+      const code = data?.code || data?.error
+      const message = data?.message
+      const normalizedCode = typeof code === 'string' ? code.toLowerCase() : ''
+      const normalizedMessage = typeof message === 'string' ? message.toLowerCase() : ''
+
+      if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
+        toast.error(tCommon("error"), { description: t("toast.maxQuantityReachedDesc") })
+      } else if (
+        code === 'OUT_OF_STOCK' ||
+        normalizedCode === 'out_of_stock' ||
+        normalizedMessage === 'out_of_stock' ||
+        code === 'INSUFFICIENT_STOCK' ||
+        normalizedCode === 'insufficient_stock'
+      ) {
+        toast.error(tCommon("error"), { description: t("toast.stockChangedDesc") })
+      } else {
+        toast.error(tCommon("error"), { description: t("toast.addToCartFailedDesc") })
+      }
     }
   }
 

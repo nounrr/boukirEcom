@@ -47,7 +47,13 @@ function buildChildrenMap(categories: Category[], locale: string): CategoryByPar
   return map
 }
 
-export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }) {
+export function CategoriesMobileMenu({
+  onNavigate,
+  tone = 'onPrimary',
+}: {
+  onNavigate?: () => void
+  tone?: 'onPrimary' | 'onSurface'
+}) {
   const t = useTranslations('header')
   const locale = useLocale()
 
@@ -68,6 +74,8 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
     setExpandedParents((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
+  const isOnPrimary = tone === 'onPrimary'
+
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
@@ -75,19 +83,27 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
           type="button"
           className={cn(
             'flex w-full items-center justify-between gap-3 px-3 py-3 text-sm font-semibold rounded-xl transition-colors',
-            'bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25',
-            'text-white/90 hover:text-white'
+            isOnPrimary
+              ? 'bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25 text-white/90 hover:text-white'
+              : 'bg-card border border-border/50 hover:bg-muted/40 text-foreground'
           )}
         >
           <span className="flex items-center gap-3 min-w-0">
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/10 border border-white/15" aria-hidden="true">
-              <Menu className="w-4 h-4 text-white/90" />
+            <span
+              className={cn(
+                'grid h-7 w-7 shrink-0 place-items-center rounded-lg border',
+                isOnPrimary ? 'bg-white/10 border-white/15' : 'bg-primary/10 border-primary/15'
+              )}
+              aria-hidden="true"
+            >
+              <Menu className={cn('w-4 h-4', isOnPrimary ? 'text-white/90' : 'text-primary')} />
             </span>
             <span className="truncate">{t('categories')}</span>
           </span>
           <ChevronDown
             className={cn(
-              'w-4 h-4 shrink-0 text-white/80 transition-transform duration-200',
+              'w-4 h-4 shrink-0 transition-transform duration-200',
+              isOnPrimary ? 'text-white/80' : 'text-muted-foreground',
               open && 'rotate-180'
             )}
           />
@@ -95,15 +111,20 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="mt-1 ml-2 pl-2 border-l border-white/15 flex flex-col gap-1">
+        <div
+          className={cn(
+            'mt-1 ml-2 pl-2 border-l flex flex-col gap-1',
+            isOnPrimary ? 'border-white/15' : 'border-border/50'
+          )}
+        >
           {isLoading ? (
             <div className="px-3 py-2 space-y-2">
-              <div className="h-9 rounded-md bg-white/10 animate-pulse" />
-              <div className="h-9 rounded-md bg-white/10 animate-pulse" />
-              <div className="h-9 rounded-md bg-white/10 animate-pulse" />
+              <div className={cn('h-9 rounded-md animate-pulse', isOnPrimary ? 'bg-white/10' : 'bg-muted/40')} />
+              <div className={cn('h-9 rounded-md animate-pulse', isOnPrimary ? 'bg-white/10' : 'bg-muted/40')} />
+              <div className={cn('h-9 rounded-md animate-pulse', isOnPrimary ? 'bg-white/10' : 'bg-muted/40')} />
             </div>
           ) : roots.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-white/60">—</div>
+              <div className={cn('px-3 py-2 text-sm', isOnPrimary ? 'text-white/60' : 'text-muted-foreground')}>—</div>
           ) : (
             roots.slice(0, 18).map((c) => {
               const children = childrenMap.get(c.id ?? -1) ?? []
@@ -119,7 +140,12 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
                         onNavigate?.()
                         setOpen(false)
                       }}
-                      className="flex-1 px-3 py-2 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors min-w-0 truncate"
+                      className={cn(
+                        'flex-1 px-3 py-2 rounded-lg text-sm transition-colors min-w-0 truncate',
+                        isOnPrimary
+                          ? 'text-white/80 hover:text-white hover:bg-white/10'
+                          : 'text-foreground/80 hover:text-foreground hover:bg-muted/40'
+                      )}
                     >
                       {getCategoryLabel(c, locale)}
                     </Link>
@@ -133,15 +159,29 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
                           e.stopPropagation()
                           toggleParent(c.id)
                         }}
-                        className="h-9 w-9 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center"
+                        className={cn(
+                          'h-9 w-9 rounded-lg transition-colors flex items-center justify-center',
+                          isOnPrimary ? 'hover:bg-white/10' : 'hover:bg-muted/40'
+                        )}
                       >
-                        <ChevronRight className={cn('w-4 h-4 text-white/70 transition-transform duration-200', isExpanded && 'rotate-90')} />
+                        <ChevronRight
+                          className={cn(
+                            'w-4 h-4 transition-transform duration-200',
+                            isOnPrimary ? 'text-white/70' : 'text-muted-foreground',
+                            isExpanded && 'rotate-90'
+                          )}
+                        />
                       </button>
                     ) : null}
                   </div>
 
                   {hasChildren && isExpanded ? (
-                    <div className="ml-3 pl-2 border-l border-white/10 flex flex-col gap-1">
+                    <div
+                      className={cn(
+                        'ml-3 pl-2 border-l flex flex-col gap-1',
+                        isOnPrimary ? 'border-white/10' : 'border-border/40'
+                      )}
+                    >
                       {children.slice(0, 24).map((child) => (
                         <Link
                           key={child.id}
@@ -150,7 +190,12 @@ export function CategoriesMobileMenu({ onNavigate }: { onNavigate?: () => void }
                             onNavigate?.()
                             setOpen(false)
                           }}
-                          className="px-3 py-2 rounded-lg text-sm text-white/75 hover:text-white hover:bg-white/10 transition-colors"
+                          className={cn(
+                            'px-3 py-2 rounded-lg text-sm transition-colors',
+                            isOnPrimary
+                              ? 'text-white/75 hover:text-white hover:bg-white/10'
+                              : 'text-foreground/70 hover:text-foreground hover:bg-muted/40'
+                          )}
                         >
                           {getCategoryLabel(child, locale)}
                         </Link>

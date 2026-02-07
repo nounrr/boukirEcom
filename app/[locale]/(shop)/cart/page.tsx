@@ -30,7 +30,7 @@ interface LocalCartItem {
   quantity: number
   image: string
   category?: string
-  stock?: number
+  purchase_limit?: number
 }
 
 export default function CartPage() {
@@ -108,13 +108,47 @@ export default function CartPage() {
   const handleQuantityChange = async (itemId: number, newQuantity: number, productName: string, itemKey?: string) => {
     if (newQuantity < 1) return
 
+    const currentItem = cartItems.find((i: any) => {
+      if (isAuthenticated) return i.id === itemId
+      return itemKey ? getCartItemKey(i as LocalCartItem) === itemKey : i.productId === itemId
+    }) as any
+
+    const rawLimit =
+      currentItem?.purchase_limit ??
+      currentItem?.purchaseLimit ??
+      currentItem?.stock?.purchase_limit ??
+      currentItem?.stock?.purchaseLimit
+    const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+    if (purchaseLimit != null && newQuantity > purchaseLimit) {
+      toast.error(tCommon("error"), { description: t("toast.maxQuantityReachedDesc") })
+      return
+    }
+
     if (isAuthenticated) {
     // API update for authenticated users
       try {
         await updateCartItem({ id: itemId, quantity: newQuantity }).unwrap()
         toast.success(t("toast.quantityUpdatedTitle"), { description: productName })
       } catch (error) {
-        toast.error(tCommon("error"), { description: t("toast.quantityUpdateFailedDesc") })
+        const data = (error as any)?.data
+        const code = data?.code || data?.error
+        const message = data?.message
+        const normalizedCode = typeof code === 'string' ? code.toLowerCase() : ''
+        const normalizedMessage = typeof message === 'string' ? message.toLowerCase() : ''
+
+        if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
+          toast.error(tCommon("error"), { description: t("toast.maxQuantityReachedDesc") })
+        } else if (
+          code === 'OUT_OF_STOCK' ||
+          normalizedCode === 'out_of_stock' ||
+          normalizedMessage === 'out_of_stock' ||
+          code === 'INSUFFICIENT_STOCK' ||
+          normalizedCode === 'insufficient_stock'
+        ) {
+          toast.error(tCommon("error"), { description: t("toast.stockChangedDesc") })
+        } else {
+          toast.error(tCommon("error"), { description: t("toast.quantityUpdateFailedDesc") })
+        }
       }
     } else {
       // localStorage update for guests
@@ -274,18 +308,20 @@ export default function CartPage() {
                             size="icon"
                             className="h-8 w-8 rounded-l-none"
                             onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
-                            disabled={isUpdating || item.quantity >= (item.stock || 999)}
+                            disabled={(() => {
+                              if (isUpdating) return true
+                              const rawLimit =
+                                (item as any)?.purchase_limit ??
+                                (item as any)?.purchaseLimit ??
+                                (item as any)?.stock?.purchase_limit ??
+                                (item as any)?.stock?.purchaseLimit
+                              const limit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+                              return limit != null ? item.quantity >= limit : false
+                            })()}
                           >
                             <Plus className="w-3 h-3" />
                           </Button>
                         </div>
-
-                        {/* Stock Warning */}
-                        {item.stock && item.stock <= 5 && (
-                          <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
-                            {t("lowStockWarning", { count: item.stock })}
-                          </Badge>
-                        )}
                       </div>
 
                       {/* Price */}

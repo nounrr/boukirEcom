@@ -25,6 +25,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
+import { useToast } from "@/hooks/use-toast"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
 
@@ -34,13 +35,31 @@ export interface CartPopoverRef {
   addItem: (item: CartItem) => Promise<void>
 }
 
-export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPrimary" }>((props, ref) => {
+export const CartPopover = forwardRef<
+  CartPopoverRef,
+  { tone?: "default" | "onPrimary"; size?: "sm" | "md" }
+>((props, ref) => {
   const t = useTranslations('cart')
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const { isAuthenticated } = useAppSelector((state) => state.user)
+  const toast = useToast()
   const [isOpen, setIsOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const tone = props.tone ?? "default"
+  const size = props.size ?? "md"
+
+  const iconClassName = size === "sm" ? "w-4 h-4" : "w-4.5 h-4.5"
+  const badgeClassName = size === "sm" ? "h-4 w-4 text-[9px]" : "h-4.5 w-4.5 text-[10px]"
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const media = window.matchMedia('(max-width: 640px)')
+    const update = () => setIsMobile(media.matches)
+    update()
+    media.addEventListener?.('change', update)
+    return () => media.removeEventListener?.('change', update)
+  }, [])
   
   // Local state for cart items (used for guests)
   const [localItems, setLocalItems] = useState<CartItem[]>([])
@@ -131,18 +150,32 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             const itemKey = getCartItemKey(item)
             const existingIndex = prev.findIndex(i => getCartItemKey(i) === itemKey)
 
+            const rawLimit = (item as any)?.purchase_limit
+            const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+
             if (existingIndex >= 0) {
               const newItems = [...prev]
-              newItems[existingIndex].quantity += item.quantity
+              const nextQty = newItems[existingIndex].quantity + item.quantity
+              if (purchaseLimit != null && nextQty > purchaseLimit) {
+                newItems[existingIndex].quantity = purchaseLimit
+                toast.error(tCommon('error'), { description: t('toast.maxQuantityReachedDesc') })
+              } else {
+                newItems[existingIndex].quantity = nextQty
+              }
               return newItems
             } else {
+              const nextQty = item.quantity
+              if (purchaseLimit != null && nextQty > purchaseLimit) {
+                toast.error(tCommon('error'), { description: t('toast.maxQuantityReachedDesc') })
+                return [...prev, { ...item, quantity: purchaseLimit }]
+              }
               return [...prev, item]
             }
           })
         }
       },
     }
-  }, [isAuthenticated, addToCartApi, refetchCart])
+  }, [isAuthenticated, addToCartApi, refetchCart, t, tCommon, toast])
   
   const handleRemoveItem = async (item: CartItem) => {
     if (isAuthenticated) {
@@ -169,7 +202,18 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
       handleRemoveItem(item)
       return
     }
-    
+
+    const rawLimit =
+      (item as any)?.purchase_limit ??
+      (item as any)?.purchaseLimit ??
+      (item as any)?.stock?.purchase_limit ??
+      (item as any)?.stock?.purchaseLimit
+    const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+    if (purchaseLimit != null && quantity > purchaseLimit) {
+      toast.error(tCommon('error'), { description: t('toast.maxQuantityReachedDesc') })
+      return
+    }
+
     if (isAuthenticated) {
       try {
         if (!item.id) {
@@ -179,7 +223,26 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         await updateCartApi({ id: item.id, quantity }).unwrap()
         refetchCart()
       } catch (error) {
+        const data = (error as any)?.data
+        const code = data?.code || data?.error
+        const message = data?.message
+        const normalizedCode = typeof code === 'string' ? code.toLowerCase() : ''
+        const normalizedMessage = typeof message === 'string' ? message.toLowerCase() : ''
+
+        if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
+          toast.error(tCommon('error'), { description: t('toast.maxQuantityReachedDesc') })
+        } else if (
+          code === 'OUT_OF_STOCK' ||
+          normalizedCode === 'out_of_stock' ||
+          normalizedMessage === 'out_of_stock' ||
+          code === 'INSUFFICIENT_STOCK' ||
+          normalizedCode === 'insufficient_stock'
+        ) {
+          toast.error(tCommon('error'), { description: t('toast.stockChangedDesc') })
+        }
+
         console.error('❌ Failed to update backend:', error)
+        refetchCart()
       }
     } else {
       setLocalItems(prev => {
@@ -207,14 +270,16 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         >
           <ShoppingCart
             className={cn(
-              "w-4.5 h-4.5 transition-colors duration-200",
+              iconClassName,
+              "transition-colors duration-200",
               tone === "onPrimary" ? "text-white/85 group-hover:text-white" : "text-muted-foreground group-hover:text-foreground",
             )}
           />
           {itemCount > 0 && (
             <Badge
               className={cn(
-                "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+                "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+                badgeClassName,
                 tone === "onPrimary"
                   ? "bg-white text-primary border border-white/70 shadow-black/10 hover:bg-white/90 hover:border-white/90 hover:shadow-black/20 group-hover:bg-white/90 group-hover:border-white/90 group-hover:shadow-black/20"
                   : "bg-primary text-primary-foreground shadow-primary/20 border border-background hover:bg-primary/90 hover:shadow-primary/30 group-hover:bg-primary/90 group-hover:shadow-primary/30",
@@ -225,9 +290,17 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[calc(100vw-1.25rem)] sm:w-[420px] p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
+      <DropdownMenuContent
+        align={isMobile ? "center" : "end"}
+        sideOffset={12}
+        collisionPadding={12}
+        className={cn(
+          "p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10",
+          isMobile ? "w-[min(92vw,420px)]" : "w-[420px]"
+        )}
+      >
         <DropdownMenuLabel className="p-0 mb-1">
-          <div className="relative overflow-hidden rounded-t-lg bg-linear-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
+          <div className="relative overflow-hidden rounded-t-lg bg-linear-to-br from-muted/50 via-muted/30 to-transparent p-3 sm:p-3.5 border-b border-border/40">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shadow-md shadow-primary/15 ring-1 ring-primary/20">
@@ -251,7 +324,7 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
         </DropdownMenuLabel>
 
         {items.length === 0 ? (
-          <div className="px-4 py-12 text-center">
+          <div className="px-3 sm:px-4 py-10 sm:py-12 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
               <Package2 className="w-8 h-8 text-muted-foreground/50" />
             </div>
@@ -265,12 +338,12 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
           </div>
         ) : (
           <>
-            <div className="max-h-[360px] overflow-y-auto overscroll-contain px-1.5 py-2">
+              <div className="max-h-[360px] overflow-y-auto overscroll-contain px-1 sm:px-1.5 py-1.5 sm:py-2">
               <div className="space-y-1.5">
                 {items.map((item) => (
                   <div
                     key={getCartItemKey(item)}
-                    className="group flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
+                    className="group flex items-start gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
                   >
                     {/* Product Image */}
                     <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-muted/30 ring-1 ring-border/20">
@@ -354,8 +427,8 @@ export const CartPopover = forwardRef<CartPopoverRef, { tone?: "default" | "onPr
             <DropdownMenuSeparator className="my-0" />
 
             {/* Cart Actions */}
-            <div className="p-3 space-y-2">
-              <div className="flex items-center justify-between px-2 py-1.5 bg-muted/30 rounded-md">
+              <div className="p-2.5 sm:p-3 space-y-2">
+                <div className="flex items-center justify-between px-2 py-1 sm:py-1.5 bg-muted/30 rounded-md">
                   <span className="text-sm font-medium text-foreground">{t('total')}</span>
                   <span className="text-lg font-bold text-foreground">{total.toFixed(2)} {tCommon('currency')}</span>
               </div>

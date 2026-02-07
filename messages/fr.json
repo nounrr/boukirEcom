@@ -462,7 +462,8 @@
     "variantRequiredTitle": "Veuillez sélectionner une variante",
     "variantRequiredDesc": "Cette variante est obligatoire.",
     "variantLabelFallback": "Variante",
-    "lowStock": "Plus que {count, plural, one {# en stock} other {# en stock}}"
+    "lowStock": "Plus que {count, plural, one {# en stock} other {# en stock}}",
+    "maxQuantityReachedDesc": "Quantité maximale atteinte"
   },
   "productPage": {
     "inStock": "En stock",
@@ -516,6 +517,8 @@
       "quantityUpdatedTitle": "Quantité mise à jour",
       "quantityUpdateFailedDesc": "Impossible de mettre à jour la quantité",
       "removedTitle": "Retiré du panier",
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier",
       "removeFailedDesc": "Impossible de retirer le produit"
     },
     "labels": {
@@ -552,7 +555,9 @@
       "removeFailedDesc": "Impossible de retirer le produit",
       "notFoundDesc": "Produit introuvable dans les favoris",
       "addedToCartTitle": "Ajouté au panier",
-      "addToCartFailedDesc": "Impossible d'ajouter au panier"
+      "addToCartFailedDesc": "Impossible d'ajouter au panier",
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier"
     },
     "viewProduct": "Voir le produit",
     "saveAmount": "Économisez {amount} {currency}",
@@ -790,7 +795,11 @@
     "browseProducts": "Parcourir les produits",
     "variantLabel": "Variante",
     "unitLabel": "Unité",
-    "viewCart": "Voir le panier"
+    "viewCart": "Voir le panier",
+    "toast": {
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier"
+    }
   },
   "checkout": {
     "title": "Finaliser la commande",

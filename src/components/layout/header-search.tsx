@@ -185,6 +185,7 @@ function SearchField({
   onClear,
   clearLabel,
   inputRef,
+  appearance = 'header',
   className,
 }: {
   value: string
@@ -195,12 +196,20 @@ function SearchField({
   onClear: () => void
     clearLabel: string
   inputRef: React.RefObject<HTMLInputElement | null>
+    appearance?: 'header' | 'panel'
   className?: string
 }) {
   const hasValue = !!value
+  const isPanel = appearance === 'panel'
   return (
     <div className={cn('relative w-full', className)}>
-      <Search className="absolute ltr:left-4 rtl:right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/70" />
+      <Search
+        className={cn(
+          'absolute top-1/2 -translate-y-1/2 h-4 w-4',
+          'ltr:left-3 rtl:right-3 sm:ltr:left-4 sm:rtl:right-4',
+          isPanel ? 'text-muted-foreground' : 'text-white/70'
+        )}
+      />
       <input
         ref={inputRef}
         type="search"
@@ -210,11 +219,16 @@ function SearchField({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         className={cn(
-          'h-12 md:h-11 w-full rounded-full border border-white/20 bg-white/10 text-white',
-          'ltr:pl-11 rtl:pr-11 ltr:pr-11 rtl:pl-11',
-          'placeholder:text-white/60',
-          'text-base md:text-sm outline-none ring-0',
-          'focus:border-white/30 focus:ring-2 focus:ring-white/15',
+          isPanel
+            ? 'h-11 w-full rounded-full border border-border/50 bg-background text-foreground'
+            : 'h-12 md:h-11 w-full rounded-full border border-white/20 bg-white/10 text-white',
+          'ltr:pl-10 rtl:pr-10 sm:ltr:pl-11 sm:rtl:pr-11 ltr:pr-10 rtl:pl-10 sm:ltr:pr-11 sm:rtl:pl-11',
+          isPanel ? 'placeholder:text-muted-foreground' : 'placeholder:text-white/60',
+          isPanel ? 'text-sm' : 'text-base md:text-sm',
+          'outline-none ring-0',
+          isPanel
+            ? 'focus:border-ring/50 focus:ring-2 focus:ring-ring/20'
+            : 'focus:border-white/30 focus:ring-2 focus:ring-white/15',
           '[&::-webkit-search-cancel-button]:appearance-none'
         )}
       />
@@ -222,10 +236,16 @@ function SearchField({
         <button
           type="button"
           onClick={onClear}
-          className="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full hover:bg-white/10 outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+          className={cn(
+            'absolute top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full outline-none',
+            'ltr:right-2 rtl:left-2 sm:ltr:right-2.5 sm:rtl:left-2.5',
+            isPanel
+              ? 'hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30'
+              : 'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/20'
+          )}
           aria-label={clearLabel}
         >
-          <X className="h-4 w-4 text-white/75" />
+          <X className={cn('h-4 w-4', isPanel ? 'text-muted-foreground' : 'text-white/75')} />
         </button>
       ) : null}
     </div>
@@ -265,7 +285,7 @@ function SuggestionsPanel({
 
   return (
     <div className="overflow-hidden rounded-xl border border-border/40 bg-background/98 backdrop-blur-2xl shadow-xl shadow-black/10">
-      <div className="flex items-center justify-between border-b border-border/40 bg-linear-to-br from-muted/50 via-muted/30 to-transparent px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border/40 bg-linear-to-br from-muted/50 via-muted/30 to-transparent px-3 sm:px-4 py-2.5 sm:py-3">
         <div className="flex items-center gap-2 text-sm font-medium text-foreground">
           {hasQuery ? (
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -288,7 +308,7 @@ function SuggestionsPanel({
         ) : null}
       </div>
 
-      <div className="max-h-[60vh] md:max-h-[340px] overflow-auto p-2">
+      <div className="max-h-[60vh] md:max-h-[340px] overflow-auto p-1.5 sm:p-2">
         {hasQuery && isFetching ? (
           <div className="px-3 py-3 text-sm text-muted-foreground">{t('loading')}</div>
         ) : null}
@@ -460,8 +480,18 @@ export function HeaderSearch({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
+  const [isMobile, setIsMobile] = useState(false)
 
   const { recent, saveRecent, clearRecent } = useRecentSearches(locale)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const media = window.matchMedia('(max-width: 640px)')
+    const update = () => setIsMobile(media.matches)
+    update()
+    media.addEventListener?.('change', update)
+    return () => media.removeEventListener?.('change', update)
+  }, [])
 
   useEffect(() => {
     if (!autoFocus) return
@@ -698,6 +728,28 @@ export function HeaderSearch({
     />
   )
 
+  const panelInputEl = (
+    <SearchField
+      value={query}
+      placeholder={placeholder ?? t('placeholder')}
+      inputRef={inputRef}
+      clearLabel={t('clear')}
+      appearance="panel"
+      onFocus={() => setOpen(true)}
+      onChange={(value) => {
+        setQuery(value)
+        setActiveIndex(-1)
+        setOpen(true)
+      }}
+      onKeyDown={handleKeyDown}
+      onClear={() => {
+        setQuery('')
+        setActiveIndex(-1)
+        window.setTimeout(() => inputRef.current?.focus(), 0)
+      }}
+    />
+  )
+
   const panel = (
     <SuggestionsPanel
       locale={locale}
@@ -736,9 +788,16 @@ export function HeaderSearch({
           </Button>
         </>
       ) : (
-          <PopoverAnchor asChild>
-            <div className={cn('w-full', maxWidthClassName, className)}>{inputEl}</div>
-          </PopoverAnchor>
+          <>
+            {isMobile ? <PopoverAnchor className="fixed left-1/2 top-[75px] h-0 w-0" /> : null}
+            {isMobile ? (
+              <div className={cn('w-full', maxWidthClassName, className)}>{inputEl}</div>
+            ) : (
+              <PopoverAnchor asChild>
+                <div className={cn('w-full', maxWidthClassName, className)}>{inputEl}</div>
+              </PopoverAnchor>
+            )}
+        </>
       )}
 
       {variant === 'icon' ? (
@@ -747,11 +806,11 @@ export function HeaderSearch({
           side="bottom"
           sideOffset={12}
           collisionPadding={12}
-          className="w-[min(96vw,560px)] border-border/40 bg-background/98 p-3 backdrop-blur-2xl shadow-xl shadow-black/10"
+          className="w-[min(96vw,560px)] border-border/40 bg-background/98 p-2 sm:p-3 backdrop-blur-2xl shadow-xl shadow-black/10"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          {inputEl}
-          <div className="mt-3">{panel}</div>
+          {panelInputEl}
+          <div className="mt-2">{panel}</div>
         </PopoverContent>
       ) : (
         <PopoverContent

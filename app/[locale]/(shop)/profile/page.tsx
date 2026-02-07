@@ -246,13 +246,13 @@ export default function ProfilePage() {
       icon="cart"
       showHeader={false}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         <AccountSidebar active="profile" />
 
         {/* Main content */}
-        <section className="lg:col-span-3 space-y-6">
+        <section className="lg:col-span-3 space-y-4 lg:space-y-6">
           {/* Page Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Mon profil</h1>
               <p className="text-sm text-muted-foreground mt-1">Gérez vos informations personnelles</p>
@@ -298,7 +298,7 @@ export default function ProfilePage() {
 
           {/* Artisan status / request (keep in viewport) */}
           {user && (
-            <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
+            <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <BadgePercent className="w-5 h-5 text-primary" />
@@ -344,7 +344,7 @@ export default function ProfilePage() {
                           {isRequestingArtisan ? "Envoi..." : "Demander le statut Artisan"}
                         </Button>
                         {typeof user.remise_balance === "number" && user.remise_balance > 0 && (
-                          <RemiseBalance balance={user.remise_balance} size="sm" />
+                              <RemiseBalance balance={user.remise_balance} size="md" />
                         )}
                       </div>
                     </div>
@@ -356,20 +356,20 @@ export default function ProfilePage() {
 
           {/* Remise Balance Card - if available */}
           {user?.remise_balance !== undefined && user.remise_balance > 0 && (
-            <div className="bg-linear-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-6 shadow-sm">
+            <div className="bg-linear-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-semibold text-foreground mb-1">Votre solde remise</h3>
                   <p className="text-xs text-muted-foreground">Utilisez ce solde lors de vos prochaines commandes</p>
                 </div>
-                <RemiseBalance balance={user.remise_balance} size="lg" showLabel={false} />
+                <RemiseBalance balance={user.remise_balance} size="md" showLabel={false} />
               </div>
             </div>
           )}
 
           {/* Personal Information */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-5">
+          <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <UserCircle2 className="w-4 h-4 text-primary" />
               </div>
@@ -386,7 +386,7 @@ export default function ProfilePage() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <UserCircle2 className="w-3.5 h-3.5 text-muted-foreground" />
@@ -597,8 +597,8 @@ export default function ProfilePage() {
           </div>
 
           {/* Billing Address */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-5">
+          <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <MapPin className="w-4 h-4 text-primary" />
               </div>
@@ -626,8 +626,8 @@ export default function ProfilePage() {
           </div>
 
           {/* Shipping Address */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-5">
+          <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Package className="w-4 h-4 text-primary" />
               </div>
@@ -637,7 +637,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
                 <Label className="text-xs font-medium">Adresse ligne 1</Label>
                 {isEditing ? (
@@ -670,7 +670,7 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-medium">Ville</Label>
                   {isEditing ? (
@@ -704,7 +704,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-medium">Code postal</Label>
                   {isEditing ? (
@@ -741,8 +741,8 @@ export default function ProfilePage() {
           </div>
 
           {/* Account Status */}
-          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-5">
+          <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Settings className="w-4 h-4 text-primary" />
               </div>
@@ -752,7 +752,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div className="flex items-start gap-3 rounded-xl border border-border/60 p-4">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <UserCircle2 className="w-4 h-4 text-primary" />

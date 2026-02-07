@@ -162,7 +162,9 @@ export function HomeStoreSection({
                       href={`mailto:${email}`}
                       className="flex items-center gap-3 rounded-xl border border-border/50 bg-background px-4 py-3 text-foreground hover:bg-muted/40 transition-colors"
                     >
-                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
+                        <Mail className="h-4 w-4" />
+                      </span>
                       <span className="text-muted-foreground">{labelEmail}</span>
                       <span className="font-semibold break-all">{email}</span>
                     </a>
@@ -170,7 +172,12 @@ export function HomeStoreSection({
 
                   {address ? (
                     <div className="flex items-start gap-3 rounded-xl border border-border/50 bg-background px-4 py-3">
-                      <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                      <span
+                        className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                        aria-hidden="true"
+                      >
+                        <MapPin className="h-4 w-4" />
+                      </span>
                       <div className="min-w-0">
                         <div className="text-muted-foreground">{labelAddress}</div>
                         <div className="font-semibold text-foreground">{address}</div>
@@ -180,7 +187,12 @@ export function HomeStoreSection({
 
                   {hours ? (
                     <div className="flex items-start gap-3 rounded-xl border border-border/50 bg-background px-4 py-3">
-                      <Clock className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                      <span
+                        className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                        aria-hidden="true"
+                      >
+                        <Clock className="h-4 w-4" />
+                      </span>
                       <div className="min-w-0">
                         <div className="text-muted-foreground">{labelHours}</div>
                         <div className="font-semibold text-foreground">{hours}</div>

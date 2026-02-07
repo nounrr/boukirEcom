@@ -28,15 +28,15 @@ export function RemiseBalance({
       container: "gap-2",
       icon: "w-4 h-4",
       iconBg: "w-8 h-8",
-      amount: "text-base",
-      label: "text-sm"
+      amount: "text-sm sm:text-base",
+      label: "text-xs sm:text-sm"
     },
     lg: {
       container: "gap-3",
       icon: "w-5 h-5",
       iconBg: "w-10 h-10",
-      amount: "text-lg",
-      label: "text-base"
+      amount: "text-base sm:text-lg",
+      label: "text-sm sm:text-base"
     }
   }
 
@@ -51,7 +51,7 @@ export function RemiseBalance({
         <Coins className={cn("text-amber-600 dark:text-amber-500", classes.icon)} />
       </div>
       <div className="flex flex-col">
-        <span className={cn("font-bold text-amber-600 dark:text-amber-500", classes.amount)}>
+        <span className={cn("font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap", classes.amount)}>
           {balance.toFixed(2)} DH
         </span>
         {showLabel && (

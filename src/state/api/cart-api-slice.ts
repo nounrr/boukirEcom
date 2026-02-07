@@ -14,7 +14,9 @@ export interface CartItem {
   quantity: number;
   image?: string;
   category?: string;
-  stock?: number;
+  purchase_limit?: number;
+  in_stock?: boolean;
+  inStock?: boolean;
 }
 
 export interface Cart {
@@ -58,7 +60,23 @@ export const cartApi = createApi({
             quantity: isNaN(quantity) ? 1 : quantity,
             image: item.variant?.image_url || item.product?.image_url || undefined,
             category: item.product?.base_unit || undefined,
-            stock: item.stock?.available || 0,
+            purchase_limit: typeof item.stock?.purchase_limit === 'number'
+              ? item.stock.purchase_limit
+              : typeof item.stock?.purchaseLimit === 'number'
+                ? item.stock.purchaseLimit
+                : typeof item.purchase_limit === 'number'
+                  ? item.purchase_limit
+                  : undefined,
+            in_stock: typeof item.stock?.in_stock === 'boolean'
+              ? item.stock.in_stock
+              : typeof item.in_stock === 'boolean'
+                ? item.in_stock
+                : undefined,
+            inStock: typeof item.stock?.inStock === 'boolean'
+              ? item.stock.inStock
+              : typeof item.inStock === 'boolean'
+                ? item.inStock
+                : undefined,
           };
 
           console.log('📦 Transformed item:', transformedItem);

@@ -11,7 +11,7 @@ export interface ProductImageMaskProps {
 export function ProductImageMask({ children, className }: ProductImageMaskProps) {
   return (
     <div className={cn('relative aspect-square overflow-visible rounded-[22px]', className)}>
-      <div className="absolute inset-2.5 sm:inset-3 rounded-[24px] overflow-hidden">
+      <div className="absolute inset-0.5 sm:inset-3 rounded-3xl overflow-hidden">
         {children}
       </div>
     </div>

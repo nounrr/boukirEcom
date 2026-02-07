@@ -741,7 +741,6 @@ export default function OrderDetailsPage() {
         quantity: item.quantity,
         image: item.imageUrl || "",
         category: "",
-        stock: typeof item.stock === "number" ? item.stock : undefined,
       })
 
       toast.success(t("toast.addedToCartTitle"), { description: item.productName })

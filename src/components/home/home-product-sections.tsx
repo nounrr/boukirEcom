@@ -6,7 +6,7 @@ import { ArrowRight, Package } from 'lucide-react'
 import { useLocale } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
-import { ProductCard } from '@/components/shop/product-card'
+import { ProductCardTile } from '@/components/shop/product-card-tile'
 import {
   type CarouselApi,
   Carousel,
@@ -38,6 +38,7 @@ function getCategoryLabel(
 function toProductCardModel(product: ProductListItem, locale: string) {
   const currentPrice = product.prix_promo || product.prix_vente
   const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
+  const stockFlag = (product as any)?.in_stock ?? (product as any)?.inStock
 
   return {
     id: product.id,
@@ -50,6 +51,9 @@ function toProductCardModel(product: ProductListItem, locale: string) {
     brand: product.brand?.nom,
     unit: product.base_unit,
     stock: product.quantite_disponible,
+    purchase_limit: typeof (product as any)?.purchase_limit === 'number' ? (product as any).purchase_limit : undefined,
+    in_stock: typeof stockFlag === 'boolean' ? stockFlag : undefined,
+    inStock: typeof stockFlag === 'boolean' ? stockFlag : undefined,
     rating: 0,
     reviews: 0,
     variants:
@@ -170,7 +174,7 @@ function ProductRail({
                   <CarouselContent className="cursor-grab select-none active:cursor-grabbing">
                     {cardProducts.map((p) => (
                   <CarouselItem key={p.id} className="basis-[260px] sm:basis-[280px]">
-                    <ProductCard product={p} viewMode="grid" />
+                        <ProductCardTile product={p} viewMode="grid" />
                   </CarouselItem>
                 ))}
                   </CarouselContent>

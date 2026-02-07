@@ -1,9 +1,10 @@
 "use client"
 
-import { ProductCard } from "@/components/shop/product-card"
+import { ProductCardRow } from "@/components/shop/product-card-row"
+import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Package, Tag, Store } from "lucide-react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
 
@@ -41,7 +42,7 @@ interface ProductsListProps {
   onAddToCart: (productId: number, variantId?: number) => void
   onToggleWishlist: (productId: number) => void
   onQuickView: (productId: number) => void
-  viewMode: 'grid' | 'large'
+  viewMode: 'grid' | 'list'
   isFiltersCollapsed: boolean
 }
 
@@ -63,18 +64,31 @@ export function ProductsList({
   const locale = useLocale()
   const t = useTranslations('productsList')
 
+  const isListView = viewMode === 'list'
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const media = window.matchMedia('(max-width: 640px)')
+    const update = () => setIsMobile(media.matches)
+    update()
+    media.addEventListener?.('change', update)
+    return () => media.removeEventListener?.('change', update)
+  }, [])
+
   // Dynamic grid columns based on filter state and view mode
   const gridColumns = (() => {
-    if (viewMode === 'large') {
-      // Comfortable view: fewer columns, larger tiles
-      return isFiltersCollapsed
-        ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3'
-        : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
-    }
     // Compact grid
     return isFiltersCollapsed
-      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
-      : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+      ? 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+      : 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3'
+  })()
+
+  const gridColumnsLarge = (() => {
+    // Comfortable/large view for desktop/tablet
+    return isFiltersCollapsed
+      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3'
+      : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
   })()
 
   const getLocalizedDesignation = (product: ProductListItem): string => {
@@ -99,6 +113,7 @@ export function ProductsList({
     return products.map((product) => {
       const currentPrice = product.prix_promo || product.prix_vente
       const hasDiscount = product.prix_promo && product.prix_promo < product.prix_vente
+      const stockFlag = (product as any)?.in_stock ?? (product as any)?.inStock
 
       return {
         id: product.id,
@@ -111,6 +126,9 @@ export function ProductsList({
         brand: product.brand?.nom,
         unit: product.base_unit,
         stock: product.quantite_disponible,
+        purchase_limit: typeof (product as any)?.purchase_limit === 'number' ? (product as any).purchase_limit : undefined,
+        in_stock: typeof stockFlag === 'boolean' ? stockFlag : undefined,
+        inStock: typeof stockFlag === 'boolean' ? stockFlag : undefined,
         rating: 0,
         reviews: 0,
         variants: product.variants?.all?.map(v => ({
@@ -173,7 +191,7 @@ export function ProductsList({
 
       {/* Products Grid */}
       {isLoading ? (
-        <div className={`grid gap-5 ${viewMode === 'grid' ? gridColumns : 'grid-cols-1'}`}>
+        <div className={`grid gap-5 ${isListView && isMobile ? 'grid-cols-1' : isListView ? gridColumnsLarge : gridColumns}`}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-card rounded-lg border border-border/40 overflow-hidden">
               <div className="aspect-square bg-muted animate-pulse" />
@@ -213,19 +231,49 @@ export function ProductsList({
           </p>
         </div>
       ) : (
-        <div className={`grid ${viewMode === 'large' ? 'gap-6' : 'gap-5'} ${gridColumns}`}>
-          {transformedProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              viewMode={viewMode}
-              isWide={isFiltersCollapsed || viewMode === 'large'}
-              onAddToCart={onAddToCart}
-              onToggleWishlist={onToggleWishlist}
-              onQuickView={onQuickView}
-            />
-          ))}
-        </div>
+              isListView && isMobile ? (
+                <div className="space-y-3">
+                  {transformedProducts.map((product) => (
+                    <ProductCardRow
+                      key={product.id}
+                      product={product}
+                      viewMode="list"
+                      isWide
+                      onAddToCart={onAddToCart}
+                      onToggleWishlist={onToggleWishlist}
+                      onQuickView={onQuickView}
+                    />
+                  ))}
+                </div>
+              ) : isListView ? (
+                <div className={`grid gap-6 ${gridColumnsLarge}`}>
+                  {transformedProducts.map((product) => (
+                    <ProductCardTile
+                      key={product.id}
+                      product={product}
+                      viewMode="grid"
+                      isWide
+                      onAddToCart={onAddToCart}
+                      onToggleWishlist={onToggleWishlist}
+                      onQuickView={onQuickView}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className={`grid gap-5 ${gridColumns}`}>
+                  {transformedProducts.map((product) => (
+                    <ProductCardTile
+                      key={product.id}
+                      product={product}
+                      viewMode="grid"
+                      isWide={isFiltersCollapsed}
+                      onAddToCart={onAddToCart}
+                      onToggleWishlist={onToggleWishlist}
+                      onQuickView={onQuickView}
+                    />
+                  ))}
+                    </div>
+                  )
       )}
 
       {/* Pagination */}

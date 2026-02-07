@@ -150,14 +150,29 @@ export default function ProductPage() {
 
   const handleQuantityChange = (delta: number) => {
     if (!product) return
-    const newQuantity = quantity + delta
-    if (newQuantity >= 1 && newQuantity <= product.quantite_disponible) {
-      setQuantity(newQuantity)
+    const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
+    const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+
+    const next = quantity + delta
+    if (next < 1) return
+    if (purchaseLimit != null && next > purchaseLimit) {
+      setQuantity(purchaseLimit)
+      toast.error(tCommon("error"), { description: tProductCard("maxQuantityReachedDesc") })
+      return
     }
+    setQuantity(next)
   }
 
   const handleAddToCart = async () => {
     if (!product) return
+
+    const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
+    const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+    if (purchaseLimit != null && quantity > purchaseLimit) {
+      setQuantity(purchaseLimit)
+      toast.error(tCommon("error"), { description: tProductCard("maxQuantityReachedDesc") })
+      return
+    }
 
     const outOfStock = isOutOfStockLike({
       stock: (product as any)?.quantite_disponible,
@@ -212,7 +227,17 @@ export default function ProductPage() {
         const data = (error as any)?.data
         const code = data?.code || data?.error
         const message = data?.message
-        if (code === "out_of_stock" || message === "out_of_stock") {
+        const normalizedCode = typeof code === 'string' ? code.toLowerCase() : ''
+        const normalizedMessage = typeof message === 'string' ? message.toLowerCase() : ''
+
+        if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
+          toast.error(tCommon("error"), { description: tProductCard("maxQuantityReachedDesc") })
+        } else if (
+          code === "out_of_stock" ||
+          normalizedMessage === "out_of_stock" ||
+          code === 'INSUFFICIENT_STOCK' ||
+          normalizedCode === 'insufficient_stock'
+        ) {
           toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
         } else {
           toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
@@ -550,7 +575,12 @@ export default function ProductPage() {
                     size="icon"
                     className="h-9 w-9 rounded-l-none hover:bg-muted"
                     onClick={() => handleQuantityChange(1)}
-                    disabled={isOutOfStock || quantity >= product.quantite_disponible}
+                    disabled={(() => {
+                      if (isOutOfStock) return true
+                      const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
+                      const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+                      return purchaseLimit != null ? quantity >= purchaseLimit : false
+                    })()}
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </Button>
