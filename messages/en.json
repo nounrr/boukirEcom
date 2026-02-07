@@ -610,6 +610,21 @@
     "myAccount": "My account",
     "subscription": "Subscription"
   },
+  "contactPage": {
+    "badge": "Info & directions",
+    "title": "Contact",
+    "description": "Find all Boukir Diamond details: phone numbers, email, address and Google Maps directions.",
+    "openInMaps": "Open in Google Maps",
+    "detailsTitle": "Contact details",
+    "detailsDesc": "Reach out for any question or request.",
+    "noPhone": "Phone not available.",
+    "serviceChargeLabel": "Customer service",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "hoursLabel": "Hours",
+    "mapTitle": "Location",
+    "mapDesc": "Interactive map to guide you to the store."
+  },
   "header": {
     "home": "Home",
     "categories": "Categories",
@@ -619,6 +634,9 @@
     "profile": "My profile",
     "orders": "My orders",
     "settings": "Settings",
+    "open": "Open",
+    "close": "Close",
+    "contactUs": "Contact us",
     "logout": "Logout",
     "login": "Login",
     "register": "Register",
@@ -1070,6 +1088,14 @@
     "storeLocationTitle": "Our store",
     "storeLocationDesc": "Find our store on Google Maps.",
     "openInMaps": "Open in Google Maps",
-    "storeLocationUnavailable": "Coordinates coming soon."
+    "storeLocationUnavailable": "Coordinates coming soon.",
+    "storeContactTitle": "Contact",
+    "storeContactDesc": "Customer service and store information.",
+    "storeContactPhone": "Phone:",
+    "storeContactServiceCharge": "Service charge:",
+    "storeContactEmail": "Email:",
+    "storeContactAddress": "Address:",
+    "storeContactHours": "Hours:",
+    "storeContactUnavailable": "Contact information coming soon."
   }
 }

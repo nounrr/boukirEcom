@@ -610,6 +610,21 @@
     "myAccount": "Mon compte",
     "subscription": "Abonnement"
   },
+  "contactPage": {
+    "badge": "Informations & itinéraire",
+    "title": "Contact",
+    "description": "Retrouvez toutes les informations de Boukir Diamond : téléphones, email, adresse et accès via Google Maps.",
+    "openInMaps": "Ouvrir dans Google Maps",
+    "detailsTitle": "Coordonnées",
+    "detailsDesc": "Contactez-nous pour toute question ou demande.",
+    "noPhone": "Téléphone indisponible.",
+    "serviceChargeLabel": "Service client",
+    "emailLabel": "Email",
+    "addressLabel": "Adresse",
+    "hoursLabel": "Horaires",
+    "mapTitle": "Notre emplacement",
+    "mapDesc": "Carte interactive pour vous guider vers le magasin."
+  },
   "header": {
     "home": "Accueil",
     "categories": "Catégories",
@@ -619,6 +634,9 @@
     "profile": "Mon profil",
     "orders": "Mes commandes",
     "settings": "Paramètres",
+    "open": "Ouvrir",
+    "close": "Fermer",
+    "contactUs": "Contactez-nous",
     "logout": "Déconnexion",
     "login": "Connexion",
     "register": "S'inscrire",
@@ -1097,7 +1115,15 @@
     "storeLocationTitle": "Notre magasin",
     "storeLocationDesc": "Retrouvez notre boutique sur Google Maps.",
     "openInMaps": "Ouvrir dans Google Maps",
-    "storeLocationUnavailable": "Coordonnées bientôt disponibles."
+    "storeLocationUnavailable": "Coordonnées bientôt disponibles.",
+    "storeContactTitle": "Contact",
+    "storeContactDesc": "Service client et informations du magasin.",
+    "storeContactPhone": "Tél:",
+    "storeContactServiceCharge": "Service charge:",
+    "storeContactEmail": "Email:",
+    "storeContactAddress": "Adresse:",
+    "storeContactHours": "Horaires:",
+    "storeContactUnavailable": "Informations de contact bientôt disponibles."
   },
   "toast": {
     "auth": {

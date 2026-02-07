@@ -243,14 +243,14 @@ export default function ShopPage() {
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
         {/* Toolbar: filter toggle, results, view toggle */}
         <div className="mb-5 rounded-2xl border border-border/40 bg-card/60 px-5 py-3 shadow-sm backdrop-blur-sm">
-          <div className="grid grid-cols-3 items-center gap-4">
-            {/* Left: Filters toggle */}
-            <div className="flex items-center">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left: Desktop filters collapse toggle */}
+            <div className="hidden lg:flex items-center">
               <Button
                 type="button"
                 variant="default"
                 size="sm"
-                className="hidden gap-2 rounded-full px-4 py-2 text-sm font-medium lg:inline-flex bg-primary text-white hover:bg-primary/90"
+                className="gap-2 rounded-full px-4 py-2 text-sm font-medium bg-primary text-white hover:bg-primary/90"
                 onClick={() => setIsFiltersCollapsed(prev => !prev)}
               >
                 <SlidersHorizontal className="h-4 w-4" />
@@ -293,7 +293,7 @@ export default function ShopPage() {
             </div>
 
             {/* Right: View mode toggle (eye comfort) */}
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-center lg:justify-end">
               <div className="flex items-center gap-2 rounded-full bg-muted/40 px-2 py-1 shadow-sm ring-1 ring-border/30">
                 <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
                 <div className="flex items-center gap-1" aria-label="Mode d'affichage">
@@ -326,7 +326,7 @@ export default function ShopPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row">
             {/* Filters Sidebar */}
             <ProductFilters
               onFilterChange={handleFilterChange}

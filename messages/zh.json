@@ -610,6 +610,21 @@
     "myAccount": "我的账户",
     "subscription": "订阅"
   },
+  "contactPage": {
+    "badge": "信息与路线",
+    "title": "联系我们",
+    "description": "查看 Boukir Diamond 的完整信息：电话、邮箱、地址以及 Google 地图路线。",
+    "openInMaps": "在 Google 地图中打开",
+    "detailsTitle": "联系信息",
+    "detailsDesc": "如有任何问题或需求，欢迎联系我们。",
+    "noPhone": "暂无电话信息。",
+    "serviceChargeLabel": "客服",
+    "emailLabel": "邮箱",
+    "addressLabel": "地址",
+    "hoursLabel": "营业时间",
+    "mapTitle": "门店位置",
+    "mapDesc": "交互式地图，帮助你找到门店。"
+  },
   "header": {
     "home": "首页",
     "categories": "分类",
@@ -619,6 +634,9 @@
     "profile": "我的资料",
     "orders": "我的订单",
     "settings": "设置",
+    "open": "打开",
+    "close": "关闭",
+    "contactUs": "联系我们",
     "logout": "退出登录",
     "login": "登录",
     "register": "注册",
@@ -1070,6 +1088,14 @@
     "storeLocationTitle": "门店位置",
     "storeLocationDesc": "在 Google 地图上查看我们的门店位置。",
     "openInMaps": "在 Google 地图中打开",
-    "storeLocationUnavailable": "坐标即将提供。"
+    "storeLocationUnavailable": "坐标即将提供。",
+    "storeContactTitle": "联系方式",
+    "storeContactDesc": "客服与门店信息。",
+    "storeContactPhone": "电话:",
+    "storeContactServiceCharge": "服务电话:",
+    "storeContactEmail": "邮箱:",
+    "storeContactAddress": "地址:",
+    "storeContactHours": "营业时间:",
+    "storeContactUnavailable": "联系方式即将提供。"
   }
 }

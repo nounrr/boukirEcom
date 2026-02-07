@@ -183,6 +183,7 @@ function SearchField({
   onKeyDown,
   onFocus,
   onClear,
+  clearLabel,
   inputRef,
   className,
 }: {
@@ -192,6 +193,7 @@ function SearchField({
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   onFocus: () => void
   onClear: () => void
+    clearLabel: string
   inputRef: React.RefObject<HTMLInputElement | null>
   className?: string
 }) {
@@ -208,10 +210,10 @@ function SearchField({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         className={cn(
-          'h-11 w-full rounded-full border border-white/20 bg-white/10 text-white',
+          'h-12 md:h-11 w-full rounded-full border border-white/20 bg-white/10 text-white',
           'ltr:pl-11 rtl:pr-11 ltr:pr-11 rtl:pl-11',
           'placeholder:text-white/60',
-          'outline-none ring-0',
+          'text-base md:text-sm outline-none ring-0',
           'focus:border-white/30 focus:ring-2 focus:ring-white/15',
           '[&::-webkit-search-cancel-button]:appearance-none'
         )}
@@ -220,8 +222,8 @@ function SearchField({
         <button
           type="button"
           onClick={onClear}
-          className="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"
-          aria-label="Clear"
+          className="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full hover:bg-white/10 outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+          aria-label={clearLabel}
         >
           <X className="h-4 w-4 text-white/75" />
         </button>
@@ -286,7 +288,7 @@ function SuggestionsPanel({
         ) : null}
       </div>
 
-      <div className="max-h-[340px] overflow-auto p-2">
+      <div className="max-h-[60vh] md:max-h-[340px] overflow-auto p-2">
         {hasQuery && isFetching ? (
           <div className="px-3 py-3 text-sm text-muted-foreground">{t('loading')}</div>
         ) : null}
@@ -306,7 +308,7 @@ function SuggestionsPanel({
                     onClick={() => onSubmitSearch(item.query)}
                     onMouseEnter={() => onHoverIndex(idx)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
                       isActive ? 'bg-muted' : 'hover:bg-muted/60'
                     )}
                   >
@@ -339,7 +341,7 @@ function SuggestionsPanel({
                     onClick={() => onSubmitSearch(item.query)}
                     onMouseEnter={() => onHoverIndex(idx)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
                       isActive ? 'bg-muted' : 'hover:bg-muted/60'
                     )}
                   >
@@ -372,7 +374,7 @@ function SuggestionsPanel({
                     onClick={() => onPickProduct(item.id)}
                     onMouseEnter={() => onHoverIndex(idx)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                      'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
                       isActive ? 'bg-muted' : 'hover:bg-muted/60'
                     )}
                   >
@@ -408,7 +410,7 @@ function SuggestionsPanel({
                   onClick={() => (item.type === 'recent' ? onSelectRecent(item.query) : onSubmitSearch(item.query))}
                   onMouseEnter={() => onHoverIndex(idx)}
                   className={cn(
-                    'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+                    'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
                     isActive ? 'bg-muted' : 'hover:bg-muted/60'
                   )}
                 >
@@ -680,6 +682,7 @@ export function HeaderSearch({
       value={query}
       placeholder={placeholder ?? t('placeholder')}
       inputRef={inputRef}
+      clearLabel={t('clear')}
       onFocus={() => setOpen(true)}
       onChange={(value) => {
         setQuery(value)
@@ -714,8 +717,10 @@ export function HeaderSearch({
 
   return (
     <Popover open={open} onOpenChange={(next) => (next ? setOpen(true) : close())}>
-      <PopoverAnchor asChild>
-        {variant === 'icon' ? (
+      {variant === 'icon' ? (
+        <>
+          {/* Mobile UX: center the panel within the viewport (not relative to the icon). */}
+          <PopoverAnchor className="fixed left-1/2 top-[75px] h-0 w-0" />
           <Button
             type="button"
             variant="ghost"
@@ -729,17 +734,20 @@ export function HeaderSearch({
           >
             <Search className="w-4.5 h-4.5 text-white/85 hover:text-white transition-colors" />
           </Button>
-        ) : (
-          <div className={cn('w-full', maxWidthClassName, className)}>{inputEl}</div>
-        )}
-      </PopoverAnchor>
+        </>
+      ) : (
+          <PopoverAnchor asChild>
+            <div className={cn('w-full', maxWidthClassName, className)}>{inputEl}</div>
+          </PopoverAnchor>
+      )}
 
       {variant === 'icon' ? (
         <PopoverContent
-          align="end"
+          align="center"
           side="bottom"
-          sideOffset={10}
-          className="w-[min(92vw,560px)] border-border/40 bg-background/98 p-3 backdrop-blur-2xl shadow-xl shadow-black/10"
+          sideOffset={12}
+          collisionPadding={12}
+          className="w-[min(96vw,560px)] border-border/40 bg-background/98 p-3 backdrop-blur-2xl shadow-xl shadow-black/10"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           {inputEl}
@@ -751,7 +759,7 @@ export function HeaderSearch({
           side="bottom"
           sideOffset={12}
           className={cn(
-            'w-[min(92vw,720px)] border-0 bg-transparent p-0 shadow-none',
+            'w-[min(96vw,720px)] border-0 bg-transparent p-0 shadow-none',
             maxWidthClassName
           )}
           onOpenAutoFocus={(e) => e.preventDefault()}

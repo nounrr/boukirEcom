@@ -610,6 +610,21 @@
     "myAccount": "حسابي",
     "subscription": "الاشتراك"
   },
+  "contactPage": {
+    "badge": "معلومات واتجاهات",
+    "title": "اتصل بنا",
+    "description": "اعثر على جميع معلومات Boukir Diamond: أرقام الهاتف والبريد الإلكتروني والعنوان والاتجاهات عبر خرائط Google.",
+    "openInMaps": "فتح في خرائط Google",
+    "detailsTitle": "بيانات التواصل",
+    "detailsDesc": "تواصل معنا لأي استفسار أو طلب.",
+    "noPhone": "رقم الهاتف غير متوفر.",
+    "serviceChargeLabel": "خدمة العملاء",
+    "emailLabel": "البريد الإلكتروني",
+    "addressLabel": "العنوان",
+    "hoursLabel": "ساعات العمل",
+    "mapTitle": "الموقع",
+    "mapDesc": "خريطة تفاعلية لإرشادك إلى المتجر."
+  },
   "header": {
     "home": "الرئيسية",
     "categories": "الفئات",
@@ -619,6 +634,9 @@
     "profile": "ملفي الشخصي",
     "orders": "طلباتي",
     "settings": "الإعدادات",
+    "open": "فتح",
+    "close": "إغلاق",
+    "contactUs": "تواصل معنا",
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
     "register": "التسجيل",
@@ -1097,7 +1115,15 @@
     "storeLocationTitle": "موقع المتجر",
     "storeLocationDesc": "اعثر على متجرنا على خرائط Google.",
     "openInMaps": "فتح في خرائط Google",
-    "storeLocationUnavailable": "سيتم إضافة الإحداثيات قريباً."
+    "storeLocationUnavailable": "سيتم إضافة الإحداثيات قريباً.",
+    "storeContactTitle": "معلومات التواصل",
+    "storeContactDesc": "خدمة العملاء ومعلومات المتجر.",
+    "storeContactPhone": "الهاتف:",
+    "storeContactServiceCharge": "خدمة الشحن:",
+    "storeContactEmail": "البريد الإلكتروني:",
+    "storeContactAddress": "العنوان:",
+    "storeContactHours": "ساعات العمل:",
+    "storeContactUnavailable": "سيتم إضافة معلومات التواصل قريباً."
   },
   "toast": {
     "auth": {

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
@@ -778,17 +778,23 @@ export function ProductFilters({
       {/* Mobile Filter Button */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild className="lg:hidden">
-          <Button variant="outline" className="gap-2 relative">
-            <SlidersHorizontal className="w-4 h-4" />
+          <Button variant="outline" className="w-full gap-2 relative justify-center">
+            <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
             {t('title')}
             {activeFiltersCount > 0 && (
-              <Badge variant="default" className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary">
+              <Badge
+                variant="default"
+                className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary"
+              >
                 {activeFiltersCount}
               </Badge>
             )}
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-80 p-6">
+          <SheetHeader className="p-0">
+            <SheetTitle className="sr-only">{t('title')}</SheetTitle>
+          </SheetHeader>
           <FiltersContent />
         </SheetContent>
       </Sheet>

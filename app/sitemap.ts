@@ -11,6 +11,7 @@ type StaticEntry = {
 const STATIC_PAGES: StaticEntry[] = [
   { path: "/", changeFrequency: "daily", priority: 1 },
   { path: "/shop", changeFrequency: "daily", priority: 0.9 },
+  { path: "/contact", changeFrequency: "monthly", priority: 0.6 },
 ]
 
 function toUrl(origin: string, path: string) {

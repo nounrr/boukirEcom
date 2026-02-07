@@ -337,6 +337,32 @@ export function Header() {
         </div>
       </div>
 
+      {/* Secondary Nav Bar (Mobile/Tablet) */}
+      <div className="lg:hidden bg-background text-foreground border-b border-border/40">
+        <div className="container mx-auto px-6 sm:px-8">
+          <div className="flex h-12 items-center gap-2">
+            <nav className="flex items-center gap-1.5 min-w-0 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {secondaryLinks.map((link) => (
+                <Link
+                  key={link.href + link.label}
+                  href={link.href}
+                  className="shrink-0 px-3 py-2 rounded-full text-xs font-semibold text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <Link
+              href={`/${locale}/contact`}
+              className="ml-auto shrink-0 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/15 hover:border-primary/30 transition-colors"
+            >
+              {t('contactUs')}
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Secondary Nav Bar (Desktop) */}
       <div className="hidden lg:block bg-background text-foreground border-b border-border/40">
         <div className="container mx-auto px-6 sm:px-8 lg:px-16">
@@ -355,6 +381,13 @@ export function Header() {
                 </Link>
               ))}
             </nav>
+
+            <Link
+              href={`/${locale}/contact`}
+              className="ml-auto inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/15 hover:border-primary/30 transition-colors"
+            >
+              {t('contactUs')}
+            </Link>
           </div>
         </div>
       </div>
@@ -384,6 +417,15 @@ export function Header() {
                         {link.label}
                       </Link>
                     ))}
+
+                    <Link
+                      href={`/${locale}/contact`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/10 rounded-lg transition-colors"
+                    >
+                      <span>{t('contactUs')}</span>
+                      <span className="text-xs text-white/70">→</span>
+                    </Link>
 
                     <CategoriesMobileMenu onNavigate={() => setIsMobileMenuOpen(false)} />
                   </nav>

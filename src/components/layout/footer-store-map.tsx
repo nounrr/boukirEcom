@@ -7,28 +7,14 @@ import { cn } from '@/lib/utils'
 
 const DEFAULT_STORE_MAP_URL =
   'https://www.google.com/maps/place/BOUKIR+DIAMOND+CONSTUCTION+STORE/@35.7532036,-5.8421462,1453m/data=!3m2!1e3!4b1!4m6!3m5!1s0xd0b87005196739b:0xfa8dc0aeae136e27!8m2!3d35.7532036!4d-5.8421462!16s%2Fg%2F11y45mc9yr?entry=ttu'
-const DEFAULT_STORE_LAT = 35.7532036
-const DEFAULT_STORE_LNG = -5.8421462
 const DEFAULT_STORE_QUERY = 'BOUKIR DIAMOND CONSTUCTION STORE'
 
-function parseNumber(value: string | undefined): number | null {
-  if (!value) return null
-  const num = Number.parseFloat(value)
-  return Number.isFinite(num) ? num : null
-}
-
-function buildGoogleMapsUrl({ lat, lng, query }: { lat?: number | null; lng?: number | null; query?: string }) {
-  if (lat != null && lng != null) {
-    return `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}`
-  }
+function buildGoogleMapsSearchUrl(query?: string) {
   const fallbackQuery = query?.trim() ? query.trim() : 'Boukir'
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`
 }
 
-function buildEmbedUrl({ lat, lng, query }: { lat?: number | null; lng?: number | null; query?: string }) {
-  if (lat != null && lng != null) {
-    return `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&output=embed`
-  }
+function buildEmbedUrl(query?: string) {
   const fallbackQuery = query?.trim() ? query.trim() : 'Boukir'
   return `https://www.google.com/maps?q=${encodeURIComponent(fallbackQuery)}&output=embed`
 }
@@ -44,21 +30,13 @@ export function FooterStoreMap({
   title: string
   description: string
   openLabel: string
-  unavailableLabel: string
+    unavailableLabel?: string
 }) {
   const directMapsUrl = process.env.NEXT_PUBLIC_STORE_MAP_URL?.trim() || DEFAULT_STORE_MAP_URL
-
-  const lat = parseNumber(process.env.NEXT_PUBLIC_STORE_LAT) ?? DEFAULT_STORE_LAT
-  const lng = parseNumber(process.env.NEXT_PUBLIC_STORE_LNG) ?? DEFAULT_STORE_LNG
   const query = process.env.NEXT_PUBLIC_STORE_MAP_QUERY ?? DEFAULT_STORE_QUERY
 
-  const mapsUrl = useMemo(() => directMapsUrl || buildGoogleMapsUrl({ lat, lng, query }), [directMapsUrl, lat, lng, query])
-  const embedUrl = useMemo(() => buildEmbedUrl({ lat, lng, query }), [lat, lng, query])
-
-  const center = useMemo(() => {
-    if (lat == null || lng == null) return null
-    return { lat, lng }
-  }, [lat, lng])
+  const mapsUrl = useMemo(() => directMapsUrl || buildGoogleMapsSearchUrl(query), [directMapsUrl, query])
+  const embedUrl = useMemo(() => buildEmbedUrl(query), [query])
 
   return (
     <section className={cn('rounded-2xl border border-white/15 bg-white/5 p-6', className)}>
@@ -82,7 +60,7 @@ export function FooterStoreMap({
             {openLabel}
           </a>
 
-          {!center ? <div className="mt-3 text-xs text-white/70">{unavailableLabel}</div> : null}
+          {unavailableLabel ? <div className="mt-3 text-xs text-white/70">{unavailableLabel}</div> : null}
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 lg:flex-1">
