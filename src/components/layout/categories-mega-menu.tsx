@@ -262,7 +262,7 @@ export function CategoriesMegaMenu({
                         className="text-xs font-semibold text-primary hover:underline underline-offset-4 shrink-0"
                         onClick={() => setOpen(false)}
                       >
-                        Voir
+                            {t('view')}
                       </Link>
                     </div>
 

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { isOutOfStockLike } from '@/lib/stock'
+import { toAbsoluteImageUrl } from '@/lib/image-url'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -127,7 +128,9 @@ export function ProductCard({
     const firstAvailable = normalizedVariants.find((v) => v.available !== false)
     setSelectedVariant(firstAvailable?.id ?? normalizedVariants[0].id)
   }, [normalizedVariants, selectedVariant])
-  const [currentImage, setCurrentImage] = useState(product.image)
+
+  const normalizedBaseImage = useMemo(() => toAbsoluteImageUrl(product.image) ?? '', [product.image])
+  const [currentImage, setCurrentImage] = useState(normalizedBaseImage)
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
   const locale = useLocale()
@@ -257,7 +260,7 @@ export function ProductCard({
   const handleVariantClick = useCallback((variant: SimpleVariant) => {
     setSelectedVariant(variant.id)
     if (variant.image) {
-      setCurrentImage(variant.image)
+      setCurrentImage(toAbsoluteImageUrl(variant.image) ?? '')
       setImageError(false)
     }
     // Update price if variant has different price (would come from API)
@@ -269,10 +272,15 @@ export function ProductCard({
     if (!selectedVariant) return
     const variant = product.variants?.find((v) => v.id === selectedVariant)
     if (variant?.image) {
-      setCurrentImage(variant.image)
+      setCurrentImage(toAbsoluteImageUrl(variant.image) ?? '')
       setImageError(false)
     }
   }, [selectedVariant, product.variants])
+
+  useEffect(() => {
+    setCurrentImage(normalizedBaseImage)
+    setImageError(false)
+  }, [normalizedBaseImage, product.id])
 
   const getVariantLabel = useCallback((variant: ProductVariant) => {
     const raw = variant.value || variant.name

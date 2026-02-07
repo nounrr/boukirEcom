@@ -621,7 +621,8 @@
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
-    "register": "التسجيل"
+    "register": "التسجيل",
+    "view": "عرض"
   },
   "headerSearch": {
     "placeholder": "ابحث عن منتج أو علامة…",

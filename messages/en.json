@@ -612,6 +612,7 @@
   },
   "header": {
     "home": "Home",
+    "categories": "Categories",
     "shop": "Shop",
     "products": "Products",
     "searchPlaceholder": "Search products...",
@@ -620,7 +621,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "view": "View"
   },
   "headerSearch": {
     "placeholder": "Search a product, a brand…",

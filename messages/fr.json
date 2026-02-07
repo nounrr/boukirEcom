@@ -621,7 +621,8 @@
     "settings": "Paramètres",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "register": "S'inscrire"
+    "register": "S'inscrire",
+    "view": "Voir"
   },
   "headerSearch": {
     "placeholder": "Rechercher un produit, une marque…",
