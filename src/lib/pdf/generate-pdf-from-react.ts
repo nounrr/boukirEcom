@@ -1,6 +1,7 @@
 import React from "react"
 
 export type PdfPaperSize = "a4" | "a5"
+export type PdfImageFormat = "png" | "jpeg"
 
 export async function downloadPdfFromReactElement(options: {
   element: React.ReactElement
@@ -8,10 +9,26 @@ export async function downloadPdfFromReactElement(options: {
   paper?: PdfPaperSize
   widthPx?: number
   heightPx?: number
+  /**
+   * Render scale used by html2canvas. Higher = sharper but slower/larger.
+   * Defaults to 2.5 for print-quality A4 captures.
+   */
+  scale?: number
+  /**
+   * Image format embedded into the PDF. PNG is lossless (best quality).
+   */
+  imageFormat?: PdfImageFormat
+  /**
+   * Only used when `imageFormat` is `jpeg`.
+   */
+  jpegQuality?: number
 }): Promise<void> {
   const paper = options.paper ?? "a4"
   const widthPx = options.widthPx ?? (paper === "a4" ? 794 : 559)
   const heightPx = options.heightPx ?? (paper === "a4" ? 1123 : 794)
+  const scale = options.scale ?? 2.5
+  const imageFormat: PdfImageFormat = options.imageFormat ?? "png"
+  const jpegQuality = typeof options.jpegQuality === "number" ? options.jpegQuality : 0.92
 
   const [{ createRoot }, jspdfModule, html2canvasModule] = await Promise.all([
     import("react-dom/client"),
@@ -83,7 +100,7 @@ export async function downloadPdfFromReactElement(options: {
     })
 
     const canvas = await html2canvas(container, {
-      scale: 1.5,
+      scale,
       useCORS: true,
       allowTaint: true,
       backgroundColor: "#ffffff",
@@ -142,8 +159,13 @@ export async function downloadPdfFromReactElement(options: {
     const x = (pdfWidth - imgWidth) / 2
     const y = (pdfHeight - imgHeight) / 2
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.78)
-    pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "MEDIUM")
+    if (imageFormat === "png") {
+      const imgData = canvas.toDataURL("image/png")
+      pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight, undefined, "FAST")
+    } else {
+      const imgData = canvas.toDataURL("image/jpeg", jpegQuality)
+      pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "MEDIUM")
+    }
 
     pdf.save(options.fileName)
   } finally {

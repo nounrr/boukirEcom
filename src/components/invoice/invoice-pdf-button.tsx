@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react"
 import { Download } from "lucide-react"
 import type { VariantProps } from "class-variance-authority"
 import { useLocale, useTranslations } from "next-intl"
+import { NextIntlClientProvider } from "next-intl"
 
 import type { Order } from "@/types/order"
 import type { User } from "@/state/slices/user-slice"
@@ -12,6 +13,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { downloadPdfFromReactElement } from "@/lib/pdf/generate-pdf-from-react"
 import { InvoicePrintTemplate } from "@/components/invoice/invoice-print-template"
+import { loadInvoiceMessages } from "@/components/invoice/invoice-messages"
 
 type ButtonVariant = VariantProps<typeof buttonVariants>["variant"]
 type ButtonSize = VariantProps<typeof buttonVariants>["size"]
@@ -67,8 +69,14 @@ export function InvoicePdfButton({
     try {
       setIsGenerating(true)
 
+      const messages = await loadInvoiceMessages(invoiceLocale)
+
       await downloadPdfFromReactElement({
-        element: <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />,
+        element: (
+          <NextIntlClientProvider locale={invoiceLocale} messages={messages}>
+            <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />
+          </NextIntlClientProvider>
+        ),
         fileName,
         paper: "a4",
       })

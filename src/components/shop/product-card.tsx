@@ -143,8 +143,14 @@ export function ProductCard({
   const [addToWishlistApi, { isLoading: isAddingToWishlist }] = useAddToWishlistMutation()
   const [removeFromWishlistApi, { isLoading: isRemovingFromWishlist }] = useRemoveFromWishlistByProductMutation()
 
-  // Use backend-provided wishlist state
-  const isInWishlist = product.is_wishlisted === true
+  // Optimistic wishlist state (Home page doesn't refetch products after mutation)
+  const [isWishlisted, setIsWishlisted] = useState<boolean>(() => product.is_wishlisted === true)
+
+  // Keep optimistic state in sync when parent data updates (e.g. shop page refetch)
+  useEffect(() => {
+    setIsWishlisted(product.is_wishlisted === true)
+  }, [product.id, product.is_wishlisted])
+
   const isWishlistLoading = isAddingToWishlist || isRemovingFromWishlist
 
   const handleToggleWishlist = useCallback(async (e: React.MouseEvent) => {
@@ -156,8 +162,12 @@ export function ProductCard({
       return
     }
 
+    const wasWishlisted = isWishlisted
+    // Optimistically update UI immediately
+    setIsWishlisted(!wasWishlisted)
+
     try {
-      if (isInWishlist) {
+      if (wasWishlisted) {
         await removeFromWishlistApi({
           productId: product.id,
           variantId: selectedVariant || undefined,
@@ -172,9 +182,11 @@ export function ProductCard({
       }
       onToggleWishlist?.(product.id)
     } catch (error) {
+      // Revert optimistic update on error
+      setIsWishlisted(wasWishlisted)
       toast.error(t('genericErrorTitle'), { description: t('wishlistUpdateFailedDesc') })
     }
-  }, [isAuthenticated, isInWishlist, product.id, product.name, selectedVariant, addToWishlistApi, removeFromWishlistApi, onToggleWishlist, t])
+  }, [addToWishlistApi, isAuthenticated, isWishlisted, onToggleWishlist, openAuthDialog, product.id, product.name, removeFromWishlistApi, selectedVariant, t, toast])
 
   const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -407,16 +419,16 @@ export function ProductCard({
               disabled={isWishlistLoading}
               className={cn(
                 "h-8 w-8 rounded-full transition-all duration-300 flex items-center justify-center border-0 outline-none focus:outline-none",
-                isInWishlist
+                isWishlisted
                   ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30 scale-105 cursor-pointer"
                   : "bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-500 cursor-pointer",
                 isWishlistLoading && "opacity-50 cursor-not-allowed"
               )}
-                title={isInWishlist ? t('removeFromWishlist') : t('addToWishlist')}
+                title={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
             >
               <Heart className={cn(
                 "w-4 h-4 transition-all duration-300",
-                isInWishlist && "fill-current animate-in zoom-in-50"
+                isWishlisted && "fill-current animate-in zoom-in-50"
               )} />
             </button>
             <Button

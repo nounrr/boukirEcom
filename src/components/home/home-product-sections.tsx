@@ -1,12 +1,20 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Package } from 'lucide-react'
 import { useLocale } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/shop/product-card'
+import {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import {
   useGetFeaturedPromoQuery,
   useGetNewArrivalsQuery,
@@ -81,19 +89,30 @@ function ProductRail({
   locale: string
 }) {
   const cardProducts = useMemo(() => products.map((p) => toProductCardModel(p, locale)), [products, locale])
+  const [api, setApi] = useState<CarouselApi | null>(null)
+  const [isPaused, setIsPaused] = useState(false)
+  const canLoop = cardProducts.length > 5
+
+  useEffect(() => {
+    if (!api) return
+    if (isPaused) return
+    if (!canLoop) return
+
+    const id = window.setInterval(() => {
+      api.scrollNext()
+    }, 3200)
+
+    return () => window.clearInterval(id)
+  }, [api, canLoop, isPaused])
 
   return (
     <section className="py-10">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16">
         <div className="flex items-end justify-between gap-4 mb-6">
           <div className="min-w-0">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-              {title}
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{title}</h2>
             {description ? (
-              <p className="mt-1 text-sm md:text-base text-muted-foreground">
-                {description}
-              </p>
+              <p className="mt-1 text-sm md:text-base text-muted-foreground">{description}</p>
             ) : null}
           </div>
 
@@ -106,20 +125,23 @@ function ProductRail({
         </div>
 
         {isLoading ? (
-          <div className="flex gap-4 overflow-x-auto pb-2 -mx-2 px-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="shrink-0 w-[280px] rounded-2xl border border-border/30 bg-card overflow-hidden"
-              >
-                <div className="h-[280px] bg-muted animate-pulse" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-muted/70 animate-pulse rounded" />
-                  <div className="h-4 bg-muted/50 animate-pulse rounded w-2/3" />
-                  <div className="h-6 bg-muted/60 animate-pulse rounded w-1/3" />
-                </div>
-              </div>
-            ))}
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+            <Carousel className="relative" opts={{ align: 'start' }}>
+              <CarouselContent className="cursor-grab select-none active:cursor-grabbing">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <CarouselItem key={i} className="basis-[260px] sm:basis-[280px]">
+                    <div className="w-full rounded-2xl border border-border/30 bg-card overflow-hidden">
+                      <div className="h-[280px] bg-muted animate-pulse" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-muted/70 animate-pulse rounded" />
+                        <div className="h-4 bg-muted/50 animate-pulse rounded w-2/3" />
+                        <div className="h-6 bg-muted/60 animate-pulse rounded w-1/3" />
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
         ) : cardProducts.length === 0 ? (
           <div className="border border-border/40 rounded-xl bg-card p-8 text-center">
@@ -129,12 +151,37 @@ function ProductRail({
             <p className="text-sm text-muted-foreground">Aucun produit pour le moment.</p>
           </div>
         ) : (
-          <div className="flex gap-4 overflow-x-auto pb-2 -mx-2 px-2">
-            {cardProducts.map((p) => (
-              <div key={p.id} className="shrink-0 w-[280px]">
-                <ProductCard product={p} viewMode="grid" />
-              </div>
-            ))}
+              <div
+                className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onFocusCapture={() => setIsPaused(true)}
+                onBlurCapture={() => setIsPaused(false)}
+              >
+                <Carousel
+                  className="relative"
+                  opts={{
+                    loop: canLoop,
+                    align: 'start',
+                    slidesToScroll: 1,
+                  }}
+                  setApi={(a) => setApi(a)}
+                >
+                  <CarouselContent className="cursor-grab select-none active:cursor-grabbing">
+                    {cardProducts.map((p) => (
+                  <CarouselItem key={p.id} className="basis-[260px] sm:basis-[280px]">
+                    <ProductCard product={p} viewMode="grid" />
+                  </CarouselItem>
+                ))}
+                  </CarouselContent>
+
+                  {cardProducts.length > 5 && (
+                    <>
+                      <CarouselPrevious className="-left-4" />
+                      <CarouselNext className="-right-4" />
+                    </>
+                  )}
+                </Carousel>
           </div>
         )}
       </div>
