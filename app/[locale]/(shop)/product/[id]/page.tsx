@@ -21,6 +21,7 @@ import { Heart, Minus, Package, Plus, Share2, ShoppingCart, Tag } from "lucide-r
 import { useLocale, useTranslations } from "next-intl"
 import { notFound, useParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
+import DOMPurify from "dompurify"
 
 export default function ProductPage() {
   const params = useParams()
@@ -53,6 +54,26 @@ export default function ProductPage() {
       return value || fallback
     }
   }, [locale])
+
+  const getLocalizedDescription = useMemo(() => {
+    return (data: any): string => {
+      const fallback = (data?.description ?? "").toString()
+
+      const candidate =
+        locale === "ar"
+          ? data?.description_ar
+          : locale === "en"
+            ? data?.description_en
+            : locale === "zh"
+              ? data?.description_zh
+              : data?.description
+
+      const value = (candidate ?? "").toString().trim()
+      return value || fallback
+    }
+  }, [locale])
+
+  const looksLikeHtml = (value: string) => /<\s*\/?\s*[a-z][\s\S]*>/i.test(value)
 
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
@@ -571,12 +592,32 @@ export default function ProductPage() {
             <Separator />
 
             {/* Description */}
-            {product.description && (
+            {getLocalizedDescription(product) && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">{t("descriptionHeading")}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {product.description}
-                </p>
+                {(() => {
+                  const desc = getLocalizedDescription(product)
+                  if (!desc) return null
+
+                  if (looksLikeHtml(desc)) {
+                    const clean = DOMPurify.sanitize(desc, {
+                      USE_PROFILES: { html: true },
+                    })
+
+                    return (
+                      <div
+                        className="text-sm text-muted-foreground leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: clean }}
+                      />
+                    )
+                  }
+
+                  return (
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {desc}
+                    </p>
+                  )
+                })()}
               </div>
             )}
           </div>
