@@ -129,7 +129,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
       {list.map((variant) => {
         // Use the variant value (e.g. "Beige Sable") as the color key,
         // just like product-filters does when mapping availableColors
@@ -167,7 +167,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               onClick={() => available && onSelect(variant)}
               disabled={!available}
               className={cn(
-                "w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
+                "w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
                 selectedId === variant.id ? "border-primary scale-110 shadow-md" : "border-border hover:border-border/60 hover:scale-105",
                 !available && "opacity-30 cursor-not-allowed"
               )}
@@ -193,7 +193,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               onClick={() => available && onSelect(variant)}
               disabled={!available}
               className={cn(
-                "px-2 py-1 text-xs font-semibold rounded-md border transition-all duration-200 min-w-8 flex items-center justify-center gap-1",
+                "px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-xs font-semibold rounded-md border transition-all duration-200 min-w-7 sm:min-w-8 flex items-center justify-center gap-1",
                 selectedId === variant.id
                   ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
                   : "border-border hover:border-primary/50 hover:bg-muted/50 text-foreground",
@@ -212,7 +212,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
             onClick={() => available && onSelect(variant)}
             disabled={!available}
             className={cn(
-              "px-2 py-1 text-xs font-medium rounded-md border transition-all duration-200 flex items-center gap-1",
+              "px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-xs font-medium rounded-md border transition-all duration-200 flex items-center gap-1",
               selectedId === variant.id
                 ? "bg-primary text-primary-foreground border-primary"
                 : "border-border hover:border-primary/50 hover:bg-muted/50",
@@ -226,7 +226,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
         )
       })}
       {variants.length > max && (
-        <span className="text-[10px] font-medium text-muted-foreground px-1.5 py-0.5 bg-muted/50 rounded">+{variants.length - max}</span>
+        <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground px-1.5 py-0.5 bg-muted/50 rounded">+{variants.length - max}</span>
       )}
     </div>
   )

@@ -1,10 +1,12 @@
 "use client"
 
+import { useCallback, useMemo, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { toAbsoluteImageUrl } from "@/lib/image-url"
+import { ChevronLeft, ChevronRight, Package } from "lucide-react"
 
 export interface GalleryImage { id: number; image_url: string }
 
@@ -37,8 +39,26 @@ export function ProductGallery({
   thumbsOnRight = false,
   thumbsOnLeft = false,
 }: ProductGalleryProps) {
+  const [brokenIds, setBrokenIds] = useState<Set<number>>(() => new Set())
+
+  const markBroken = useCallback((id: number) => {
+    setBrokenIds((prev) => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+  }, [])
+
+  const resolvedImages = useMemo(() => {
+    return (Array.isArray(images) ? images : []).map((img) => ({
+      ...img,
+      resolvedSrc: toAbsoluteImageUrl(img.image_url),
+    }))
+  }, [images])
+
   const hasImages = Array.isArray(images) && images.length > 0
-  const current = hasImages ? images[Math.max(0, Math.min(selectedIndex, images.length - 1))] : undefined
+  const current = hasImages ? resolvedImages[Math.max(0, Math.min(selectedIndex, resolvedImages.length - 1))] : undefined
 
   const goPrev = () => onSelectedChange((selectedIndex - 1 + images.length) % images.length)
   const goNext = () => onSelectedChange((selectedIndex + 1) % images.length)
@@ -49,7 +69,7 @@ export function ProductGallery({
         className="flex flex-col gap-2"
         style={{ maxHeight: maxHeight, overflowY: "auto" }}
       >
-        {images.map((image, index) => (
+        {resolvedImages.map((image, index) => (
           <button
             key={image.id}
             onClick={() => onSelectedChange(index)}
@@ -61,7 +81,19 @@ export function ProductGallery({
             )}
             style={{ width: thumbSize, height: thumbSize }}
           >
-            <Image src={image.image_url} alt={`Image ${index + 1}`} fill className="object-cover" />
+            {image.resolvedSrc && !brokenIds.has(image.id) ? (
+              <Image
+                src={image.resolvedSrc}
+                alt={`Image ${index + 1}`}
+                fill
+                className="object-cover"
+                onError={() => markBroken(image.id)}
+              />
+            ) : (
+              <div className="absolute inset-0 grid place-items-center">
+                <Package className="h-5 w-5 text-muted-foreground/40" />
+              </div>
+            )}
           </button>
         ))}
       </div>
@@ -87,17 +119,18 @@ export function ProductGallery({
             }
           }}
         >
-        {current?.image_url ? (
+          {current?.resolvedSrc && !brokenIds.has(current.id) ? (
           <Image
-            src={current.image_url}
+              src={current.resolvedSrc}
               alt={altText}
             fill
             className="object-cover"
             priority
+              onError={() => markBroken(current.id)}
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            {/* fallback is handled by parent */}
+              <div className="absolute inset-0 grid place-items-center">
+                <Package className="h-14 w-14 text-muted-foreground/25" />
           </div>
         )}
 
@@ -157,7 +190,7 @@ export function ProductGallery({
             verticalThumbs
           ) : (
             <div className="flex flex-wrap gap-1">
-              {images.map((image, index) => (
+                {resolvedImages.map((image, index) => (
                 <button
                   key={image.id}
                   onClick={() => onSelectedChange(index)}
@@ -169,7 +202,19 @@ export function ProductGallery({
                   )}
                   style={{ width: thumbSize, height: thumbSize }}
                 >
-                  <Image src={image.image_url} alt={`Image ${index + 1}`} fill className="object-cover" />
+                  {image.resolvedSrc && !brokenIds.has(image.id) ? (
+                    <Image
+                      src={image.resolvedSrc}
+                      alt={`Image ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      onError={() => markBroken(image.id)}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 grid place-items-center">
+                      <Package className="h-5 w-5 text-muted-foreground/40" />
+                    </div>
+                  )}
                 </button>
               ))}
               </div>

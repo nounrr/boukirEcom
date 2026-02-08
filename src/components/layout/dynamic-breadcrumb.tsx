@@ -161,7 +161,12 @@ export function DynamicBreadcrumb() {
 
   React.useEffect(() => {
     const updateMaxItems = () => {
-      setMaxItems(window.innerWidth >= 768 ? segments.length : 2)
+      // Mobile app feel: keep breadcrumbs compact on smaller screens.
+      // - < md: show last 2
+      // - md: show last 3
+      // - lg+: show full trail
+      const w = window.innerWidth
+      setMaxItems(w >= 1024 ? segments.length : w >= 768 ? 3 : 2)
     }
     updateMaxItems()
     window.addEventListener('resize', updateMaxItems)
@@ -172,15 +177,15 @@ export function DynamicBreadcrumb() {
 
   return (
     <div className="bg-background/60 backdrop-blur-sm border-b border-border/20">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-16 py-2 sm:py-3 md:py-4">
         <Breadcrumb>
-          <BreadcrumbList className="flex-wrap gap-1.5">
+          <BreadcrumbList className="flex-nowrap md:flex-wrap gap-1 overflow-x-auto md:overflow-visible">
             <BreadcrumbItem>
               <BreadcrumbLink 
                 href={`/${locale}`} 
-                className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+                className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               >
-                <Home className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200" />
+                <Home className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-200" />
                 <span className="hidden md:inline text-sm font-medium">{t('home')}</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -188,12 +193,12 @@ export function DynamicBreadcrumb() {
             {hiddenItems.length > 0 && (
               <>
                 <BreadcrumbSeparator>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+                  <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground/50" />
                 </BreadcrumbSeparator>
                 <BreadcrumbItem>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200">
-                      <BreadcrumbEllipsis className="h-3.5 w-3.5" />
+                    <DropdownMenuTrigger className="flex items-center gap-1 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                      <BreadcrumbEllipsis className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       <span className="sr-only">{t('showMore')}</span>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="bg-background/98 backdrop-blur-xl border-border/40 shadow-xl">
@@ -219,25 +224,25 @@ export function DynamicBreadcrumb() {
               return (
                 <React.Fragment key={item.href}>
                   <BreadcrumbSeparator>
-                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground/50" />
                   </BreadcrumbSeparator>
                   <BreadcrumbItem>
                     {item.active ? (
-                      <BreadcrumbPage className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 text-primary">
-                        {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
-                        <span className="text-sm font-semibold inline-block truncate max-w-60 sm:max-w-90 md:max-w-[560px] lg:max-w-[720px]">
+                      <BreadcrumbPage className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary">
+                        {Icon && <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />}
+                        <span className="text-[11px] sm:text-sm font-semibold inline-block truncate max-w-56 sm:max-w-90 md:max-w-[560px] lg:max-w-[720px]">
                           {item.title}
                         </span>
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink 
                         href={item.href} 
-                        className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+                          className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                       >
-                          {Icon && <Icon className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200 shrink-0" />}
-                        <span className="text-sm font-medium">{item.title}</span>
+                          {Icon && <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-200 shrink-0" />}
+                          <span className="font-medium">{item.title}</span>
                         {item.filter && (
-                          <span className="ml-1 text-xs text-muted-foreground/70 italic">
+                            <span className="ml-1 text-[10px] sm:text-xs text-muted-foreground/70 italic">
                             ({item.filter})
                           </span>
                         )}

@@ -36,6 +36,7 @@ import { InvoiceDialog } from "@/components/invoice/invoice-dialog"
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { isOutOfStockLike } from "@/lib/stock"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
@@ -696,6 +697,7 @@ export default function OrderDetailsPage() {
   const locale = useLocale()
   const t = useTranslations("orderDetailsPage")
   const tCommon = useTranslations("common")
+  const tProductCard = useTranslations("productCard")
   const currency = tCommon("currency")
   const empty = t("placeholder")
 
@@ -722,25 +724,40 @@ export default function OrderDetailsPage() {
   const handleBuyAgain = async (item: any) => {
     if (!cartRef?.current) return
 
-    cartRef.current.addItem({
-      productId: item.productId,
-      variantId: item.variantId,
-      unitId: item.unitId ?? item.unit_id,
-      unitName: item.unitName ?? item.unit_name,
-      variantName: item.variantName ?? item.variant_name,
-      name: item.productName,
-      price: item.unitPrice,
-      quantity: item.quantity,
-      image: item.imageUrl || "",
-      category: "",
-      stock: 999,
-    })
+    if (isOutOfStockLike(item as any)) {
+      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
+      return
+    }
 
-    toast.success(t("toast.addedToCartTitle"), { description: item.productName })
+    try {
+      await cartRef.current.addItem({
+        productId: item.productId,
+        variantId: item.variantId,
+        unitId: item.unitId ?? item.unit_id,
+        unitName: item.unitName ?? item.unit_name,
+        variantName: item.variantName ?? item.variant_name,
+        name: item.productName,
+        price: item.unitPrice,
+        quantity: item.quantity,
+        image: item.imageUrl || "",
+        category: "",
+      })
 
-    setTimeout(() => {
-      cartRef.current?.open()
-    }, 250)
+      toast.success(t("toast.addedToCartTitle"), { description: item.productName })
+
+      setTimeout(() => {
+        cartRef.current?.open()
+      }, 250)
+    } catch (error) {
+      const data = (error as any)?.data
+      const code = data?.code || data?.error
+      const message = data?.message
+      if (code === "out_of_stock" || message === "out_of_stock") {
+        toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
+      } else {
+        toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
+      }
+    }
   }
 
   if (!isAuthenticated) {
@@ -990,7 +1007,8 @@ export default function OrderDetailsPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleBuyAgain(item)}
-                          className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
+                          disabled={isOutOfStockLike(item as any)}
+                          className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           {t("actions.buyAgain")}

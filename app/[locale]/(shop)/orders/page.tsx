@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { isOutOfStockLike } from "@/lib/stock"
 import { endOfDay, format, startOfDay, startOfMonth, startOfWeek } from "date-fns"
 import { arSA, enUS, fr, zhCN } from "date-fns/locale"
 import { type DateRange } from "react-day-picker"
@@ -25,6 +26,8 @@ import { type DateRange } from "react-day-picker"
 export default function OrdersPage() {
   const locale = useLocale()
   const t = useTranslations("ordersPage")
+  const tCommon = useTranslations("common")
+  const tProductCard = useTranslations("productCard")
   const { isAuthenticated, user } = useAppSelector((state) => state.user)
   const { cartRef } = useCart()
   const toast = useToast()
@@ -175,8 +178,15 @@ export default function OrdersPage() {
   const isTrulyEmpty = isEmpty && !hasActiveFilters
 
   const handleBuyAgain = async (item: any) => {
-    if (cartRef?.current) {
-      cartRef.current.addItem({
+    if (!cartRef?.current) return
+
+    if (isOutOfStockLike(item)) {
+      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
+      return
+    }
+
+    try {
+      await cartRef.current.addItem({
         productId: item.productId,
         variantId: item.variantId,
         unitId: item.unitId ?? item.unit_id,
@@ -187,14 +197,22 @@ export default function OrdersPage() {
         quantity: item.quantity,
         image: item.imageUrl || '',
         category: '',
-        stock: 999,
       })
 
       toast.success(t("toast.addedToCartTitle"), { description: item.productName })
-      
+
       setTimeout(() => {
         cartRef.current?.open()
       }, 300)
+    } catch (error) {
+      const data = (error as any)?.data
+      const code = data?.code || data?.error
+      const message = data?.message
+      if (code === "out_of_stock" || message === "out_of_stock") {
+        toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
+      } else {
+        toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
+      }
     }
   }
 

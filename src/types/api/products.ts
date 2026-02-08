@@ -106,6 +106,7 @@ export interface ProductListItem {
   image_url: string;
   gallery: ProductGalleryImage[];
   quantite_disponible: number;
+  purchase_limit?: number;
   has_variants: boolean;
   is_obligatoire_variant?: boolean;
   isObligatoireVariant?: boolean;
@@ -136,6 +137,7 @@ export interface ProductDetail extends Omit<ProductListItem, 'variants'> {
   kg: number | null;
   est_service: boolean;
   in_stock: boolean;
+  purchase_limit?: number;
   variants: {
     id: number;
     variant_name: string;

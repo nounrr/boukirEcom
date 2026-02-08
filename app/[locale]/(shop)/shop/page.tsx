@@ -10,9 +10,35 @@ import { Button } from "@/components/ui/button"
 import { SlidersHorizontal, Grid3x3, LayoutGrid, Package } from "lucide-react"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useLocale } from "next-intl"
+import type { ProductCategory, ProductBrand } from "@/types/api/products"
+
+function getCategoryLabel(
+  category: ProductCategory | undefined,
+  locale: string
+) {
+  if (!category) return ''
+  if (locale === 'ar') return category.nom_ar || category.nom
+  if (locale === 'en') return category.nom_en || category.nom
+  if (locale === 'zh') return category.nom_zh || category.nom
+  return category.nom
+}
+
+function flattenCategories(categories: ProductCategory[]): ProductCategory[] {
+  const out: ProductCategory[] = []
+  const visit = (node: ProductCategory) => {
+    out.push(node)
+    if (node.children && node.children.length) {
+      for (const child of node.children) visit(child)
+    }
+  }
+  for (const c of categories) visit(c)
+  return out
+}
 
 export default function ShopPage() {
   const t = useTranslations('shop')
+  const locale = useLocale()
 
   const router = useRouter()
   const pathname = usePathname()
@@ -80,7 +106,7 @@ export default function ShopPage() {
 
   const [filterState, setFilterState] = useState<FilterState>(() => urlFilters)
 
-  const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false)
 
   // Keep state aligned when user uses browser back/forward or manual URL edits
@@ -163,6 +189,31 @@ export default function ShopPage() {
   const products = data?.products || []
   const pagination = data?.pagination
 
+  const selectedCategoryLabels = useMemo(() => {
+    if (!filterState.categories.length) return []
+
+    const flat = flattenCategories(categories as ProductCategory[])
+    const map = new Map<number, ProductCategory>()
+    for (const c of flat) map.set(c.id, c)
+
+    return filterState.categories
+      .map((id) => map.get(id))
+      .filter(Boolean)
+      .map((c) => getCategoryLabel(c, locale))
+      .filter(Boolean)
+  }, [categories, filterState.categories, locale])
+
+  const selectedBrandLabels = useMemo(() => {
+    if (!filterState.brands.length) return []
+
+    const map = new Map<number, ProductBrand>()
+    for (const b of brands as ProductBrand[]) map.set(b.id, b)
+
+    return filterState.brands
+      .map((id) => map.get(id)?.nom)
+      .filter(Boolean) as string[]
+  }, [brands, filterState.brands])
+
   const handleFilterChange = useCallback((filters: FilterState) => {
     setFilterState(filters)
   }, [])
@@ -187,19 +238,49 @@ export default function ShopPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
+  const viewToggle = (
+    <div className="flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-full bg-muted/40 px-1.5 sm:px-2 shadow-sm ring-1 ring-border/30">
+      <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
+      <div className="flex items-center gap-1" aria-label="Mode d'affichage">
+        <Button
+          type="button"
+          variant={viewMode === 'grid' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setViewMode('grid')}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
+          aria-pressed={viewMode === 'grid'}
+          aria-label="Grille compacte"
+        >
+          <Grid3x3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant={viewMode === 'list' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setViewMode('list')}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
+          aria-pressed={viewMode === 'list'}
+          aria-label="Liste"
+        >
+          <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </Button>
+      </div>
+    </div>
+  )
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
         {/* Toolbar: filter toggle, results, view toggle */}
         <div className="mb-5 rounded-2xl border border-border/40 bg-card/60 px-5 py-3 shadow-sm backdrop-blur-sm">
-          <div className="grid grid-cols-3 items-center gap-4">
-            {/* Left: Filters toggle */}
-            <div className="flex items-center">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left: Desktop filters collapse toggle */}
+            <div className="hidden lg:flex items-center">
               <Button
                 type="button"
                 variant="default"
                 size="sm"
-                className="hidden gap-2 rounded-full px-4 py-2 text-sm font-medium lg:inline-flex bg-primary text-white hover:bg-primary/90"
+                className="gap-2 rounded-full px-4 py-2 text-sm font-medium bg-primary text-white hover:bg-primary/90"
                 onClick={() => setIsFiltersCollapsed(prev => !prev)}
               >
                 <SlidersHorizontal className="h-4 w-4" />
@@ -241,41 +322,15 @@ export default function ShopPage() {
               )}
             </div>
 
-            {/* Right: View mode toggle (eye comfort) */}
-            <div className="flex items-center justify-end">
-              <div className="flex items-center gap-2 rounded-full bg-muted/40 px-2 py-1 shadow-sm ring-1 ring-border/30">
-                <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
-                <div className="flex items-center gap-1" aria-label="Mode d'affichage">
-                  <Button
-                    type="button"
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                    className="h-9 w-9 p-0 rounded-full"
-                    aria-pressed={viewMode === 'grid'}
-                    aria-label="Grille compacte"
-                  >
-                    <Grid3x3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={viewMode === 'large' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('large')}
-                    className="h-9 w-9 p-0 rounded-full"
-                    aria-pressed={viewMode === 'large'}
-                    aria-label="Vue confortable"
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+            {/* Right: View mode toggle (desktop) */}
+            <div className="hidden lg:flex items-center justify-end">
+              {viewToggle}
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row">
             {/* Filters Sidebar */}
             <ProductFilters
               onFilterChange={handleFilterChange}
@@ -289,6 +344,7 @@ export default function ShopPage() {
               isLoading={isLoading || isFetching}
             isCollapsed={isFiltersCollapsed}
             onCollapsedChange={setIsFiltersCollapsed}
+            mobileActionSlot={viewToggle}
             />
 
             {/* Products List */}
@@ -297,6 +353,8 @@ export default function ShopPage() {
               isLoading={isLoading}
               isFetching={isFetching}
               error={error}
+            selectedCategoryLabels={selectedCategoryLabels}
+            selectedBrandLabels={selectedBrandLabels}
               pagination={pagination}
               onPageChange={handlePageChange}
               onAddToCart={handleAddToCart}

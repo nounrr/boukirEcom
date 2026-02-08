@@ -10,13 +10,22 @@ import { useAppSelector } from "@/state/hooks"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 
-export function WishlistIcon({ tone = "default" }: { tone?: "default" | "onPrimary" }) {
+export function WishlistIcon({
+  tone = "default",
+  size = "md",
+}: {
+  tone?: "default" | "onPrimary"
+  size?: "sm" | "md"
+}) {
   const locale = useLocale()
   const tCommon = useTranslations('common')
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const [prevCount, setPrevCount] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  
+
+  const iconClassName = size === "sm" ? "w-4 h-4" : "w-4.5 h-4.5"
+  const badgeClassName = size === "sm" ? "h-4 w-4 text-[9px]" : "h-4.5 w-4.5 text-[10px]"
+
   // Fetch wishlist only if authenticated - with auto-refetch on focus/reconnect
   const { data: wishlist } = useGetWishlistQuery(undefined, {
     skip: !isAuthenticated,
@@ -50,14 +59,16 @@ export function WishlistIcon({ tone = "default" }: { tone?: "default" | "onPrima
       >
         <Heart
           className={cn(
-            "w-4.5 h-4.5 transition-colors duration-200",
+            iconClassName,
+            "transition-colors duration-200",
             tone === "onPrimary" ? "text-white/85 group-hover:text-white" : "text-muted-foreground group-hover:text-foreground",
           )}
         />
         {itemCount > 0 && (
           <Badge
             className={cn(
-              "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 h-4.5 w-4.5 flex items-center justify-center p-0 text-[10px] font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+              "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+              badgeClassName,
               tone === "onPrimary"
                 ? "bg-white text-primary border border-white/70 shadow-black/10 hover:bg-white/90 hover:border-white/90 hover:shadow-black/20 group-hover:bg-white/90 group-hover:border-white/90 group-hover:shadow-black/20"
                 : "bg-primary text-primary-foreground shadow-primary/20 border border-background hover:bg-primary/90 hover:shadow-primary/30 group-hover:bg-primary/90 group-hover:shadow-primary/30",

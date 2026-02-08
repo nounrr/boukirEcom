@@ -434,6 +434,9 @@
     "featureQualityDesc": "为专业人士精心挑选的产品。"
   },
   "productsList": {
+    "filtersSummaryLabel": "筛选条件",
+    "categoryLabel": "分类",
+    "brandLabel": "品牌",
     "errorTitle": "无法加载商品",
     "errorDescription": "加载商品时发生错误，请稍后再试。",
     "retry": "重试",
@@ -459,7 +462,8 @@
     "variantRequiredTitle": "请选择规格",
     "variantRequiredDesc": "该规格为必选项。",
     "variantLabelFallback": "规格",
-    "lowStock": "仅剩 {count} 件"
+    "lowStock": "仅剩 {count} 件库存",
+    "maxQuantityReachedDesc": "已达到最大可购买数量"
   },
   "productPage": {
     "inStock": "有货",
@@ -513,6 +517,8 @@
       "quantityUpdatedTitle": "数量已更新",
       "quantityUpdateFailedDesc": "无法更新数量",
       "removedTitle": "已从购物车移除",
+      "maxQuantityReachedDesc": "已达到最大可购买数量",
+      "stockChangedDesc": "库存已变动，请更新购物车",
       "removeFailedDesc": "无法移除商品"
     },
     "labels": {
@@ -549,7 +555,9 @@
       "removeFailedDesc": "无法移除商品",
       "notFoundDesc": "心愿单中未找到该商品",
       "addedToCartTitle": "已加入购物车",
-      "addToCartFailedDesc": "无法加入购物车"
+      "addToCartFailedDesc": "无法加入购物车",
+      "maxQuantityReachedDesc": "已达到最大可购买数量",
+      "stockChangedDesc": "库存已变动，请更新购物车"
     },
     "viewProduct": "查看商品",
     "saveAmount": "立省 {amount} {currency}",
@@ -607,17 +615,36 @@
     "myAccount": "我的账户",
     "subscription": "订阅"
   },
+  "contactPage": {
+    "badge": "信息与路线",
+    "title": "联系我们",
+    "description": "查看 Boukir Diamond 的完整信息：电话、邮箱、地址以及 Google 地图路线。",
+    "openInMaps": "在 Google 地图中打开",
+    "detailsTitle": "联系信息",
+    "detailsDesc": "如有任何问题或需求，欢迎联系我们。",
+    "noPhone": "暂无电话信息。",
+    "serviceChargeLabel": "客服",
+    "emailLabel": "邮箱",
+    "addressLabel": "地址",
+    "hoursLabel": "营业时间",
+    "mapDesc": "交互式地图，帮助你找到门店。"
+  },
   "header": {
     "home": "首页",
+    "categories": "分类",
     "shop": "商店",
     "products": "产品",
     "searchPlaceholder": "搜索产品...",
     "profile": "我的资料",
     "orders": "我的订单",
     "settings": "设置",
+    "open": "打开",
+    "close": "关闭",
+    "contactUs": "联系我们",
     "logout": "退出登录",
     "login": "登录",
-    "register": "注册"
+    "register": "注册",
+    "view": "查看"
   },
   "headerSearch": {
     "placeholder": "搜索商品、品牌…",
@@ -629,7 +656,9 @@
     "loading": "搜索中…",
     "empty": "暂无建议",
     "recent": "最近",
-    "noResults": "没有找到相关商品"
+    "noResults": "没有找到相关商品",
+    "category": "分类",
+    "brand": "品牌"
   },
   "breadcrumb": {
     "home": "首页",
@@ -765,7 +794,11 @@
     "browseProducts": "浏览商品",
     "variantLabel": "规格",
     "unitLabel": "单位",
-    "viewCart": "查看购物车"
+    "viewCart": "查看购物车",
+    "toast": {
+      "maxQuantityReachedDesc": "已达到最大可购买数量",
+      "stockChangedDesc": "库存已变动，请更新购物车"
+    }
   },
   "checkout": {
     "title": "结算",
@@ -1059,6 +1092,18 @@
     "paymentMethodsList": "银行卡、转账、货到付款",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "保留所有权利。",
-    "bottomTagline": "摩洛哥电商平台 • 快速配送 • 安全支付"
+    "bottomTagline": "摩洛哥电商平台 • 快速配送 • 安全支付",
+    "storeLocationTitle": "门店位置",
+    "storeLocationDesc": "在 Google 地图上查看我们的门店位置。",
+    "openInMaps": "在 Google 地图中打开",
+    "storeLocationUnavailable": "坐标即将提供。",
+    "storeContactTitle": "联系方式",
+    "storeContactDesc": "客服与门店信息。",
+    "storeContactPhone": "电话:",
+    "storeContactServiceCharge": "服务电话:",
+    "storeContactEmail": "邮箱:",
+    "storeContactAddress": "地址:",
+    "storeContactHours": "营业时间:",
+    "storeContactUnavailable": "联系方式即将提供。"
   }
 }

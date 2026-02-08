@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react"
 import { Download, Receipt } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
+import { NextIntlClientProvider } from "next-intl"
 
 import type { Order } from "@/types/order"
 import type { User } from "@/state/slices/user-slice"
@@ -13,6 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/hooks/use-toast"
 import { downloadPdfFromReactElement } from "@/lib/pdf/generate-pdf-from-react"
 import { InvoicePrintTemplate } from "@/components/invoice/invoice-print-template"
+import { loadInvoiceMessages } from "@/components/invoice/invoice-messages"
 
 export function InvoiceDialog({
   order,
@@ -64,8 +66,14 @@ export function InvoiceDialog({
   const onDownload = async () => {
     try {
       setIsGenerating(true)
+
+      const messages = await loadInvoiceMessages(invoiceLocale)
       await downloadPdfFromReactElement({
-        element: <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />,
+        element: (
+          <NextIntlClientProvider locale={invoiceLocale} messages={messages}>
+            <InvoicePrintTemplate order={order} buyer={buyer} locale={invoiceLocale} dir={invoiceDir} lang={invoiceLang} />
+          </NextIntlClientProvider>
+        ),
         fileName,
         paper: "a4",
       })

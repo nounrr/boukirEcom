@@ -434,6 +434,9 @@
     "featureQualityDesc": "Une sélection pensée pour les pros."
   },
   "productsList": {
+    "filtersSummaryLabel": "Filtré par",
+    "categoryLabel": "Catégorie",
+    "brandLabel": "Marque",
     "errorTitle": "Impossible de charger les produits",
     "errorDescription": "Une erreur s'est produite lors du chargement des produits. Veuillez réessayer plus tard.",
     "retry": "Réessayer",
@@ -459,7 +462,8 @@
     "variantRequiredTitle": "Veuillez sélectionner une variante",
     "variantRequiredDesc": "Cette variante est obligatoire.",
     "variantLabelFallback": "Variante",
-    "lowStock": "Plus que {count, plural, one {# en stock} other {# en stock}}"
+    "lowStock": "Plus que {count, plural, one {# en stock} other {# en stock}}",
+    "maxQuantityReachedDesc": "Quantité maximale atteinte"
   },
   "productPage": {
     "inStock": "En stock",
@@ -513,6 +517,8 @@
       "quantityUpdatedTitle": "Quantité mise à jour",
       "quantityUpdateFailedDesc": "Impossible de mettre à jour la quantité",
       "removedTitle": "Retiré du panier",
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier",
       "removeFailedDesc": "Impossible de retirer le produit"
     },
     "labels": {
@@ -549,7 +555,9 @@
       "removeFailedDesc": "Impossible de retirer le produit",
       "notFoundDesc": "Produit introuvable dans les favoris",
       "addedToCartTitle": "Ajouté au panier",
-      "addToCartFailedDesc": "Impossible d'ajouter au panier"
+      "addToCartFailedDesc": "Impossible d'ajouter au panier",
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier"
     },
     "viewProduct": "Voir le produit",
     "saveAmount": "Économisez {amount} {currency}",
@@ -607,6 +615,21 @@
     "myAccount": "Mon compte",
     "subscription": "Abonnement"
   },
+  "contactPage": {
+    "badge": "Informations & itinéraire",
+    "title": "Contact",
+    "description": "Retrouvez toutes les informations de Boukir Diamond : téléphones, email, adresse et accès via Google Maps.",
+    "openInMaps": "Ouvrir dans Google Maps",
+    "detailsTitle": "Coordonnées",
+    "detailsDesc": "Contactez-nous pour toute question ou demande.",
+    "noPhone": "Téléphone indisponible.",
+    "serviceChargeLabel": "Service client",
+    "emailLabel": "Email",
+    "addressLabel": "Adresse",
+    "hoursLabel": "Horaires",
+    "mapTitle": "Notre emplacement",
+    "mapDesc": "Carte interactive pour vous guider vers le magasin."
+  },
   "header": {
     "home": "Accueil",
     "categories": "Catégories",
@@ -616,9 +639,13 @@
     "profile": "Mon profil",
     "orders": "Mes commandes",
     "settings": "Paramètres",
+    "open": "Ouvrir",
+    "close": "Fermer",
+    "contactUs": "Contactez-nous",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "register": "S'inscrire"
+    "register": "S'inscrire",
+    "view": "Voir"
   },
   "headerSearch": {
     "placeholder": "Rechercher un produit, une marque…",
@@ -630,7 +657,9 @@
     "loading": "Recherche…",
     "empty": "Aucune suggestion",
     "recent": "Récent",
-    "noResults": "Aucun résultat produit"
+    "noResults": "Aucun résultat produit",
+    "category": "Catégorie",
+    "brand": "Marque"
   },
   "breadcrumb": {
     "home": "Accueil",
@@ -766,7 +795,11 @@
     "browseProducts": "Parcourir les produits",
     "variantLabel": "Variante",
     "unitLabel": "Unité",
-    "viewCart": "Voir le panier"
+    "viewCart": "Voir le panier",
+    "toast": {
+      "maxQuantityReachedDesc": "Quantité maximale atteinte",
+      "stockChangedDesc": "Le stock a changé, mettez à jour votre panier"
+    }
   },
   "checkout": {
     "title": "Finaliser la commande",
@@ -1087,7 +1120,19 @@
     "paymentMethodsList": "Carte bancaire, virement, paiement à la livraison",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "Tous droits réservés.",
-    "bottomTagline": "Marketplace marocaine • Livraison rapide • Paiement sécurisé"
+    "bottomTagline": "Marketplace marocaine • Livraison rapide • Paiement sécurisé",
+    "storeLocationTitle": "Notre magasin",
+    "storeLocationDesc": "Retrouvez notre boutique sur Google Maps.",
+    "openInMaps": "Ouvrir dans Google Maps",
+    "storeLocationUnavailable": "Coordonnées bientôt disponibles.",
+    "storeContactTitle": "Contact",
+    "storeContactDesc": "Service client et informations du magasin.",
+    "storeContactPhone": "Tél:",
+    "storeContactServiceCharge": "Service charge:",
+    "storeContactEmail": "Email:",
+    "storeContactAddress": "Adresse:",
+    "storeContactHours": "Horaires:",
+    "storeContactUnavailable": "Informations de contact bientôt disponibles."
   },
   "toast": {
     "auth": {

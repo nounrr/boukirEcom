@@ -2,7 +2,7 @@
 
 import { Sparkles } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { ProductCard } from './product-card'
+import { ProductCardTile } from '@/components/shop/product-card-tile'
 
 function getCategoryLabel(
   category:
@@ -28,7 +28,10 @@ interface ProductSuggestion {
   has_promo: boolean
   image_url: string
   quantite_disponible: number
+  purchase_limit?: number
   has_variants: boolean
+  in_stock?: boolean
+  inStock?: boolean
   categorie: {
     id: number
     nom: string
@@ -61,7 +64,7 @@ export function ProductSuggestions({
   return (
     <div className="space-y-6 pt-8 border-t">
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-linear-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20">
           <Sparkles className="w-5 h-5 text-amber-600" />
         </div>
         <div>
@@ -70,9 +73,9 @@ export function ProductSuggestions({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {productList.map((product) => (
-          <ProductCard
+          <ProductCardTile
             key={product.id}
             product={{
               id: product.id,
@@ -82,6 +85,9 @@ export function ProductSuggestions({
               image: product.image_url || '',
               category: getCategoryLabel(product.categorie, locale),
               stock: product.quantite_disponible,
+              purchase_limit: typeof (product as any).purchase_limit === 'number' ? (product as any).purchase_limit : undefined,
+              in_stock: (product as any).in_stock ?? (product as any).inStock,
+              inStock: (product as any).inStock ?? (product as any).in_stock,
               is_wishlisted: product.is_wishlisted,
               sale: product.pourcentage_promo ? {
                 discount: product.pourcentage_promo,

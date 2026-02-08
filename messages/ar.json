@@ -434,6 +434,9 @@
     "featureQualityDesc": "تشكيلة مختارة للمحترفين."
   },
   "productsList": {
+    "filtersSummaryLabel": "تمت التصفية حسب",
+    "categoryLabel": "الفئة",
+    "brandLabel": "العلامة",
     "errorTitle": "تعذر تحميل المنتجات",
     "errorDescription": "حدث خطأ أثناء تحميل المنتجات. يرجى المحاولة لاحقاً.",
     "retry": "إعادة المحاولة",
@@ -459,7 +462,8 @@
     "variantRequiredTitle": "يرجى اختيار نوع",
     "variantRequiredDesc": "هذا الاختيار مطلوب.",
     "variantLabelFallback": "نوع",
-    "lowStock": "متبقي {count} فقط"
+    "lowStock": "متبقي {count} فقط",
+    "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية"
   },
   "productPage": {
     "inStock": "متوفر",
@@ -513,6 +517,8 @@
       "quantityUpdatedTitle": "تم تحديث الكمية",
       "quantityUpdateFailedDesc": "تعذر تحديث الكمية",
       "removedTitle": "تمت الإزالة من السلة",
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق",
       "removeFailedDesc": "تعذر إزالة المنتج"
     },
     "labels": {
@@ -549,7 +555,9 @@
       "removeFailedDesc": "تعذر إزالة المنتج",
       "notFoundDesc": "لم يتم العثور على المنتج في المفضلة",
       "addedToCartTitle": "تمت الإضافة إلى السلة",
-      "addToCartFailedDesc": "تعذر الإضافة إلى السلة"
+      "addToCartFailedDesc": "تعذر الإضافة إلى السلة",
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق"
     },
     "viewProduct": "عرض المنتج",
     "saveAmount": "وفّر {amount} {currency}",
@@ -607,6 +615,21 @@
     "myAccount": "حسابي",
     "subscription": "الاشتراك"
   },
+  "contactPage": {
+    "badge": "معلومات واتجاهات",
+    "title": "اتصل بنا",
+    "description": "اعثر على جميع معلومات Boukir Diamond: أرقام الهاتف والبريد الإلكتروني والعنوان والاتجاهات عبر خرائط Google.",
+    "openInMaps": "فتح في خرائط Google",
+    "detailsTitle": "بيانات التواصل",
+    "detailsDesc": "تواصل معنا لأي استفسار أو طلب.",
+    "noPhone": "رقم الهاتف غير متوفر.",
+    "serviceChargeLabel": "خدمة العملاء",
+    "emailLabel": "البريد الإلكتروني",
+    "addressLabel": "العنوان",
+    "hoursLabel": "ساعات العمل",
+    "mapTitle": "الموقع",
+    "mapDesc": "خريطة تفاعلية لإرشادك إلى المتجر."
+  },
   "header": {
     "home": "الرئيسية",
     "categories": "الفئات",
@@ -616,9 +639,13 @@
     "profile": "ملفي الشخصي",
     "orders": "طلباتي",
     "settings": "الإعدادات",
+    "open": "فتح",
+    "close": "إغلاق",
+    "contactUs": "تواصل معنا",
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
-    "register": "التسجيل"
+    "register": "التسجيل",
+    "view": "عرض"
   },
   "headerSearch": {
     "placeholder": "ابحث عن منتج أو علامة…",
@@ -630,7 +657,9 @@
     "loading": "جاري البحث…",
     "empty": "لا توجد اقتراحات",
     "recent": "حديثاً",
-    "noResults": "لا توجد نتائج"
+    "noResults": "لا توجد نتائج",
+    "category": "الفئة",
+    "brand": "العلامة"
   },
   "breadcrumb": {
     "home": "الرئيسية",
@@ -766,7 +795,11 @@
     "browseProducts": "تصفح المنتجات",
     "variantLabel": "النوع",
     "unitLabel": "الوحدة",
-    "viewCart": "عرض السلة"
+    "viewCart": "عرض السلة",
+    "toast": {
+      "maxQuantityReachedDesc": "تم الوصول إلى الحد الأقصى للكمية",
+      "stockChangedDesc": "تغير المخزون، حدّث سلة التسوق"
+    }
   },
   "checkout": {
     "title": "إتمام الطلب",
@@ -1087,7 +1120,19 @@
     "paymentMethodsList": "بطاقة، تحويل بنكي، الدفع عند الاستلام",
     "copyrightLine": "© {year} Boukir",
     "rightsReserved": "جميع الحقوق محفوظة.",
-    "bottomTagline": "سوق مغربي • توصيل سريع • دفع آمن"
+    "bottomTagline": "سوق مغربي • توصيل سريع • دفع آمن",
+    "storeLocationTitle": "موقع المتجر",
+    "storeLocationDesc": "اعثر على متجرنا على خرائط Google.",
+    "openInMaps": "فتح في خرائط Google",
+    "storeLocationUnavailable": "سيتم إضافة الإحداثيات قريباً.",
+    "storeContactTitle": "معلومات التواصل",
+    "storeContactDesc": "خدمة العملاء ومعلومات المتجر.",
+    "storeContactPhone": "الهاتف:",
+    "storeContactServiceCharge": "خدمة الشحن:",
+    "storeContactEmail": "البريد الإلكتروني:",
+    "storeContactAddress": "العنوان:",
+    "storeContactHours": "ساعات العمل:",
+    "storeContactUnavailable": "سيتم إضافة معلومات التواصل قريباً."
   },
   "toast": {
     "auth": {

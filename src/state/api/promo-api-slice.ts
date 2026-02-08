@@ -26,6 +26,14 @@ export const promoApiSlice = createApi({
         url: API_CONFIG.ENDPOINTS.PROMO_VALIDATE,
         method: "POST",
         body: data,
+        // Avoid any CDN/browser caching edge-cases (especially when a code is activated after being inactive)
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+        // fetch() RequestInit hint (supported by fetchBaseQuery) — keep as any to avoid TS lib mismatches
+        cache: "no-store" as any,
       }),
     }),
   }),

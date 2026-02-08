@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useMemo, useState } from "react"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useTranslations } from "next-intl"
+import { isOutOfStockLike } from "@/lib/stock"
 
 interface OrderCardProps {
   order: Order
@@ -34,6 +35,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const [open, setOpen] = useState(false)
   const t = useTranslations("orderCard")
   const tCommon = useTranslations("common")
+  const tProductCard = useTranslations("productCard")
 
   const currency = tCommon("currency")
 
@@ -408,8 +410,12 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onBuyAgain(item)}
-                      className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
+                      onClick={() => {
+                        if (isOutOfStockLike(item)) return
+                        onBuyAgain(item)
+                      }}
+                      disabled={isOutOfStockLike(item)}
+                      className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       {t("actions.buyAgain")}

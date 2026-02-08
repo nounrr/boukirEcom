@@ -4,6 +4,7 @@ import { HomeCatalogHighlights } from '@/components/home/home-catalog-highlights
 import { HomeBrandsCarousel } from '@/components/home/home-brands-carousel'
 import { HomeHero, type HeroSlide } from '@/components/home/home-hero'
 import { HomeProductSections } from '@/components/home/home-product-sections'
+import { HomeStoreSection } from '@/components/home/home-store-section'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { normalizeLocale } from '@/i18n/locale'
@@ -16,6 +17,7 @@ export default async function HomePage({
   const { locale: localeParam } = await params
   const locale = normalizeLocale(localeParam)
   const tShop = await getTranslations({ locale, namespace: 'shop' })
+  const tFooter = await getTranslations({ locale, namespace: 'footer' })
 
   // Test slide with secondary image
   const testSlides: HeroSlide[] = [
@@ -52,6 +54,19 @@ export default async function HomePage({
           featuredDesc={tShop('featuredDesc')}
           newArrivalsTitle={tShop('newArrivalsTitle')}
           newArrivalsDesc={tShop('newArrivalsDesc')}
+        />
+
+        <HomeStoreSection
+          title={tFooter('storeLocationTitle')}
+          description={tFooter('storeLocationDesc')}
+          openLabel={tFooter('openInMaps')}
+          contactTitle={tFooter('storeContactTitle')}
+          contactDesc={tFooter('storeContactDesc')}
+          labelPhone={tFooter('storeContactPhone')}
+          labelEmail={tFooter('storeContactEmail')}
+          labelAddress={tFooter('storeContactAddress')}
+          labelHours={tFooter('storeContactHours')}
+          unavailableLabel={tFooter('storeContactUnavailable')}
         />
       </main>
       <Footer />

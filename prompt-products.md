@@ -1,1 +1,0 @@
-so right now we want to implement the wishlist page please. but first we want to implement a layout that can be in teh wishlist also in the cart page like suggestions products some layout some section that follwow real world ecommerce sites. so let's do that please. let's create only the page of wishlist and the layout that is shared 

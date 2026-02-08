@@ -24,7 +24,7 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
   const [message, setMessage] = useState("")
   const [discountAmount, setDiscountAmount] = useState(0)
 
-  const [validatePromo, { isLoading }] = useValidatePromoMutation()
+  const [validatePromo, { isLoading, reset: resetValidatePromo }] = useValidatePromoMutation()
 
   // Reset when subtotal changes (cart updated)
   useEffect(() => {
@@ -61,6 +61,8 @@ export function PromoCodeInput({ subtotal, onPromoApplied, onPromoRemoved }: Pro
       return
     }
 
+    // Ensure a fresh validation attempt every time
+    resetValidatePromo()
     setStatus("idle")
     setMessage("")
 

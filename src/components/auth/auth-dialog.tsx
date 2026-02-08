@@ -1,6 +1,6 @@
 "use client"
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { LoginForm } from "@/components/auth/login-form"
 import { RegisterForm } from "@/components/auth/register-form"
@@ -47,12 +47,12 @@ export function AuthDialog({ open, onOpenChange, defaultMode = "login" }: AuthDi
                 <Heart className="w-5 h-5 text-red-500 fill-red-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-base sm:text-lg font-semibold text-foreground leading-tight">
+                <DialogTitle className="text-base sm:text-lg font-semibold text-foreground leading-tight">
                   {t("wishlistTitle")}
-                </p>
-                <p className="text-[12px] sm:text-sm text-muted-foreground mt-1">
+                </DialogTitle>
+                <DialogDescription className="text-[12px] sm:text-sm text-muted-foreground mt-1">
                   {t("wishlistSubtitle")}
-                </p>
+                </DialogDescription>
               </div>
             </div>
           </div>

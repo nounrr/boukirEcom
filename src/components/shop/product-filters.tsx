@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
@@ -34,6 +34,7 @@ interface ProductFiltersProps {
   isLoading?: boolean
   isCollapsed?: boolean
   onCollapsedChange?: (collapsed: boolean) => void
+  mobileActionSlot?: React.ReactNode
 }
 
 export function ProductFilters({
@@ -48,6 +49,7 @@ export function ProductFilters({
   isLoading = false,
   isCollapsed: controlledCollapsed,
   onCollapsedChange,
+  mobileActionSlot,
 }: ProductFiltersProps) {
   const t = useTranslations('productFilters')
   const tCommon = useTranslations('common')
@@ -776,22 +778,32 @@ export function ProductFilters({
   return (
     <>
       {/* Mobile Filter Button */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild className="lg:hidden">
-          <Button variant="outline" className="gap-2 relative">
-            <SlidersHorizontal className="w-4 h-4" />
-            {t('title')}
-            {activeFiltersCount > 0 && (
-              <Badge variant="default" className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary">
-                {activeFiltersCount}
-              </Badge>
-            )}
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-80 p-6">
-          <FiltersContent />
-        </SheetContent>
-      </Sheet>
+      <div className="lg:hidden flex items-center gap-2">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="flex-1 h-10 rounded-full gap-2 relative justify-center">
+              <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
+              {t('title')}
+              {activeFiltersCount > 0 && (
+                <Badge
+                  variant="default"
+                  className="absolute -top-2 -right-2 h-5 min-w-5 flex items-center justify-center px-1.5 bg-primary"
+                >
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80 p-6">
+            <SheetHeader className="p-0">
+              <SheetTitle className="sr-only">{t('title')}</SheetTitle>
+            </SheetHeader>
+            <FiltersContent />
+          </SheetContent>
+        </Sheet>
+
+        {mobileActionSlot ? <div className="shrink-0">{mobileActionSlot}</div> : null}
+      </div>
 
       {/* Desktop Sidebar */}
       <div className={cn("hidden lg:block relative", isCollapsed ? "shrink-0" : "shrink-0")}>

@@ -1,0 +1,286 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.panel {
+  width: min(520px, 100%);
+  border-radius: 1.25rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  overflow: hidden;
+}
+
+.panelInner {
+  padding: 1.25rem;
+}
+
+.scene {
+  position: relative;
+  height: 92px;
+  width: 100%;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  border: 1px solid hsl(var(--border));
+  overflow: hidden;
+}
+
+/*
+  We keep the original spirit (box -> truck -> road) but:
+  - avoid large box-shadow chains
+  - rely on transforms/opacity only
+  - use theme CSS variables
+*/
+
+.box {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate3d(-38px, -50%, 0);
+  border-radius: 4px;
+  border: 1px solid hsl(var(--border));
+  background: linear-gradient(180deg, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.12) 100%);
+  will-change: transform, opacity;
+  opacity: 0.98;
+}
+
+.truck {
+  position: absolute;
+  left: 64px;
+  top: 50%;
+  transform: translate3d(260px, -50%, 0);
+  width: 110px;
+  height: 34px;
+  display: flex;
+  gap: 2px;
+  will-change: transform;
+}
+
+.truckBody {
+  flex: 1;
+  border-radius: 6px;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  position: relative;
+  overflow: hidden;
+}
+
+.truckCab {
+  width: 20px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.75) 100%);
+  border: 1px solid hsl(var(--border));
+  position: relative;
+}
+
+.wheel {
+  position: absolute;
+  bottom: -6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: hsl(var(--foreground));
+  opacity: 0.85;
+}
+
+.wheel::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 9999px;
+  background: hsl(var(--background));
+}
+
+.wheelLeft {
+  left: 12px;
+}
+
+.wheelRight {
+  right: 12px;
+}
+
+.road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  height: 4px;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    hsl(var(--foreground)) 0 10px,
+    transparent 10px 20px
+  );
+  transform: translate3d(110px, 0, 0);
+  will-change: transform, opacity;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0.85rem;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--foreground) / 0.18);
+  border-top-color: hsl(var(--primary));
+  animation: spin 800ms linear infinite;
+}
+
+.check {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--primary) / 0.12);
+  position: relative;
+}
+
+.check::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  width: 6px;
+  height: 3px;
+  border-left: 2px solid hsl(var(--primary));
+  border-bottom: 2px solid hsl(var(--primary));
+  transform: rotate(-45deg);
+}
+
+/* Idle (processing) motion */
+[data-phase="processing"] .truck {
+  animation: idleTruck 1100ms ease-in-out infinite;
+}
+
+[data-phase="processing"] .box {
+  animation: idleBox 1100ms ease-in-out infinite;
+}
+
+/* Success sequence (based on original timing) */
+[data-phase="success-1"] .box {
+  animation: boxToTruck 900ms 150ms linear forwards;
+}
+
+[data-phase="success-1"] .truck {
+  animation: truckArrive 900ms ease-in-out forwards;
+}
+
+[data-phase="success-2"] .truck {
+  animation: truckDrive 1800ms ease-in-out forwards;
+}
+
+[data-phase="success-2"] .road {
+  opacity: 0.85;
+  animation: roadMove 1900ms 650ms ease-in-out forwards;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes idleTruck {
+  0%,
+  100% {
+    transform: translate3d(260px, -50%, 0);
+  }
+  50% {
+    transform: translate3d(260px, calc(-50% - 2px), 0);
+  }
+}
+
+@keyframes idleBox {
+  0%,
+  100% {
+    transform: translate3d(-38px, -50%, 0);
+  }
+  50% {
+    transform: translate3d(-38px, calc(-50% - 2px), 0);
+  }
+}
+
+@keyframes boxToTruck {
+  50% {
+    transform: translate3d(0px, -50%, 0);
+  }
+  70% {
+    transform: translate3d(0px, -50%, 0);
+  }
+  100% {
+    transform: translate3d(60px, -50%, 0);
+    opacity: 0.0;
+  }
+}
+
+@keyframes truckArrive {
+  100% {
+    transform: translate3d(10px, -50%, 0);
+  }
+}
+
+@keyframes truckDrive {
+  0% {
+    transform: translate3d(10px, -50%, 0);
+  }
+  30% {
+    transform: translate3d(120px, -50%, 0);
+  }
+  75% {
+    transform: translate3d(-30px, -50%, 0);
+  }
+  100% {
+    transform: translate3d(260px, -50%, 0);
+  }
+}
+
+@keyframes roadMove {
+  40% {
+    transform: translate3d(-180px, 0, 0);
+  }
+  100% {
+    transform: translate3d(-108px, 0, 0);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+  [data-phase="processing"] .truck,
+  [data-phase="processing"] .box,
+  [data-phase="success-1"] .box,
+  [data-phase="success-1"] .truck,
+  [data-phase="success-2"] .truck,
+  [data-phase="success-2"] .road {
+    animation: none !important;
+  }
+  .road {
+    opacity: 0.55;
+  }
+}
