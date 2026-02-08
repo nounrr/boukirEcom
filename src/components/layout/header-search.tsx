@@ -66,6 +66,34 @@ function normalizeQuery(value: string) {
   return value.trim()
 }
 
+function parseDirectProductLookupId(value: string): number | null {
+  const q = normalizeQuery(value)
+  if (!q) return null
+
+  // Plain numeric id
+  const asNumber = q.match(/^\d+$/)
+  if (asNumber) return Number(q)
+
+  // id:123 / ref:123
+  const colon = q.match(/^(?:id|ref)\s*:\s*(\d+)$/i)
+  if (colon) return Number(colon[1])
+
+  // reference 123
+  const reference = q.match(/^reference\s+(\d+)$/i)
+  if (reference) return Number(reference[1])
+
+  return null
+}
+
+function findDirectProductId(products: SearchSuggestionProduct[] | undefined, lookupId: number): number | null {
+  if (!products || products.length === 0) return null
+  if (!Number.isFinite(lookupId)) return null
+
+  const lookupRef = String(lookupId)
+  const match = products.find((p) => p.id === lookupId || (p.reference ? String(p.reference) === lookupRef : false))
+  return match?.id ?? null
+}
+
 function clampIndex(index: number, length: number) {
   if (length <= 0) return -1
   return Math.max(0, Math.min(index, length - 1))
@@ -516,6 +544,25 @@ export function HeaderSearch({
         },
       ]
 
+      const directLookupId = parseDirectProductLookupId(normalized)
+      const directProductId = directLookupId !== null ? findDirectProductId(data?.products, directLookupId) : null
+      const directProduct =
+        directProductId !== null ? data?.products?.find((p) => p.id === directProductId) ?? null : null
+
+      const addedProductIds = new Set<number>()
+
+      if (directProduct) {
+        addedProductIds.add(directProduct.id)
+        items.push({
+          type: 'product',
+          id: directProduct.id,
+          label: getSuggestionProductLabel(directProduct, locale),
+          imageUrl: directProduct.image_url ?? undefined,
+          category: getSuggestionCategoryLabel(directProduct.categorie, locale),
+          brand: directProduct.brand?.nom,
+        })
+      }
+
       // Intent-aware quick jump: if backend detects brand/category, prefer those as top picks.
       const detectedCategory = data?.intent?.detected_category ?? null
       const detectedBrand = data?.intent?.detected_brand ?? null
@@ -573,6 +620,7 @@ export function HeaderSearch({
       }
 
       for (const p of data?.products ?? []) {
+        if (addedProductIds.has(p.id)) continue
         items.push({
           type: 'product',
           id: p.id,
@@ -612,10 +660,30 @@ export function HeaderSearch({
     saveRecent(normalized)
   }, [query, saveRecent])
 
+  const pickProduct = useCallback(
+    (id: number) => {
+      recordTypedQuery()
+      close()
+      onSearchDone?.()
+      router.push(`/${locale}/product/${id}`)
+    },
+    [close, locale, onSearchDone, recordTypedQuery, router]
+  )
+
   const submitSearch = useCallback(
     (q: string) => {
       const normalized = normalizeQuery(q)
       if (!normalized) return
+
+      // Direct product jump (backend prepends matched product to suggestions)
+      const directLookupId = parseDirectProductLookupId(normalized)
+      if (directLookupId !== null) {
+        const directProductId = findDirectProductId(data?.products, directLookupId)
+        if (directProductId !== null) {
+          pickProduct(directProductId)
+          return
+        }
+      }
 
       // Special internal targets for quick navigation
       if (normalized.startsWith('__category__:')) {
@@ -641,17 +709,7 @@ export function HeaderSearch({
       onSearchDone?.()
       router.push(`/${locale}/shop?search=${encodeURIComponent(normalized)}`)
     },
-    [close, locale, onSearchDone, recordTypedQuery, router, saveRecent]
-  )
-
-  const pickProduct = useCallback(
-    (id: number) => {
-      recordTypedQuery()
-      close()
-      onSearchDone?.()
-      router.push(`/${locale}/product/${id}`)
-    },
-    [close, locale, onSearchDone, recordTypedQuery, router]
+    [close, data?.products, locale, onSearchDone, pickProduct, recordTypedQuery, router, saveRecent]
   )
 
   const handleKeyDown = useCallback(

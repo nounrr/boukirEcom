@@ -4,11 +4,10 @@ import { ProductFilters } from "@/components/shop/product-filters"
 import { ProductsList } from "@/components/shop/products-list"
 import { useTranslations } from "next-intl"
 import { useState, useCallback, useMemo, useEffect, useRef } from "react"
-import { useGetProductsQuery, useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
+import { useGetProductsQuery } from "@/state/api/products-api-slice"
 import { filterStateToApiRequest, type FilterState } from "@/types/api/products"
 import { Button } from "@/components/ui/button"
 import { SlidersHorizontal, Grid3x3, LayoutGrid, Package } from "lucide-react"
-import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useLocale } from "next-intl"
 import type { ProductCategory, ProductBrand } from "@/types/api/products"
@@ -174,10 +173,6 @@ export default function ShopPage() {
 
   // Fetch products with filters (capture refetch for manual refresh)
   const { data, isLoading, isFetching, error, refetch } = useGetProductsQuery(apiFilters)
-
-  // Suggestions sections
-  const { data: featuredPromo = [] } = useGetFeaturedPromoQuery(8)
-  const { data: newArrivals = [] } = useGetNewArrivalsQuery(8)
 
   // Extract metadata from API response
   const categories = data?.filters?.categories || []
@@ -365,25 +360,6 @@ export default function ShopPage() {
           />
         </div>
 
-        {/* Suggestions sections */}
-        {(featuredPromo.length > 0 || newArrivals.length > 0) && (
-          <div className="mt-12 space-y-12">
-            {featuredPromo.length > 0 && (
-              <ProductSuggestions
-                products={featuredPromo as any}
-                title={t('featuredTitle', { defaultValue: 'Promotions du moment' })}
-                description={t('featuredDesc', { defaultValue: 'Nos meilleures offres sélectionnées pour vous' })}
-              />
-            )}
-            {newArrivals.length > 0 && (
-              <ProductSuggestions
-                products={newArrivals as any}
-                title={t('newArrivalsTitle', { defaultValue: 'Nouveautés' })}
-                description={t('newArrivalsDesc', { defaultValue: 'Les derniers produits ajoutés à la boutique' })}
-              />
-            )}
-          </div>
-        )}
       </div>
     </div>
   )
