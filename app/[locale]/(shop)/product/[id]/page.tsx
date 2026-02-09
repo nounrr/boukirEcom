@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
+import { getLocalizedCategoryName } from "@/lib/localized-fields"
 import { cn } from "@/lib/utils"
 import { isOutOfStockLike } from "@/lib/stock"
 import { useGetProductQuery } from "@/state/api/products-api-slice"
@@ -230,7 +231,7 @@ export default function ProductPage() {
       price: currentPrice,
       quantity,
       image: product.image_url,
-      category: product.categorie?.nom || t("categoryFallback"),
+      category: categoryLabel || t("categoryFallback"),
       stock: product.quantite_disponible,
     }
 
@@ -432,6 +433,7 @@ export default function ProductPage() {
 
 
   const baseDesignation = getLocalizedDesignation(product)
+  const categoryLabel = getLocalizedCategoryName((product as any)?.categorie, locale)
   const titleVariantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
   const titleUnitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
   const titleSuffixParts = [titleVariantLabel, titleUnitLabel].filter(Boolean)
@@ -469,10 +471,10 @@ export default function ProductPage() {
           {/* Right: Product Info */}
           <div className="lg:col-span-6 space-y-4">
             {/* Breadcrumb/Category */}
-            {product.categorie?.nom && (
+            {categoryLabel && (
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
-                  <span className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {product.categorie.nom}</span>
+                  <span className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {categoryLabel}</span>
                 </Badge>
                 {product.brand?.nom && (
                   <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">

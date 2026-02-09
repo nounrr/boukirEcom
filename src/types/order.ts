@@ -122,6 +122,8 @@ export interface OrderItem {
   unitId?: number | null
   productName: string
   productNameAr?: string | null
+  productNameEn?: string | null
+  productNameZh?: string | null
   variantName?: string | null
   variantType?: string | null
   unitName?: string | null

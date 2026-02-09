@@ -418,6 +418,16 @@
   },
   "shop": {
     "filters": "Filtres",
+    "viewToggle": {
+      "label": "Vue",
+      "aria": "Mode d'affichage",
+      "gridAria": "Grille compacte",
+      "listAria": "Liste"
+    },
+    "loadError": "Erreur lors du chargement",
+    "showing": "Affichage",
+    "of": "sur",
+    "pageXofY": "Page {current}/{total}",
     "productsLabel": "produits",
     "tagline": "Livraison rapide • Retours faciles • Paiement sécurisé",
     "taglineShort": "Livraison rapide • Paiement sécurisé",
@@ -583,6 +593,10 @@
     "heroKicker": "Votre quincaillerie en ligne",
     "heroTitle": "Achetez vos produits pro, simplement",
     "heroSubtitle": "Des milliers d’articles pour les artisans et les particuliers, avec une expérience d’achat rapide, claire et sécurisée.",
+    "heroSlideAlt": "Diapositive d’accueil",
+    "heroLoadError": "Impossible de charger les slides pour le moment.",
+    "heroEmpty": "Aucune slide disponible pour le moment.",
+    "heroGoToSlide": "Aller à la diapositive {index}",
     "ctaShop": "Aller à la boutique",
     "ctaPromos": "Voir les promos",
     "ctaBrowse": "Parcourir",
@@ -597,6 +611,12 @@
     "heroCard3Title": "Promos du moment",
     "heroCard3Desc": "Profitez des meilleures offres.",
     "heroCardHint": "Astuce: utilisez la recherche en haut pour aller plus vite.",
+    "heroTags": {
+      "category": "Catégorie",
+      "brand": "Marque",
+      "campaign": "Promo",
+      "product": "Produit"
+    },
     "categoriesTitle": "Catégories populaires",
     "categoriesDesc": "Accès rapide aux rayons les plus demandés.",
     "brandsTitle": "Marques",
@@ -1078,6 +1098,128 @@
     "orderDate": "Date",
     "orderStatus": "Statut",
     "orderTotal": "Total"
+  },
+  "profile": {
+    "layoutTitle": "Mon compte",
+    "layoutSubtitle": "Gérez votre profil et vos préférences",
+    "headerTitle": "Mon profil",
+    "headerSubtitle": "Gérez vos informations personnelles",
+    "guest": {
+      "layoutTitle": "Mon profil",
+      "layoutSubtitle": "Connectez-vous pour accéder à votre compte",
+      "sessionRequiredTitle": "Session requise",
+      "sessionRequiredDesc": "Veuillez vous connecter pour voir votre profil et vos informations.",
+      "login": "Se connecter"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "sending": "Envoi..."
+    },
+    "artisan": {
+      "title": "Statut Artisan / Pro",
+      "badges": {
+        "approved": "Validé",
+        "pending": "En attente"
+      },
+      "approvedTitle": "Vous êtes Artisan/Promoteur.",
+      "approvedDesc": "Votre compte bénéficie des avantages Artisan/Pro.",
+      "pendingTitle": "Demande en cours de validation.",
+      "pendingDesc": "Un administrateur validera votre demande bientôt.",
+      "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.",
+      "requestAction": "Demander le statut Artisan"
+    },
+    "remise": {
+      "title": "Votre solde remise",
+      "desc": "Utilisez ce solde lors de vos prochaines commandes"
+    },
+    "sections": {
+      "personal": {
+        "title": "Informations personnelles",
+        "subtitle": "Vos données d'identification"
+      },
+      "billing": {
+        "title": "Adresse de facturation",
+        "subtitle": "Votre adresse principale"
+      },
+      "shipping": {
+        "title": "Adresse de livraison",
+        "subtitle": "Où recevoir vos commandes"
+      },
+      "status": {
+        "title": "Statut du compte",
+        "subtitle": "Informations sur votre compte"
+      }
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "accountType": "Type de compte",
+      "language": "Langue",
+      "company": "Société",
+      "ice": "ICE",
+      "address": "Adresse",
+      "shippingLine1": "Adresse ligne 1",
+      "shippingLine2": "Adresse ligne 2 (optionnel)",
+      "city": "Ville",
+      "state": "Région/État (optionnel)",
+      "postalCode": "Code postal",
+      "country": "Pays"
+    },
+    "placeholders": {
+      "firstName": "Votre prénom",
+      "lastName": "Votre nom",
+      "company": "Nom de la société",
+      "ice": "Numéro ICE",
+      "address": "Votre adresse complète",
+      "shippingLine1": "Rue, numéro, bâtiment",
+      "shippingLine2": "Appartement, étage",
+      "city": "Ville",
+      "state": "Région",
+      "postalCode": "Code postal",
+      "country": "Pays"
+    },
+    "verified": "Vérifié",
+    "notProvided": "Non renseigné",
+    "languages": {
+      "fr": "Français",
+      "ar": "العربية",
+      "en": "English",
+      "zh": "中文"
+    },
+    "accountTypes": {
+      "client": "Client",
+      "artisan": "Artisan/Promoteur"
+    },
+    "status": {
+      "authProvider": "Fournisseur d'auth",
+      "eligibleBalanceTitle": "Éligible au solde",
+      "eligibleBalanceDesc": "Achetez maintenant, payez plus tard",
+      "memberSince": "Membre depuis",
+      "lastLogin": "Dernière connexion"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "Aucune modification",
+        "desc": "Aucun champ n'a été modifié."
+      },
+      "updated": {
+        "title": "Profil mis à jour",
+        "desc": "Vos informations ont été enregistrées avec succès."
+      },
+      "requestArtisan": {
+        "sentFallback": "Elle sera validée par un administrateur."
+      },
+      "error": {
+        "title": "Erreur",
+        "updateProfileFallback": "Impossible de mettre à jour le profil.",
+        "requestArtisanFallback": "Impossible d'envoyer la demande."
+      }
+    }
   },
   "footer": {
     "about": "À propos",

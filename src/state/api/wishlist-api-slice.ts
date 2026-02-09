@@ -7,11 +7,21 @@ export interface WishlistItem {
   productId: number;
   variantId?: number;
   name: string;
+  designation?: string | null;
+  designation_ar?: string | null;
+  designation_en?: string | null;
+  designation_zh?: string | null;
   price: number;
   priceAfterPromo?: number;
   hasPromo: boolean;
   image?: string;
   category?: string;
+  categoryObj?: {
+    nom?: string | null;
+    nom_ar?: string | null;
+    nom_en?: string | null;
+    nom_zh?: string | null;
+  } | null;
   stock: number;
   inStock: boolean;
   isAvailable: boolean;
@@ -47,11 +57,23 @@ export const wishlistApi = createApi({
             productId: item.product_id,
             variantId: item.variant_id || undefined,
             name: item.product?.designation || item.product?.designation_en || 'Unknown Product',
+            designation: item.product?.designation ?? null,
+            designation_ar: item.product?.designation_ar ?? null,
+            designation_en: item.product?.designation_en ?? null,
+            designation_zh: item.product?.designation_zh ?? null,
             price: isNaN(price) ? 0 : price,
             priceAfterPromo: isNaN(priceAfterPromo) ? price : priceAfterPromo,
             hasPromo: item.pricing?.has_promo || false,
             image: item.product?.image_url || undefined,
-            category: item.product?.base_unit || undefined,
+            category: item.product?.categorie?.nom || item.product?.categorie_base || undefined,
+            categoryObj: item.product?.categorie
+              ? {
+                nom: item.product.categorie.nom ?? null,
+                nom_ar: item.product.categorie.nom_ar ?? null,
+                nom_en: item.product.categorie.nom_en ?? null,
+                nom_zh: item.product.categorie.nom_zh ?? null,
+              }
+              : null,
             stock: item.stock?.available || 0,
             inStock: item.stock?.in_stock || false,
             isAvailable: item.product?.is_available || false,

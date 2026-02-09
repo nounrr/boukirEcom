@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { isOutOfStockLike } from '@/lib/stock'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
+import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -43,12 +44,22 @@ interface ProductVariant {
 interface Product {
   id: number
   name: string
+  designation?: string | null
+  designation_ar?: string | null
+  designation_en?: string | null
+  designation_zh?: string | null
   description?: string
   price: number
   originalPrice?: number
   image: string
   images?: string[]
   category: string
+  categoryObj?: {
+    nom?: string | null
+    nom_ar?: string | null
+    nom_en?: string | null
+    nom_zh?: string | null
+  } | null
   brand?: string
   unit?: string
   stock: number
@@ -137,6 +148,21 @@ export function ProductCard({
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
   const locale = useLocale()
+
+  const localizedProductName = useMemo(() => {
+    if (product.designation || product.designation_ar || product.designation_en || product.designation_zh) {
+      const value = getLocalizedProductName(product as any, locale)
+      return value || product.name
+    }
+    return product.name
+  }, [locale, product])
+
+  const localizedCategoryName = useMemo(() => {
+    if (product.categoryObj) {
+      return getLocalizedCategoryName(product.categoryObj as any, locale) || product.category
+    }
+    return product.category
+  }, [locale, product.category, product.categoryObj])
   const { cartRef } = useCart()
   const { isAuthenticated } = useAppSelector((state) => state.user)
   const toast = useToast()
@@ -175,13 +201,13 @@ export function ProductCard({
           productId: product.id,
           variantId: selectedVariant || undefined,
         }).unwrap()
-        toast.success(t('wishlistRemovedTitle'), { description: product.name })
+        toast.success(t('wishlistRemovedTitle'), { description: localizedProductName })
       } else {
         await addToWishlistApi({
           productId: product.id,
           variantId: selectedVariant || undefined,
         }).unwrap()
-        toast.success(t('wishlistAddedTitle'), { description: product.name })
+        toast.success(t('wishlistAddedTitle'), { description: localizedProductName })
       }
       onToggleWishlist?.(product.id)
     } catch (error) {
@@ -189,7 +215,7 @@ export function ProductCard({
       setIsWishlisted(wasWishlisted)
       toast.error(t('genericErrorTitle'), { description: t('wishlistUpdateFailedDesc') })
     }
-  }, [addToWishlistApi, isAuthenticated, isWishlisted, onToggleWishlist, openAuthDialog, product.id, product.name, removeFromWishlistApi, selectedVariant, t, toast])
+  }, [addToWishlistApi, isAuthenticated, isWishlisted, localizedProductName, onToggleWishlist, openAuthDialog, product.id, removeFromWishlistApi, selectedVariant, t, toast])
 
   const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -223,16 +249,21 @@ export function ProductCard({
     const variantLabel = selectedVariantObj?.value || selectedVariantObj?.name
     const unitLabel = product.unit
     const suffixParts = [variantLabel, unitLabel].filter(Boolean)
-    const displayName = suffixParts.length > 0 ? `${product.name} • ${suffixParts.join(' · ')}` : product.name
+    const displayName = suffixParts.length > 0 ? `${localizedProductName} • ${suffixParts.join(' · ')}` : localizedProductName
     const cartItem = {
       productId: product.id,
       variantId: selectedVariant || undefined,
       variantName: selectedVariantObj?.value || selectedVariantObj?.name,
       name: displayName,
+      designation: (product as any).designation ?? null,
+      designation_ar: (product as any).designation_ar ?? null,
+      designation_en: (product as any).designation_en ?? null,
+      designation_zh: (product as any).designation_zh ?? null,
       price: itemPrice,
       quantity: 1,
       image: currentImage,
-      category: product.category,
+      category: localizedCategoryName,
+      categoryObj: product.categoryObj ?? null,
       stock: product.stock,
       purchase_limit: typeof (product as any).purchase_limit === 'number' ? (product as any).purchase_limit : undefined,
     }
@@ -274,7 +305,7 @@ export function ProductCard({
         }
       }
     }
-  }, [cartRef, product.category, product.id, product.isVariantRequired, product.name, product.price, product.stock, product.variants, selectedVariant, currentImage, onAddToCart, t, toast])
+  }, [cartRef, localizedCategoryName, localizedProductName, product.id, product.isVariantRequired, product.price, product.stock, product.variants, selectedVariant, currentImage, onAddToCart, t, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -339,8 +370,8 @@ export function ProductCard({
     const variantLabel = selectedVariantObj?.value || selectedVariantObj?.name
     const unitLabel = product.unit
     const suffixParts = [variantLabel, unitLabel].filter(Boolean)
-    return suffixParts.length > 0 ? `${product.name} • ${suffixParts.join(' · ')}` : product.name
-  }, [product.name, product.unit, product.variants, selectedVariant])
+    return suffixParts.length > 0 ? `${localizedProductName} • ${suffixParts.join(' · ')}` : localizedProductName
+  }, [localizedProductName, product.unit, product.variants, selectedVariant])
 
   // Memoize computed values
   const discountPercentage = useMemo(() =>
@@ -397,7 +428,7 @@ export function ProductCard({
               {currentImage && !imageError ? (
                 <Image
                   src={currentImage}
-                  alt={product.name}
+                  alt={localizedProductName}
                   fill
                   className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
                   onError={() => setImageError(true)}
@@ -423,7 +454,7 @@ export function ProductCard({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
-                  {product.category}
+                  {localizedCategoryName}
                 </p>
                 <h3 className="font-semibold text-[13px] sm:text-sm line-clamp-2 leading-snug">
                   {displayName}
@@ -554,7 +585,7 @@ export function ProductCard({
         {currentImage && !imageError ? (
           <Image
             src={currentImage}
-            alt={product.name}
+              alt={localizedProductName}
             fill
               className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
             onError={() => setImageError(true)}
@@ -638,7 +669,7 @@ export function ProductCard({
       <Link href={`/${locale}/product/${product.id}`} className="block p-2.5 sm:p-3">
         {/* Category */}
         <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 sm:mb-1">
-          {product.category}
+          {localizedCategoryName}
         </p>
 
         {/* Product Name */}

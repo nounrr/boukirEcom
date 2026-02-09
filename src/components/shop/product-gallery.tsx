@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -40,6 +40,23 @@ export function ProductGallery({
   thumbsOnLeft = false,
 }: ProductGalleryProps) {
   const [brokenIds, setBrokenIds] = useState<Set<number>>(() => new Set())
+  const swipeRef = useRef<{
+    pointerId: number | null
+    startX: number
+    startY: number
+    lastX: number
+    lastY: number
+    moved: boolean
+    blockNextClick: boolean
+  }>({
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    moved: false,
+    blockNextClick: false,
+  })
 
   const markBroken = useCallback((id: number) => {
     setBrokenIds((prev) => {
@@ -62,6 +79,66 @@ export function ProductGallery({
 
   const goPrev = () => onSelectedChange((selectedIndex - 1 + images.length) % images.length)
   const goNext = () => onSelectedChange((selectedIndex + 1) % images.length)
+
+  const getIsRtl = () => {
+    if (typeof document === "undefined") return false
+    const dir = document.documentElement?.dir || document.body?.dir
+    return (dir || "").toLowerCase() === "rtl"
+  }
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (images.length <= 1) return
+    swipeRef.current.pointerId = e.pointerId
+    swipeRef.current.startX = e.clientX
+    swipeRef.current.startY = e.clientY
+    swipeRef.current.lastX = e.clientX
+    swipeRef.current.lastY = e.clientY
+    swipeRef.current.moved = false
+    swipeRef.current.blockNextClick = false
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // ignore
+    }
+  }
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (swipeRef.current.pointerId !== e.pointerId) return
+    swipeRef.current.lastX = e.clientX
+    swipeRef.current.lastY = e.clientY
+
+    const dx = e.clientX - swipeRef.current.startX
+    const dy = e.clientY - swipeRef.current.startY
+    if (!swipeRef.current.moved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      swipeRef.current.moved = true
+    }
+  }
+
+  const onPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (swipeRef.current.pointerId !== e.pointerId) return
+
+    const dx = swipeRef.current.lastX - swipeRef.current.startX
+    const dy = swipeRef.current.lastY - swipeRef.current.startY
+    swipeRef.current.pointerId = null
+
+    // Only treat mostly-horizontal drags as swipe
+    if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy)) {
+      swipeRef.current.blockNextClick = false
+      return
+    }
+
+    swipeRef.current.blockNextClick = true
+
+    // LTR: swipe left => next, swipe right => prev
+    // RTL: invert
+    const isRtl = getIsRtl()
+    const swipeRight = dx > 0
+    if ((swipeRight && !isRtl) || (!swipeRight && isRtl)) {
+      goPrev()
+    } else {
+      goNext()
+    }
+  }
 
   const verticalThumbs = (
     images.length > 1 && (
@@ -100,25 +177,71 @@ export function ProductGallery({
     )
   )
 
+  const mobileThumbs = (
+    images.length > 1 && (
+      <div className="md:hidden w-full">
+        <div className="w-full overflow-x-auto">
+          <div className="flex gap-2 min-w-max py-2">
+            {resolvedImages.map((image, index) => (
+              <button
+                key={image.id}
+                onClick={() => onSelectedChange(index)}
+                className={cn(
+                  "relative rounded-md overflow-hidden bg-muted border transition-all cursor-pointer shrink-0",
+                  selectedIndex === index
+                    ? "border-primary border-2 ring-1 ring-primary/20"
+                    : "border-border hover:border-primary/50"
+                )}
+                style={{ width: thumbSize, height: thumbSize }}
+              >
+                {image.resolvedSrc && !brokenIds.has(image.id) ? (
+                  <Image
+                    src={image.resolvedSrc}
+                    alt={`Image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    onError={() => markBroken(image.id)}
+                  />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center">
+                    <Package className="h-5 w-5 text-muted-foreground/40" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  )
+
   return (
     <div className={cn("sticky top-2 w-full", className)}>
-      <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex items-start gap-2" : "space-y-2")}>
-        {thumbsOnLeft && verticalThumbs}
-        <div
-          className="relative aspect-square rounded-md overflow-hidden bg-muted border border-border/40 group cursor-pointer flex-1"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowLeft") goPrev()
-            if (e.key === "ArrowRight") goNext()
-          }}
-          aria-label="Galerie produit"
-          style={{ maxHeight: maxHeight }}
-          onClick={() => {
-            if (current) {
-              onMainClick ? onMainClick(current, selectedIndex) : goNext()
-            }
-          }}
-        >
+      <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex flex-col md:flex-row items-start gap-2" : "space-y-2")}>
+        {thumbsOnLeft && <div className="hidden md:block">{verticalThumbs}</div>}
+        <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex-1 w-full" : "w-full")}>
+          <div
+            className="relative aspect-square w-full rounded-md overflow-hidden bg-muted border border-border/40 group cursor-pointer"
+            tabIndex={0}
+            style={{ maxHeight: maxHeight, touchAction: "pan-y" }}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft") goPrev()
+              if (e.key === "ArrowRight") goNext()
+            }}
+            aria-label="Galerie produit"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerEnd}
+            onPointerCancel={onPointerEnd}
+            onPointerLeave={onPointerEnd}
+            onClick={() => {
+              if (swipeRef.current.blockNextClick) {
+                swipeRef.current.blockNextClick = false
+                return
+              }
+              if (current) onMainClick ? onMainClick(current, selectedIndex) : goNext()
+            }}
+          >
           {current?.resolvedSrc && !brokenIds.has(current.id) ? (
           <Image
               src={current.resolvedSrc}
@@ -183,14 +306,18 @@ export function ProductGallery({
               )}
           </>
         )}
+          </div>
+
+          {/* Mobile/small: thumbnails under main image, horizontal row */}
+          {mobileThumbs}
         </div>
 
         {images.length > 1 && !thumbsOnLeft && (
           thumbsOnRight ? (
-            verticalThumbs
+            <div className="hidden md:block">{verticalThumbs}</div>
           ) : (
-            <div className="flex flex-wrap gap-1">
-                {resolvedImages.map((image, index) => (
+            <div className="hidden md:flex md:flex-wrap gap-1">
+              {resolvedImages.map((image, index) => (
                 <button
                   key={image.id}
                   onClick={() => onSelectedChange(index)}
@@ -217,8 +344,8 @@ export function ProductGallery({
                   )}
                 </button>
               ))}
-              </div>
-            )
+            </div>
+          )
         )}
       </div>
     </div>

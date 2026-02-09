@@ -27,6 +27,128 @@
     "previous": "上一步",
     "viewAll": "查看全部"
   },
+  "profile": {
+    "layoutTitle": "我的账户",
+    "layoutSubtitle": "管理你的个人资料和偏好设置",
+    "headerTitle": "我的资料",
+    "headerSubtitle": "管理你的个人信息",
+    "guest": {
+      "layoutTitle": "我的资料",
+      "layoutSubtitle": "登录以访问你的账户",
+      "sessionRequiredTitle": "需要登录",
+      "sessionRequiredDesc": "请登录以查看你的资料和信息。",
+      "login": "登录"
+    },
+    "actions": {
+      "edit": "编辑",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "正在保存...",
+      "sending": "正在发送..."
+    },
+    "artisan": {
+      "title": "工匠 / 专业状态",
+      "badges": {
+        "approved": "已通过",
+        "pending": "审核中"
+      },
+      "approvedTitle": "你是工匠/开发者。",
+      "approvedDesc": "你的账户享有工匠/专业权益。",
+      "pendingTitle": "申请审核中。",
+      "pendingDesc": "管理员将很快审核你的申请。",
+      "requestHint": "申请工匠/专业状态以获得更多权益并提升折扣收益。",
+      "requestAction": "申请工匠状态"
+    },
+    "remise": {
+      "title": "你的折扣余额",
+      "desc": "在下一次订单中使用该余额"
+    },
+    "sections": {
+      "personal": {
+        "title": "个人信息",
+        "subtitle": "你的身份信息"
+      },
+      "billing": {
+        "title": "账单地址",
+        "subtitle": "你的主要地址"
+      },
+      "shipping": {
+        "title": "收货地址",
+        "subtitle": "用于接收你的订单"
+      },
+      "status": {
+        "title": "账户状态",
+        "subtitle": "关于你账户的信息"
+      }
+    },
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱",
+      "phone": "电话",
+      "accountType": "账户类型",
+      "language": "语言",
+      "company": "公司",
+      "ice": "ICE",
+      "address": "地址",
+      "shippingLine1": "地址第 1 行",
+      "shippingLine2": "地址第 2 行（可选）",
+      "city": "城市",
+      "state": "州/地区（可选）",
+      "postalCode": "邮编",
+      "country": "国家/地区"
+    },
+    "placeholders": {
+      "firstName": "你的名字",
+      "lastName": "你的姓氏",
+      "company": "公司名称",
+      "ice": "ICE 号码",
+      "address": "完整地址",
+      "shippingLine1": "街道、门牌号、楼栋",
+      "shippingLine2": "公寓、楼层",
+      "city": "城市",
+      "state": "地区",
+      "postalCode": "邮编",
+      "country": "国家/地区"
+    },
+    "verified": "已验证",
+    "notProvided": "未填写",
+    "languages": {
+      "fr": "法语",
+      "ar": "阿拉伯语",
+      "en": "英语",
+      "zh": "中文"
+    },
+    "accountTypes": {
+      "client": "客户",
+      "artisan": "工匠/开发者"
+    },
+    "status": {
+      "authProvider": "登录方式",
+      "eligibleBalanceTitle": "可用余额",
+      "eligibleBalanceDesc": "先买后付",
+      "memberSince": "注册于",
+      "lastLogin": "上次登录"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "没有更改",
+        "desc": "没有字段被修改。"
+      },
+      "updated": {
+        "title": "资料已更新",
+        "desc": "你的信息已成功保存。"
+      },
+      "requestArtisan": {
+        "sentFallback": "将由管理员进行审核。"
+      },
+      "error": {
+        "title": "错误",
+        "updateProfileFallback": "无法更新资料。",
+        "requestArtisanFallback": "无法发送申请。"
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "登录以保存你喜欢的商品",
     "wishlistSubtitle": "访问心愿单并跟踪订单。"
@@ -418,6 +540,16 @@
   },
   "shop": {
     "filters": "筛选",
+    "viewToggle": {
+      "label": "视图",
+      "aria": "显示模式",
+      "gridAria": "紧凑网格",
+      "listAria": "列表"
+    },
+    "loadError": "加载时出错",
+    "showing": "显示",
+    "of": "共",
+    "pageXofY": "第 {current}/{total} 页",
     "productsLabel": "件商品",
     "tagline": "快速配送 • 轻松退换 • 安全支付",
     "taglineShort": "快速配送 • 安全支付",
@@ -583,6 +715,10 @@
     "heroKicker": "你的在线五金与日用品商店",
     "heroTitle": "轻松购买专业产品",
     "heroSubtitle": "为专业人士与个人提供数千种商品，购物体验快速、清晰且安全。",
+    "heroSlideAlt": "首页幻灯片",
+    "heroLoadError": "暂时无法加载幻灯片。",
+    "heroEmpty": "当前暂无可用幻灯片。",
+    "heroGoToSlide": "跳转到第 {index} 张幻灯片",
     "ctaShop": "进入商店",
     "ctaPromos": "查看优惠",
     "ctaBrowse": "浏览",
@@ -597,6 +733,12 @@
     "heroCard3Title": "当前优惠",
     "heroCard3Desc": "享受最佳折扣。",
     "heroCardHint": "提示：使用顶部搜索更快找到商品。",
+    "heroTags": {
+      "category": "分类",
+      "brand": "品牌",
+      "campaign": "优惠",
+      "product": "商品"
+    },
     "categoriesTitle": "热门分类",
     "categoriesDesc": "快速访问最受欢迎的专区。",
     "brandsTitle": "品牌",

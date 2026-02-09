@@ -31,6 +31,8 @@ const mapOrderItemsFromApi = (items: any[] | undefined): OrderItem[] | undefined
     unitId: item.unit_id ?? null,
     productName: item.product_name,
     productNameAr: item.product_name_ar ?? null,
+    productNameEn: item.product_name_en ?? null,
+    productNameZh: item.product_name_zh ?? null,
     variantName: item.variant_name ?? null,
     variantType: item.variant_type ?? null,
     unitName: item.unit_name ?? null,

@@ -14,6 +14,7 @@ import Link from "next/link"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { useState, useEffect } from "react"
 import { formatCartItemName, getCartItemKey } from "@/lib/cart-storage"
+import { getLocalizedCartItemBaseName, getLocalizedCartItemCategory } from "@/lib/localized-fields"
 
 // Keep this key in sync with CART_STORAGE_KEY used in cart-popover
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -223,11 +224,16 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <div
-                key={item.id || getCartItemKey(item as LocalCartItem)}
-                className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
-              >
+            {cartItems.map((item) => {
+              const localizedBaseName = getLocalizedCartItemBaseName(item as any, locale)
+              const localizedCategory = getLocalizedCartItemCategory(item as any, locale)
+              const displayName = formatCartItemName({ ...(item as any), name: localizedBaseName } as any)
+
+              return (
+                <div
+                  key={item.id || getCartItemKey(item as LocalCartItem)}
+                  className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
+                >
                 <div className="flex gap-4">
                   {/* Product Image */}
                   <Link
@@ -238,7 +244,7 @@ export default function CartPage() {
                       {item.image ? (
                         <Image
                           src={item.image}
-                          alt={item.name}
+                            alt={localizedBaseName}
                           fill
                           className="object-cover"
                         />
@@ -257,13 +263,13 @@ export default function CartPage() {
                       className="hover:text-primary transition-colors"
                     >
                       <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
-                        {formatCartItemName(item as LocalCartItem)}
+                          {displayName}
                       </h3>
                     </Link>
 
-                    {item.category && (
+                      {localizedCategory && (
                       <p className="text-xs text-muted-foreground mb-3">
-                        {item.category}
+                          {localizedCategory}
                       </p>
                     )}
                     {(() => {
@@ -295,7 +301,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-r-none"
-                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity - 1, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
+                              onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity - 1, localizedBaseName, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                             disabled={isUpdating || item.quantity <= 1}
                           >
                             <Minus className="w-3 h-3" />
@@ -307,7 +313,7 @@ export default function CartPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-l-none"
-                            onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
+                              onClick={() => handleQuantityChange(isAuthenticated ? item.id! : item.productId, item.quantity + 1, localizedBaseName, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                             disabled={(() => {
                               if (isUpdating) return true
                               const rawLimit =
@@ -342,7 +348,7 @@ export default function CartPage() {
                       variant="ghost"
                       size="icon"
                       aria-label={t("aria.removeItem")}
-                      onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, item.name, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
+                        onClick={() => handleRemove(isAuthenticated ? item.id! : item.productId, localizedBaseName, !isAuthenticated ? getCartItemKey(item as LocalCartItem) : undefined)}
                       disabled={isRemoving}
                       className="hover:bg-destructive/10 hover:text-destructive"
                     >
@@ -351,7 +357,8 @@ export default function CartPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Cart Summary - Sticky Sidebar */}

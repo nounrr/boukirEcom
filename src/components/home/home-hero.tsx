@@ -36,6 +36,7 @@ export type HeroSlide = {
   type: HeroSlideType
   title: string
   subtitle?: string
+  description?: string
   imageSrc: string
   imageAlt: string
   secondaryImageSrc?: string
@@ -56,7 +57,7 @@ export function HomeHero({
   const t = useTranslations('home')
   const detectedLocale = useLocale()
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
-  const heroApiLocale: 'fr' | 'ar' = activeLocale === 'ar' ? 'ar' : 'fr'
+  const isRtl = activeLocale === 'ar'
 
   const {
     data: apiSlides,
@@ -64,7 +65,7 @@ export function HomeHero({
     isFetching,
     isError,
   } = useGetHeroSlidesQuery(
-    { locale: heroApiLocale, limit: 4 },
+    { locale: activeLocale, limit: 4 },
     { skip: !!(slides && slides.length > 0) }
   )
 
@@ -78,9 +79,37 @@ export function HomeHero({
     const normalizeInternalHref = (href: string): string => {
       if (!href) return `/${activeLocale}/shop`
       if (/^https?:\/\//i.test(href)) return href
-      if (/^\/(fr|ar)(\/|$)/.test(href)) return href
+      if (/^\/(fr|ar|en|zh)(\/|$)/.test(href)) return href
       if (href.startsWith('/')) return `/${activeLocale}${href}`
       return `/${activeLocale}/${href}`
+    }
+
+    const resolveLocalizedText = (value: unknown): string | undefined => {
+      if (typeof value === 'string') return value
+      if (!value || typeof value !== 'object') return undefined
+
+      const record = value as Record<string, unknown>
+      const preferred =
+        record[activeLocale] ?? record.fr ?? record.en ?? record.ar ?? record.zh
+
+      if (typeof preferred === 'string') return preferred
+      return Object.values(record).find((v) => typeof v === 'string') as string | undefined
+    }
+
+    const resolveLocalizedCtaLabel = (value: unknown): string | undefined => {
+      if (!value || typeof value !== 'object') {
+        return typeof value === 'string' ? value : undefined
+      }
+
+      const obj = value as Record<string, unknown>
+      const base = obj.label
+      const localized =
+        (activeLocale === 'ar' ? obj.label_ar : undefined) ??
+        (activeLocale === 'en' ? obj.label_en : undefined) ??
+        (activeLocale === 'zh' ? obj.label_zh : undefined) ??
+        base
+
+      return typeof localized === 'string' ? localized : typeof base === 'string' ? base : undefined
     }
 
     const defaultHrefFor = (type: HeroSlideType, targetId?: string | number | null): string => {
@@ -138,8 +167,31 @@ export function HomeHero({
       const targetId = getTargetId(type, s.target)
       const legacyCtas = Array.isArray(s.ctas) ? s.ctas : []
 
-      const primaryLabel = s.cta?.primary?.label ?? legacyCtas[0]?.label ?? t('ctaShop')
-      const secondaryLabel = s.cta?.secondary?.label ?? legacyCtas[1]?.label
+      const primaryFromResolved = s.cta_resolved?.primary?.label
+      const secondaryFromResolved = s.cta_resolved?.secondary?.label
+
+      const primaryFromCtasResolved = Array.isArray(s.ctas_resolved)
+        ? s.ctas_resolved.find((c) => (c.style ?? 'primary') === 'primary')?.label ??
+        s.ctas_resolved[0]?.label
+        : undefined
+
+      const secondaryFromCtasResolved = Array.isArray(s.ctas_resolved)
+        ? s.ctas_resolved.find((c) => (c.style ?? 'secondary') === 'secondary')?.label ??
+        s.ctas_resolved[1]?.label
+        : undefined
+
+      const primaryLabel =
+        resolveLocalizedCtaLabel(s.cta?.primary) ??
+        resolveLocalizedCtaLabel(legacyCtas[0]) ??
+        primaryFromCtasResolved ??
+        primaryFromResolved ??
+        t('ctaShop')
+
+      const secondaryLabel =
+        resolveLocalizedCtaLabel(s.cta?.secondary) ??
+        resolveLocalizedCtaLabel(legacyCtas[1])
+        ?? secondaryFromCtasResolved
+        ?? secondaryFromResolved
 
       // Backend must NOT provide hrefs. We derive the href from the slide type + target.
       // Legacy payloads may still contain hrefs; in that case we accept them.
@@ -151,13 +203,19 @@ export function HomeHero({
         ? normalizeInternalHref(legacyCtas[1].href)
         : defaultSecondaryHrefFor(type)
 
+      const resolvedContent = s.content_resolved?.locale === activeLocale ? s.content_resolved : undefined
+      const title = resolvedContent?.title ?? resolveLocalizedText(s.content?.title) ?? t('heroTitle')
+      const subtitle = resolvedContent?.subtitle ?? resolveLocalizedText(s.content?.subtitle) ?? t('heroSubtitle')
+      const description = resolvedContent?.description ?? resolveLocalizedText(s.content?.description)
+
       return {
         id: String(s.id),
         type,
-        title: s.content?.title ?? t('heroTitle'),
-        subtitle: s.content?.subtitle ?? t('heroSubtitle'),
+        title,
+        subtitle: subtitle ?? undefined,
+        description: description ?? undefined,
         imageSrc: toAbsoluteImageUrl(s.media?.image_url),
-        imageAlt: s.media?.image_alt || 'Hero slide',
+        imageAlt: s.media?.image_alt || t('heroSlideAlt'),
         secondaryImageSrc: s.media?.secondary_image_url ? toAbsoluteImageUrl(s.media.secondary_image_url) : undefined,
         secondaryImageAlt: s.media?.secondary_image_alt || undefined,
         primaryCta: {
@@ -183,6 +241,8 @@ export function HomeHero({
   useEffect(() => {
     if (!api) return
     if (isPaused) return
+
+    if (api.scrollSnapList().length < 2) return
 
     const id = window.setInterval(() => {
       api.scrollNext()
@@ -210,13 +270,13 @@ export function HomeHero({
   const slideTag = (type: HeroSlideType) => {
     switch (type) {
       case 'category':
-        return 'Catégorie'
+        return t('heroTags.category')
       case 'brand':
-        return 'Marque'
+        return t('heroTags.brand')
       case 'campaign':
-        return 'Promo'
+        return t('heroTags.campaign')
       case 'product':
-        return 'Produit'
+        return t('heroTags.product')
     }
   }
 
@@ -264,8 +324,8 @@ export function HomeHero({
                   </h1>
                   <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-[60ch]">
                     {isError
-                      ? 'Impossible de charger les slides pour le moment.'
-                      : 'Aucune slide disponible pour le moment.'}
+                        ? t('heroLoadError')
+                        : t('heroEmpty')}
                   </p>
                   <div className="mt-6">
                     <Link href={`/${activeLocale}/shop`}>
@@ -285,9 +345,18 @@ export function HomeHero({
               onFocusCapture={() => setIsPaused(true)}
               onBlurCapture={() => setIsPaused(false)}
             >
+                  {(() => {
+                    const shouldLoop = resolvedSlides.length > 1
+
+                    return (
               <Carousel
                 className="relative"
-                opts={{ loop: true, align: 'start' }}
+                    dir={isRtl ? 'rtl' : 'ltr'}
+                    opts={{
+                      loop: shouldLoop,
+                      align: 'start',
+                      direction: isRtl ? 'rtl' : 'ltr',
+                    }}
                 setApi={(a) => setApi(a)}
               >
                 <CarouselContent className="ml-0">
@@ -305,15 +374,23 @@ export function HomeHero({
                                 <span className="font-semibold">{slideTag(s.type)}</span>
                               </div>
 
-                              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-foreground">
-                                {s.title}
-                              </h1>
+                              <div className="mt-4 space-y-2">
+                                {s.subtitle ? (
+                                  <p className="text-xs sm:text-sm text-muted-foreground max-w-[60ch]">
+                                    {s.subtitle}
+                                  </p>
+                                ) : null}
 
-                              {s.subtitle ? (
-                                <p className="mt-3 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-[60ch]">
-                                  {s.subtitle}
-                                </p>
-                              ) : null}
+                                <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-foreground">
+                                  {s.title}
+                                </h1>
+
+                                {s.description ? (
+                                  <p className="text-xs sm:text-sm text-muted-foreground max-w-[70ch]">
+                                    {s.description}
+                                  </p>
+                                ) : null}
+                              </div>
 
                               <div className="mt-7 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
                                 <Link href={s.primaryCta.href} className="w-full sm:w-auto">
@@ -389,7 +466,7 @@ export function HomeHero({
                           <button
                             key={i}
                             type="button"
-                            aria-label={`Go to slide ${i + 1}`}
+                            aria-label={t('heroGoToSlide', { index: i + 1 })}
                             className={cn(
                               'h-2.5 rounded-full transition-all',
                               isActive ? 'w-6 bg-white/90' : 'w-2.5 bg-white/40 hover:bg-white/60'
@@ -400,6 +477,8 @@ export function HomeHero({
                       })}
                     </div>
                   </Carousel>
+                    )
+                  })()}
                 </div>
           )}
         </div>

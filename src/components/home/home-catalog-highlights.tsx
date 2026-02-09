@@ -18,16 +18,14 @@ import {
 } from '@/components/ui/carousel'
 import { cn } from '@/lib/utils'
 import { API_CONFIG } from '@/lib/api-config'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 
 type CategoryShape = 'rounded' | 'circle'
 
 function getCategoryLabel(category: Category, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
@@ -138,7 +136,7 @@ export function HomeCatalogHighlights({
               <div key={i} className="flex flex-col items-center gap-2">
                 <Skeleton
                   className={cn(
-                    'aspect-square w-full max-w-[96px]',
+                    'aspect-square w-full max-w-24',
                     shape === 'circle' ? 'rounded-full' : 'rounded-xl'
                   )}
                 />
@@ -156,7 +154,7 @@ export function HomeCatalogHighlights({
               className="relative mx-auto"
               opts={{
                 loop: items.length > 6,
-                align: 'start',
+                align: 'center',
                 dragFree: true,
                 skipSnaps: true,
               }}
@@ -174,11 +172,11 @@ export function HomeCatalogHighlights({
                       : undefined
                   }
             >
-                  <CarouselContent className="justify-start">
+                  <CarouselContent className="justify-center">
                 {items.map((c) => (
                   <CarouselItem
                     key={c.id}
-                    className="basis-[92px] sm:basis-[96px] md:basis-[104px] lg:basis-[112px] xl:basis-[120px]"
+                    className="basis-[92px] sm:basis-24 md:basis-[104px] lg:basis-28 xl:basis-[120px]"
                   >
                     <CategoryCard category={c} locale={activeLocale} shape={shape} />
                   </CarouselItem>

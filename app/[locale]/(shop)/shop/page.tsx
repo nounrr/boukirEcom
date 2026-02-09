@@ -235,8 +235,8 @@ export default function ShopPage() {
 
   const viewToggle = (
     <div className="flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-full bg-muted/40 px-1.5 sm:px-2 shadow-sm ring-1 ring-border/30">
-      <span className="hidden text-xs text-muted-foreground sm:inline">Vue</span>
-      <div className="flex items-center gap-1" aria-label="Mode d'affichage">
+      <span className="hidden text-xs text-muted-foreground sm:inline">{t('viewToggle.label', { defaultValue: 'Vue' })}</span>
+      <div className="flex items-center gap-1" aria-label={t('viewToggle.aria', { defaultValue: "Mode d'affichage" })}>
         <Button
           type="button"
           variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -244,7 +244,7 @@ export default function ShopPage() {
           onClick={() => setViewMode('grid')}
           className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
           aria-pressed={viewMode === 'grid'}
-          aria-label="Grille compacte"
+          aria-label={t('viewToggle.gridAria', { defaultValue: 'Grille compacte' })}
         >
           <Grid3x3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Button>
@@ -255,7 +255,7 @@ export default function ShopPage() {
           onClick={() => setViewMode('list')}
           className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
           aria-pressed={viewMode === 'list'}
-          aria-label="Liste"
+          aria-label={t('viewToggle.listAria', { defaultValue: 'Liste' })}
         >
           <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Button>
@@ -288,7 +288,7 @@ export default function ShopPage() {
               {isLoading && !data ? (
                 <div className="h-5 w-40 rounded bg-muted/50 animate-pulse" />
               ) : error ? (
-                <p className="text-sm font-medium text-destructive">Erreur lors du chargement</p>
+                <p className="text-sm font-medium text-destructive">{t('loadError', { defaultValue: 'Erreur lors du chargement' })}</p>
               ) : (
                 <>
                   <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-background px-5 py-2 text-xs font-medium text-primary shadow-sm sm:text-sm transition-all duration-300">
@@ -297,7 +297,11 @@ export default function ShopPage() {
                       <span className="font-semibold">{pagination?.total_items || 0}</span> {t('productsLabel', { defaultValue: 'produits' })}
                       {pagination && pagination.total_items > 0 && (
                         <span className="ml-2 text-[11px] sm:text-xs opacity-90 text-primary">
-                          · Page {pagination.current_page}/{pagination.total_pages}
+                          · {t('pageXofY', {
+                            current: pagination.current_page,
+                            total: pagination.total_pages,
+                            defaultValue: 'Page {current}/{total}',
+                          })}
                         </span>
                       )}
                     </span>
@@ -305,9 +309,9 @@ export default function ShopPage() {
                   <p className="mt-2 text-[11px] text-muted-foreground sm:text-xs">
                     {pagination && pagination.total_items > 0 ? (
                       <>
-                        Affichage{' '}
+                        {t('showing', { defaultValue: 'Affichage' })}{' '}
                         <span className="font-medium text-foreground">{pagination.from}-{pagination.to}</span>{' '}
-                        sur{' '}
+                        {t('of', { defaultValue: 'sur' })}{' '}
                         <span className="font-medium text-foreground">{pagination.total_items}</span>
                       </>
                     ) : null}

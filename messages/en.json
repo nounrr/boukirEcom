@@ -27,6 +27,128 @@
     "previous": "Previous",
     "viewAll": "View all"
   },
+  "profile": {
+    "layoutTitle": "My account",
+    "layoutSubtitle": "Manage your profile and preferences",
+    "headerTitle": "My profile",
+    "headerSubtitle": "Manage your personal information",
+    "guest": {
+      "layoutTitle": "My profile",
+      "layoutSubtitle": "Sign in to access your account",
+      "sessionRequiredTitle": "Session required",
+      "sessionRequiredDesc": "Please sign in to view your profile and information.",
+      "login": "Sign in"
+    },
+    "actions": {
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "sending": "Sending..."
+    },
+    "artisan": {
+      "title": "Artisan / Pro status",
+      "badges": {
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "approvedTitle": "You are an Artisan/Developer.",
+      "approvedDesc": "Your account benefits from Artisan/Pro advantages.",
+      "pendingTitle": "Request under review.",
+      "pendingDesc": "An admin will review your request soon.",
+      "requestHint": "Request Artisan/Pro status to access more benefits and increase your discount earnings.",
+      "requestAction": "Request Artisan status"
+    },
+    "remise": {
+      "title": "Your discount balance",
+      "desc": "Use this balance on your next orders"
+    },
+    "sections": {
+      "personal": {
+        "title": "Personal information",
+        "subtitle": "Your identification details"
+      },
+      "billing": {
+        "title": "Billing address",
+        "subtitle": "Your primary address"
+      },
+      "shipping": {
+        "title": "Shipping address",
+        "subtitle": "Where to receive your orders"
+      },
+      "status": {
+        "title": "Account status",
+        "subtitle": "Information about your account"
+      }
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "accountType": "Account type",
+      "language": "Language",
+      "company": "Company",
+      "ice": "ICE",
+      "address": "Address",
+      "shippingLine1": "Address line 1",
+      "shippingLine2": "Address line 2 (optional)",
+      "city": "City",
+      "state": "State/Region (optional)",
+      "postalCode": "Postal code",
+      "country": "Country"
+    },
+    "placeholders": {
+      "firstName": "Your first name",
+      "lastName": "Your last name",
+      "company": "Company name",
+      "ice": "ICE number",
+      "address": "Your full address",
+      "shippingLine1": "Street, number, building",
+      "shippingLine2": "Apartment, floor",
+      "city": "City",
+      "state": "Region",
+      "postalCode": "Postal code",
+      "country": "Country"
+    },
+    "verified": "Verified",
+    "notProvided": "Not provided",
+    "languages": {
+      "fr": "French",
+      "ar": "Arabic",
+      "en": "English",
+      "zh": "Chinese"
+    },
+    "accountTypes": {
+      "client": "Customer",
+      "artisan": "Artisan/Developer"
+    },
+    "status": {
+      "authProvider": "Auth provider",
+      "eligibleBalanceTitle": "Eligible for balance",
+      "eligibleBalanceDesc": "Buy now, pay later",
+      "memberSince": "Member since",
+      "lastLogin": "Last login"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "No changes",
+        "desc": "No field was modified."
+      },
+      "updated": {
+        "title": "Profile updated",
+        "desc": "Your information was saved successfully."
+      },
+      "requestArtisan": {
+        "sentFallback": "It will be reviewed by an administrator."
+      },
+      "error": {
+        "title": "Error",
+        "updateProfileFallback": "Unable to update the profile.",
+        "requestArtisanFallback": "Unable to send the request."
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "Sign in to save your favorite products",
     "wishlistSubtitle": "Access your wishlist and track your orders."
@@ -418,6 +540,16 @@
   },
   "shop": {
     "filters": "Filters",
+    "viewToggle": {
+      "label": "View",
+      "aria": "Display mode",
+      "gridAria": "Compact grid",
+      "listAria": "List"
+    },
+    "loadError": "Error while loading",
+    "showing": "Showing",
+    "of": "of",
+    "pageXofY": "Page {current}/{total}",
     "productsLabel": "products",
     "tagline": "Fast delivery • Easy returns • Secure payment",
     "taglineShort": "Fast delivery • Secure payment",
@@ -583,6 +715,10 @@
     "heroKicker": "Your online hardware store",
     "heroTitle": "Shop pro products, easily",
     "heroSubtitle": "Thousands of items for professionals and individuals, with a fast, clear and secure shopping experience.",
+    "heroSlideAlt": "Hero slide",
+    "heroLoadError": "Unable to load slides right now.",
+    "heroEmpty": "No slides available at the moment.",
+    "heroGoToSlide": "Go to slide {index}",
     "ctaShop": "Go to the shop",
     "ctaPromos": "See deals",
     "ctaBrowse": "Browse",
@@ -597,6 +733,12 @@
     "heroCard3Title": "Current deals",
     "heroCard3Desc": "Enjoy the best offers.",
     "heroCardHint": "Tip: use the search at the top to go faster.",
+    "heroTags": {
+      "category": "Category",
+      "brand": "Brand",
+      "campaign": "Deal",
+      "product": "Product"
+    },
     "categoriesTitle": "Popular categories",
     "categoriesDesc": "Quick access to the most requested aisles.",
     "brandsTitle": "Brands",

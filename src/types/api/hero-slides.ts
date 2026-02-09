@@ -9,8 +9,12 @@
 
 export type HeroSlideTypeApi = 'category' | 'brand' | 'campaign' | 'product'
 
+export type HeroSlidesLocale = 'fr' | 'ar' | 'en' | 'zh'
+
+export type LocalizedText = string | Record<HeroSlidesLocale, string | null | undefined>
+
 export interface HeroSlidesRequest {
-  locale: 'fr' | 'ar'
+  locale: HeroSlidesLocale
   limit?: number
   /**
    * Optional ISO date-time string used by backend to resolve scheduling.
@@ -27,9 +31,17 @@ export interface HeroSlideMediaApi {
 }
 
 export interface HeroSlideContentApi {
+  title: LocalizedText
+  subtitle?: LocalizedText | null
+  description?: LocalizedText | null
+  badge?: LocalizedText | null
+}
+
+export interface HeroSlideContentResolvedApi {
+  locale: HeroSlidesLocale
   title: string
   subtitle?: string | null
-  badge?: string | null
+  description?: string | null
 }
 
 export interface HeroSlideTargetApi {
@@ -50,6 +62,9 @@ export interface HeroSlideTargetApi {
 
 export interface HeroSlideCtaButtonApi {
   label: string
+  label_ar?: string | null
+  label_en?: string | null
+  label_zh?: string | null
 }
 
 export interface HeroSlideCtaApi {
@@ -57,19 +72,32 @@ export interface HeroSlideCtaApi {
   secondary?: HeroSlideCtaButtonApi | null
 }
 
+export interface HeroSlideCtaResolvedApi {
+  primary?: {
+    label: string
+  } | null
+  secondary?: {
+    label: string
+  } | null
+}
+
 /**
  * Legacy CTA format (deprecated): backend-provided hrefs.
  */
 export interface HeroSlideCtaLegacyApi {
   label: string
-  href: string
+  label_ar?: string | null
+  label_en?: string | null
+  label_zh?: string | null
+  href?: string
+  style?: 'primary' | 'secondary' | string
   variant?: 'primary' | 'secondary' | 'outline' | 'link'
 }
 
 export interface HeroSlideApi {
   id: number | string
   type: HeroSlideTypeApi
-  locale?: 'fr' | 'ar' | null
+  locale?: HeroSlidesLocale | null
   priority?: number | null
   start_at?: string | null
   end_at?: string | null
@@ -77,6 +105,7 @@ export interface HeroSlideApi {
 
   media: HeroSlideMediaApi
   content: HeroSlideContentApi
+  content_resolved?: HeroSlideContentResolvedApi | null
   target?: HeroSlideTargetApi | null
 
   /**
@@ -84,10 +113,17 @@ export interface HeroSlideApi {
    */
   cta?: HeroSlideCtaApi | null
 
+  cta_resolved?: HeroSlideCtaResolvedApi | null
+
   /**
    * Legacy contract (deprecated).
    */
   ctas?: HeroSlideCtaLegacyApi[] | null
+
+  ctas_resolved?: Array<{
+    style?: 'primary' | 'secondary' | string
+    label: string
+  }> | null
 }
 
 export interface HeroSlidesResponse {

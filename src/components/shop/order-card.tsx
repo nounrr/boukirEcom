@@ -39,6 +39,14 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
 
   const currency = tCommon("currency")
 
+  const getLocalizedOrderItemName = (item: any) => {
+    const base = String(item?.productName ?? '')
+    if (locale === 'ar') return (item?.productNameAr ?? base) || base
+    if (locale === 'en') return (item?.productNameEn ?? base) || base
+    if (locale === 'zh') return (item?.productNameZh ?? base) || base
+    return base
+  }
+
   const hasId = typeof order.id === "number" ? order.id > 0 : Boolean(order.id)
   const shouldFetchDetails = open && hasId && !(order.items && order.items.length > 0)
   const { data: detailedOrder, isFetching: isFetchingDetails } = useGetOrderQuery(
@@ -377,7 +385,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
-                      alt={item.productName}
+                      alt={getLocalizedOrderItemName(item)}
                       fill
                       className="object-cover"
                       unoptimized={item.imageUrl.includes('picsum') || item.imageUrl.includes('unsplash')}
@@ -392,7 +400,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                 {/* Product Details */}
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground line-clamp-2">
-                    {item.productName}
+                    {getLocalizedOrderItemName(item)}
                   </h4>
                   {item.variantName && (
                     <p className="text-xs text-muted-foreground mt-1">

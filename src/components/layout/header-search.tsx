@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
+import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
 import { useGetSearchSuggestionsQuery } from '@/state/api/search-suggestions-api-slice'
 import type { SearchSuggestionCategory, SearchSuggestionProduct } from '@/types/api/search-suggestions'
 
@@ -100,17 +101,11 @@ function clampIndex(index: number, length: number) {
 }
 
 function getSuggestionCategoryLabel(category: SearchSuggestionCategory, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 function getSuggestionProductLabel(product: SearchSuggestionProduct, locale: string) {
-  if (locale === 'ar') return product.designation_ar || product.designation
-  if (locale === 'en') return product.designation_en || product.designation
-  if (locale === 'zh') return product.designation_zh || product.designation
-  return product.designation
+  return getLocalizedProductName(product, locale)
 }
 
 function pruneRecents(entries: RecentSearchEntry[]) {

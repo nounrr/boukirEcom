@@ -21,6 +21,7 @@ import {
 } from '@/state/api/products-api-slice'
 import type { ProductListItem } from '@/types/api/products'
 import { normalizeLocale } from '@/i18n/locale'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 
 function getCategoryLabel(
   category:
@@ -28,11 +29,7 @@ function getCategoryLabel(
     | undefined,
   locale: string
 ) {
-  if (!category) return ''
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 function toProductCardModel(product: ProductListItem, locale: string) {
@@ -96,6 +93,32 @@ function ProductRail({
   const [api, setApi] = useState<CarouselApi | null>(null)
   const [isPaused, setIsPaused] = useState(false)
   const canLoop = cardProducts.length > 5
+  const isRtl = locale === 'ar'
+
+  const contentClassName = useMemo(
+    () =>
+      [
+        'cursor-grab select-none active:cursor-grabbing justify-center',
+        // Our shared Carousel uses -ml-4 + pl-4 spacing; for RTL we want the mirror.
+        // Override the base utilities via class order (these are appended last).
+        isRtl ? 'ml-0 -mr-4 flex-row-reverse' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    [isRtl]
+  )
+
+  const itemClassName = useMemo(
+    () =>
+      [
+        'basis-[260px] sm:basis-[280px]',
+        // Mirror the base CarouselItem padding (pl-4) for RTL.
+        isRtl ? 'pl-0 pr-4' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    [isRtl]
+  )
 
   useEffect(() => {
     if (!api) return
@@ -130,10 +153,17 @@ function ProductRail({
 
         {isLoading ? (
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
-            <Carousel className="relative" opts={{ align: 'start' }}>
-              <CarouselContent className="cursor-grab select-none active:cursor-grabbing">
+            <Carousel
+              className="relative"
+              dir={isRtl ? 'rtl' : 'ltr'}
+              opts={{
+                align: 'center',
+                direction: isRtl ? 'rtl' : 'ltr',
+              }}
+            >
+              <CarouselContent className={contentClassName}>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <CarouselItem key={i} className="basis-[260px] sm:basis-[280px]">
+                  <CarouselItem key={i} className={itemClassName}>
                     <div className="w-full rounded-2xl border border-border/30 bg-card overflow-hidden">
                       <div className="h-[280px] bg-muted animate-pulse" />
                       <div className="p-4 space-y-3">
@@ -164,19 +194,21 @@ function ProductRail({
               >
                 <Carousel
                   className="relative"
+                  dir={isRtl ? 'rtl' : 'ltr'}
                   opts={{
                     loop: canLoop,
-                    align: 'start',
+                    align: 'center',
+                    direction: isRtl ? 'rtl' : 'ltr',
                     slidesToScroll: 1,
                   }}
                   setApi={(a) => setApi(a)}
                 >
-                  <CarouselContent className="cursor-grab select-none active:cursor-grabbing">
+                  <CarouselContent className={contentClassName}>
                     {cardProducts.map((p) => (
-                  <CarouselItem key={p.id} className="basis-[260px] sm:basis-[280px]">
+                      <CarouselItem key={p.id} className={itemClassName}>
                         <ProductCardTile product={p} viewMode="grid" />
-                  </CarouselItem>
-                ))}
+                      </CarouselItem>
+                    ))}
                   </CarouselContent>
 
                   {cardProducts.length > 5 && (
@@ -186,7 +218,7 @@ function ProductRail({
                     </>
                   )}
                 </Carousel>
-          </div>
+              </div>
         )}
       </div>
     </section>

@@ -24,6 +24,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
+import { getLocalizedCartItemBaseName } from "@/lib/localized-fields"
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -364,7 +365,7 @@ export const CartPopover = forwardRef<
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-foreground line-clamp-1 mb-1">
-                        {formatCartItemName(item)}
+                        {formatCartItemName({ ...item, name: getLocalizedCartItemBaseName(item as any, locale) })}
                       </h4>
                       {(item.variantName || item.unitName) && (
                         <p className="text-[11px] text-muted-foreground mb-1">

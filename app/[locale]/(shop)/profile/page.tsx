@@ -14,34 +14,35 @@ import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
 import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent } from "lucide-react"
 import Link from "next/link"
-import { useLocale } from "next-intl"
-import { useMemo, useState, useEffect } from "react"
+import { useLocale, useTranslations } from "next-intl"
+import { useCallback, useMemo, useState, useEffect } from "react"
 
 const PHONE_COUNTRIES = [
-  { code: "MA", name: "Maroc", dialCode: "+212" },
-  { code: "FR", name: "France", dialCode: "+33" },
-  { code: "ES", name: "Espagne", dialCode: "+34" },
-  { code: "DE", name: "Allemagne", dialCode: "+49" },
-  { code: "IT", name: "Italie", dialCode: "+39" },
-  { code: "GB", name: "Royaume-Uni", dialCode: "+44" },
-  { code: "BE", name: "Belgique", dialCode: "+32" },
-  { code: "NL", name: "Pays-Bas", dialCode: "+31" },
-  { code: "CH", name: "Suisse", dialCode: "+41" },
-  { code: "PT", name: "Portugal", dialCode: "+351" },
-  { code: "DZ", name: "Algérie", dialCode: "+213" },
-  { code: "TN", name: "Tunisie", dialCode: "+216" },
-  { code: "EG", name: "Égypte", dialCode: "+20" },
-  { code: "SA", name: "Arabie Saoudite", dialCode: "+966" },
-  { code: "AE", name: "Émirats arabes unis", dialCode: "+971" },
-  { code: "US", name: "États-Unis", dialCode: "+1" },
-  { code: "CA", name: "Canada", dialCode: "+1" },
-  { code: "TR", name: "Turquie", dialCode: "+90" },
-  { code: "SE", name: "Suède", dialCode: "+46" },
-  { code: "NO", name: "Norvège", dialCode: "+47" },
+  { code: "MA", dialCode: "+212" },
+  { code: "FR", dialCode: "+33" },
+  { code: "ES", dialCode: "+34" },
+  { code: "DE", dialCode: "+49" },
+  { code: "IT", dialCode: "+39" },
+  { code: "GB", dialCode: "+44" },
+  { code: "BE", dialCode: "+32" },
+  { code: "NL", dialCode: "+31" },
+  { code: "CH", dialCode: "+41" },
+  { code: "PT", dialCode: "+351" },
+  { code: "DZ", dialCode: "+213" },
+  { code: "TN", dialCode: "+216" },
+  { code: "EG", dialCode: "+20" },
+  { code: "SA", dialCode: "+966" },
+  { code: "AE", dialCode: "+971" },
+  { code: "US", dialCode: "+1" },
+  { code: "CA", dialCode: "+1" },
+  { code: "TR", dialCode: "+90" },
+  { code: "SE", dialCode: "+46" },
+  { code: "NO", dialCode: "+47" },
 ]
 
 export default function ProfilePage() {
   const locale = useLocale()
+  const t = useTranslations('profile')
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
@@ -67,6 +68,42 @@ export default function ProfilePage() {
   })
 
   const [initialSnapshot, setInitialSnapshot] = useState<string>("")
+
+  const regionNames = useMemo(() => {
+    try {
+      return new Intl.DisplayNames([locale], { type: 'region' })
+    } catch {
+      return null
+    }
+  }, [locale])
+
+  const getRegionName = useCallback(
+    (code: string) => {
+      return regionNames?.of(code) || code
+    },
+    [regionNames]
+  )
+
+  const getLanguageLabel = useCallback(
+    (value: string | null | undefined) => {
+      const key = (value || '').toLowerCase()
+      if (key === 'ar') return t('languages.ar')
+      if (key === 'en') return t('languages.en')
+      if (key === 'zh') return t('languages.zh')
+      return t('languages.fr')
+    },
+    [t]
+  )
+
+  const getAccountTypeLabel = useCallback(
+    (value: string | null | undefined) => {
+      if (!value) return t('accountTypes.client')
+      if (value === 'Artisan/Promoteur') return t('accountTypes.artisan')
+      if (value.toLowerCase() === 'client') return t('accountTypes.client')
+      return value
+    },
+    [t]
+  )
 
   const hasChanges = useMemo(() => {
     if (!isEditing) return false
@@ -125,8 +162,8 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     if (!hasChanges) {
-      toast.info("Aucune modification", {
-        description: "Aucun champ n'a été modifié.",
+      toast.info(t('toasts.noChanges.title'), {
+        description: t('toasts.noChanges.desc'),
       })
       return
     }
@@ -134,16 +171,16 @@ export default function ProfilePage() {
     try {
       const result = await updateProfile(formData).unwrap()
       dispatch(setUser(result))
-      toast.success("Profil mis à jour", { 
-        description: "Vos informations ont été enregistrées avec succès." 
+      toast.success(t('toasts.updated.title'), {
+        description: t('toasts.updated.desc'),
       })
       setIsEditing(false)
 
       // New baseline after successful save
       setInitialSnapshot(JSON.stringify(formData))
     } catch (error: any) {
-      toast.error("Erreur", { 
-        description: error?.data?.message || "Impossible de mettre à jour le profil." 
+      toast.error(t('toasts.error.title'), {
+        description: error?.data?.message || t('toasts.error.updateProfileFallback'),
       })
     }
   }
@@ -194,15 +231,15 @@ export default function ProfilePage() {
       )
 
       toast.success("Demande envoyée", {
-        description: data?.message || "Elle sera validée par un administrateur.",
+        description: data?.message || t('toasts.requestArtisan.sentFallback'),
       })
     } catch (error: any) {
-      toast.error("Erreur", {
+      toast.error(t('toasts.error.title'), {
         description:
           error?.data?.message ||
           error?.error?.message ||
           error?.message ||
-          "Impossible d'envoyer la demande.",
+          t('toasts.error.requestArtisanFallback'),
       })
     }
   }
@@ -210,8 +247,8 @@ export default function ProfilePage() {
   if (!isAuthenticated && !isAuthLoading) {
     return (
       <ShopPageLayout
-        title="Mon profil"
-        subtitle="Connectez-vous pour accéder à votre compte"
+        title={t('guest.layoutTitle')}
+        subtitle={t('guest.layoutSubtitle')}
         icon="cart"
       >
         <div className="bg-card border border-border rounded-2xl p-6 max-w-xl">
@@ -220,15 +257,15 @@ export default function ProfilePage() {
               <UserCircle2 className="w-5 h-5 text-muted-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-foreground">Session requise</p>
+              <p className="text-sm font-semibold text-foreground">{t('guest.sessionRequiredTitle')}</p>
               <p className="text-sm text-muted-foreground">
-                Veuillez vous connecter pour voir votre profil et vos informations.
+                {t('guest.sessionRequiredDesc')}
               </p>
               <div className="mt-4">
                 <Link href={`/${locale}/login`}>
                   <Button className="text-white">
                     <LogIn className="w-4 h-4 mr-2" />
-                    Se connecter
+                    {t('guest.login')}
                   </Button>
                 </Link>
               </div>
@@ -241,8 +278,8 @@ export default function ProfilePage() {
 
   return (
     <ShopPageLayout
-      title="Mon compte"
-      subtitle="Gérez votre profil et vos préférences"
+      title={t('layoutTitle')}
+      subtitle={t('layoutSubtitle')}
       icon="cart"
       showHeader={false}
     >
@@ -254,8 +291,8 @@ export default function ProfilePage() {
           {/* Page Header */}
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Mon profil</h1>
-              <p className="text-sm text-muted-foreground mt-1">Gérez vos informations personnelles</p>
+              <h1 className="text-2xl font-bold text-foreground">{t('headerTitle')}</h1>
+              <p className="text-sm text-muted-foreground mt-1">{t('headerSubtitle')}</p>
             </div>
             {!isEditing ? (
               <Button
@@ -269,7 +306,7 @@ export default function ProfilePage() {
                 className="gap-2"
               >
                 <Edit2 className="w-4 h-4" />
-                Modifier
+                {t('actions.edit')}
               </Button>
             ) : (
               <div className="flex gap-2">
@@ -281,7 +318,7 @@ export default function ProfilePage() {
                   disabled={isUpdating}
                 >
                   <X className="w-4 h-4" />
-                  Annuler
+                    {t('actions.cancel')}
                 </Button>
                 <Button
                   onClick={handleSave}
@@ -290,7 +327,7 @@ export default function ProfilePage() {
                     disabled={isUpdating || !hasChanges}
                 >
                   <Save className="w-4 h-4" />
-                  {isUpdating ? "Enregistrement..." : "Enregistrer"}
+                    {isUpdating ? t('actions.saving') : t('actions.save')}
                 </Button>
               </div>
             )}
@@ -305,12 +342,12 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">Statut Artisan / Pro</p>
+                    <p className="text-sm font-semibold text-foreground">{t('artisan.title')}</p>
                     {(user.artisan_approuve || user.type_compte === "Artisan/Promoteur") && (
-                      <Badge variant="secondary" className="text-[10px]">Validé</Badge>
+                      <Badge variant="secondary" className="text-[10px]">{t('artisan.badges.approved')}</Badge>
                     )}
                     {!!user.demande_artisan && !user.artisan_approuve && user.type_compte !== "Artisan/Promoteur" && (
-                      <Badge variant="secondary" className="text-[10px]">En attente</Badge>
+                      <Badge variant="secondary" className="text-[10px]">{t('artisan.badges.pending')}</Badge>
                     )}
                   </div>
 
@@ -318,22 +355,22 @@ export default function ProfilePage() {
                     <div className="mt-2 flex items-start gap-2 text-sm">
                       <ShieldCheck className="w-4 h-4 text-green-600 mt-0.5" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">Vous êtes Artisan/Promoteur.</p>
-                        <p className="text-xs text-muted-foreground">Votre compte bénéficie des avantages Artisan/Pro.</p>
+                        <p className="text-sm font-medium text-foreground">{t('artisan.approvedTitle')}</p>
+                        <p className="text-xs text-muted-foreground">{t('artisan.approvedDesc')}</p>
                       </div>
                     </div>
                   ) : user.demande_artisan ? (
                     <div className="mt-2 flex items-start gap-2 text-sm">
                       <Clock className="w-4 h-4 text-amber-600 mt-0.5" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">Demande en cours de validation.</p>
-                        <p className="text-xs text-muted-foreground">Un administrateur validera votre demande bientôt.</p>
+                          <p className="text-sm font-medium text-foreground">{t('artisan.pendingTitle')}</p>
+                          <p className="text-xs text-muted-foreground">{t('artisan.pendingDesc')}</p>
                       </div>
                     </div>
                   ) : (
                     <div className="mt-2">
                       <p className="text-xs text-muted-foreground">
-                        Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.
+                            {t('artisan.requestHint')}
                       </p>
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <Button
@@ -341,7 +378,7 @@ export default function ProfilePage() {
                           onClick={handleRequestArtisan}
                           disabled={isRequestingArtisan || isEditing}
                         >
-                          {isRequestingArtisan ? "Envoi..." : "Demander le statut Artisan"}
+                              {isRequestingArtisan ? t('actions.sending') : t('artisan.requestAction')}
                         </Button>
                         {typeof user.remise_balance === "number" && user.remise_balance > 0 && (
                               <RemiseBalance balance={user.remise_balance} size="md" />
@@ -359,8 +396,8 @@ export default function ProfilePage() {
             <div className="bg-linear-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/20 dark:to-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground mb-1">Votre solde remise</h3>
-                  <p className="text-xs text-muted-foreground">Utilisez ce solde lors de vos prochaines commandes</p>
+                  <h3 className="text-sm font-semibold text-foreground mb-1">{t('remise.title')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('remise.desc')}</p>
                 </div>
                 <RemiseBalance balance={user.remise_balance} size="md" showLabel={false} />
               </div>
@@ -374,8 +411,8 @@ export default function ProfilePage() {
                 <UserCircle2 className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">Informations personnelles</h2>
-                <p className="text-xs text-muted-foreground">Vos données d'identification</p>
+                <h2 className="text-base font-semibold text-foreground">{t('sections.personal.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('sections.personal.subtitle')}</p>
               </div>
             </div>
 
@@ -390,18 +427,18 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <UserCircle2 className="w-3.5 h-3.5 text-muted-foreground" />
-                    Prénom
+                      {t('fields.firstName')}
                   </Label>
                   {isEditing ? (
                     <Input
                       value={formData.prenom}
                       onChange={(e) => handleInputChange("prenom", e.target.value)}
                       className="h-10"
-                      placeholder="Votre prénom"
+                        placeholder={t('placeholders.firstName')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                      <p className="text-sm font-semibold text-foreground">{user?.prenom || "Non renseigné"}</p>
+                          <p className="text-sm font-semibold text-foreground">{user?.prenom || t('notProvided')}</p>
                     </div>
                   )}
                 </div>
@@ -409,18 +446,18 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <UserCircle2 className="w-3.5 h-3.5 text-muted-foreground" />
-                    Nom
+                      {t('fields.lastName')}
                   </Label>
                   {isEditing ? (
                     <Input
                       value={formData.nom}
                       onChange={(e) => handleInputChange("nom", e.target.value)}
                       className="h-10"
-                      placeholder="Votre nom"
+                        placeholder={t('placeholders.lastName')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                      <p className="text-sm font-semibold text-foreground">{user?.nom || "Non renseigné"}</p>
+                          <p className="text-sm font-semibold text-foreground">{user?.nom || t('notProvided')}</p>
                     </div>
                   )}
                 </div>
@@ -428,11 +465,11 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-                    Email
+                      {t('fields.email')}
                     {user?.email_verified && (
                       <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">
                         <CheckCircle2 className="w-3 h-3 mr-0.5" />
-                        Vérifié
+                          {t('verified')}
                       </Badge>
                     )}
                   </Label>
@@ -444,7 +481,7 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5 text-muted-foreground" />
-                    Téléphone
+                      {t('fields.phone')}
                   </Label>
                   {isEditing ? (
                     <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-2">
@@ -467,7 +504,7 @@ export default function ProfilePage() {
                               <img 
                                 src={`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`}
                                 srcSet={`https://flagcdn.com/w40/${selectedCountry.code.toLowerCase()}.png 2x`}
-                                alt={selectedCountry.name}
+                                  alt={getRegionName(selectedCountry.code)}
                                 className="w-5 h-auto"
                               />
                               <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
@@ -481,10 +518,10 @@ export default function ProfilePage() {
                                 <img 
                                   src={`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`}
                                   srcSet={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png 2x`}
-                                  alt={country.name}
+                                  alt={getRegionName(country.code)}
                                   className="w-5 h-auto"
                                 />
-                                <span className="text-sm">{country.name}</span>
+                                <span className="text-sm">{getRegionName(country.code)}</span>
                                 <span className="text-xs text-muted-foreground">{country.dialCode}</span>
                               </div>
                             </SelectItem>
@@ -516,7 +553,7 @@ export default function ProfilePage() {
                             <img 
                               src={`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`}
                               srcSet={`https://flagcdn.com/w40/${selectedCountry.code.toLowerCase()}.png 2x`}
-                              alt={selectedCountry.name}
+                                  alt={getRegionName(selectedCountry.code)}
                               className="w-5 h-auto shrink-0"
                             />
                             <span className="text-primary">{selectedCountry.dialCode}</span>
@@ -524,7 +561,7 @@ export default function ProfilePage() {
                             <span>{localPhoneNumber || user.telephone.replace(selectedCountry.dialCode, '')}</span>
                           </>
                         ) : (
-                          "Non renseigné"
+                                t('notProvided')
                         )}
                       </p>
                     </div>
@@ -534,20 +571,20 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                    Type de compte
+                      {t('fields.accountType')}
                   </Label>
                   <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                    <p className="text-sm font-semibold text-foreground">{user?.type_compte || "Client"}</p>
+                      <p className="text-sm font-semibold text-foreground">{getAccountTypeLabel(user?.type_compte)}</p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-xs font-medium flex items-center gap-1.5">
                     <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                    Langue
+                      {t('fields.language')}
                   </Label>
                   <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                    <p className="text-sm font-semibold text-foreground">{user?.locale === "ar" ? "العربية" : "Français"}</p>
+                      <p className="text-sm font-semibold text-foreground">{getLanguageLabel(user?.locale)}</p>
                   </div>
                 </div>
 
@@ -556,18 +593,18 @@ export default function ProfilePage() {
                     <div className="space-y-2">
                       <Label className="text-xs font-medium flex items-center gap-1.5">
                         <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
-                        Société
+                          {t('fields.company')}
                       </Label>
                       {isEditing ? (
                         <Input
                           value={formData.societe}
                           onChange={(e) => handleInputChange("societe", e.target.value)}
                           className="h-10"
-                          placeholder="Nom de la société"
+                            placeholder={t('placeholders.company')}
                         />
                       ) : (
                         <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                          <p className="text-sm font-semibold text-foreground">{user?.societe || "Non renseigné"}</p>
+                              <p className="text-sm font-semibold text-foreground">{user?.societe || t('notProvided')}</p>
                         </div>
                       )}
                     </div>
@@ -582,11 +619,11 @@ export default function ProfilePage() {
                           value={formData.ice}
                           onChange={(e) => handleInputChange("ice", e.target.value)}
                           className="h-10"
-                          placeholder="Numéro ICE"
+                            placeholder={t('placeholders.ice')}
                         />
                       ) : (
                         <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                          <p className="text-sm font-semibold text-foreground">{user?.ice || "Non renseigné"}</p>
+                              <p className="text-sm font-semibold text-foreground">{user?.ice || t('notProvided')}</p>
                         </div>
                       )}
                     </div>
@@ -603,23 +640,23 @@ export default function ProfilePage() {
                 <MapPin className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">Adresse de facturation</h2>
-                <p className="text-xs text-muted-foreground">Votre adresse principale</p>
+                <h2 className="text-base font-semibold text-foreground">{t('sections.billing.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('sections.billing.subtitle')}</p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-medium">Adresse</Label>
+              <Label className="text-xs font-medium">{t('fields.address')}</Label>
               {isEditing ? (
                 <Input
                   value={formData.adresse}
                   onChange={(e) => handleInputChange("adresse", e.target.value)}
                   className="h-10"
-                  placeholder="Votre adresse complète"
+                  placeholder={t('placeholders.address')}
                 />
               ) : (
                 <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                  <p className="text-sm font-semibold text-foreground">{user?.adresse || "Non renseignée"}</p>
+                    <p className="text-sm font-semibold text-foreground">{user?.adresse || t('notProvided')}</p>
                 </div>
               )}
             </div>
@@ -632,36 +669,36 @@ export default function ProfilePage() {
                 <Package className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">Adresse de livraison</h2>
-                <p className="text-xs text-muted-foreground">Où recevoir vos commandes</p>
+                <h2 className="text-base font-semibold text-foreground">{t('sections.shipping.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('sections.shipping.subtitle')}</p>
               </div>
             </div>
 
             <div className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs font-medium">Adresse ligne 1</Label>
+                <Label className="text-xs font-medium">{t('fields.shippingLine1')}</Label>
                 {isEditing ? (
                   <Input
                     value={formData.shipping_address_line1}
                     onChange={(e) => handleInputChange("shipping_address_line1", e.target.value)}
                     className="h-10"
-                    placeholder="Rue, numéro, bâtiment"
+                    placeholder={t('placeholders.shippingLine1')}
                   />
                 ) : (
                   <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                    <p className="text-sm font-semibold text-foreground">{user?.shipping_address_line1 || "Non renseignée"}</p>
+                      <p className="text-sm font-semibold text-foreground">{user?.shipping_address_line1 || t('notProvided')}</p>
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-medium">Adresse ligne 2 (optionnel)</Label>
+                <Label className="text-xs font-medium">{t('fields.shippingLine2')}</Label>
                 {isEditing ? (
                   <Input
                     value={formData.shipping_address_line2}
                     onChange={(e) => handleInputChange("shipping_address_line2", e.target.value)}
                     className="h-10"
-                    placeholder="Appartement, étage"
+                    placeholder={t('placeholders.shippingLine2')}
                   />
                 ) : (
                   <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
@@ -672,29 +709,29 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium">Ville</Label>
+                  <Label className="text-xs font-medium">{t('fields.city')}</Label>
                   {isEditing ? (
                     <Input
                       value={formData.shipping_city}
                       onChange={(e) => handleInputChange("shipping_city", e.target.value)}
                       className="h-10"
-                      placeholder="Ville"
+                      placeholder={t('placeholders.city')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                      <p className="text-sm font-semibold text-foreground">{user?.shipping_city || "Non renseignée"}</p>
+                        <p className="text-sm font-semibold text-foreground">{user?.shipping_city || t('notProvided')}</p>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium">Région/État (optionnel)</Label>
+                  <Label className="text-xs font-medium">{t('fields.state')}</Label>
                   {isEditing ? (
                     <Input
                       value={formData.shipping_state}
                       onChange={(e) => handleInputChange("shipping_state", e.target.value)}
                       className="h-10"
-                      placeholder="Région"
+                      placeholder={t('placeholders.state')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
@@ -706,29 +743,29 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium">Code postal</Label>
+                  <Label className="text-xs font-medium">{t('fields.postalCode')}</Label>
                   {isEditing ? (
                     <Input
                       value={formData.shipping_postal_code}
                       onChange={(e) => handleInputChange("shipping_postal_code", e.target.value)}
                       className="h-10"
-                      placeholder="Code postal"
+                      placeholder={t('placeholders.postalCode')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
-                      <p className="text-sm font-semibold text-foreground">{user?.shipping_postal_code || "Non renseigné"}</p>
+                        <p className="text-sm font-semibold text-foreground">{user?.shipping_postal_code || t('notProvided')}</p>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium">Pays</Label>
+                  <Label className="text-xs font-medium">{t('fields.country')}</Label>
                   {isEditing ? (
                     <Input
                       value={formData.shipping_country}
                       onChange={(e) => handleInputChange("shipping_country", e.target.value)}
                       className="h-10"
-                      placeholder="Pays"
+                      placeholder={t('placeholders.country')}
                     />
                   ) : (
                     <div className="rounded-xl border border-border/60 p-3 bg-muted/20">
@@ -747,8 +784,8 @@ export default function ProfilePage() {
                 <Settings className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-foreground">Statut du compte</h2>
-                <p className="text-xs text-muted-foreground">Informations sur votre compte</p>
+                <h2 className="text-base font-semibold text-foreground">{t('sections.status.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('sections.status.subtitle')}</p>
               </div>
             </div>
 
@@ -758,9 +795,9 @@ export default function ProfilePage() {
                   <UserCircle2 className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Fournisseur d'auth</p>
+                  <p className="text-xs text-muted-foreground">{t('status.authProvider')}</p>
                   <p className="text-sm font-semibold text-foreground capitalize">
-                    {user?.auth_provider || "Email"}
+                    {user?.auth_provider || t('fields.email')}
                   </p>
                 </div>
               </div>
@@ -771,9 +808,9 @@ export default function ProfilePage() {
                     <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500" />
                   </div>
                   <div>
-                    <p className="text-xs text-green-700 dark:text-green-400">Éligible au solde</p>
+                    <p className="text-xs text-green-700 dark:text-green-400">{t('status.eligibleBalanceTitle')}</p>
                     <p className="text-sm font-semibold text-green-800 dark:text-green-300">
-                      Achetez maintenant, payez plus tard
+                      {t('status.eligibleBalanceDesc')}
                     </p>
                   </div>
                 </div>
@@ -783,9 +820,9 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-3 rounded-xl border border-border/60 p-4">
                   <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-xs text-muted-foreground">Membre depuis</p>
+                    <p className="text-xs text-muted-foreground">{t('status.memberSince')}</p>
                     <p className="text-sm font-semibold text-foreground">
-                      {new Date(user.created_at).toLocaleDateString("fr-FR", {
+                      {new Date(user.created_at).toLocaleDateString(locale, {
                         year: "numeric",
                         month: "long",
                         day: "numeric"
@@ -799,9 +836,9 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-3 rounded-xl border border-border/60 p-4">
                   <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-xs text-muted-foreground">Dernière connexion</p>
+                    <p className="text-xs text-muted-foreground">{t('status.lastLogin')}</p>
                     <p className="text-sm font-semibold text-foreground">
-                      {new Date(user.last_login_at).toLocaleDateString("fr-FR", {
+                      {new Date(user.last_login_at).toLocaleDateString(locale, {
                         year: "numeric",
                         month: "long",
                         day: "numeric",

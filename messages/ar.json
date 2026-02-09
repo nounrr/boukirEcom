@@ -27,6 +27,128 @@
     "previous": "السابق",
     "viewAll": "عرض الكل"
   },
+  "profile": {
+    "layoutTitle": "حسابي",
+    "layoutSubtitle": "إدارة ملفك الشخصي وتفضيلاتك",
+    "headerTitle": "ملفي الشخصي",
+    "headerSubtitle": "إدارة معلوماتك الشخصية",
+    "guest": {
+      "layoutTitle": "ملفي الشخصي",
+      "layoutSubtitle": "سجّل الدخول للوصول إلى حسابك",
+      "sessionRequiredTitle": "يلزم تسجيل الدخول",
+      "sessionRequiredDesc": "يرجى تسجيل الدخول لعرض ملفك الشخصي ومعلوماتك.",
+      "login": "تسجيل الدخول"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "sending": "جارٍ الإرسال..."
+    },
+    "artisan": {
+      "title": "حالة الحرفي / المحترف",
+      "badges": {
+        "approved": "تمت الموافقة",
+        "pending": "قيد المراجعة"
+      },
+      "approvedTitle": "أنت حرفي/مطور.",
+      "approvedDesc": "حسابك يستفيد من مزايا الحرفي/المحترف.",
+      "pendingTitle": "الطلب قيد التحقق.",
+      "pendingDesc": "سيتم التحقق من طلبك قريباً من طرف مسؤول.",
+      "requestHint": "اطلب حالة الحرفي/المحترف للوصول إلى مزايا أكثر وزيادة مكاسب الخصم.",
+      "requestAction": "طلب حالة الحرفي"
+    },
+    "remise": {
+      "title": "رصيد الخصم",
+      "desc": "استخدم هذا الرصيد في طلباتك القادمة"
+    },
+    "sections": {
+      "personal": {
+        "title": "المعلومات الشخصية",
+        "subtitle": "بيانات التعريف الخاصة بك"
+      },
+      "billing": {
+        "title": "عنوان الفاتورة",
+        "subtitle": "عنوانك الأساسي"
+      },
+      "shipping": {
+        "title": "عنوان التوصيل",
+        "subtitle": "أين تستلم طلباتك"
+      },
+      "status": {
+        "title": "حالة الحساب",
+        "subtitle": "معلومات حول حسابك"
+      }
+    },
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "accountType": "نوع الحساب",
+      "language": "اللغة",
+      "company": "الشركة",
+      "ice": "ICE",
+      "address": "العنوان",
+      "shippingLine1": "العنوان (سطر 1)",
+      "shippingLine2": "العنوان (سطر 2) (اختياري)",
+      "city": "المدينة",
+      "state": "المنطقة/الولاية (اختياري)",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد"
+    },
+    "placeholders": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "company": "اسم الشركة",
+      "ice": "رقم ICE",
+      "address": "العنوان الكامل",
+      "shippingLine1": "الشارع، الرقم، المبنى",
+      "shippingLine2": "الشقة، الطابق",
+      "city": "المدينة",
+      "state": "المنطقة",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد"
+    },
+    "verified": "موثّق",
+    "notProvided": "غير مذكور",
+    "languages": {
+      "fr": "الفرنسية",
+      "ar": "العربية",
+      "en": "الإنجليزية",
+      "zh": "الصينية"
+    },
+    "accountTypes": {
+      "client": "عميل",
+      "artisan": "حرفي/مطور"
+    },
+    "status": {
+      "authProvider": "مزود تسجيل الدخول",
+      "eligibleBalanceTitle": "مؤهل للرصيد",
+      "eligibleBalanceDesc": "اشترِ الآن وادفع لاحقاً",
+      "memberSince": "عضو منذ",
+      "lastLogin": "آخر تسجيل دخول"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "لا توجد تغييرات",
+        "desc": "لم يتم تعديل أي حقل."
+      },
+      "updated": {
+        "title": "تم تحديث الملف الشخصي",
+        "desc": "تم حفظ معلوماتك بنجاح."
+      },
+      "requestArtisan": {
+        "sentFallback": "سيتم التحقق منها من طرف مسؤول."
+      },
+      "error": {
+        "title": "خطأ",
+        "updateProfileFallback": "تعذر تحديث الملف الشخصي.",
+        "requestArtisanFallback": "تعذر إرسال الطلب."
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "سجّل الدخول لحفظ منتجاتك المفضلة",
     "wishlistSubtitle": "اطّلع على قائمة المفضلة وتتبّع طلباتك."
@@ -418,6 +540,16 @@
   },
   "shop": {
     "filters": "الفلاتر",
+    "viewToggle": {
+      "label": "العرض",
+      "aria": "وضع العرض",
+      "gridAria": "شبكة مدمجة",
+      "listAria": "قائمة"
+    },
+    "loadError": "حدث خطأ أثناء التحميل",
+    "showing": "عرض",
+    "of": "من",
+    "pageXofY": "الصفحة {current}/{total}",
     "productsLabel": "منتجات",
     "tagline": "توصيل سريع • إرجاع سهل • دفع آمن",
     "taglineShort": "توصيل سريع • دفع آمن",
@@ -583,6 +715,10 @@
     "heroKicker": "متجرك للعدد واللوازم",
     "heroTitle": "تسوّق احتياجاتك بسهولة",
     "heroSubtitle": "آلاف المنتجات للحرفيين والأفراد، بتجربة شراء سريعة وواضحة وآمنة.",
+    "heroSlideAlt": "شريحة رئيسية",
+    "heroLoadError": "تعذّر تحميل الشرائح حالياً.",
+    "heroEmpty": "لا توجد شرائح متاحة حالياً.",
+    "heroGoToSlide": "اذهب إلى الشريحة {index}",
     "ctaShop": "اذهب للمتجر",
     "ctaPromos": "شاهد العروض",
     "ctaBrowse": "تصفّح",
@@ -597,6 +733,12 @@
     "heroCard3Title": "عروض حالية",
     "heroCard3Desc": "استفد من أفضل التخفيضات.",
     "heroCardHint": "نصيحة: استخدم البحث بالأعلى للوصول بسرعة.",
+    "heroTags": {
+      "category": "فئة",
+      "brand": "علامة",
+      "campaign": "عرض",
+      "product": "منتج"
+    },
     "categoriesTitle": "فئات شائعة",
     "categoriesDesc": "دخول سريع للأقسام الأكثر طلباً.",
     "brandsTitle": "العلامات التجارية",

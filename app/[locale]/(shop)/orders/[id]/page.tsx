@@ -724,6 +724,16 @@ export default function OrderDetailsPage() {
   const handleBuyAgain = async (item: any) => {
     if (!cartRef?.current) return
 
+    const baseName = String(item?.productName ?? '')
+    const localizedName =
+      locale === 'ar'
+        ? (item?.productNameAr ?? baseName) || baseName
+        : locale === 'en'
+          ? (item?.productNameEn ?? baseName) || baseName
+          : locale === 'zh'
+            ? (item?.productNameZh ?? baseName) || baseName
+            : baseName
+
     if (isOutOfStockLike(item as any)) {
       toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
       return
@@ -736,14 +746,18 @@ export default function OrderDetailsPage() {
         unitId: item.unitId ?? item.unit_id,
         unitName: item.unitName ?? item.unit_name,
         variantName: item.variantName ?? item.variant_name,
-        name: item.productName,
+        name: localizedName,
+        designation: baseName,
+        designation_ar: item?.productNameAr ?? null,
+        designation_en: item?.productNameEn ?? null,
+        designation_zh: item?.productNameZh ?? null,
         price: item.unitPrice,
         quantity: item.quantity,
         image: item.imageUrl || "",
         category: "",
       })
 
-      toast.success(t("toast.addedToCartTitle"), { description: item.productName })
+      toast.success(t("toast.addedToCartTitle"), { description: localizedName })
 
       setTimeout(() => {
         cartRef.current?.open()

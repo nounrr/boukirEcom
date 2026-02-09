@@ -1,6 +1,14 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { 
   FileText, 
@@ -25,6 +33,87 @@ interface TechnicalSheetProps {
   className?: string
 }
 
+type ParsedMarkdownItem = { label: string; value: string }
+type ParsedFiche =
+  | { kind: "json"; data: AnyRecord }
+  | { kind: "markdown"; items: ParsedMarkdownItem[] }
+
+function normalizeMarkdownValue(value: string): string {
+  const trimmed = value.trim()
+  if (!trimmed) return "—"
+
+  // Common artifact from some generators: doubled single quotes.
+  // Example: l''unité -> l'unité
+  const collapsedQuotes = trimmed.replace(/''/g, "'")
+  return collapsedQuotes
+}
+
+function parseMarkdownFiche(input: string): ParsedMarkdownItem[] {
+  const lines = input
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+
+  const items: ParsedMarkdownItem[] = []
+
+  for (const line of lines) {
+    // Match: - **Label**: value (also supports *, • and __Label__)
+    const boldMatch = line.match(
+      /^(?:[-*•]\s*)?(?:\*\*(.+?)\*\*|__(.+?)__)\s*:\s*(.*)$/
+    )
+    if (boldMatch) {
+      const label = (boldMatch[1] ?? boldMatch[2] ?? "").trim()
+      const value = normalizeMarkdownValue(boldMatch[3] ?? "")
+      if (label) items.push({ label, value })
+      continue
+    }
+
+    // Fallback: - Label: value
+    const plainMatch = line.match(/^(?:[-*•]\s*)?([^:]+?)\s*:\s*(.*)$/)
+    if (plainMatch) {
+      const label = (plainMatch[1] ?? "").trim()
+      const value = normalizeMarkdownValue(plainMatch[2] ?? "")
+      if (label) items.push({ label, value })
+    }
+  }
+
+  // Deduplicate while preserving order (in case generator repeats fields)
+  const seen = new Set<string>()
+  return items.filter((it) => {
+    const key = `${it.label.toLowerCase()}\u0000${it.value}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+function parseFiche(fiche: string | AnyRecord | null | undefined): ParsedFiche | null {
+  if (!fiche) return null
+
+  if (typeof fiche !== "string") {
+    return { kind: "json", data: fiche }
+  }
+
+  const raw = fiche.trim()
+  if (!raw) return null
+
+  // Try JSON first (legacy format)
+  try {
+    const parsed = JSON.parse(raw)
+    if (parsed && typeof parsed === "object") {
+      return { kind: "json", data: parsed as AnyRecord }
+    }
+  } catch {
+    // ignore
+  }
+
+  // Markdown bullet-list format
+  const items = parseMarkdownFiche(raw)
+  if (items.length === 0) return null
+  return { kind: "markdown", items }
+}
+
 function formatValue(v: any): string {
   if (v === null || v === undefined || v === "") return "—"
   if (typeof v === "number") return String(v)
@@ -38,14 +127,80 @@ function formatValue(v: any): string {
 export function TechnicalSheet({ fiche, className }: TechnicalSheetProps) {
   const [activeTab, setActiveTab] = useState<string>("general")
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  
-  let data: AnyRecord | null = null
-  if (!fiche) return null
-  try {
-    data = typeof fiche === "string" ? JSON.parse(fiche) : fiche
-  } catch {
-    return null
+
+  const parsed = parseFiche(fiche)
+  if (!parsed) return null
+
+  // Markdown rendering: clean spec table.
+  if (parsed.kind === "markdown") {
+    return (
+      <div className={cn("rounded-lg border bg-card", className)}>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center justify-between w-full px-4 py-4 sm:py-3 hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold">Fiche technique</h3>
+            <Badge variant="secondary" className="text-xs px-1.5 py-0">
+              {parsed.items.length}
+            </Badge>
+          </div>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          )}
+        </button>
+
+        {isExpanded && (
+          <div className="border-t border-border/40 p-4">
+            <div className="rounded-lg border bg-muted/30">
+              {/* Mobile: stacked spec list (more scannable, no horizontal table) */}
+              <div className="sm:hidden divide-y divide-border/40">
+                {parsed.items.map((item, idx) => (
+                  <div key={`${item.label}-${idx}`} className="px-3 py-3">
+                    <div className="text-xs font-medium text-foreground rtl:text-right">
+                      {item.label}
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground whitespace-pre-wrap rtl:text-right">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop/tablet */}
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-2/5 text-xs text-left rtl:text-right">Caractéristique</TableHead>
+                      <TableHead className="text-xs text-left rtl:text-right">Valeur</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parsed.items.map((item, idx) => (
+                      <TableRow key={`${item.label}-${idx}`}>
+                        <TableCell className="text-xs font-medium text-foreground align-top">
+                          {item.label}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-pre-wrap">
+                          {item.value}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
+
+  const data = parsed.data
 
   const specs = (data?.specs ?? {}) as AnyRecord
   const section = (specs?.section_mm ?? {}) as AnyRecord

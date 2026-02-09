@@ -8,12 +8,10 @@ import { Facebook, Instagram, Youtube, Truck, CreditCard, ShieldCheck } from 'lu
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
 import { cn } from '@/lib/utils';
+import { getLocalizedCategoryName } from '@/lib/localized-fields';
 
 function getCategoryLabel(category: { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom;
-  if (locale === 'en') return category.nom_en || category.nom;
-  if (locale === 'zh') return category.nom_zh || category.nom;
-  return category.nom;
+  return getLocalizedCategoryName(category, locale);
 }
 
 export function Footer({

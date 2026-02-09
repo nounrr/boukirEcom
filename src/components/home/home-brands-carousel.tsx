@@ -129,7 +129,7 @@ export function HomeBrandsCarousel({
               <div key={i} className="flex flex-col items-center gap-3">
                 <Skeleton
                   className={cn(
-                    'aspect-square w-full max-w-[96px]',
+                    'aspect-square w-full max-w-24',
                     shape === 'circle' ? 'rounded-full' : 'rounded-2xl'
                   )}
                 />
@@ -147,7 +147,7 @@ export function HomeBrandsCarousel({
               className="relative mx-auto"
               opts={{
                 loop: items.length > 6,
-                align: 'start',
+                align: 'center',
                 dragFree: true,
                 skipSnaps: true,
               }}
@@ -165,11 +165,11 @@ export function HomeBrandsCarousel({
                       : undefined
                   }
             >
-                  <CarouselContent className="justify-start">
+                  <CarouselContent className="justify-center">
                 {items.map((b) => (
                   <CarouselItem
                     key={b.id}
-                    className="basis-[92px] sm:basis-[96px] md:basis-[104px] lg:basis-[112px] xl:basis-[120px]"
+                    className="basis-[92px] sm:basis-24 md:basis-[104px] lg:basis-28 xl:basis-[120px]"
                   >
                     <BrandCard brand={b} locale={activeLocale} shape={shape} />
                   </CarouselItem>
