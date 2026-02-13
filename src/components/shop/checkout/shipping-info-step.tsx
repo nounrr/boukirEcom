@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,6 +9,19 @@ import { Button } from "@/components/ui/button"
 import { Building2, Globe, Mail, MapPin, Phone, Store, Truck, User } from "lucide-react"
 import { useGetPickupLocationsQuery } from "@/state/api/ecommerce-public-api-slice"
 import { useTranslations } from "next-intl"
+import dynamic from "next/dynamic"
+
+const LocationPicker = dynamic(() => import("./location-picker"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[300px] w-full rounded-xl border border-border bg-muted/10 animate-pulse flex items-center justify-center">
+      <div className="flex flex-col items-center gap-2">
+        <Truck className="w-8 h-8 text-muted-foreground/20" />
+        <span className="text-sm text-muted-foreground">Chargement de la carte...</span>
+      </div>
+    </div>
+  ),
+})
 
 interface ShippingInfoStepProps {
   register: UseFormRegister<any>
@@ -124,6 +137,9 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
   const pickupLocationId = watch?.("pickupLocationId")
   const pickupLocationIdString = typeof pickupLocationId === "number" ? String(pickupLocationId) : (pickupLocationId ?? "")
 
+  const initialLat = watch?.("shippingAddress.latitude")
+  const initialLng = watch?.("shippingAddress.longitude")
+
   // Fetch pickup locations in the background to avoid delay when switching to pickup
   const {
     data: pickupLocations = [],
@@ -140,6 +156,17 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
     },
     [pickupLocations, pickupLocationId]
   )
+
+  const handleLocationSelect = useCallback((location: { lat: number, lng: number, address: string, city: string, postalCode: string }) => {
+    if (!setValue) return
+
+    setValue("shippingAddress.latitude", location.lat, { shouldValidate: true })
+    setValue("shippingAddress.longitude", location.lng, { shouldValidate: true })
+
+    if (location.address) setValue("shippingAddress.address", location.address, { shouldValidate: true, shouldDirty: true })
+    if (location.city) setValue("shippingAddress.city", location.city, { shouldValidate: true, shouldDirty: true })
+    if (location.postalCode) setValue("shippingAddress.postalCode", location.postalCode, { shouldValidate: true, shouldDirty: true })
+  }, [setValue])
 
   const setDeliveryMethod = (method: "delivery" | "pickup") => {
     setValue?.("deliveryMethod", method, { shouldValidate: true, shouldDirty: true })
@@ -352,7 +379,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 }
               }}
             >
-              <SelectTrigger className="h-[41px] bg-background border-input w-full">
+              <SelectTrigger className="!h-[42px] bg-background border-input w-full">
                 <SelectValue>
                   <div className="flex items-center gap-2">
                     <img
@@ -413,6 +440,14 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
                 <p className="text-xs text-muted-foreground">{tCheckout("shippingAddressSubtitle")}</p>
               </div>
             </div>
+          </div>
+
+          <div className="overflow-hidden z-0 relative">
+            <LocationPicker
+              onLocationSelect={handleLocationSelect}
+              initialLat={typeof initialLat === 'number' ? initialLat : undefined}
+              initialLng={typeof initialLng === 'number' ? initialLng : undefined}
+            />
           </div>
 
           {/* Street Address */}

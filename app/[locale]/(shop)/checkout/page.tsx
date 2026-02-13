@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { cartStorage } from "@/lib/cart-storage"
 import type { CartItem as APICartItem } from "@/state/api/cart-api-slice"
 import { useClearCartMutation, useGetCartQuery } from "@/state/api/cart-api-slice"
-import { useCreateOrderMutation } from "@/state/api/orders-api-slice"
+import { useCreateOrderMutation, useQuoteOrderMutation } from "@/state/api/orders-api-slice"
 import { useGetCurrentUserQuery } from "@/state/api/auth-api-slice"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearCart } from "@/state/slices/cart-slice"
@@ -45,6 +45,8 @@ const buildCheckoutSchema = (t: Translator) =>
         address: z.string().optional(),
         city: z.string().optional(),
         postalCode: z.string().optional(),
+        latitude: z.number().nullable().optional(),
+        longitude: z.number().nullable().optional(),
       }),
       billingAddress: z
         .object({
@@ -151,6 +153,7 @@ export default function CheckoutPage() {
 
   // Create order mutation
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation()
+  const [quoteOrder, { isLoading: isQuoting }] = useQuoteOrderMutation()
   const [clearCartApi] = useClearCartMutation()
 
   // Wizard step state
@@ -184,7 +187,7 @@ export default function CheckoutPage() {
     subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
   }), [items])
 
-  const shippingCost: number = 0
+  const [shippingCost, setShippingCost] = useState<number>(0)
   const total = useMemo(() => subtotal - promoDiscount + shippingCost, [subtotal, promoDiscount, shippingCost])
 
   const remiseBalance = useMemo(() => {
@@ -237,7 +240,7 @@ export default function CheckoutPage() {
     router.push(nextUrl)
   }, [router])
 
-  const isBlockingUi = confirmAnimationOpen || isProcessing
+  const isBlockingUi = confirmAnimationOpen || isProcessing || isQuoting
   const isCartEmpty = !items.length
 
   const {
@@ -260,6 +263,8 @@ export default function CheckoutPage() {
         address: "",
         city: "",
         postalCode: "",
+        latitude: null,
+        longitude: null,
       },
       billingAddress: {
         firstName: "",
@@ -285,6 +290,9 @@ export default function CheckoutPage() {
 
   // Watch form values for summary step
   const formValues = watch()
+
+  // Automatic quote effect removed as per requirements.
+  // Quote is now triggered manually when moving to next step.
 
   const didPrefillFromReduxRef = useRef(false)
   const didFetchMeRef = useRef(false)
@@ -424,6 +432,8 @@ export default function CheckoutPage() {
             shippingState: undefined,
             shippingPostalCode: values.shippingAddress.postalCode || undefined,
             shippingCountry: "Morocco",
+            shippingLatitude: values.shippingAddress.latitude || undefined,
+            shippingLongitude: values.shippingAddress.longitude || undefined,
           }),
           // Delivery method and pickup location
           deliveryMethod: values.deliveryMethod,
@@ -566,13 +576,46 @@ export default function CheckoutPage() {
   const goToNextStep = useCallback(async () => {
     let isValid = false
     const deliveryMethod = watch("deliveryMethod")
+    const formValues = getValues()
 
     if (currentStep === 1) {
-      // Validate delivery method, contact info, and address (for delivery)
       if (deliveryMethod === "pickup") {
         isValid = await trigger(["deliveryMethod", "pickupLocationId", "shippingAddress.firstName", "shippingAddress.lastName", "shippingAddress.phone", "email"])
+        setShippingCost(0)
       } else {
         isValid = await trigger(["deliveryMethod", "shippingAddress", "email"])
+
+        if (isValid) {
+          const lat = formValues.shippingAddress.latitude
+          const lng = formValues.shippingAddress.longitude
+
+          try {
+            const quote = await quoteOrder({
+              useCart: isAuthenticated,
+              deliveryMethod: "delivery",
+              shippingLocation: (lat && lng) ? { lat, lng } : undefined,
+              promoCode: promoCodeValue || undefined,
+              items: !isAuthenticated
+                ? items.map((item) => ({
+                  productId: item.productId,
+                  variantId: item.variantId ?? null,
+                  unitId: item.unitId ?? null,
+                  quantity: item.quantity,
+                }))
+                : undefined,
+            }).unwrap()
+
+            const nextShipping = Number(quote?.totals?.shippingCost ?? 0)
+            setShippingCost(Number.isFinite(nextShipping) ? nextShipping : 0)
+
+            if (quote?.summary?.distance_km && typeof quote.summary.distance_km === 'number') {
+              toast.success(`Distance du magasin: ${quote.summary.distance_km.toFixed(2)} km`)
+            }
+          } catch (error) {
+            console.error("Quote error:", error)
+            setShippingCost(0)
+          }
+        }
       }
     } else if (currentStep === 2) {
       // Check if card payment is selected and validate card fields
@@ -583,7 +626,7 @@ export default function CheckoutPage() {
         isValid = await trigger("paymentMethod")
       }
 
-      // Early Solde plafond check (avoid letting user proceed with invalid selection)
+      // Early Solde plafond check
       if (isValid && paymentMethod === "solde" && isAuthenticated) {
         const useRemiseBalance = !!watch("useRemiseBalance")
         const remiseToUseRaw = watch("remiseToUse")
@@ -611,7 +654,7 @@ export default function CheckoutPage() {
     if (isValid) {
       setCurrentStep((prev) => Math.min(prev + 1, wizardSteps.length))
     }
-  }, [currentStep, trigger, watch, wizardSteps.length])
+  }, [currentStep, trigger, watch, wizardSteps.length, quoteOrder, isAuthenticated, items, promoCodeValue, getValues, t, currency, soldeAvailable, remiseBalance, total])
 
   const goToPreviousStep = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 1))

@@ -5,6 +5,8 @@ import type {
   Order,
   OrdersResponse,
   CreateOrderData,
+  OrderQuoteRequest,
+  OrderQuoteResponse,
   CancelOrderData,
   OrderItem,
   OrderStatusHistoryEntry,
@@ -170,6 +172,55 @@ export const ordersApi = createApi({
   baseQuery: baseQueryWithAuth,
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
+    // Quote an order (totals + shipping) without creating it
+    quoteOrder: builder.mutation<OrderQuoteResponse, OrderQuoteRequest>({
+      query: (data) => ({
+        url: API_CONFIG.ENDPOINTS.ORDERS_QUOTE,
+        method: 'POST',
+        body: {
+          use_cart: data.useCart,
+          delivery_method: data.deliveryMethod,
+          shipping_location: data.shippingLocation,
+          promo_code: data.promoCode || undefined,
+          items: data.items?.map((item) => ({
+            product_id: item.productId,
+            variant_id: item.variantId ?? null,
+            unit_id: item.unitId ?? null,
+            quantity: item.quantity,
+          })),
+        },
+      }),
+      transformResponse: (response: any): OrderQuoteResponse => {
+        const totalsRaw = response?.totals ?? {};
+        const summaryRaw = response?.summary ?? undefined;
+
+        return {
+          deliveryMethod: (response?.delivery_method ?? 'delivery') as any,
+          currency: response?.currency,
+          totals: {
+            subtotal: Number(totalsRaw.subtotal ?? 0),
+            taxAmount: Number(totalsRaw.tax_amount ?? 0),
+            shippingCost: Number(totalsRaw.shipping_cost ?? 0),
+            discountAmount: Number(totalsRaw.discount_amount ?? 0),
+            promoCode: totalsRaw.promo_code ?? null,
+            promoDiscountAmount: Number(totalsRaw.promo_discount_amount ?? 0),
+            totalAmount: Number(totalsRaw.total_amount ?? 0),
+          },
+          summary: summaryRaw
+            ? {
+              itemsCount: summaryRaw.items_count != null ? Number(summaryRaw.items_count) : undefined,
+              shippingLabel: summaryRaw.shipping_label ?? undefined,
+              distance_km: summaryRaw.distance_km != null ? Number(summaryRaw.distance_km) : undefined,
+              shipping_reason: summaryRaw.shipping_reason,
+              contains_kg: summaryRaw.contains_kg,
+              total_kg: summaryRaw.total_kg != null ? Number(summaryRaw.total_kg) : undefined,
+              store_location: summaryRaw.store_location,
+            }
+            : undefined,
+        };
+      },
+    }),
+
     // List orders for authenticated user or guest (by email)
     getOrders: builder.query<OrdersResponse, {
       email?: string
@@ -242,6 +293,8 @@ export const ordersApi = createApi({
           shipping_state: data.shippingState,
           shipping_postal_code: data.shippingPostalCode,
           shipping_country: data.shippingCountry,
+          shipping_latitude: data.shippingLatitude,
+          shipping_longitude: data.shippingLongitude,
           payment_method: data.paymentMethod ?? 'cash_on_delivery',
           customer_notes: data.customerNotes,
           promo_code: data.promoCode,
@@ -492,6 +545,7 @@ export const ordersApi = createApi({
 });
 
 export const {
+  useQuoteOrderMutation,
   useGetOrdersQuery,
   useGetOrderQuery,
   useCreateOrderMutation,

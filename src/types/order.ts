@@ -142,6 +142,8 @@ export interface ShippingAddress {
   state?: string | null
   postalCode?: string | null
   country: string
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export interface OrderStatusHistoryEntry {
@@ -199,6 +201,46 @@ export interface CreateOrderItemInput {
   quantity: number
 }
 
+export interface OrderQuoteItemInput {
+  productId: number
+  variantId?: number | null
+  unitId?: number | null
+  quantity: number
+}
+
+export interface OrderQuoteRequest {
+  useCart: boolean
+  deliveryMethod: DeliveryMethod
+  shippingLocation?: { lat: number; lng: number }
+  promoCode?: string
+  items?: OrderQuoteItemInput[]
+}
+
+export interface OrderQuoteTotals {
+  subtotal: number
+  taxAmount: number
+  shippingCost: number
+  discountAmount: number
+  promoCode?: string | null
+  promoDiscountAmount: number
+  totalAmount: number
+}
+
+export interface OrderQuoteResponse {
+  deliveryMethod: DeliveryMethod
+  currency?: string
+  totals: OrderQuoteTotals
+  summary?: {
+    itemsCount?: number
+    shippingLabel?: string
+    distance_km?: number
+    shipping_reason?: string
+    contains_kg?: boolean
+    total_kg?: number
+    store_location?: { lat: number; lng: number }
+  }
+}
+
 // Payload used when creating an order via POST /api/ecommerce/orders
 export interface CreateOrderData {
   customerName: string
@@ -212,6 +254,8 @@ export interface CreateOrderData {
   shippingState?: string
   shippingPostalCode?: string
   shippingCountry?: string
+  shippingLatitude?: number
+  shippingLongitude?: number
   paymentMethod?: PaymentMethod
   customerNotes?: string
   promoCode?: string

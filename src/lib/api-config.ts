@@ -23,6 +23,7 @@ export const API_CONFIG = {
     AUTH: '/users/auth',
     CART: '/api/ecommerce/cart',
     ORDERS: '/api/ecommerce/orders',
+    ORDERS_QUOTE: '/api/ecommerce/orders/quote',
     PICKUP_LOCATIONS: '/api/ecommerce/pickup-locations',
     WISHLIST: '/api/ecommerce/wishlist',
     PROMO_VALIDATE: '/api/ecommerce/promo/validate',
