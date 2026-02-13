@@ -608,9 +608,6 @@ export default function CheckoutPage() {
             const nextShipping = Number(quote?.totals?.shippingCost ?? 0)
             setShippingCost(Number.isFinite(nextShipping) ? nextShipping : 0)
 
-            if (quote?.summary?.distance_km && typeof quote.summary.distance_km === 'number') {
-              toast.success(`Distance du magasin: ${quote.summary.distance_km.toFixed(2)} km`)
-            }
           } catch (error) {
             console.error("Quote error:", error)
             setShippingCost(0)

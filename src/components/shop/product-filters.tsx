@@ -808,14 +808,14 @@ export function ProductFilters({
         <div
           className={cn(
             // Clean container: no border, no shadow
-            "sticky top-20 bg-background rounded-2xl transition-all duration-300 ease-in-out",
+            "sticky top-24 h-[calc(100vh-8rem)] bg-background rounded-2xl transition-all duration-300 ease-in-out",
             // Keep in flex flow; when collapsed do not reserve width
             isCollapsed ? "w-0 p-0 overflow-visible" : "w-[360px] md:w-[400px] p-6 overflow-visible"
           )}
         >
           {/* Content with smooth opacity transition */}
           {!isCollapsed && (
-            <div className="transition-opacity duration-300">
+            <div className="transition-opacity duration-300 h-full">
               <FiltersContent />
             </div>
           )}

@@ -84,7 +84,8 @@ export default async function RootLayout({
         </NextIntlClientProvider>
 
         <Toaster
-          position="top-center"
+          position={locale === "ar" ? "top-right" : "top-left"}
+          dir={locale === "ar" ? "rtl" : "ltr"}
           theme="system"
           richColors={false}
           closeButton={false}
