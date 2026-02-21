@@ -144,7 +144,7 @@ export function HomeBrandsCarousel({
         ) : (
               <div className="mx-auto">
             <Carousel
-              className="relative mx-auto"
+                  className="relative mx-auto w-full"
               opts={{
                 loop: items.length > 6,
                 align: 'center',
@@ -165,11 +165,11 @@ export function HomeBrandsCarousel({
                       : undefined
                   }
             >
-                  <CarouselContent className="justify-center">
+                  <CarouselContent className="justify-start sm:justify-center">
                 {items.map((b) => (
                   <CarouselItem
                     key={b.id}
-                    className="basis-[92px] sm:basis-24 md:basis-[104px] lg:basis-28 xl:basis-[120px]"
+                    className="flex-none shrink-0 basis-[92px] sm:basis-24 md:basis-[104px] lg:basis-28 xl:basis-[120px]"
                   >
                     <BrandCard brand={b} locale={activeLocale} shape={shape} />
                   </CarouselItem>
@@ -178,8 +178,8 @@ export function HomeBrandsCarousel({
 
               {items.length > 6 && (
                 <>
-                      <CarouselPrevious className="hidden md:inline-flex -left-4" />
-                      <CarouselNext className="hidden md:inline-flex -right-4" />
+                      <CarouselPrevious className="hidden! md:inline-flex! -left-4" />
+                      <CarouselNext className="hidden! md:inline-flex! -right-4" />
                 </>
               )}
             </Carousel>

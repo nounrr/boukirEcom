@@ -510,7 +510,7 @@ export default function ProductPage() {
 
             {/* Stock Status */}
             <div className="flex items-center gap-2">
-              {!isOutOfStock && product.quantite_disponible > 0 ? (
+              {!isOutOfStock ? (
                 <>
                   <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
                     {t("inStock")}
@@ -620,7 +620,7 @@ export default function ProductPage() {
                 size="lg"
                 className="flex-1 h-11 text-sm font-semibold"
                 onClick={handleAddToCart}
-                disabled={isAddingToCart || isOutOfStock || product.quantite_disponible === 0}
+                disabled={isAddingToCart || isOutOfStock}
               >
                 <ShoppingCart className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
                 {tProductCard("addToCart")}

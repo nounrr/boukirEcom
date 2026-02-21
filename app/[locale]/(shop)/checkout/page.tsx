@@ -21,7 +21,7 @@ import { useCreateOrderMutation, useQuoteOrderMutation } from "@/state/api/order
 import { useGetCurrentUserQuery } from "@/state/api/auth-api-slice"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearCart } from "@/state/slices/cart-slice"
-import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react"
+import { CheckCircle2, ChevronLeft, ChevronRight, PhoneCall, ShoppingCart } from "lucide-react"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
 
@@ -40,8 +40,7 @@ const buildCheckoutSchema = (t: Translator) =>
         lastName: z.string().min(2, { message: t("validation.lastNameMin") }),
         phone: z
           .string()
-          .min(10, { message: t("validation.phoneInvalid") })
-          .max(20, { message: t("validation.phoneTooLong") }),
+          .regex(/^\+\d{1,4}\d{9}$/, { message: t("validation.phoneInvalid") }),
         address: z.string().optional(),
         city: z.string().optional(),
         postalCode: z.string().optional(),
@@ -137,6 +136,14 @@ export default function CheckoutPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
 
+  // Avoid hydration mismatch: initial SSR render cannot read client-only sources
+  // (localStorage guest cart, redux persisted auth, etc.). Render a stable
+  // placeholder until the component mounts.
+  const [hasMounted, setHasMounted] = useState(false)
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
   const currency = tCommon("currency")
 
   const checkoutSchema = useMemo(() => buildCheckoutSchema(t), [t])
@@ -188,6 +195,8 @@ export default function CheckoutPage() {
   }), [items])
 
   const [shippingCost, setShippingCost] = useState<number>(0)
+  const [hasQuotedShipping, setHasQuotedShipping] = useState(false)
+  const shippingQuoteKeyRef = useRef<string | null>(null)
   const total = useMemo(() => subtotal - promoDiscount + shippingCost, [subtotal, promoDiscount, shippingCost])
 
   const remiseBalance = useMemo(() => {
@@ -231,13 +240,14 @@ export default function CheckoutPage() {
   const [confirmAnimationStatus, setConfirmAnimationStatus] = useState<"processing" | "success">("processing")
   const pendingRedirectRef = useRef<string | null>(null)
 
+  const [guestOrderCreated, setGuestOrderCreated] = useState(false)
+  const [guestOrderNumber, setGuestOrderNumber] = useState<string | null>(null)
+
   const handleConfirmAnimationComplete = useCallback(() => {
     const nextUrl = pendingRedirectRef.current
-    if (!nextUrl) return
-
     pendingRedirectRef.current = null
     setConfirmAnimationOpen(false)
-    router.push(nextUrl)
+    if (nextUrl) router.push(nextUrl)
   }, [router])
 
   const isBlockingUi = confirmAnimationOpen || isProcessing || isQuoting
@@ -290,6 +300,83 @@ export default function CheckoutPage() {
 
   // Watch form values for summary step
   const formValues = watch()
+
+  // Quote shipping immediately after selecting a delivery location (step 1)
+  useEffect(() => {
+    if (currentStep !== 1) return
+
+    const deliveryMethod = (formValues as any)?.deliveryMethod as ("delivery" | "pickup" | undefined)
+    if (deliveryMethod === "pickup") {
+      shippingQuoteKeyRef.current = null
+      setHasQuotedShipping(false)
+      setShippingCost(0)
+      return
+    }
+
+    if (!items.length) return
+
+    const latRaw = (formValues as any)?.shippingAddress?.latitude as number | null | undefined
+    const lngRaw = (formValues as any)?.shippingAddress?.longitude as number | null | undefined
+    const lat = typeof latRaw === "number" && Number.isFinite(latRaw) ? latRaw : null
+    const lng = typeof lngRaw === "number" && Number.isFinite(lngRaw) ? lngRaw : null
+
+    if (lat === null || lng === null) {
+      shippingQuoteKeyRef.current = null
+      setHasQuotedShipping(false)
+      setShippingCost(0)
+      return
+    }
+
+    const round5 = (n: number) => Math.round(n * 1e5) / 1e5
+    const keyLat = round5(lat)
+    const keyLng = round5(lng)
+
+    const itemsKey = isAuthenticated
+      ? "cart"
+      : items
+        .map((item) => `${item.productId}:${item.variantId ?? ""}:${item.unitId ?? ""}:${item.quantity}`)
+        .join(",")
+
+    const quoteKey = `${keyLat},${keyLng}|${promoCodeValue || ""}|${itemsKey}`
+    if (shippingQuoteKeyRef.current === quoteKey) return
+
+    shippingQuoteKeyRef.current = quoteKey
+    setHasQuotedShipping(false)
+    setShippingCost(0)
+
+    const timeout = setTimeout(async () => {
+      try {
+        const activeKey = quoteKey
+        const quote = await quoteOrder({
+          useCart: isAuthenticated,
+          deliveryMethod: "delivery",
+          shippingLocation: { lat, lng },
+          promoCode: promoCodeValue || undefined,
+          items: !isAuthenticated
+            ? items.map((item) => ({
+              productId: item.productId,
+              variantId: item.variantId ?? null,
+              unitId: item.unitId ?? null,
+              quantity: item.quantity,
+            }))
+            : undefined,
+        }).unwrap()
+
+        if (shippingQuoteKeyRef.current !== activeKey) return
+
+        const nextShipping = Number(quote?.totals?.shippingCost ?? 0)
+        setShippingCost(Number.isFinite(nextShipping) ? nextShipping : 0)
+        setHasQuotedShipping(true)
+      } catch (error) {
+        console.error("Quote error:", error)
+        if (shippingQuoteKeyRef.current !== quoteKey) return
+        setShippingCost(0)
+        setHasQuotedShipping(false)
+      }
+    }, 400)
+
+    return () => clearTimeout(timeout)
+  }, [currentStep, formValues, isAuthenticated, items, promoCodeValue, quoteOrder])
 
   // Automatic quote effect removed as per requirements.
   // Quote is now triggered manually when moving to next step.
@@ -494,9 +581,16 @@ export default function CheckoutPage() {
 
         console.log("🧹 Clearing local cart state")
         dispatch(clearCart())
+        cartStorage.clearCart()
 
-        // Wait for confirmation animation to finish, then redirect.
-        pendingRedirectRef.current = `/${locale}/orders`
+        // Wait for confirmation animation to finish.
+        if (isAuthenticated) {
+          pendingRedirectRef.current = `/${locale}/orders`
+        } else {
+          pendingRedirectRef.current = null
+          setGuestOrderNumber(order?.orderNumber ? String(order.orderNumber) : null)
+          setGuestOrderCreated(true)
+        }
         setConfirmAnimationStatus("success")
       } catch (error: any) {
         console.error("❌ Failed to create order:", error)
@@ -657,6 +751,26 @@ export default function CheckoutPage() {
     setCurrentStep((prev) => Math.max(prev - 1, 1))
   }, [])
 
+  if (!hasMounted) {
+    return (
+      <div className="min-h-screen bg-background py-6">
+        <OrderConfirmationAnimation
+          open={confirmAnimationOpen}
+          status={confirmAnimationStatus}
+          onComplete={handleConfirmAnimationComplete}
+        />
+
+        <div className="max-w-md mx-auto text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center animate-pulse">
+            <ShoppingCart className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">{t("loading.title")}</h2>
+          <p className="text-sm text-muted-foreground">{t("loading.subtitle")}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background py-6">
       <OrderConfirmationAnimation
@@ -677,7 +791,7 @@ export default function CheckoutPage() {
       )}
 
       {/* Empty Cart */}
-      {!isCartLoading && isCartEmpty && (
+      {!isCartLoading && isCartEmpty && !guestOrderCreated && (
         <div className="max-w-md mx-auto text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
@@ -689,7 +803,7 @@ export default function CheckoutPage() {
       )}
 
       {/* Cart Loaded */}
-      {!isCartLoading && !isCartEmpty && (
+      {!isCartLoading && (!isCartEmpty || guestOrderCreated) && (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title - Compact */}
           <div className="text-center mb-5">
@@ -698,14 +812,46 @@ export default function CheckoutPage() {
             <p className="text-xs text-muted-foreground mt-1">{t("page.taxIncludedNote")}</p>
           </div>
 
-          {/* Timeline */}
-          <div className="mb-6">
-            <CheckoutWizard currentStep={currentStep} steps={wizardSteps} />
-          </div>
+          {guestOrderCreated ? (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-lg font-semibold text-foreground">{t("guestOrder.title")}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">{t("guestOrder.subtitle")}</p>
+                    {guestOrderNumber && (
+                      <p className="text-sm text-foreground mt-3">
+                        {t("guestOrder.orderNumber", { orderNumber: guestOrderNumber })}
+                      </p>
+                    )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-            {/* Left: Wizard Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-3 flex flex-col gap-6">
+                    <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-4 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-background flex items-center justify-center border border-border/50 shrink-0">
+                        <PhoneCall className="w-4 h-4 text-foreground" />
+                      </div>
+                      <p className="text-sm text-foreground/90">{t("guestOrder.callout")}</p>
+                    </div>
+
+                    <div className="mt-6 flex justify-center">
+                      <Button onClick={() => router.push(`/${locale}/shop`)}>{t("guestOrder.backToShop")}</Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+                {/* Timeline */}
+                <div className="mb-6">
+                  <CheckoutWizard currentStep={currentStep} steps={wizardSteps} />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+                  {/* Left: Wizard Form */}
+                  <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-3 flex flex-col gap-6">
               {/* Step Content */}
               <div>
                 {currentStep === 1 && (
@@ -807,6 +953,10 @@ export default function CheckoutPage() {
                 items={items}
                 subtotal={subtotal}
                 shippingCost={shippingCost}
+                      showShippingDetails={
+                        currentStep >= 2 ||
+                        (currentStep === 1 && formValues.deliveryMethod === "delivery" && hasQuotedShipping)
+                      }
                 discount={promoDiscount}
                 total={total}
                 showConfirmButton={currentStep === 3}
@@ -817,6 +967,8 @@ export default function CheckoutPage() {
               />
             </div>
           </div>
+            </>
+          )}
         </div>
       )}
     </div>

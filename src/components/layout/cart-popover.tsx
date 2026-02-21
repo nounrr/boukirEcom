@@ -25,7 +25,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
 import { getLocalizedCartItemBaseName } from "@/lib/localized-fields"
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
+import { forwardRef, useCallback, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -47,6 +47,10 @@ export const CartPopover = forwardRef<
   const toast = useToast()
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+
+  const closePopover = useCallback(() => {
+    setIsOpen(false)
+  }, [])
   const tone = props.tone ?? "default"
   const size = props.size ?? "md"
 
@@ -331,7 +335,7 @@ export const CartPopover = forwardRef<
             </div>
             <p className="text-sm font-medium text-foreground mb-1">{t('empty')}</p>
             <p className="text-xs text-muted-foreground mb-4">{t('emptyHint')}</p>
-            <Link href={`/${locale}/shop`}>
+            <Link href={`/${locale}/shop`} onClick={closePopover}>
               <Button size="sm" className="bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15">
                 {t('browseProducts')}
               </Button>
@@ -435,12 +439,12 @@ export const CartPopover = forwardRef<
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <Link href={`/${locale}/cart`} className="w-full">
+                  <Link href={`/${locale}/cart`} className="w-full" onClick={closePopover}>
                   <Button variant="outline" className="w-full border-border/60 hover:bg-muted/50 transition-all duration-200">
                       {t('viewCart')}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/checkout`} className="w-full">
+                  <Link href={`/${locale}/checkout`} className="w-full" onClick={closePopover}>
                     <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
                       {tCommon('checkout')}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />

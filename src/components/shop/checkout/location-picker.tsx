@@ -94,7 +94,12 @@ export default function LocationPicker({
   const [isMoving, setIsMoving] = useState(false)
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const mapRef = useRef<L.Map | null>(null)
-  
+
+  const reverseAbortRef = useRef<AbortController | null>(null)
+  const reverseReqIdRef = useRef(0)
+  const moveEndTimerRef = useRef<number | null>(null)
+  const searchAbortRef = useRef<AbortController | null>(null)
+
   // Suggestion visibility
   const [showSuggestions, setShowSuggestions] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -109,15 +114,36 @@ export default function LocationPicker({
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
-  
+
+  useEffect(() => {
+    return () => {
+      reverseAbortRef.current?.abort()
+      searchAbortRef.current?.abort()
+      if (moveEndTimerRef.current) window.clearTimeout(moveEndTimerRef.current)
+    }
+  }, [])
+
   // Reverse Geocoding Function
   const fetchAddress = useCallback(async (lat: number, lng: number) => {
+    reverseAbortRef.current?.abort()
+    const controller = new AbortController()
+    reverseAbortRef.current = controller
+    const reqId = ++reverseReqIdRef.current
+
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-      )
+      const response = await fetch(`/api/nominatim/reverse?lat=${lat}&lng=${lng}`, {
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Reverse geocoding failed (${response.status})`)
+      }
+
       const data: AddressResult = await response.json()
-      
+
+      // Ignore stale responses.
+      if (reverseReqIdRef.current !== reqId) return
+
       const addr = data.address
       // Prioritize road/neighborhood for the main address field
       // Logic: Street > Neighborhood > City > Display Name
@@ -134,15 +160,23 @@ export default function LocationPicker({
         city,
         postalCode,
       })
-    } catch (error) {
-      console.error("Reverse geocoding error:", error)
+    } catch (error: any) {
+      if (error?.name === "AbortError") return
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("Reverse geocoding failed:", error)
+      }
     }
   }, [onLocationSelect])
 
   // Handle map movement end
   const handleMapMoveEnd = useCallback((center: L.LatLng) => {
     setIsMoving(false)
-    fetchAddress(center.lat, center.lng)
+
+    // Debounce to reduce request bursts.
+    if (moveEndTimerRef.current) window.clearTimeout(moveEndTimerRef.current)
+    moveEndTimerRef.current = window.setTimeout(() => {
+      fetchAddress(center.lat, center.lng)
+    }, 350)
   }, [fetchAddress])
 
   const handleLocateMe = () => {
@@ -204,20 +238,28 @@ export default function LocationPicker({
 
       setIsSearching(true)
       try {
+        searchAbortRef.current?.abort()
+        const controller = new AbortController()
+        searchAbortRef.current = controller
+
         const center = mapRef.current?.getCenter()
         const lat = center?.lat ?? startLat
         const lng = center?.lng ?? startLng
-        const viewbox = `${lng - 0.5},${lat - 0.5},${lng + 0.5},${lat + 0.5}`
 
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            searchQuery
-          )}&countrycodes=ma&addressdetails=1&limit=5&viewbox=${viewbox}&bounded=0`
+          `/api/nominatim/search?q=${encodeURIComponent(searchQuery)}&countrycodes=ma&addressdetails=1&limit=5&lat=${lat}&lng=${lng}`,
+          { signal: controller.signal }
         )
+        if (!response.ok) {
+          throw new Error(`Search failed (${response.status})`)
+        }
         const data = await response.json()
         setSearchResults(data)
-      } catch (error) {
-        console.error("Search error:", error)
+      } catch (error: any) {
+        if (error?.name === "AbortError") return
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("Search failed:", error)
+        }
       } finally {
         setIsSearching(false)
       }
@@ -243,7 +285,7 @@ export default function LocationPicker({
     <div className="w-full relative z-0 h-[500px] rounded-xl overflow-hidden border border-border shadow-sm bg-muted/10 group" ref={wrapperRef}>
         
         {/* Top Search Bar Overlay */}
-        <div className="absolute top-4 left-4 z-[500] w-full max-w-xs sm:max-w-md">
+      <div className="absolute top-3 left-3 right-3 z-500 sm:top-4 sm:left-4 sm:right-auto sm:w-full sm:max-w-md">
             <div className="relative shadow-md rounded-lg">
                 <Input
                     value={searchQuery}
@@ -311,7 +353,7 @@ export default function LocationPicker({
         </MapContainer>
 
         {/* Center Pin Overlay (Uber Style) */}
-        <div className="absolute inset-0 pointer-events-none z-[400] flex items-center justify-center pb-8 /* Offset for pin tip */">
+      <div className="absolute inset-0 pointer-events-none z-400 flex items-center justify-center pb-8 /* Offset for pin tip */">
             <div className={`relative transition-transform duration-200 ease-out ${isMoving ? '-translate-y-3 scale-110' : 'translate-y-0'}`}>
                 {/* Pin Head */}
                 <div className="relative z-10">
@@ -331,7 +373,7 @@ export default function LocationPicker({
         </div>
 
         {/* Bottom Controls */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-[400]">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-400">
             <Button
                 type="button"
                 variant="secondary"

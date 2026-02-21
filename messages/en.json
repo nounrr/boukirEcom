@@ -625,6 +625,7 @@
     "searchPlaceholder": "Search for a product...",
     "categories": "Categories",
     "brands": "Brands",
+    "utilityTypes": "Utility type",
     "price": "Price",
     "colors": "Colors",
     "units": "Units",
@@ -738,6 +739,15 @@
       "brand": "Brand",
       "campaign": "Deal",
       "product": "Product"
+    },
+    "utilityType": {
+      "kicker": "By use",
+      "title": "Home or Professional?",
+      "desc": "Filter the shop in one click and find what you need faster.",
+      "homeLabel": "Home",
+      "homeDesc": "Products for home and DIY.",
+      "proLabel": "Professional",
+      "proDesc": "Tools and supplies for pros."
     },
     "categoriesTitle": "Popular categories",
     "categoriesDesc": "Quick access to the most requested aisles.",
@@ -1009,6 +1019,13 @@
     "emptyCart": {
       "title": "Your cart is empty",
       "subtitle": "Add products to your cart before checking out.",
+      "backToShop": "Back to shop"
+    },
+    "guestOrder": {
+      "title": "Order received",
+      "subtitle": "Your order is being handled by our sales team.",
+      "callout": "You will receive a call to confirm your order.",
+      "orderNumber": "Order number: {orderNumber}",
       "backToShop": "Back to shop"
     },
     "validation": {

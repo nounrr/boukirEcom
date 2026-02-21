@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { getSiteUrl } from "@/lib/seo/metadata"
+import { getSiteUrl, localizedPath } from "@/lib/seo/metadata"
 
 type StaticEntry = {
   path: string
@@ -27,17 +27,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   for (const page of STATIC_PAGES) {
     const alternates = {
-      fr: toUrl(origin, page.path),
-      ar: toUrl(origin, `/ar${page.path}`),
-      en: toUrl(origin, `/en${page.path}`),
-      zh: toUrl(origin, `/zh${page.path}`),
+      fr: toUrl(origin, localizedPath("fr", page.path)),
+      ar: toUrl(origin, localizedPath("ar", page.path)),
+      en: toUrl(origin, localizedPath("en", page.path)),
+      zh: toUrl(origin, localizedPath("zh", page.path)),
     }
 
     const localeEntries: Array<{ locale: keyof typeof alternates; path: string; priority: number }> = [
-      { locale: "fr", path: page.path, priority: page.priority },
-      { locale: "ar", path: `/ar${page.path}`, priority: Math.max(0.1, page.priority - 0.05) },
-      { locale: "en", path: `/en${page.path}`, priority: Math.max(0.1, page.priority - 0.05) },
-      { locale: "zh", path: `/zh${page.path}`, priority: Math.max(0.1, page.priority - 0.05) },
+      { locale: "fr", path: localizedPath("fr", page.path), priority: page.priority },
+      { locale: "ar", path: localizedPath("ar", page.path), priority: Math.max(0.1, page.priority - 0.05) },
+      { locale: "en", path: localizedPath("en", page.path), priority: Math.max(0.1, page.priority - 0.05) },
+      { locale: "zh", path: localizedPath("zh", page.path), priority: Math.max(0.1, page.priority - 0.05) },
     ]
 
     for (const e of localeEntries) {

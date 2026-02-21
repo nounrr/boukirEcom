@@ -12,6 +12,7 @@ import { AuthDebugPanel } from "@/components/auth/auth-debug-panel"
 import { GoogleOneTapWrapper } from "@/components/auth/google-one-tap-wrapper"
 import { ArtisanRequestPromptWrapper } from "@/components/auth/artisan-request-prompt-wrapper"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
+import { WhatsAppFloatingButton } from "@/components/layout/whatsapp-floating-button"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
 import { LocalePreferenceInitializer } from "@/components/i18n/locale-preference-initializer"
 
@@ -72,6 +73,7 @@ export default async function RootLayout({
             <CurrentUserInitializer />
             <AuthDebugPanel />
             <GoogleOneTapWrapper />
+            <WhatsAppFloatingButton />
             <ArtisanRequestPromptWrapper />
             <CartContextProvider>
               <AuthDialogProvider>

@@ -13,6 +13,7 @@ interface OrderCartSummaryProps {
   items: CartItem[]
   subtotal: number
   shippingCost: number
+  showShippingDetails?: boolean
   discount?: number
   total: number
   showConfirmButton?: boolean 
@@ -26,6 +27,7 @@ export function OrderCartSummary({
   items,
   subtotal,
   shippingCost,
+  showShippingDetails = true,
   discount = 0,
   total,
   showConfirmButton = false,
@@ -118,8 +120,8 @@ export function OrderCartSummary({
         )}
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("cartSummary.shipping")}</span>
-          <span className="font-medium text-emerald-600">
-            {shippingCost === 0 ? t("cartSummary.free") : `${shippingCost.toFixed(2)} ${currency}`}
+          <span className={showShippingDetails ? "font-medium text-emerald-600" : "font-medium text-muted-foreground"}>
+            {!showShippingDetails ? "—" : shippingCost === 0 ? t("cartSummary.free") : `${shippingCost.toFixed(2)} ${currency}`}
           </span>
         </div>
         <div className="flex justify-between items-center pt-3 border-t border-border/50">

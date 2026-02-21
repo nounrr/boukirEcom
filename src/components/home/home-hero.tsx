@@ -350,7 +350,7 @@ export function HomeHero({
 
                     return (
               <Carousel
-                className="relative"
+                        className="relative w-full"
                     dir={isRtl ? 'rtl' : 'ltr'}
                     opts={{
                       loop: shouldLoop,
@@ -392,8 +392,8 @@ export function HomeHero({
                                 ) : null}
                               </div>
 
-                              <div className="mt-7 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
-                                <Link href={s.primaryCta.href} className="w-full sm:w-auto">
+                              <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                                <Link href={s.primaryCta.href} className="w-full sm:w-auto flex justify-center sm:justify-start">
                                   <Button size="lg" className="w-full sm:w-auto gap-2">
                                     {s.primaryCta.label}
                                     <ArrowRight className="h-4 w-4" />
@@ -401,7 +401,7 @@ export function HomeHero({
                                 </Link>
 
                                 {s.secondaryCta ? (
-                                  <Link href={s.secondaryCta.href} className="w-full sm:w-auto">
+                                  <Link href={s.secondaryCta.href} className="w-full sm:w-auto flex justify-center sm:justify-start">
                                     <Button
                                       size="lg"
                                       variant="outline"

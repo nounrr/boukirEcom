@@ -625,6 +625,7 @@
     "searchPlaceholder": "搜索商品...",
     "categories": "分类",
     "brands": "品牌",
+    "utilityTypes": "用途类型",
     "price": "价格",
     "colors": "颜色",
     "units": "单位",
@@ -738,6 +739,15 @@
       "brand": "品牌",
       "campaign": "优惠",
       "product": "商品"
+    },
+    "utilityType": {
+      "kicker": "按用途",
+      "title": "家用还是专业？",
+      "desc": "一键筛选商店，更快找到你需要的商品。",
+      "homeLabel": "家用",
+      "homeDesc": "适用于家用与DIY的商品。",
+      "proLabel": "专业",
+      "proDesc": "面向专业人士的工具与耗材。"
     },
     "categoriesTitle": "热门分类",
     "categoriesDesc": "快速访问最受欢迎的专区。",
@@ -1008,6 +1018,13 @@
     "emptyCart": {
       "title": "购物车为空",
       "subtitle": "请先将商品加入购物车再结算。",
+      "backToShop": "返回商店"
+    },
+    "guestOrder": {
+      "title": "下单成功",
+      "subtitle": "你的订单将由我们的销售团队处理。",
+      "callout": "我们会致电与你确认订单信息。",
+      "orderNumber": "订单号：{orderNumber}",
       "backToShop": "返回商店"
     },
     "validation": {

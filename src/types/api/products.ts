@@ -20,6 +20,14 @@ export interface ProductFiltersRequest {
   brand_id?: number | number[] | string;
   color?: string | string[];
   unit?: string | string[];
+  /**
+   * Filter by product utility type.
+   * Backend field: `products.categorie_base`.
+   * API supports both `categorie_base` and `utility_type` (alias).
+   */
+  categorie_base?: string | string[];
+  /** Alias for `categorie_base` (preferred in frontend URLs). */
+  utility_type?: string | string[];
   search?: string;
   min_price?: number;
   max_price?: number;
@@ -173,6 +181,8 @@ export interface FiltersMetadata {
   colors: string[];
   units: string[];
   brands: ProductBrand[];
+  /** Available utility types found in published products (e.g. Maison, Professionel). */
+  utility_types?: string[];
   price_range: {
     min: number;
     max: number;
@@ -195,6 +205,7 @@ export interface FilterState {
   priceRange: [number, number];
   colors: string[];
   units: string[];
+  utilityTypes: string[];
   search: string;
   inStock: boolean;
   sort: SortOption;
@@ -228,6 +239,11 @@ export function filterStateToApiRequest(state: FilterState): ProductFiltersReque
 
   if (state.units.length > 0) {
     request.unit = state.units;
+  }
+
+  if (state.utilityTypes.length > 0) {
+    // Use the documented alias so URLs and requests are consistent.
+    request.utility_type = state.utilityTypes;
   }
 
   if (state.search) {

@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { HomeCatalogHighlights } from '@/components/home/home-catalog-highlights'
 import { HomeBrandsCarousel } from '@/components/home/home-brands-carousel'
 import { HomeHero } from '@/components/home/home-hero'
+import { HomeUtilityTypeSelector } from '@/components/home/home-utility-type-selector'
 import { HomeProductSections } from '@/components/home/home-product-sections'
 import { HomeStoreSection } from '@/components/home/home-store-section'
 import { Header } from '@/components/layout/header'
@@ -24,7 +25,8 @@ export default async function HomePage({
       <Header />
       <main>
         <HomeHero locale={locale} />
-        <HomeCatalogHighlights className="-mt-8 md:-mt-10" />
+        <HomeUtilityTypeSelector locale={locale} className="pt-6 md:pt-8" />
+        <HomeCatalogHighlights className="pt-0" />
         <HomeBrandsCarousel locale={locale} className="pt-0" shape="rounded" />
         <HomeProductSections
           locale={locale}

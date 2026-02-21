@@ -98,7 +98,7 @@ function ProductRail({
   const contentClassName = useMemo(
     () =>
       [
-        'cursor-grab select-none active:cursor-grabbing justify-center',
+        'cursor-grab select-none active:cursor-grabbing justify-start sm:justify-center',
         // Our shared Carousel uses -ml-4 + pl-4 spacing; for RTL we want the mirror.
         // Override the base utilities via class order (these are appended last).
         isRtl ? 'ml-0 -mr-4 flex-row-reverse' : '',
@@ -111,7 +111,7 @@ function ProductRail({
   const itemClassName = useMemo(
     () =>
       [
-        'basis-[260px] sm:basis-[280px]',
+        'flex-none shrink-0 basis-[260px] sm:basis-[280px]',
         // Mirror the base CarouselItem padding (pl-4) for RTL.
         isRtl ? 'pl-0 pr-4' : '',
       ]
@@ -154,7 +154,7 @@ function ProductRail({
         {isLoading ? (
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
             <Carousel
-              className="relative"
+              className="relative w-full"
               dir={isRtl ? 'rtl' : 'ltr'}
               opts={{
                 align: 'center',
@@ -193,7 +193,7 @@ function ProductRail({
                 onBlurCapture={() => setIsPaused(false)}
               >
                 <Carousel
-                  className="relative"
+                  className="relative w-full"
                   dir={isRtl ? 'rtl' : 'ltr'}
                   opts={{
                     loop: canLoop,

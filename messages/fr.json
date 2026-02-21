@@ -503,6 +503,7 @@
     "searchPlaceholder": "Rechercher un produit...",
     "categories": "Catégories",
     "brands": "Marques",
+    "utilityTypes": "Type d’usage",
     "price": "Prix",
     "colors": "Couleurs",
     "units": "Unités de mesure",
@@ -616,6 +617,15 @@
       "brand": "Marque",
       "campaign": "Promo",
       "product": "Produit"
+    },
+    "utilityType": {
+      "kicker": "Par usage",
+      "title": "Maison ou Professionel ?",
+      "desc": "Filtrez la boutique en un clic et trouvez plus vite.",
+      "homeLabel": "Maison",
+      "homeDesc": "Produits pour la maison et le bricolage.",
+      "proLabel": "Professionel",
+      "proDesc": "Outillage et fournitures pour les pros."
     },
     "categoriesTitle": "Catégories populaires",
     "categoriesDesc": "Accès rapide aux rayons les plus demandés.",
@@ -887,6 +897,13 @@
     "emptyCart": {
       "title": "Votre panier est vide",
       "subtitle": "Ajoutez des produits à votre panier avant de passer à la commande.",
+      "backToShop": "Revenir à la boutique"
+    },
+    "guestOrder": {
+      "title": "Commande reçue",
+      "subtitle": "Votre commande est prise en charge par notre équipe commerciale.",
+      "callout": "Vous recevrez un appel pour confirmer votre commande.",
+      "orderNumber": "Numéro de commande : {orderNumber}",
       "backToShop": "Revenir à la boutique"
     },
     "validation": {

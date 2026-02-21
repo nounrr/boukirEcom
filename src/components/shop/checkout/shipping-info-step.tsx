@@ -414,10 +414,14 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
               value={localPhoneNumber}
               onChange={(e) => {
                 hasUserEditedPhoneRef.current = true
-                setLocalPhoneNumber(e.target.value)
+                const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 9)
+                setLocalPhoneNumber(digitsOnly)
               }}
               placeholder={tCheckout("phonePlaceholder")}
-              maxLength={15}
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={9}
               Icon={Phone}
               error={(errors.shippingAddress as any)?.phone?.message as string}
               className="h-11"
