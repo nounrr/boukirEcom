@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -25,6 +24,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
 import { getLocalizedCartItemBaseName } from "@/lib/localized-fields"
+import { toAbsoluteImageUrl } from "@/lib/image-url"
 import { forwardRef, useCallback, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -47,6 +47,19 @@ export const CartPopover = forwardRef<
   const toast = useToast()
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [failedImages, setFailedImages] = useState<Record<string, true>>({})
+
+  const getCartImageSrc = useCallback((rawImage?: string) => {
+    const raw = String(rawImage ?? "").trim()
+    if (!raw) return null
+
+    // Some backends can return Windows-style paths or unescaped spaces.
+    const normalized = raw.replace(/\\/g, "/")
+    const absolute = toAbsoluteImageUrl(normalized)
+    if (!absolute) return null
+
+    return absolute.replace(/ /g, "%20")
+  }, [])
 
   const closePopover = useCallback(() => {
     setIsOpen(false)
@@ -346,18 +359,37 @@ export const CartPopover = forwardRef<
               <div className="max-h-[360px] overflow-y-auto overscroll-contain px-1 sm:px-1.5 py-1.5 sm:py-2">
               <div className="space-y-1.5">
                 {items.map((item) => (
+                  (() => {
+                    const itemKey = getCartItemKey(item)
+                    const imageSrc = getCartImageSrc(item.image)
+                    const displayName = formatCartItemName({
+                      ...item,
+                      name: getLocalizedCartItemBaseName(item as any, locale),
+                    })
+                    const shouldBypassOptimization =
+                      typeof imageSrc === 'string' &&
+                      /^http:\/\//i.test(imageSrc) &&
+                      !/^http:\/\/localhost(?::\d+)?\//i.test(imageSrc) &&
+                      !/^http:\/\/127\.0\.0\.1(?::\d+)?\//i.test(imageSrc)
+
+                    return (
                   <div
-                    key={getCartItemKey(item)}
+                        key={itemKey}
                     className="group flex items-start gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
                   >
                     {/* Product Image */}
                     <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-muted/30 ring-1 ring-border/20">
-                      {item.image ? (
+                          {imageSrc && !failedImages[itemKey] ? (
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                              src={imageSrc}
+                              alt={displayName}
                           fill
+                              sizes="64px"
                           className="object-cover"
+                              unoptimized={shouldBypassOptimization}
+                              onError={() => {
+                                setFailedImages((prev) => ({ ...prev, [itemKey]: true }))
+                              }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -369,7 +401,7 @@ export const CartPopover = forwardRef<
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-foreground line-clamp-1 mb-1">
-                        {formatCartItemName({ ...item, name: getLocalizedCartItemBaseName(item as any, locale) })}
+                            {displayName}
                       </h4>
                       {(item.variantName || item.unitName) && (
                         <p className="text-[11px] text-muted-foreground mb-1">
@@ -425,6 +457,8 @@ export const CartPopover = forwardRef<
                       <p className="text-[10px] text-muted-foreground">{tCommon('currency')}</p>
                     </div>
                   </div>
+                    )
+                  })()
                 ))}
               </div>
             </div>
