@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { X, BadgePercent, ShieldCheck, Sparkles } from "lucide-react"
-import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 import { useAppSelector } from "@/state/hooks"
 import { useRequestArtisanMutation } from "@/state/api/auth-api-slice"
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { RemiseBalance } from "@/components/ui/remise-balance"
+import { useToast } from "@/hooks/use-toast"
 import {
   ARTISAN_REQUEST_PROMPT_CONFIG,
   incrementSessionShowCount,
@@ -39,6 +40,9 @@ export function ArtisanRequestPrompt() {
   const pathname = usePathname()
   const { user, isAuthenticated } = useAppSelector((s) => s.user)
   const [open, setOpen] = useState(false)
+
+  const toast = useToast()
+  const tToast = useTranslations("toast.artisanRequestPrompt")
 
   const timersRef = useRef<Timers>({ showTimer: null, hideTimer: null, repeatTimer: null })
   const mountedRef = useRef(true)
@@ -154,10 +158,10 @@ export function ArtisanRequestPrompt() {
             try {
               res = JSON.parse(raw)
             } catch {
-              res = { message: "Demande envoyée avec succès.", status: "requested" }
+              res = { message: tToast("sentSuccessFallbackMessage"), status: "requested" }
             }
           } else {
-            res = { message: "Demande envoyée avec succès.", status: "requested" }
+            res = { message: tToast("sentSuccessFallbackMessage"), status: "requested" }
           }
         }
       }
@@ -171,17 +175,11 @@ export function ArtisanRequestPrompt() {
 
       const status = String(res?.status || "requested")
       if (status === "pending") {
-        toast.success("Demande déjà en attente", {
-          description: "Votre demande Artisan est déjà enregistrée.",
-        })
+        toast.success(tToast("pendingTitle"), { description: tToast("pendingDesc") })
       } else if (status === "already_artisan") {
-        toast.info("Vous êtes déjà Artisan", {
-          description: "Votre compte est déjà Artisan/Promoteur.",
-        })
+        toast.info(tToast("alreadyArtisanTitle"), { description: tToast("alreadyArtisanDesc") })
       } else {
-        toast.success("Demande envoyée", {
-          description: "Elle sera validée par un administrateur.",
-        })
+        toast.success(tToast("sentTitle"), { description: tToast("sentDesc") })
       }
 
       setOpen(false)
@@ -189,11 +187,11 @@ export function ArtisanRequestPrompt() {
     } catch (e: any) {
       const messageFromServer = e?.data?.message || e?.error?.message
       const message = messageFromServer || e?.message
-      toast.error("Impossible d'envoyer la demande", {
-        description: message || "Réessayez dans un instant.",
+      toast.error(tToast("sendFailedTitle"), {
+        description: message || tToast("sendFailedDesc"),
       })
     }
-  }, [requestArtisan, user])
+  }, [requestArtisan, tToast, toast, user])
 
   if (!canRun) return null
   if (!open) return null

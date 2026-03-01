@@ -524,7 +524,7 @@ export function HeaderSearch({
 
   const debouncedQuery = useDebounce(normalizeQuery(query), 250)
   const suggestionsArgs = debouncedQuery
-    ? ({ q: debouncedQuery, limit_products: 8, limit_categories: 6, limit_brands: 6, in_stock_only: true } as const)
+    ? ({ q: debouncedQuery, limit_products: 8, limit_categories: 6, limit_brands: 6, in_stock_only: false } as const)
     : skipToken
   const { data, isFetching } = useGetSearchSuggestionsQuery(suggestionsArgs)
 

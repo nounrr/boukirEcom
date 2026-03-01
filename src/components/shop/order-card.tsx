@@ -11,7 +11,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useMemo, useState } from "react"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useTranslations } from "next-intl"
-import { isOutOfStockLike } from "@/lib/stock"
 
 interface OrderCardProps {
   order: Order
@@ -419,10 +418,8 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        if (isOutOfStockLike(item)) return
                         onBuyAgain(item)
                       }}
-                      disabled={isOutOfStockLike(item)}
                       className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />

@@ -140,6 +140,7 @@
         "desc": "تم حفظ معلوماتك بنجاح."
       },
       "requestArtisan": {
+        "sentTitle": "تم إرسال الطلب",
         "sentFallback": "سيتم التحقق منها من طرف مسؤول."
       },
       "error": {
@@ -590,6 +591,7 @@
     "wishlistAddedTitle": "تمت الإضافة إلى المفضلة",
     "wishlistRemovedTitle": "تمت الإزالة من المفضلة",
     "genericErrorTitle": "حدث خطأ",
+    "genericErrorDesc": "يرجى المحاولة مرة أخرى.",
     "wishlistUpdateFailedDesc": "تعذر تحديث المفضلة",
     "variantRequiredTitle": "يرجى اختيار نوع",
     "variantRequiredDesc": "هذا الاختيار مطلوب.",
@@ -726,6 +728,16 @@
     "trustDelivery": "توصيل سريع لجميع مناطق المغرب",
     "trustSecure": "دفع آمن",
     "trustPayments": "طرق دفع متعددة",
+    "trustBar": {
+      "deliveryTitle": "التوصيل",
+      "deliveryDesc": "توصيل سريع لجميع مناطق المغرب.",
+      "securePaymentTitle": "دفع آمن",
+      "securePaymentDesc": "خيارات دفع آمنة ومتعددة.",
+      "supportTitle": "خدمة العملاء",
+      "supportDesc": "نحن هنا لمساعدتك كل يوم.",
+      "remiseTitle": "الخصم والرصيد",
+      "remiseDesc": "اكسب خصومات وتابع رصيدك بسهولة."
+    },
     "heroCardSubtitle": "اختيار واسع وأسعار مناسبة",
     "heroCard1Title": "فئات أساسية",
     "heroCard1Desc": "وصول سريع لأكثر الأقسام طلباً.",
@@ -1300,6 +1312,7 @@
       "registerSuccess": "تم إنشاء الحساب بنجاح",
       "registerSuccessDesc": "مرحباً بك في بوكير، {name}",
       "logoutSuccess": "تم تسجيل الخروج بنجاح",
+      "fallbackName": "مستخدم",
       "loginError": "خطأ في تسجيل الدخول",
       "registerError": "خطأ في التسجيل",
       "networkError": "خطأ في الاتصال بالخادم",
@@ -1322,9 +1335,24 @@
       "googleError": "خطأ في Google OAuth",
       "googleLoadError": "فشل تحميل Google Sign-In",
       "googleLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت",
+      "missingTokenDesc": "الرمز مفقود",
+      "originNotAllowedDesc": "تعذر التحقق من رمز Google. تأكد من السماح بالمصدر {origin} في Google Cloud Console ثم أعد المحاولة بعد 5–10 دقائق.",
+      "initFailedDesc": "تعذر بدء تسجيل الدخول عبر Google.",
+      "unexpectedErrorDesc": "حدث خطأ غير متوقع",
       "facebookError": "خطأ في Facebook OAuth",
       "facebookLoadError": "فشل تحميل Facebook SDK",
       "facebookLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "الطلب قيد الانتظار",
+      "pendingDesc": "طلبك للحرفي مسجل مسبقاً.",
+      "alreadyArtisanTitle": "أنت بالفعل حرفي",
+      "alreadyArtisanDesc": "حسابك بالفعل حرفي/مروج.",
+      "sentTitle": "تم إرسال الطلب",
+      "sentDesc": "سيتم التحقق منه من طرف مسؤول.",
+      "sentSuccessFallbackMessage": "تم إرسال الطلب بنجاح.",
+      "sendFailedTitle": "تعذر إرسال الطلب",
+      "sendFailedDesc": "أعد المحاولة بعد قليل."
     }
   }
 }

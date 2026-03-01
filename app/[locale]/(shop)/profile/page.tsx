@@ -230,7 +230,7 @@ export default function ProfilePage() {
         } as any)
       )
 
-      toast.success("Demande envoyée", {
+      toast.success(t('toasts.requestArtisan.sentTitle'), {
         description: data?.message || t('toasts.requestArtisan.sentFallback'),
       })
     } catch (error: any) {

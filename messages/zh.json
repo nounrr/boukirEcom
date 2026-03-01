@@ -140,6 +140,7 @@
         "desc": "你的信息已成功保存。"
       },
       "requestArtisan": {
+        "sentTitle": "申请已发送",
         "sentFallback": "将由管理员进行审核。"
       },
       "error": {
@@ -590,6 +591,7 @@
     "wishlistAddedTitle": "已加入心愿单",
     "wishlistRemovedTitle": "已从心愿单移除",
     "genericErrorTitle": "发生错误",
+    "genericErrorDesc": "请稍后再试。",
     "wishlistUpdateFailedDesc": "无法更新心愿单",
     "variantRequiredTitle": "请选择规格",
     "variantRequiredDesc": "该规格为必选项。",
@@ -726,6 +728,16 @@
     "trustDelivery": "摩洛哥全境快速配送",
     "trustSecure": "安全支付",
     "trustPayments": "多种支付方式",
+    "trustBar": {
+      "deliveryTitle": "配送",
+      "deliveryDesc": "摩洛哥全境快速配送。",
+      "securePaymentTitle": "安全支付",
+      "securePaymentDesc": "多种安全支付方式。",
+      "supportTitle": "客服支持",
+      "supportDesc": "每天为你提供帮助。",
+      "remiseTitle": "折扣与余额",
+      "remiseDesc": "获取折扣并随时查看余额。"
+    },
     "heroCardSubtitle": "精选、价格与库存",
     "heroCard1Title": "核心分类",
     "heroCard1Desc": "快速进入最受欢迎的品类。",
@@ -1208,6 +1220,56 @@
         "supportTitle": "24/7 客服",
         "supportDesc": "专属协助"
       }
+    }
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "登录成功",
+      "loginSuccessDesc": "欢迎，{name}",
+      "registerSuccess": "账号创建成功",
+      "registerSuccessDesc": "欢迎来到 Boukir，{name}",
+      "logoutSuccess": "已退出登录",
+      "fallbackName": "用户",
+      "loginError": "登录失败",
+      "registerError": "注册失败",
+      "networkError": "网络错误",
+      "networkErrorDesc": "请检查你的网络连接",
+      "accountLocked": "账号已锁定",
+      "accountBlocked": "账号已封禁",
+      "accountInactive": "账号已停用",
+      "ssoAccountOnly": "仅支持 SSO 账号",
+      "ssoAccountOnlyDesc": "请使用 {provider} 登录",
+      "emailExists": "该邮箱已存在",
+      "emailExistsDesc": "请登录或使用其他邮箱",
+      "emailExistsLocal": "该邮箱已绑定账号",
+      "emailExistsLocalDesc": "请使用邮箱和密码登录",
+      "emailExistsGoogle": "该邮箱已绑定 Google",
+      "emailExistsGoogleDesc": "请使用 Google 继续",
+      "emailExistsFacebook": "该邮箱已绑定 Facebook",
+      "emailExistsFacebookDesc": "请使用 Facebook 继续",
+      "invalidCredentials": "邮箱或密码错误",
+      "attemptsLeft": "剩余 {{count}} 次尝试",
+      "googleError": "Google OAuth 错误",
+      "googleLoadError": "无法加载 Google 登录",
+      "googleLoadErrorDesc": "请检查你的网络连接",
+      "missingTokenDesc": "缺少令牌",
+      "originNotAllowedDesc": "无法验证 Google 令牌。请确保在 Google Cloud Console 中允许来源 {origin}，并在 5–10 分钟后重试。",
+      "initFailedDesc": "无法启动 Google 登录。",
+      "unexpectedErrorDesc": "发生未知错误",
+      "facebookError": "Facebook OAuth 错误",
+      "facebookLoadError": "无法加载 Facebook SDK",
+      "facebookLoadErrorDesc": "请检查你的网络连接"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "申请正在处理中",
+      "pendingDesc": "你的 Artisan 申请已提交。",
+      "alreadyArtisanTitle": "你已是 Artisan",
+      "alreadyArtisanDesc": "你的账号已是 Artisan/推广者。",
+      "sentTitle": "申请已发送",
+      "sentDesc": "管理员将进行审核。",
+      "sentSuccessFallbackMessage": "申请已成功发送。",
+      "sendFailedTitle": "无法发送申请",
+      "sendFailedDesc": "请稍后再试。"
     }
   },
   "footer": {

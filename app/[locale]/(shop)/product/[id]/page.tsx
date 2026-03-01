@@ -12,7 +12,6 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { getLocalizedCategoryName } from "@/lib/localized-fields"
 import { cn } from "@/lib/utils"
-import { isOutOfStockLike } from "@/lib/stock"
 import { useGetProductQuery } from "@/state/api/products-api-slice"
 import {
   useAddToWishlistMutation,
@@ -196,17 +195,6 @@ export default function ProductPage() {
       return
     }
 
-    const outOfStock = isOutOfStockLike({
-      stock: (product as any)?.quantite_disponible,
-      quantite_disponible: (product as any)?.quantite_disponible,
-      in_stock: (product as any)?.in_stock,
-      inStock: (product as any)?.inStock,
-    })
-    if (outOfStock) {
-      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      return
-    }
-
     const isVariantRequired = (product as any).is_obligatoire_variant || (product as any).isObligatoireVariant
     if (isVariantRequired && !selectedVariant) {
       toast.error(tProductCard("variantRequiredTitle"), {
@@ -254,13 +242,6 @@ export default function ProductPage() {
 
         if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
           toast.error(tCommon("error"), { description: tProductCard("maxQuantityReachedDesc") })
-        } else if (
-          code === "out_of_stock" ||
-          normalizedMessage === "out_of_stock" ||
-          code === 'INSUFFICIENT_STOCK' ||
-          normalizedCode === 'insufficient_stock'
-        ) {
-          toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
         } else {
           toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
         }
@@ -441,12 +422,6 @@ export default function ProductPage() {
     ? `${baseDesignation} • ${titleSuffixParts.join(' · ')}`
     : baseDesignation
 
-  const isOutOfStock = isOutOfStockLike({
-    quantite_disponible: (product as any)?.quantite_disponible,
-    in_stock: (product as any)?.in_stock,
-    inStock: (product as any)?.inStock,
-  })
-
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
@@ -510,18 +485,9 @@ export default function ProductPage() {
 
             {/* Stock Status */}
             <div className="flex items-center gap-2">
-              {!isOutOfStock ? (
-                <>
-                  <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
-                    {t("inStock")}
-                  </Badge>
-                  {/* <span className="text-xs text-muted-foreground">
-                    {product.quantite_disponible} unités disponibles
-                  </span> */}
-                </>
-              ) : (
-                  <Badge variant="destructive" className="text-xs text-white">{tProductCard("outOfStock")}</Badge>
-              )}
+              <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
+                {t("inStock")}
+              </Badge>
             </div>
             <Separator />
 
@@ -599,7 +565,6 @@ export default function ProductPage() {
                     className="h-9 w-9 rounded-l-none hover:bg-muted"
                     onClick={() => handleQuantityChange(1)}
                     disabled={(() => {
-                      if (isOutOfStock) return true
                       const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
                       const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
                       return purchaseLimit != null ? quantity >= purchaseLimit : false
@@ -620,7 +585,7 @@ export default function ProductPage() {
                 size="lg"
                 className="flex-1 h-11 text-sm font-semibold"
                 onClick={handleAddToCart}
-                disabled={isAddingToCart || isOutOfStock}
+                disabled={isAddingToCart}
               >
                 <ShoppingCart className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
                 {tProductCard("addToCart")}

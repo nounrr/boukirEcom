@@ -80,7 +80,7 @@ export default function ShopPageClient() {
     const inStockRaw = searchParams.get("inStock")
     const inStock =
       inStockRaw == null
-        ? true
+        ? false
         : inStockRaw === "1" || inStockRaw === "true" || inStockRaw === "yes"
 
     const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1)
@@ -152,7 +152,7 @@ export default function ShopPageClient() {
       if (filterState.search) next.set("search", filterState.search)
 
       if (filterState.sort && filterState.sort !== "newest") next.set("sort", filterState.sort)
-      if (filterState.inStock === false) next.set("inStock", "0")
+      if (filterState.inStock === true) next.set("inStock", "1")
 
       if (filterState.page && filterState.page !== 1) next.set("page", String(filterState.page))
       if (filterState.per_page && filterState.per_page !== 20) {

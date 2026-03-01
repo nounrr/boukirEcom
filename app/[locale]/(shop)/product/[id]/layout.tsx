@@ -87,9 +87,7 @@ export default async function ProductDetailsRouteLayout({
           url: productUrl,
           priceCurrency: seo.currency,
           price: seo.price,
-          availability: seo.inStock
-            ? "https://schema.org/InStock"
-            : "https://schema.org/OutOfStock",
+          availability: "https://schema.org/InStock",
           itemCondition: "https://schema.org/NewCondition",
         }
         : undefined,

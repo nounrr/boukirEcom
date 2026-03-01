@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import { isOutOfStockLike } from "@/lib/stock"
 import { endOfDay, format, startOfDay, startOfMonth, startOfWeek } from "date-fns"
 import { arSA, enUS, fr, zhCN } from "date-fns/locale"
 import { type DateRange } from "react-day-picker"
@@ -190,11 +189,6 @@ export default function OrdersPage() {
             ? (item?.productNameZh ?? baseName) || baseName
             : baseName
 
-    if (isOutOfStockLike(item)) {
-      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      return
-    }
-
     try {
       await cartRef.current.addItem({
         productId: item.productId,
@@ -222,11 +216,7 @@ export default function OrdersPage() {
       const data = (error as any)?.data
       const code = data?.code || data?.error
       const message = data?.message
-      if (code === "out_of_stock" || message === "out_of_stock") {
-        toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      } else {
-        toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
-      }
+      toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
     }
   }
 

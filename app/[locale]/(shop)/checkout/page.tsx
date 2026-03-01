@@ -9,7 +9,6 @@ import { z } from "zod"
 
 import CheckoutWizard from "@/components/shop/checkout/checkout-wizard"
 import OrderCartSummary from "@/components/shop/checkout/order-cart-summary"
-import OrderConfirmationAnimation from "@/components/shop/checkout/order-confirmation-animation"
 import OrderSummaryStep from "@/components/shop/checkout/order-summary-step"
 import PaymentStep from "@/components/shop/checkout/payment-step"
 import ShippingInfoStep from "@/components/shop/checkout/shipping-info-step"
@@ -236,21 +235,10 @@ export default function CheckoutPage() {
   const [isPending, startTransition] = useTransition()
   const isProcessing = isPending || isCreatingOrder
 
-  const [confirmAnimationOpen, setConfirmAnimationOpen] = useState(false)
-  const [confirmAnimationStatus, setConfirmAnimationStatus] = useState<"processing" | "success">("processing")
-  const pendingRedirectRef = useRef<string | null>(null)
-
   const [guestOrderCreated, setGuestOrderCreated] = useState(false)
   const [guestOrderNumber, setGuestOrderNumber] = useState<string | null>(null)
 
-  const handleConfirmAnimationComplete = useCallback(() => {
-    const nextUrl = pendingRedirectRef.current
-    pendingRedirectRef.current = null
-    setConfirmAnimationOpen(false)
-    if (nextUrl) router.push(nextUrl)
-  }, [router])
-
-  const isBlockingUi = confirmAnimationOpen || isProcessing || isQuoting
+  const isBlockingUi = isProcessing || isQuoting
   const isCartEmpty = !items.length
 
   const {
@@ -498,10 +486,6 @@ export default function CheckoutPage() {
       }
     }
 
-    setConfirmAnimationOpen(true)
-    setConfirmAnimationStatus("processing")
-    pendingRedirectRef.current = null
-
     startTransition(async () => {
       try {
         const isPickup = values.deliveryMethod === "pickup"
@@ -583,15 +567,13 @@ export default function CheckoutPage() {
         dispatch(clearCart())
         cartStorage.clearCart()
 
-        // Wait for confirmation animation to finish.
         if (isAuthenticated) {
-          pendingRedirectRef.current = `/${locale}/orders`
-        } else {
-          pendingRedirectRef.current = null
-          setGuestOrderNumber(order?.orderNumber ? String(order.orderNumber) : null)
-          setGuestOrderCreated(true)
+          router.push(`/${locale}/orders`)
+          return
         }
-        setConfirmAnimationStatus("success")
+
+        setGuestOrderNumber(order?.orderNumber ? String(order.orderNumber) : null)
+        setGuestOrderCreated(true)
       } catch (error: any) {
         console.error("❌ Failed to create order:", error)
         console.error("Error details:", {
@@ -602,8 +584,6 @@ export default function CheckoutPage() {
 
         const errorType = error?.data?.error_type
         if (errorType === "SOLDE_AUTH_REQUIRED") {
-          setConfirmAnimationOpen(false)
-          pendingRedirectRef.current = null
           toast.error(error?.data?.message || t("errors.authRequiredForSolde"))
           const next = encodeURIComponent(`/${locale}/checkout`)
           router.push(`/${locale}/login?next=${next}`)
@@ -611,15 +591,11 @@ export default function CheckoutPage() {
         }
 
         if (errorType === "SOLDE_NOT_ALLOWED") {
-          setConfirmAnimationOpen(false)
-          pendingRedirectRef.current = null
           toast.error(error?.data?.message || t("errors.soldeNotAllowed"))
           return
         }
 
         if (errorType === "SOLDE_PLAFOND_EXCEEDED") {
-          setConfirmAnimationOpen(false)
-          pendingRedirectRef.current = null
           const plafondValue = typeof error?.data?.plafond === "number" ? error.data.plafond : undefined
           const cumuleValue = typeof error?.data?.solde_cumule === "number" ? error.data.solde_cumule : undefined
           const amountValue = typeof error?.data?.solde_amount === "number" ? error.data.solde_amount : undefined
@@ -659,8 +635,6 @@ export default function CheckoutPage() {
           return
         }
 
-        setConfirmAnimationOpen(false)
-        pendingRedirectRef.current = null
         toast.error(error?.data?.message || t("errors.orderCreateFailed"))
       }
     })
@@ -754,12 +728,6 @@ export default function CheckoutPage() {
   if (!hasMounted) {
     return (
       <div className="min-h-screen bg-background py-6">
-        <OrderConfirmationAnimation
-          open={confirmAnimationOpen}
-          status={confirmAnimationStatus}
-          onComplete={handleConfirmAnimationComplete}
-        />
-
         <div className="max-w-md mx-auto text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center animate-pulse">
             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
@@ -773,12 +741,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background py-6">
-      <OrderConfirmationAnimation
-        open={confirmAnimationOpen}
-        status={confirmAnimationStatus}
-        onComplete={handleConfirmAnimationComplete}
-      />
-
       {/* Loading State */}
       {isCartLoading && (
         <div className="max-w-md mx-auto text-center py-12">

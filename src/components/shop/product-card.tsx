@@ -5,7 +5,6 @@ import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-rea
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { isOutOfStockLike } from '@/lib/stock'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
 import Image from 'next/image'
@@ -221,12 +220,6 @@ export function ProductCard({
     e.preventDefault()
     e.stopPropagation()
 
-    const outOfStock = isOutOfStockLike({ stock: product.stock, in_stock: (product as any).in_stock, inStock: (product as any).inStock })
-    if (outOfStock) {
-      toast.error(t('genericErrorTitle'), { description: t('outOfStock') })
-      return
-    }
-
     if (product.isVariantRequired && !selectedVariant) {
       toast.error(t('variantRequiredTitle'), { description: t('variantRequiredDesc') })
       return
@@ -293,13 +286,6 @@ export function ProductCard({
 
         if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
           toast.error(t('genericErrorTitle'), { description: t('maxQuantityReachedDesc') })
-        } else if (
-          code === 'INSUFFICIENT_STOCK' ||
-          normalizedCode === 'insufficient_stock' ||
-          normalizedCode === 'out_of_stock' ||
-          normalizedMessage === 'out_of_stock'
-        ) {
-          toast.error(t('genericErrorTitle'), { description: t('outOfStock') })
         } else {
           toast.error(t('genericErrorTitle'), { description: t('genericErrorDesc') })
         }
@@ -380,11 +366,6 @@ export function ProductCard({
     [product.sale?.discount, product.originalPrice, product.price]
   )
 
-  const isOutOfStock = useMemo(
-    () => isOutOfStockLike({ stock: product.stock, in_stock: (product as any).in_stock, inStock: (product as any).inStock }),
-    [product.stock, (product as any).in_stock, (product as any).inStock]
-  )
-
   // Calculate current price based on selected variant
   const currentPrice = useMemo(() => {
     if (selectedVariant) {
@@ -436,14 +417,6 @@ export function ProductCard({
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Package className="w-12 h-12 text-muted-foreground/30" />
-                </div>
-              )}
-
-              {isOutOfStock && (
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
-                  <Badge variant="destructive" className="text-[10px] font-bold px-2 py-1">
-                    {t('outOfStock')}
-                  </Badge>
                 </div>
               )}
             </ProductImageMask>
@@ -501,15 +474,13 @@ export function ProductCard({
                   size="icon"
                   variant="ghost"
                   onClick={handleAddToCart}
-                  disabled={isOutOfStock}
                   className={cn(
                     "h-8 w-8 rounded-full transition-all duration-200",
                     isAddedToCart
                       ? "bg-primary hover:bg-primary text-primary-foreground"
                       : "hover:bg-muted disabled:opacity-50 disabled:pointer-events-auto"
                   )}
-                  aria-disabled={isOutOfStock}
-                  title={isOutOfStock ? t('outOfStock') : t('addToCart')}
+                  title={t('addToCart')}
                 >
                   {isAddedToCart ? (
                     <Check className="w-4 h-4" />
@@ -596,14 +567,7 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Stock Status Overlay */}
-        {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
-            <Badge variant="destructive" className="text-sm font-bold px-4 py-2">
-                {t('outOfStock')}
-            </Badge>
-          </div>
-        )}
+          {/* Stock Status Overlay */}
 
         {/* Quick Action Dock - Always visible and docked shape */}
           <div
@@ -643,16 +607,14 @@ export function ProductCard({
             <Button
               size="icon"
               variant="ghost"
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
+                onClick={handleAddToCart}
               className={cn(
                 "h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all duration-200",
                 isAddedToCart
                   ? "bg-primary hover:bg-primary text-primary-foreground"
                   : "hover:bg-muted disabled:opacity-50 disabled:pointer-events-auto"
               )}
-                aria-disabled={isOutOfStock}
-                title={isOutOfStock ? t('outOfStock') : t('addToCart')}
+                title={t('addToCart')}
             >
               {isAddedToCart ? (
                   <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

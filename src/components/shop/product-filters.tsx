@@ -84,7 +84,7 @@ export function ProductFilters({
     units: initialFilters?.units ?? [],
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
     sort: initialFilters?.sort ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
@@ -141,7 +141,7 @@ export function ProductFilters({
     units: initialFilters?.units ?? [],
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
     sort: (initialFilters?.sort as SortOption | undefined) ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
@@ -369,7 +369,7 @@ export function ProductFilters({
       units: [],
       utilityTypes: [],
       search: '',
-      inStock: true,
+      inStock: false,
       sort: 'newest',
       page: 1,
       per_page: 20
@@ -385,7 +385,7 @@ export function ProductFilters({
       filters.colors.length +
       filters.units.length +
       filters.utilityTypes.length +
-      (filters.inStock !== true ? 1 : 0) +
+      (filters.inStock === true ? 1 : 0) +
       (isPriceFilterActive(filters.priceRange) ? 1 : 0) +
       (filters.search ? 1 : 0)
     )

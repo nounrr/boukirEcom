@@ -18,6 +18,7 @@ interface AddressResult {
     house_number?: string
     road?: string
     suburb?: string
+    neighbourhood?: string
     city?: string
     town?: string
     village?: string
@@ -25,6 +26,36 @@ interface AddressResult {
     postcode?: string
     country?: string
     country_code?: string
+  }
+}
+
+function formatEssentialAddress(result: AddressResult) {
+  const addr = result.address ?? {}
+
+  const streetLine = [addr.house_number, addr.road].filter(Boolean).join(" ").trim()
+  const district = addr.neighbourhood || addr.suburb
+  const streetWithDistrict = [streetLine, district].filter(Boolean).join(", ").trim()
+  const fallbackPrimary = result.display_name?.split(",")[0]?.trim()
+
+  const primary =
+    streetWithDistrict ||
+    addr.road ||
+    addr.neighbourhood ||
+    addr.suburb ||
+    fallbackPrimary ||
+    result.display_name
+
+  const city = addr.city || addr.town || addr.village || addr.state || ""
+  const postalCode = addr.postcode || ""
+
+  const cityPostal = [postalCode, city].filter(Boolean).join(" ").trim()
+  const label = [primary, cityPostal].filter(Boolean).join(", ").trim()
+
+  return {
+    addressLine: (primary || "").trim(),
+    displayLabel: label || result.display_name,
+    city,
+    postalCode,
   }
 }
 
@@ -144,19 +175,15 @@ export default function LocationPicker({
       // Ignore stale responses.
       if (reverseReqIdRef.current !== reqId) return
 
-      const addr = data.address
-      // Prioritize road/neighborhood for the main address field
-      // Logic: Street > Neighborhood > City > Display Name
-      const street = addr.road || addr.suburb || data.display_name.split(",")[0]
-      const city = addr.city || addr.town || addr.village || addr.state || ""
-      const postalCode = addr.postcode || ""
+      const { addressLine, displayLabel, city, postalCode } = formatEssentialAddress(data)
 
-      setSearchQuery(data.display_name) // Update search bar for visual feedback
+      // Update search bar for visual feedback (keep it short, too)
+      setSearchQuery(displayLabel)
       
       onLocationSelect({
         lat,
         lng,
-        address: data.display_name,
+        address: addressLine,
         city,
         postalCode,
       })

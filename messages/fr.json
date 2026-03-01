@@ -468,6 +468,7 @@
     "wishlistAddedTitle": "Ajouté aux favoris",
     "wishlistRemovedTitle": "Retiré des favoris",
     "genericErrorTitle": "Une erreur est survenue",
+    "genericErrorDesc": "Veuillez réessayer.",
     "wishlistUpdateFailedDesc": "Impossible de mettre à jour les favoris",
     "variantRequiredTitle": "Veuillez sélectionner une variante",
     "variantRequiredDesc": "Cette variante est obligatoire.",
@@ -604,6 +605,16 @@
     "trustDelivery": "Livraison rapide partout au Maroc",
     "trustSecure": "Paiement sécurisé",
     "trustPayments": "Plusieurs moyens de paiement",
+    "trustBar": {
+      "deliveryTitle": "Livraison",
+      "deliveryDesc": "Livraison rapide partout au Maroc.",
+      "securePaymentTitle": "Paiement sécurisé",
+      "securePaymentDesc": "Plusieurs options de paiement sécurisé.",
+      "supportTitle": "Service client",
+      "supportDesc": "Nous sommes disponibles tous les jours.",
+      "remiseTitle": "Remise & solde",
+      "remiseDesc": "Gagnez des remises et suivez votre solde."
+    },
     "heroCardSubtitle": "Sélection, prix et disponibilité",
     "heroCard1Title": "Catégories essentielles",
     "heroCard1Desc": "Accédez vite aux familles les plus demandées.",
@@ -1229,6 +1240,7 @@
         "desc": "Vos informations ont été enregistrées avec succès."
       },
       "requestArtisan": {
+        "sentTitle": "Demande envoyée",
         "sentFallback": "Elle sera validée par un administrateur."
       },
       "error": {
@@ -1300,6 +1312,7 @@
       "registerSuccess": "Compte créé avec succès",
       "registerSuccessDesc": "Bienvenue sur Boukir, {name}",
       "logoutSuccess": "Déconnexion réussie",
+      "fallbackName": "Utilisateur",
       "loginError": "Erreur de connexion",
       "registerError": "Erreur d'inscription",
       "networkError": "Erreur de connexion au serveur",
@@ -1322,9 +1335,24 @@
       "googleError": "Erreur Google OAuth",
       "googleLoadError": "Impossible de charger Google Sign-In",
       "googleLoadErrorDesc": "Veuillez vérifier votre connexion internet",
+      "missingTokenDesc": "Jeton manquant",
+      "originNotAllowedDesc": "Impossible de vérifier le jeton Google. Vérifiez que l'origine {origin} est autorisée dans Google Cloud Console et réessayez après 5–10 minutes.",
+      "initFailedDesc": "Impossible de démarrer Google Sign-In",
+      "unexpectedErrorDesc": "Une erreur inattendue s'est produite",
       "facebookError": "Erreur Facebook OAuth",
       "facebookLoadError": "Impossible de charger Facebook SDK",
       "facebookLoadErrorDesc": "Veuillez vérifier votre connexion internet"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "Demande déjà en attente",
+      "pendingDesc": "Votre demande Artisan est déjà enregistrée.",
+      "alreadyArtisanTitle": "Vous êtes déjà Artisan",
+      "alreadyArtisanDesc": "Votre compte est déjà Artisan/Promoteur.",
+      "sentTitle": "Demande envoyée",
+      "sentDesc": "Elle sera validée par un administrateur.",
+      "sentSuccessFallbackMessage": "Demande envoyée avec succès.",
+      "sendFailedTitle": "Impossible d'envoyer la demande",
+      "sendFailedDesc": "Réessayez dans un instant."
     }
   }
 }

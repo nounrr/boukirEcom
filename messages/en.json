@@ -140,6 +140,7 @@
         "desc": "Your information was saved successfully."
       },
       "requestArtisan": {
+        "sentTitle": "Request sent",
         "sentFallback": "It will be reviewed by an administrator."
       },
       "error": {
@@ -590,6 +591,7 @@
     "wishlistAddedTitle": "Added to wishlist",
     "wishlistRemovedTitle": "Removed from wishlist",
     "genericErrorTitle": "Something went wrong",
+    "genericErrorDesc": "Please try again.",
     "wishlistUpdateFailedDesc": "Unable to update wishlist",
     "variantRequiredTitle": "Please select a variant",
     "variantRequiredDesc": "This variant is required.",
@@ -726,6 +728,16 @@
     "trustDelivery": "Fast delivery across Morocco",
     "trustSecure": "Secure payment",
     "trustPayments": "Multiple payment methods",
+    "trustBar": {
+      "deliveryTitle": "Delivery",
+      "deliveryDesc": "Fast delivery across Morocco.",
+      "securePaymentTitle": "Secure payment",
+      "securePaymentDesc": "Multiple secure payment options.",
+      "supportTitle": "Customer support",
+      "supportDesc": "We’re here to help every day.",
+      "remiseTitle": "Remise & balance",
+      "remiseDesc": "Earn discounts and track your balance."
+    },
     "heroCardSubtitle": "Selection, price and availability",
     "heroCard1Title": "Essential categories",
     "heroCard1Desc": "Quick access to the most requested ranges.",
@@ -1209,6 +1221,56 @@
         "supportTitle": "24/7 support",
         "supportDesc": "Dedicated assistance"
       }
+    }
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "Login successful",
+      "loginSuccessDesc": "Welcome, {name}",
+      "registerSuccess": "Account created",
+      "registerSuccessDesc": "Welcome to Boukir, {name}",
+      "logoutSuccess": "Logged out",
+      "fallbackName": "User",
+      "loginError": "Login error",
+      "registerError": "Registration error",
+      "networkError": "Network error",
+      "networkErrorDesc": "Please check your internet connection",
+      "accountLocked": "Account locked",
+      "accountBlocked": "Account blocked",
+      "accountInactive": "Account disabled",
+      "ssoAccountOnly": "SSO account only",
+      "ssoAccountOnlyDesc": "Please use {provider} to sign in",
+      "emailExists": "Email already exists",
+      "emailExistsDesc": "Sign in or use another email",
+      "emailExistsLocal": "An account exists with this email",
+      "emailExistsLocalDesc": "Sign in with your email and password",
+      "emailExistsGoogle": "This email is linked to Google",
+      "emailExistsGoogleDesc": "Continue with Google",
+      "emailExistsFacebook": "This email is linked to Facebook",
+      "emailExistsFacebookDesc": "Continue with Facebook",
+      "invalidCredentials": "Incorrect email or password",
+      "attemptsLeft": "{{count}} attempts left",
+      "googleError": "Google OAuth error",
+      "googleLoadError": "Unable to load Google Sign-In",
+      "googleLoadErrorDesc": "Please check your internet connection",
+      "missingTokenDesc": "Missing token",
+      "originNotAllowedDesc": "Unable to verify the Google token. Make sure the origin {origin} is allowed in Google Cloud Console and try again in 5–10 minutes.",
+      "initFailedDesc": "Failed to start Google Sign-In.",
+      "unexpectedErrorDesc": "An unexpected error occurred",
+      "facebookError": "Facebook OAuth error",
+      "facebookLoadError": "Unable to load Facebook SDK",
+      "facebookLoadErrorDesc": "Please check your internet connection"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "Request already pending",
+      "pendingDesc": "Your Artisan request is already recorded.",
+      "alreadyArtisanTitle": "You are already an Artisan",
+      "alreadyArtisanDesc": "Your account is already Artisan/Promoter.",
+      "sentTitle": "Request sent",
+      "sentDesc": "It will be reviewed by an administrator.",
+      "sentSuccessFallbackMessage": "Request sent successfully.",
+      "sendFailedTitle": "Unable to send request",
+      "sendFailedDesc": "Please try again in a moment."
     }
   },
   "footer": {

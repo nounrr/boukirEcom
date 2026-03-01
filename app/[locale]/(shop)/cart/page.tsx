@@ -139,14 +139,6 @@ export default function CartPage() {
 
         if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
           toast.error(tCommon("error"), { description: t("toast.maxQuantityReachedDesc") })
-        } else if (
-          code === 'OUT_OF_STOCK' ||
-          normalizedCode === 'out_of_stock' ||
-          normalizedMessage === 'out_of_stock' ||
-          code === 'INSUFFICIENT_STOCK' ||
-          normalizedCode === 'insufficient_stock'
-        ) {
-          toast.error(tCommon("error"), { description: t("toast.stockChangedDesc") })
         } else {
           toast.error(tCommon("error"), { description: t("toast.quantityUpdateFailedDesc") })
         }
