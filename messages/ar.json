@@ -27,6 +27,129 @@
     "previous": "السابق",
     "viewAll": "عرض الكل"
   },
+  "profile": {
+    "layoutTitle": "حسابي",
+    "layoutSubtitle": "إدارة ملفك الشخصي وتفضيلاتك",
+    "headerTitle": "ملفي الشخصي",
+    "headerSubtitle": "إدارة معلوماتك الشخصية",
+    "guest": {
+      "layoutTitle": "ملفي الشخصي",
+      "layoutSubtitle": "سجّل الدخول للوصول إلى حسابك",
+      "sessionRequiredTitle": "يلزم تسجيل الدخول",
+      "sessionRequiredDesc": "يرجى تسجيل الدخول لعرض ملفك الشخصي ومعلوماتك.",
+      "login": "تسجيل الدخول"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "sending": "جارٍ الإرسال..."
+    },
+    "artisan": {
+      "title": "حالة الحرفي / المحترف",
+      "badges": {
+        "approved": "تمت الموافقة",
+        "pending": "قيد المراجعة"
+      },
+      "approvedTitle": "أنت حرفي/مطور.",
+      "approvedDesc": "حسابك يستفيد من مزايا الحرفي/المحترف.",
+      "pendingTitle": "الطلب قيد التحقق.",
+      "pendingDesc": "سيتم التحقق من طلبك قريباً من طرف مسؤول.",
+      "requestHint": "اطلب حالة الحرفي/المحترف للوصول إلى مزايا أكثر وزيادة مكاسب الخصم.",
+      "requestAction": "طلب حالة الحرفي"
+    },
+    "remise": {
+      "title": "رصيد الخصم",
+      "desc": "استخدم هذا الرصيد في طلباتك القادمة"
+    },
+    "sections": {
+      "personal": {
+        "title": "المعلومات الشخصية",
+        "subtitle": "بيانات التعريف الخاصة بك"
+      },
+      "billing": {
+        "title": "عنوان الفاتورة",
+        "subtitle": "عنوانك الأساسي"
+      },
+      "shipping": {
+        "title": "عنوان التوصيل",
+        "subtitle": "أين تستلم طلباتك"
+      },
+      "status": {
+        "title": "حالة الحساب",
+        "subtitle": "معلومات حول حسابك"
+      }
+    },
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "accountType": "نوع الحساب",
+      "language": "اللغة",
+      "company": "الشركة",
+      "ice": "ICE",
+      "address": "العنوان",
+      "shippingLine1": "العنوان (سطر 1)",
+      "shippingLine2": "العنوان (سطر 2) (اختياري)",
+      "city": "المدينة",
+      "state": "المنطقة/الولاية (اختياري)",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد"
+    },
+    "placeholders": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "company": "اسم الشركة",
+      "ice": "رقم ICE",
+      "address": "العنوان الكامل",
+      "shippingLine1": "الشارع، الرقم، المبنى",
+      "shippingLine2": "الشقة، الطابق",
+      "city": "المدينة",
+      "state": "المنطقة",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد"
+    },
+    "verified": "موثّق",
+    "notProvided": "غير مذكور",
+    "languages": {
+      "fr": "الفرنسية",
+      "ar": "العربية",
+      "en": "الإنجليزية",
+      "zh": "الصينية"
+    },
+    "accountTypes": {
+      "client": "عميل",
+      "artisan": "حرفي/مطور"
+    },
+    "status": {
+      "authProvider": "مزود تسجيل الدخول",
+      "eligibleBalanceTitle": "مؤهل للرصيد",
+      "eligibleBalanceDesc": "اشترِ الآن وادفع لاحقاً",
+      "memberSince": "عضو منذ",
+      "lastLogin": "آخر تسجيل دخول"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "لا توجد تغييرات",
+        "desc": "لم يتم تعديل أي حقل."
+      },
+      "updated": {
+        "title": "تم تحديث الملف الشخصي",
+        "desc": "تم حفظ معلوماتك بنجاح."
+      },
+      "requestArtisan": {
+        "sentTitle": "تم إرسال الطلب",
+        "sentFallback": "سيتم التحقق منها من طرف مسؤول."
+      },
+      "error": {
+        "title": "خطأ",
+        "updateProfileFallback": "تعذر تحديث الملف الشخصي.",
+        "requestArtisanFallback": "تعذر إرسال الطلب."
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "سجّل الدخول لحفظ منتجاتك المفضلة",
     "wishlistSubtitle": "اطّلع على قائمة المفضلة وتتبّع طلباتك."
@@ -418,6 +541,16 @@
   },
   "shop": {
     "filters": "الفلاتر",
+    "viewToggle": {
+      "label": "العرض",
+      "aria": "وضع العرض",
+      "gridAria": "شبكة مدمجة",
+      "listAria": "قائمة"
+    },
+    "loadError": "حدث خطأ أثناء التحميل",
+    "showing": "عرض",
+    "of": "من",
+    "pageXofY": "الصفحة {current}/{total}",
     "productsLabel": "منتجات",
     "tagline": "توصيل سريع • إرجاع سهل • دفع آمن",
     "taglineShort": "توصيل سريع • دفع آمن",
@@ -458,6 +591,7 @@
     "wishlistAddedTitle": "تمت الإضافة إلى المفضلة",
     "wishlistRemovedTitle": "تمت الإزالة من المفضلة",
     "genericErrorTitle": "حدث خطأ",
+    "genericErrorDesc": "يرجى المحاولة مرة أخرى.",
     "wishlistUpdateFailedDesc": "تعذر تحديث المفضلة",
     "variantRequiredTitle": "يرجى اختيار نوع",
     "variantRequiredDesc": "هذا الاختيار مطلوب.",
@@ -493,6 +627,7 @@
     "searchPlaceholder": "ابحث عن منتج...",
     "categories": "الفئات",
     "brands": "العلامات",
+    "utilityTypes": "نوع الاستخدام",
     "price": "السعر",
     "colors": "الألوان",
     "units": "الوحدات",
@@ -583,12 +718,26 @@
     "heroKicker": "متجرك للعدد واللوازم",
     "heroTitle": "تسوّق احتياجاتك بسهولة",
     "heroSubtitle": "آلاف المنتجات للحرفيين والأفراد، بتجربة شراء سريعة وواضحة وآمنة.",
+    "heroSlideAlt": "شريحة رئيسية",
+    "heroLoadError": "تعذّر تحميل الشرائح حالياً.",
+    "heroEmpty": "لا توجد شرائح متاحة حالياً.",
+    "heroGoToSlide": "اذهب إلى الشريحة {index}",
     "ctaShop": "اذهب للمتجر",
     "ctaPromos": "شاهد العروض",
     "ctaBrowse": "تصفّح",
     "trustDelivery": "توصيل سريع لجميع مناطق المغرب",
     "trustSecure": "دفع آمن",
     "trustPayments": "طرق دفع متعددة",
+    "trustBar": {
+      "deliveryTitle": "التوصيل",
+      "deliveryDesc": "توصيل سريع لجميع مناطق المغرب.",
+      "securePaymentTitle": "دفع آمن",
+      "securePaymentDesc": "خيارات دفع آمنة ومتعددة.",
+      "supportTitle": "خدمة العملاء",
+      "supportDesc": "نحن هنا لمساعدتك كل يوم.",
+      "remiseTitle": "الخصم والرصيد",
+      "remiseDesc": "اكسب خصومات وتابع رصيدك بسهولة."
+    },
     "heroCardSubtitle": "اختيار واسع وأسعار مناسبة",
     "heroCard1Title": "فئات أساسية",
     "heroCard1Desc": "وصول سريع لأكثر الأقسام طلباً.",
@@ -597,6 +746,21 @@
     "heroCard3Title": "عروض حالية",
     "heroCard3Desc": "استفد من أفضل التخفيضات.",
     "heroCardHint": "نصيحة: استخدم البحث بالأعلى للوصول بسرعة.",
+    "heroTags": {
+      "category": "فئة",
+      "brand": "علامة",
+      "campaign": "عرض",
+      "product": "منتج"
+    },
+    "utilityType": {
+      "kicker": "حسب الاستخدام",
+      "title": "للمنزل أم للمحترفين؟",
+      "desc": "صفِّ المتجر بنقرة واحدة واعثر على ما تحتاجه بسرعة.",
+      "homeLabel": "منزل",
+      "homeDesc": "منتجات للمنزل والأعمال اليدوية.",
+      "proLabel": "احترافي",
+      "proDesc": "أدوات ولوازم للمحترفين."
+    },
     "categoriesTitle": "فئات شائعة",
     "categoriesDesc": "دخول سريع للأقسام الأكثر طلباً.",
     "brandsTitle": "العلامات التجارية",
@@ -867,6 +1031,13 @@
     "emptyCart": {
       "title": "سلة التسوق فارغة",
       "subtitle": "أضف منتجات إلى سلة التسوق قبل إتمام الطلب.",
+      "backToShop": "العودة إلى المتجر"
+    },
+    "guestOrder": {
+      "title": "تم استلام طلبك",
+      "subtitle": "سيتم التعامل مع طلبك من طرف فريق المبيعات.",
+      "callout": "ستتلقى مكالمة لتأكيد طلبك.",
+      "orderNumber": "رقم الطلب: {orderNumber}",
       "backToShop": "العودة إلى المتجر"
     },
     "validation": {
@@ -1141,6 +1312,7 @@
       "registerSuccess": "تم إنشاء الحساب بنجاح",
       "registerSuccessDesc": "مرحباً بك في بوكير، {name}",
       "logoutSuccess": "تم تسجيل الخروج بنجاح",
+      "fallbackName": "مستخدم",
       "loginError": "خطأ في تسجيل الدخول",
       "registerError": "خطأ في التسجيل",
       "networkError": "خطأ في الاتصال بالخادم",
@@ -1163,9 +1335,24 @@
       "googleError": "خطأ في Google OAuth",
       "googleLoadError": "فشل تحميل Google Sign-In",
       "googleLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت",
+      "missingTokenDesc": "الرمز مفقود",
+      "originNotAllowedDesc": "تعذر التحقق من رمز Google. تأكد من السماح بالمصدر {origin} في Google Cloud Console ثم أعد المحاولة بعد 5–10 دقائق.",
+      "initFailedDesc": "تعذر بدء تسجيل الدخول عبر Google.",
+      "unexpectedErrorDesc": "حدث خطأ غير متوقع",
       "facebookError": "خطأ في Facebook OAuth",
       "facebookLoadError": "فشل تحميل Facebook SDK",
       "facebookLoadErrorDesc": "يرجى التحقق من اتصالك بالإنترنت"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "الطلب قيد الانتظار",
+      "pendingDesc": "طلبك للحرفي مسجل مسبقاً.",
+      "alreadyArtisanTitle": "أنت بالفعل حرفي",
+      "alreadyArtisanDesc": "حسابك بالفعل حرفي/مروج.",
+      "sentTitle": "تم إرسال الطلب",
+      "sentDesc": "سيتم التحقق منه من طرف مسؤول.",
+      "sentSuccessFallbackMessage": "تم إرسال الطلب بنجاح.",
+      "sendFailedTitle": "تعذر إرسال الطلب",
+      "sendFailedDesc": "أعد المحاولة بعد قليل."
     }
   }
 }

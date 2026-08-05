@@ -7,10 +7,21 @@ interface StoredCartItem {
   unitName?: string
   variantName?: string
   name: string
+  // Optional translated fields (so UI can re-render on locale switch)
+  designation?: string | null
+  designation_ar?: string | null
+  designation_en?: string | null
+  designation_zh?: string | null
   price: number
   quantity: number
   image?: string
   category?: string
+  categoryObj?: {
+    nom?: string | null
+    nom_ar?: string | null
+    nom_en?: string | null
+    nom_zh?: string | null
+  } | null
   stock?: number
 }
 

@@ -7,19 +7,7 @@ import { ChevronLeft, ChevronRight, Package, Tag, Store } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
-
-function getCategoryLabel(
-  category:
-    | { nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null }
-    | undefined,
-  locale: string
-) {
-  if (!category) return ''
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
-}
+import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -92,19 +80,8 @@ export function ProductsList({
   })()
 
   const getLocalizedDesignation = (product: ProductListItem): string => {
-    const data = product as any
-    const fallback = (data?.designation ?? data?.name ?? '').toString()
-
-    const candidate =
-      locale === 'ar'
-        ? data?.designation_ar
-        : locale === 'en'
-          ? data?.designation_en
-          : locale === 'zh'
-            ? data?.designation_zh
-            : data?.designation
-
-    const value = (candidate ?? '').toString().trim()
+    const fallback = String((product as any)?.designation ?? (product as any)?.name ?? '')
+    const value = getLocalizedProductName(product as any, locale).trim()
     return value || fallback
   }
 
@@ -118,11 +95,16 @@ export function ProductsList({
       return {
         id: product.id,
         name: getLocalizedDesignation(product),
+        designation: (product as any)?.designation ?? null,
+        designation_ar: (product as any)?.designation_ar ?? null,
+        designation_en: (product as any)?.designation_en ?? null,
+        designation_zh: (product as any)?.designation_zh ?? null,
         description: '',
         price: currentPrice,
         originalPrice: hasDiscount ? product.prix_vente : undefined,
         image: product.image_url || '',
-        category: getCategoryLabel(product.categorie, locale),
+        category: getLocalizedCategoryName(product.categorie as any, locale) || '',
+        categoryObj: (product as any)?.categorie ?? null,
         brand: product.brand?.nom,
         unit: product.base_unit,
         stock: product.quantite_disponible,

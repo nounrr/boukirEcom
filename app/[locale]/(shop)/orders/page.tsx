@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import { isOutOfStockLike } from "@/lib/stock"
 import { endOfDay, format, startOfDay, startOfMonth, startOfWeek } from "date-fns"
 import { arSA, enUS, fr, zhCN } from "date-fns/locale"
 import { type DateRange } from "react-day-picker"
@@ -180,10 +179,15 @@ export default function OrdersPage() {
   const handleBuyAgain = async (item: any) => {
     if (!cartRef?.current) return
 
-    if (isOutOfStockLike(item)) {
-      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      return
-    }
+    const baseName = String(item?.productName ?? '')
+    const localizedName =
+      locale === 'ar'
+        ? (item?.productNameAr ?? baseName) || baseName
+        : locale === 'en'
+          ? (item?.productNameEn ?? baseName) || baseName
+          : locale === 'zh'
+            ? (item?.productNameZh ?? baseName) || baseName
+            : baseName
 
     try {
       await cartRef.current.addItem({
@@ -192,14 +196,18 @@ export default function OrdersPage() {
         unitId: item.unitId ?? item.unit_id,
         unitName: item.unitName ?? item.unit_name,
         variantName: item.variantName ?? item.variant_name,
-        name: item.productName,
+        name: localizedName,
+        designation: baseName,
+        designation_ar: item?.productNameAr ?? null,
+        designation_en: item?.productNameEn ?? null,
+        designation_zh: item?.productNameZh ?? null,
         price: item.unitPrice,
         quantity: item.quantity,
         image: item.imageUrl || '',
         category: '',
       })
 
-      toast.success(t("toast.addedToCartTitle"), { description: item.productName })
+      toast.success(t("toast.addedToCartTitle"), { description: localizedName })
 
       setTimeout(() => {
         cartRef.current?.open()
@@ -208,11 +216,7 @@ export default function OrdersPage() {
       const data = (error as any)?.data
       const code = data?.code || data?.error
       const message = data?.message
-      if (code === "out_of_stock" || message === "out_of_stock") {
-        toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      } else {
-        toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
-      }
+      toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
     }
   }
 

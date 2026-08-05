@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -24,7 +23,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
+import { getLocalizedCartItemBaseName } from "@/lib/localized-fields"
+import { toAbsoluteImageUrl } from "@/lib/image-url"
+import { forwardRef, useCallback, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -46,6 +47,23 @@ export const CartPopover = forwardRef<
   const toast = useToast()
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [failedImages, setFailedImages] = useState<Record<string, true>>({})
+
+  const getCartImageSrc = useCallback((rawImage?: string) => {
+    const raw = String(rawImage ?? "").trim()
+    if (!raw) return null
+
+    // Some backends can return Windows-style paths or unescaped spaces.
+    const normalized = raw.replace(/\\/g, "/")
+    const absolute = toAbsoluteImageUrl(normalized)
+    if (!absolute) return null
+
+    return absolute.replace(/ /g, "%20")
+  }, [])
+
+  const closePopover = useCallback(() => {
+    setIsOpen(false)
+  }, [])
   const tone = props.tone ?? "default"
   const size = props.size ?? "md"
 
@@ -231,14 +249,6 @@ export const CartPopover = forwardRef<
 
         if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
           toast.error(tCommon('error'), { description: t('toast.maxQuantityReachedDesc') })
-        } else if (
-          code === 'OUT_OF_STOCK' ||
-          normalizedCode === 'out_of_stock' ||
-          normalizedMessage === 'out_of_stock' ||
-          code === 'INSUFFICIENT_STOCK' ||
-          normalizedCode === 'insufficient_stock'
-        ) {
-          toast.error(tCommon('error'), { description: t('toast.stockChangedDesc') })
         }
 
         console.error('❌ Failed to update backend:', error)
@@ -330,7 +340,7 @@ export const CartPopover = forwardRef<
             </div>
             <p className="text-sm font-medium text-foreground mb-1">{t('empty')}</p>
             <p className="text-xs text-muted-foreground mb-4">{t('emptyHint')}</p>
-            <Link href={`/${locale}/shop`}>
+            <Link href={`/${locale}/shop`} onClick={closePopover}>
               <Button size="sm" className="bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15">
                 {t('browseProducts')}
               </Button>
@@ -341,18 +351,37 @@ export const CartPopover = forwardRef<
               <div className="max-h-[360px] overflow-y-auto overscroll-contain px-1 sm:px-1.5 py-1.5 sm:py-2">
               <div className="space-y-1.5">
                 {items.map((item) => (
+                  (() => {
+                    const itemKey = getCartItemKey(item)
+                    const imageSrc = getCartImageSrc(item.image)
+                    const displayName = formatCartItemName({
+                      ...item,
+                      name: getLocalizedCartItemBaseName(item as any, locale),
+                    })
+                    const shouldBypassOptimization =
+                      typeof imageSrc === 'string' &&
+                      /^http:\/\//i.test(imageSrc) &&
+                      !/^http:\/\/localhost(?::\d+)?\//i.test(imageSrc) &&
+                      !/^http:\/\/127\.0\.0\.1(?::\d+)?\//i.test(imageSrc)
+
+                    return (
                   <div
-                    key={getCartItemKey(item)}
+                        key={itemKey}
                     className="group flex items-start gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
                   >
                     {/* Product Image */}
                     <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-muted/30 ring-1 ring-border/20">
-                      {item.image ? (
+                          {imageSrc && !failedImages[itemKey] ? (
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                              src={imageSrc}
+                              alt={displayName}
                           fill
+                              sizes="64px"
                           className="object-cover"
+                              unoptimized={shouldBypassOptimization}
+                              onError={() => {
+                                setFailedImages((prev) => ({ ...prev, [itemKey]: true }))
+                              }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -364,7 +393,7 @@ export const CartPopover = forwardRef<
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-foreground line-clamp-1 mb-1">
-                        {formatCartItemName(item)}
+                            {displayName}
                       </h4>
                       {(item.variantName || item.unitName) && (
                         <p className="text-[11px] text-muted-foreground mb-1">
@@ -420,6 +449,8 @@ export const CartPopover = forwardRef<
                       <p className="text-[10px] text-muted-foreground">{tCommon('currency')}</p>
                     </div>
                   </div>
+                    )
+                  })()
                 ))}
               </div>
             </div>
@@ -434,12 +465,12 @@ export const CartPopover = forwardRef<
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <Link href={`/${locale}/cart`} className="w-full">
+                  <Link href={`/${locale}/cart`} className="w-full" onClick={closePopover}>
                   <Button variant="outline" className="w-full border-border/60 hover:bg-muted/50 transition-all duration-200">
                       {t('viewCart')}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/checkout`} className="w-full">
+                  <Link href={`/${locale}/checkout`} className="w-full" onClick={closePopover}>
                     <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
                       {tCommon('checkout')}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />

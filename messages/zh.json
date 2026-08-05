@@ -27,6 +27,129 @@
     "previous": "上一步",
     "viewAll": "查看全部"
   },
+  "profile": {
+    "layoutTitle": "我的账户",
+    "layoutSubtitle": "管理你的个人资料和偏好设置",
+    "headerTitle": "我的资料",
+    "headerSubtitle": "管理你的个人信息",
+    "guest": {
+      "layoutTitle": "我的资料",
+      "layoutSubtitle": "登录以访问你的账户",
+      "sessionRequiredTitle": "需要登录",
+      "sessionRequiredDesc": "请登录以查看你的资料和信息。",
+      "login": "登录"
+    },
+    "actions": {
+      "edit": "编辑",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "正在保存...",
+      "sending": "正在发送..."
+    },
+    "artisan": {
+      "title": "工匠 / 专业状态",
+      "badges": {
+        "approved": "已通过",
+        "pending": "审核中"
+      },
+      "approvedTitle": "你是工匠/开发者。",
+      "approvedDesc": "你的账户享有工匠/专业权益。",
+      "pendingTitle": "申请审核中。",
+      "pendingDesc": "管理员将很快审核你的申请。",
+      "requestHint": "申请工匠/专业状态以获得更多权益并提升折扣收益。",
+      "requestAction": "申请工匠状态"
+    },
+    "remise": {
+      "title": "你的折扣余额",
+      "desc": "在下一次订单中使用该余额"
+    },
+    "sections": {
+      "personal": {
+        "title": "个人信息",
+        "subtitle": "你的身份信息"
+      },
+      "billing": {
+        "title": "账单地址",
+        "subtitle": "你的主要地址"
+      },
+      "shipping": {
+        "title": "收货地址",
+        "subtitle": "用于接收你的订单"
+      },
+      "status": {
+        "title": "账户状态",
+        "subtitle": "关于你账户的信息"
+      }
+    },
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱",
+      "phone": "电话",
+      "accountType": "账户类型",
+      "language": "语言",
+      "company": "公司",
+      "ice": "ICE",
+      "address": "地址",
+      "shippingLine1": "地址第 1 行",
+      "shippingLine2": "地址第 2 行（可选）",
+      "city": "城市",
+      "state": "州/地区（可选）",
+      "postalCode": "邮编",
+      "country": "国家/地区"
+    },
+    "placeholders": {
+      "firstName": "你的名字",
+      "lastName": "你的姓氏",
+      "company": "公司名称",
+      "ice": "ICE 号码",
+      "address": "完整地址",
+      "shippingLine1": "街道、门牌号、楼栋",
+      "shippingLine2": "公寓、楼层",
+      "city": "城市",
+      "state": "地区",
+      "postalCode": "邮编",
+      "country": "国家/地区"
+    },
+    "verified": "已验证",
+    "notProvided": "未填写",
+    "languages": {
+      "fr": "法语",
+      "ar": "阿拉伯语",
+      "en": "英语",
+      "zh": "中文"
+    },
+    "accountTypes": {
+      "client": "客户",
+      "artisan": "工匠/开发者"
+    },
+    "status": {
+      "authProvider": "登录方式",
+      "eligibleBalanceTitle": "可用余额",
+      "eligibleBalanceDesc": "先买后付",
+      "memberSince": "注册于",
+      "lastLogin": "上次登录"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "没有更改",
+        "desc": "没有字段被修改。"
+      },
+      "updated": {
+        "title": "资料已更新",
+        "desc": "你的信息已成功保存。"
+      },
+      "requestArtisan": {
+        "sentTitle": "申请已发送",
+        "sentFallback": "将由管理员进行审核。"
+      },
+      "error": {
+        "title": "错误",
+        "updateProfileFallback": "无法更新资料。",
+        "requestArtisanFallback": "无法发送申请。"
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "登录以保存你喜欢的商品",
     "wishlistSubtitle": "访问心愿单并跟踪订单。"
@@ -418,6 +541,16 @@
   },
   "shop": {
     "filters": "筛选",
+    "viewToggle": {
+      "label": "视图",
+      "aria": "显示模式",
+      "gridAria": "紧凑网格",
+      "listAria": "列表"
+    },
+    "loadError": "加载时出错",
+    "showing": "显示",
+    "of": "共",
+    "pageXofY": "第 {current}/{total} 页",
     "productsLabel": "件商品",
     "tagline": "快速配送 • 轻松退换 • 安全支付",
     "taglineShort": "快速配送 • 安全支付",
@@ -458,6 +591,7 @@
     "wishlistAddedTitle": "已加入心愿单",
     "wishlistRemovedTitle": "已从心愿单移除",
     "genericErrorTitle": "发生错误",
+    "genericErrorDesc": "请稍后再试。",
     "wishlistUpdateFailedDesc": "无法更新心愿单",
     "variantRequiredTitle": "请选择规格",
     "variantRequiredDesc": "该规格为必选项。",
@@ -493,6 +627,7 @@
     "searchPlaceholder": "搜索商品...",
     "categories": "分类",
     "brands": "品牌",
+    "utilityTypes": "用途类型",
     "price": "价格",
     "colors": "颜色",
     "units": "单位",
@@ -583,12 +718,26 @@
     "heroKicker": "你的在线五金与日用品商店",
     "heroTitle": "轻松购买专业产品",
     "heroSubtitle": "为专业人士与个人提供数千种商品，购物体验快速、清晰且安全。",
+    "heroSlideAlt": "首页幻灯片",
+    "heroLoadError": "暂时无法加载幻灯片。",
+    "heroEmpty": "当前暂无可用幻灯片。",
+    "heroGoToSlide": "跳转到第 {index} 张幻灯片",
     "ctaShop": "进入商店",
     "ctaPromos": "查看优惠",
     "ctaBrowse": "浏览",
     "trustDelivery": "摩洛哥全境快速配送",
     "trustSecure": "安全支付",
     "trustPayments": "多种支付方式",
+    "trustBar": {
+      "deliveryTitle": "配送",
+      "deliveryDesc": "摩洛哥全境快速配送。",
+      "securePaymentTitle": "安全支付",
+      "securePaymentDesc": "多种安全支付方式。",
+      "supportTitle": "客服支持",
+      "supportDesc": "每天为你提供帮助。",
+      "remiseTitle": "折扣与余额",
+      "remiseDesc": "获取折扣并随时查看余额。"
+    },
     "heroCardSubtitle": "精选、价格与库存",
     "heroCard1Title": "核心分类",
     "heroCard1Desc": "快速进入最受欢迎的品类。",
@@ -597,6 +746,21 @@
     "heroCard3Title": "当前优惠",
     "heroCard3Desc": "享受最佳折扣。",
     "heroCardHint": "提示：使用顶部搜索更快找到商品。",
+    "heroTags": {
+      "category": "分类",
+      "brand": "品牌",
+      "campaign": "优惠",
+      "product": "商品"
+    },
+    "utilityType": {
+      "kicker": "按用途",
+      "title": "家用还是专业？",
+      "desc": "一键筛选商店，更快找到你需要的商品。",
+      "homeLabel": "家用",
+      "homeDesc": "适用于家用与DIY的商品。",
+      "proLabel": "专业",
+      "proDesc": "面向专业人士的工具与耗材。"
+    },
     "categoriesTitle": "热门分类",
     "categoriesDesc": "快速访问最受欢迎的专区。",
     "brandsTitle": "品牌",
@@ -868,6 +1032,13 @@
       "subtitle": "请先将商品加入购物车再结算。",
       "backToShop": "返回商店"
     },
+    "guestOrder": {
+      "title": "下单成功",
+      "subtitle": "你的订单将由我们的销售团队处理。",
+      "callout": "我们会致电与你确认订单信息。",
+      "orderNumber": "订单号：{orderNumber}",
+      "backToShop": "返回商店"
+    },
     "validation": {
       "deliveryMethodRequired": "请选择配送方式",
       "paymentMethodRequired": "请选择支付方式",
@@ -1049,6 +1220,56 @@
         "supportTitle": "24/7 客服",
         "supportDesc": "专属协助"
       }
+    }
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "登录成功",
+      "loginSuccessDesc": "欢迎，{name}",
+      "registerSuccess": "账号创建成功",
+      "registerSuccessDesc": "欢迎来到 Boukir，{name}",
+      "logoutSuccess": "已退出登录",
+      "fallbackName": "用户",
+      "loginError": "登录失败",
+      "registerError": "注册失败",
+      "networkError": "网络错误",
+      "networkErrorDesc": "请检查你的网络连接",
+      "accountLocked": "账号已锁定",
+      "accountBlocked": "账号已封禁",
+      "accountInactive": "账号已停用",
+      "ssoAccountOnly": "仅支持 SSO 账号",
+      "ssoAccountOnlyDesc": "请使用 {provider} 登录",
+      "emailExists": "该邮箱已存在",
+      "emailExistsDesc": "请登录或使用其他邮箱",
+      "emailExistsLocal": "该邮箱已绑定账号",
+      "emailExistsLocalDesc": "请使用邮箱和密码登录",
+      "emailExistsGoogle": "该邮箱已绑定 Google",
+      "emailExistsGoogleDesc": "请使用 Google 继续",
+      "emailExistsFacebook": "该邮箱已绑定 Facebook",
+      "emailExistsFacebookDesc": "请使用 Facebook 继续",
+      "invalidCredentials": "邮箱或密码错误",
+      "attemptsLeft": "剩余 {{count}} 次尝试",
+      "googleError": "Google OAuth 错误",
+      "googleLoadError": "无法加载 Google 登录",
+      "googleLoadErrorDesc": "请检查你的网络连接",
+      "missingTokenDesc": "缺少令牌",
+      "originNotAllowedDesc": "无法验证 Google 令牌。请确保在 Google Cloud Console 中允许来源 {origin}，并在 5–10 分钟后重试。",
+      "initFailedDesc": "无法启动 Google 登录。",
+      "unexpectedErrorDesc": "发生未知错误",
+      "facebookError": "Facebook OAuth 错误",
+      "facebookLoadError": "无法加载 Facebook SDK",
+      "facebookLoadErrorDesc": "请检查你的网络连接"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "申请正在处理中",
+      "pendingDesc": "你的 Artisan 申请已提交。",
+      "alreadyArtisanTitle": "你已是 Artisan",
+      "alreadyArtisanDesc": "你的账号已是 Artisan/推广者。",
+      "sentTitle": "申请已发送",
+      "sentDesc": "管理员将进行审核。",
+      "sentSuccessFallbackMessage": "申请已成功发送。",
+      "sendFailedTitle": "无法发送申请",
+      "sendFailedDesc": "请稍后再试。"
     }
   },
   "footer": {

@@ -12,6 +12,7 @@ import { AuthDebugPanel } from "@/components/auth/auth-debug-panel"
 import { GoogleOneTapWrapper } from "@/components/auth/google-one-tap-wrapper"
 import { ArtisanRequestPromptWrapper } from "@/components/auth/artisan-request-prompt-wrapper"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
+import { WhatsAppFloatingButton } from "@/components/layout/whatsapp-floating-button"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
 import { LocalePreferenceInitializer } from "@/components/i18n/locale-preference-initializer"
 
@@ -60,10 +61,12 @@ export default async function RootLayout({
   const locale = await getLocale()
   const messages = await getMessages()
 
+  const isRtl = locale === "ar"
+
   const session = await getAuthCookies()
 
   return (
-    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} suppressHydrationWarning>
+    <html lang={locale} dir={isRtl ? "rtl" : "ltr"} suppressHydrationWarning>
       <body className={`${inter.variable} ${tajawal.variable} ${inter.className} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <StoreProvider>
@@ -72,6 +75,7 @@ export default async function RootLayout({
             <CurrentUserInitializer />
             <AuthDebugPanel />
             <GoogleOneTapWrapper />
+            <WhatsAppFloatingButton />
             <ArtisanRequestPromptWrapper />
             <CartContextProvider>
               <AuthDialogProvider>
@@ -84,7 +88,8 @@ export default async function RootLayout({
         </NextIntlClientProvider>
 
         <Toaster
-          position="top-center"
+          position={isRtl ? "top-left" : "top-right"}
+          dir={isRtl ? "rtl" : "ltr"}
           theme="system"
           richColors={false}
           closeButton={false}
@@ -92,21 +97,6 @@ export default async function RootLayout({
           duration={4000}
           gap={12}
           visibleToasts={5}
-          toastOptions={{
-            style: {
-              background: "hsl(var(--background))",
-              color: "hsl(var(--foreground))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "var(--radius)",
-              fontSize: "14px",
-              fontFamily: "var(--font-sans)",
-              padding: "16px 20px",
-              boxShadow:
-                "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
-            },
-            className: "toast-custom",
-            unstyled: false,
-          }}
         />
       </body>
     </html>

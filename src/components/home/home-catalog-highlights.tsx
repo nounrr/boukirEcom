@@ -1,15 +1,15 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
+import AutoScroll from 'embla-carousel-auto-scroll'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -18,16 +18,14 @@ import {
 } from '@/components/ui/carousel'
 import { cn } from '@/lib/utils'
 import { API_CONFIG } from '@/lib/api-config'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 
 type CategoryShape = 'rounded' | 'circle'
 
 function getCategoryLabel(category: Category, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
@@ -66,7 +64,7 @@ function CategoryCard({
             'relative overflow-hidden bg-white dark:bg-gray-900',
             'transition-all duration-300',
             'group-hover:shadow-md group-hover:shadow-gray-500/40 dark:group-hover:shadow-black/40',
-            'aspect-square w-full max-w-24 mx-auto',
+            'aspect-square w-full mx-auto',
             isCircle ? 'rounded-full' : 'rounded-xl'
           )}
         >
@@ -116,27 +114,11 @@ export function HomeCatalogHighlights({
 
   const { data: categories = [], isLoading } = useGetCategoriesQuery()
 
-  const [api, setApi] = useState<CarouselApi | null>(null)
-  const [isPaused, setIsPaused] = useState(false)
-
   const items = useMemo(() => {
     const roots = categories.filter((c) => !c.parent_id)
     const list = roots.length > 0 ? roots : categories
     return list.slice(0, limit)
   }, [categories, limit])
-
-  // Auto-scroll carousel
-  useEffect(() => {
-    if (!api) return
-    if (isPaused) return
-    if (items.length <= 6) return
-
-    const id = window.setInterval(() => {
-      api.scrollNext()
-    }, 3500)
-
-    return () => window.clearInterval(id)
-  }, [api, isPaused, items.length])
 
   return (
     <section className={cn('py-20', className)}>
@@ -167,27 +149,34 @@ export function HomeCatalogHighlights({
             <p className="text-muted-foreground">{t('emptyCategories')}</p>
           </div>
         ) : (
-          <div
-            className="mx-auto"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onFocusCapture={() => setIsPaused(true)}
-            onBlurCapture={() => setIsPaused(false)}
-          >
+              <div className="mx-auto">
             <Carousel
-              className="relative mx-auto"
+                  className="relative mx-auto w-full"
               opts={{
                 loop: items.length > 6,
                 align: 'center',
-                slidesToScroll: 1,
+                dragFree: true,
+                skipSnaps: true,
               }}
-              setApi={(a) => setApi(a)}
+                  plugins={
+                    items.length > 6
+                      ? [
+                        AutoScroll({
+                          speed: 0.7,
+                          startDelay: 600,
+                          stopOnInteraction: false,
+                          stopOnMouseEnter: true,
+                          stopOnFocusIn: true,
+                        }),
+                      ]
+                      : undefined
+                  }
             >
-              <CarouselContent className="justify-center">
+                  <CarouselContent className="justify-start sm:justify-center">
                 {items.map((c) => (
                   <CarouselItem
                     key={c.id}
-                    className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8 xl:basis-1/10"
+                    className="flex-none shrink-0 basis-[92px] sm:basis-24 md:basis-[104px] lg:basis-28 xl:basis-[120px]"
                   >
                     <CategoryCard category={c} locale={activeLocale} shape={shape} />
                   </CarouselItem>
@@ -196,8 +185,8 @@ export function HomeCatalogHighlights({
 
               {items.length > 6 && (
                 <>
-                  <CarouselPrevious className="-left-4" />
-                  <CarouselNext className="-right-4" />
+                      <CarouselPrevious className="hidden! md:inline-flex! -left-4" />
+                      <CarouselNext className="hidden! md:inline-flex! -right-4" />
                 </>
               )}
             </Carousel>

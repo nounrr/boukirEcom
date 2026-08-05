@@ -3,6 +3,7 @@
 import { Sparkles } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { ProductCardTile } from '@/components/shop/product-card-tile'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 
 function getCategoryLabel(
   category:
@@ -10,11 +11,7 @@ function getCategoryLabel(
     | undefined,
   locale: string
 ) {
-  if (!category) return ''
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 interface ProductSuggestion {

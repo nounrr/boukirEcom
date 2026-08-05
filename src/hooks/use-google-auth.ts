@@ -133,7 +133,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
       try {
         if (!response.credential) {
           console.error("[Google Auth] No credential in response!")
-          toast.error(t("googleError"), { description: "Token manquant" })
+          toast.error(t("googleError"), { description: t("missingTokenDesc") })
           setIsLoading(false)
           return
         }
@@ -157,7 +157,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           }
           
           // Show success toast
-          const firstName = result.user?.prenom || result.user?.nom || result.user?.email || "Utilisateur"
+          const firstName = result.user?.prenom || result.user?.nom || result.user?.email || t("fallbackName")
           if (result.isNewUser) {
             toast.success(t("registerSuccess"), { description: t("registerSuccessDesc", { name: firstName }) })
           } else {
@@ -183,7 +183,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           const msg = (result.error || '').toLowerCase()
           const needsOriginHelp = msg.includes('token manquant') || msg.includes('token google invalide')
           const description = needsOriginHelp
-            ? "Impossible de vérifier le jeton Google. Vérifiez que l'origine http://localhost:3002 est autorisée dans Google Cloud Console et réessayez après 5–10 minutes."
+            ? t("originNotAllowedDesc", { origin: "http://localhost:3002" })
             : result.error
 
           toast.error(t("googleError"), { description })
@@ -194,7 +194,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         }
       } catch (error) {
         console.error("[Google Auth] Unexpected error:", error)
-        const errorMessage = error instanceof Error ? error.message : "Une erreur inattendue s'est produite"
+        const errorMessage = error instanceof Error ? error.message : t("unexpectedErrorDesc")
         toast.error(t("googleError"), { description: errorMessage })
         
         if (onError) {
@@ -334,13 +334,13 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             hiddenContainer.parentNode.removeChild(hiddenContainer)
           }
           setIsLoading(false)
-          toast.error(t("googleError"), { description: "Failed to initiate Google Sign-In" })
+          toast.error(t("googleError"), { description: t("initFailedDesc") })
         }
       }, 100)
     } catch (error) {
       console.error("[Google Auth] Sign-in trigger error:", error)
       setIsLoading(false)
-      toast.error(t("googleError"), { description: "Failed to initiate Google Sign-In" })
+      toast.error(t("googleError"), { description: t("initFailedDesc") })
     }
   }, [isScriptLoaded, toast, t, context])
 

@@ -27,6 +27,129 @@
     "previous": "Previous",
     "viewAll": "View all"
   },
+  "profile": {
+    "layoutTitle": "My account",
+    "layoutSubtitle": "Manage your profile and preferences",
+    "headerTitle": "My profile",
+    "headerSubtitle": "Manage your personal information",
+    "guest": {
+      "layoutTitle": "My profile",
+      "layoutSubtitle": "Sign in to access your account",
+      "sessionRequiredTitle": "Session required",
+      "sessionRequiredDesc": "Please sign in to view your profile and information.",
+      "login": "Sign in"
+    },
+    "actions": {
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "sending": "Sending..."
+    },
+    "artisan": {
+      "title": "Artisan / Pro status",
+      "badges": {
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "approvedTitle": "You are an Artisan/Developer.",
+      "approvedDesc": "Your account benefits from Artisan/Pro advantages.",
+      "pendingTitle": "Request under review.",
+      "pendingDesc": "An admin will review your request soon.",
+      "requestHint": "Request Artisan/Pro status to access more benefits and increase your discount earnings.",
+      "requestAction": "Request Artisan status"
+    },
+    "remise": {
+      "title": "Your discount balance",
+      "desc": "Use this balance on your next orders"
+    },
+    "sections": {
+      "personal": {
+        "title": "Personal information",
+        "subtitle": "Your identification details"
+      },
+      "billing": {
+        "title": "Billing address",
+        "subtitle": "Your primary address"
+      },
+      "shipping": {
+        "title": "Shipping address",
+        "subtitle": "Where to receive your orders"
+      },
+      "status": {
+        "title": "Account status",
+        "subtitle": "Information about your account"
+      }
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "accountType": "Account type",
+      "language": "Language",
+      "company": "Company",
+      "ice": "ICE",
+      "address": "Address",
+      "shippingLine1": "Address line 1",
+      "shippingLine2": "Address line 2 (optional)",
+      "city": "City",
+      "state": "State/Region (optional)",
+      "postalCode": "Postal code",
+      "country": "Country"
+    },
+    "placeholders": {
+      "firstName": "Your first name",
+      "lastName": "Your last name",
+      "company": "Company name",
+      "ice": "ICE number",
+      "address": "Your full address",
+      "shippingLine1": "Street, number, building",
+      "shippingLine2": "Apartment, floor",
+      "city": "City",
+      "state": "Region",
+      "postalCode": "Postal code",
+      "country": "Country"
+    },
+    "verified": "Verified",
+    "notProvided": "Not provided",
+    "languages": {
+      "fr": "French",
+      "ar": "Arabic",
+      "en": "English",
+      "zh": "Chinese"
+    },
+    "accountTypes": {
+      "client": "Customer",
+      "artisan": "Artisan/Developer"
+    },
+    "status": {
+      "authProvider": "Auth provider",
+      "eligibleBalanceTitle": "Eligible for balance",
+      "eligibleBalanceDesc": "Buy now, pay later",
+      "memberSince": "Member since",
+      "lastLogin": "Last login"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "No changes",
+        "desc": "No field was modified."
+      },
+      "updated": {
+        "title": "Profile updated",
+        "desc": "Your information was saved successfully."
+      },
+      "requestArtisan": {
+        "sentTitle": "Request sent",
+        "sentFallback": "It will be reviewed by an administrator."
+      },
+      "error": {
+        "title": "Error",
+        "updateProfileFallback": "Unable to update the profile.",
+        "requestArtisanFallback": "Unable to send the request."
+      }
+    }
+  },
   "authDialog": {
     "wishlistTitle": "Sign in to save your favorite products",
     "wishlistSubtitle": "Access your wishlist and track your orders."
@@ -418,6 +541,16 @@
   },
   "shop": {
     "filters": "Filters",
+    "viewToggle": {
+      "label": "View",
+      "aria": "Display mode",
+      "gridAria": "Compact grid",
+      "listAria": "List"
+    },
+    "loadError": "Error while loading",
+    "showing": "Showing",
+    "of": "of",
+    "pageXofY": "Page {current}/{total}",
     "productsLabel": "products",
     "tagline": "Fast delivery • Easy returns • Secure payment",
     "taglineShort": "Fast delivery • Secure payment",
@@ -458,6 +591,7 @@
     "wishlistAddedTitle": "Added to wishlist",
     "wishlistRemovedTitle": "Removed from wishlist",
     "genericErrorTitle": "Something went wrong",
+    "genericErrorDesc": "Please try again.",
     "wishlistUpdateFailedDesc": "Unable to update wishlist",
     "variantRequiredTitle": "Please select a variant",
     "variantRequiredDesc": "This variant is required.",
@@ -493,6 +627,7 @@
     "searchPlaceholder": "Search for a product...",
     "categories": "Categories",
     "brands": "Brands",
+    "utilityTypes": "Utility type",
     "price": "Price",
     "colors": "Colors",
     "units": "Units",
@@ -583,12 +718,26 @@
     "heroKicker": "Your online hardware store",
     "heroTitle": "Shop pro products, easily",
     "heroSubtitle": "Thousands of items for professionals and individuals, with a fast, clear and secure shopping experience.",
+    "heroSlideAlt": "Hero slide",
+    "heroLoadError": "Unable to load slides right now.",
+    "heroEmpty": "No slides available at the moment.",
+    "heroGoToSlide": "Go to slide {index}",
     "ctaShop": "Go to the shop",
     "ctaPromos": "See deals",
     "ctaBrowse": "Browse",
     "trustDelivery": "Fast delivery across Morocco",
     "trustSecure": "Secure payment",
     "trustPayments": "Multiple payment methods",
+    "trustBar": {
+      "deliveryTitle": "Delivery",
+      "deliveryDesc": "Fast delivery across Morocco.",
+      "securePaymentTitle": "Secure payment",
+      "securePaymentDesc": "Multiple secure payment options.",
+      "supportTitle": "Customer support",
+      "supportDesc": "We’re here to help every day.",
+      "remiseTitle": "Remise & balance",
+      "remiseDesc": "Earn discounts and track your balance."
+    },
     "heroCardSubtitle": "Selection, price and availability",
     "heroCard1Title": "Essential categories",
     "heroCard1Desc": "Quick access to the most requested ranges.",
@@ -597,6 +746,21 @@
     "heroCard3Title": "Current deals",
     "heroCard3Desc": "Enjoy the best offers.",
     "heroCardHint": "Tip: use the search at the top to go faster.",
+    "heroTags": {
+      "category": "Category",
+      "brand": "Brand",
+      "campaign": "Deal",
+      "product": "Product"
+    },
+    "utilityType": {
+      "kicker": "By use",
+      "title": "Home or Professional?",
+      "desc": "Filter the shop in one click and find what you need faster.",
+      "homeLabel": "Home",
+      "homeDesc": "Products for home and DIY.",
+      "proLabel": "Professional",
+      "proDesc": "Tools and supplies for pros."
+    },
     "categoriesTitle": "Popular categories",
     "categoriesDesc": "Quick access to the most requested aisles.",
     "brandsTitle": "Brands",
@@ -869,6 +1033,13 @@
       "subtitle": "Add products to your cart before checking out.",
       "backToShop": "Back to shop"
     },
+    "guestOrder": {
+      "title": "Order received",
+      "subtitle": "Your order is being handled by our sales team.",
+      "callout": "You will receive a call to confirm your order.",
+      "orderNumber": "Order number: {orderNumber}",
+      "backToShop": "Back to shop"
+    },
     "validation": {
       "deliveryMethodRequired": "Please select a delivery method",
       "paymentMethodRequired": "Please select a payment method",
@@ -1050,6 +1221,56 @@
         "supportTitle": "24/7 support",
         "supportDesc": "Dedicated assistance"
       }
+    }
+  },
+  "toast": {
+    "auth": {
+      "loginSuccess": "Login successful",
+      "loginSuccessDesc": "Welcome, {name}",
+      "registerSuccess": "Account created",
+      "registerSuccessDesc": "Welcome to Boukir, {name}",
+      "logoutSuccess": "Logged out",
+      "fallbackName": "User",
+      "loginError": "Login error",
+      "registerError": "Registration error",
+      "networkError": "Network error",
+      "networkErrorDesc": "Please check your internet connection",
+      "accountLocked": "Account locked",
+      "accountBlocked": "Account blocked",
+      "accountInactive": "Account disabled",
+      "ssoAccountOnly": "SSO account only",
+      "ssoAccountOnlyDesc": "Please use {provider} to sign in",
+      "emailExists": "Email already exists",
+      "emailExistsDesc": "Sign in or use another email",
+      "emailExistsLocal": "An account exists with this email",
+      "emailExistsLocalDesc": "Sign in with your email and password",
+      "emailExistsGoogle": "This email is linked to Google",
+      "emailExistsGoogleDesc": "Continue with Google",
+      "emailExistsFacebook": "This email is linked to Facebook",
+      "emailExistsFacebookDesc": "Continue with Facebook",
+      "invalidCredentials": "Incorrect email or password",
+      "attemptsLeft": "{{count}} attempts left",
+      "googleError": "Google OAuth error",
+      "googleLoadError": "Unable to load Google Sign-In",
+      "googleLoadErrorDesc": "Please check your internet connection",
+      "missingTokenDesc": "Missing token",
+      "originNotAllowedDesc": "Unable to verify the Google token. Make sure the origin {origin} is allowed in Google Cloud Console and try again in 5–10 minutes.",
+      "initFailedDesc": "Failed to start Google Sign-In.",
+      "unexpectedErrorDesc": "An unexpected error occurred",
+      "facebookError": "Facebook OAuth error",
+      "facebookLoadError": "Unable to load Facebook SDK",
+      "facebookLoadErrorDesc": "Please check your internet connection"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "Request already pending",
+      "pendingDesc": "Your Artisan request is already recorded.",
+      "alreadyArtisanTitle": "You are already an Artisan",
+      "alreadyArtisanDesc": "Your account is already Artisan/Promoter.",
+      "sentTitle": "Request sent",
+      "sentDesc": "It will be reviewed by an administrator.",
+      "sentSuccessFallbackMessage": "Request sent successfully.",
+      "sendFailedTitle": "Unable to send request",
+      "sendFailedDesc": "Please try again in a moment."
     }
   },
   "footer": {

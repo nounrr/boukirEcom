@@ -60,7 +60,7 @@ export function LoginForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect = 
       toast.error(loginStatus?.error)
     } else if (loginStatus && loginStatus?.success) {
       console.log('[LOGIN FORM] Showing success toast')
-      const name = loginStatus.user?.prenom || loginStatus.user?.nom || loginStatus.user?.email || 'Utilisateur'
+      const name = loginStatus.user?.prenom || loginStatus.user?.nom || loginStatus.user?.email || tt('fallbackName')
       toast.success(tt('loginSuccess'), { description: tt('loginSuccessDesc', { name }) })
       console.log('[LOGIN FORM] Login successful, accessToken:', loginStatus.accessToken)
       

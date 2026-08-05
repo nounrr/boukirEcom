@@ -36,7 +36,6 @@ import { InvoiceDialog } from "@/components/invoice/invoice-dialog"
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { isOutOfStockLike } from "@/lib/stock"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
@@ -724,10 +723,15 @@ export default function OrderDetailsPage() {
   const handleBuyAgain = async (item: any) => {
     if (!cartRef?.current) return
 
-    if (isOutOfStockLike(item as any)) {
-      toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      return
-    }
+    const baseName = String(item?.productName ?? '')
+    const localizedName =
+      locale === 'ar'
+        ? (item?.productNameAr ?? baseName) || baseName
+        : locale === 'en'
+          ? (item?.productNameEn ?? baseName) || baseName
+          : locale === 'zh'
+            ? (item?.productNameZh ?? baseName) || baseName
+            : baseName
 
     try {
       await cartRef.current.addItem({
@@ -736,27 +740,25 @@ export default function OrderDetailsPage() {
         unitId: item.unitId ?? item.unit_id,
         unitName: item.unitName ?? item.unit_name,
         variantName: item.variantName ?? item.variant_name,
-        name: item.productName,
+        name: localizedName,
+        designation: baseName,
+        designation_ar: item?.productNameAr ?? null,
+        designation_en: item?.productNameEn ?? null,
+        designation_zh: item?.productNameZh ?? null,
         price: item.unitPrice,
         quantity: item.quantity,
         image: item.imageUrl || "",
         category: "",
       })
 
-      toast.success(t("toast.addedToCartTitle"), { description: item.productName })
+      toast.success(t("toast.addedToCartTitle"), { description: localizedName })
 
       setTimeout(() => {
         cartRef.current?.open()
       }, 250)
     } catch (error) {
       const data = (error as any)?.data
-      const code = data?.code || data?.error
-      const message = data?.message
-      if (code === "out_of_stock" || message === "out_of_stock") {
-        toast.error(tCommon("error"), { description: tProductCard("outOfStock") })
-      } else {
-        toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
-      }
+      toast.error(tCommon("error"), { description: tProductCard("genericErrorDesc") })
     }
   }
 
@@ -1007,7 +1009,6 @@ export default function OrderDetailsPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleBuyAgain(item)}
-                          disabled={isOutOfStockLike(item as any)}
                           className="h-8 text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />

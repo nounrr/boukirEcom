@@ -10,7 +10,7 @@ export const searchSuggestionsApi = createApi({
   keepUnusedDataFor: 60,
   endpoints: (builder) => ({
     getSearchSuggestions: builder.query<SearchSuggestionsResponse, SearchSuggestionsRequest>({
-      query: ({ q, limit_products = 10, limit_categories = 6, limit_brands = 6, in_stock_only = true }) => ({
+      query: ({ q, limit_products = 10, limit_categories = 6, limit_brands = 6, in_stock_only = false }) => ({
         url: API_CONFIG.ENDPOINTS.SEARCH_SUGGESTIONS,
         params: {
           q,

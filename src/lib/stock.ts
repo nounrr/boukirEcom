@@ -14,6 +14,10 @@ function isExplicitFalse(value: unknown) {
   return value === false || value === 0 || value === '0' || value === 'false'
 }
 
+function isExplicitTrue(value: unknown) {
+  return value === true || value === 1 || value === '1' || value === 'true'
+}
+
 function toNumberOrNull(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) return value
   if (typeof value === 'string') {
@@ -29,6 +33,7 @@ export function isOutOfStockLike(value: unknown): boolean {
 
   const stockFlag = obj.in_stock ?? obj.inStock
   if (isExplicitFalse(stockFlag)) return true
+  if (isExplicitTrue(stockFlag)) return false
 
   const qty = toNumberOrNull(obj.quantite_disponible)
   if (qty != null && qty <= 0) return true

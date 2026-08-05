@@ -74,14 +74,6 @@ export default function WishlistPage() {
 
       if (code === 'PURCHASE_LIMIT_EXCEEDED' || normalizedCode === 'purchase_limit_exceeded') {
         toast.error(tCommon("error"), { description: t("toast.maxQuantityReachedDesc") })
-      } else if (
-        code === 'OUT_OF_STOCK' ||
-        normalizedCode === 'out_of_stock' ||
-        normalizedMessage === 'out_of_stock' ||
-        code === 'INSUFFICIENT_STOCK' ||
-        normalizedCode === 'insufficient_stock'
-      ) {
-        toast.error(tCommon("error"), { description: t("toast.stockChangedDesc") })
       } else {
         toast.error(tCommon("error"), { description: t("toast.addToCartFailedDesc") })
       }
@@ -244,24 +236,18 @@ export default function WishlistPage() {
                     </div>
 
                     {/* Stock Status - Enhanced */}
-                    <div className="flex items-center gap-2">
-                      {item.inStock && item.stock > 0 ? (
-                        <>
-                          <Badge variant="outline" className="border-green-500/50 text-green-600 bg-green-50/50">
-                            ✓ {t("inStock")}
-                          </Badge>
-                          {isLowStock && (
-                            <Badge variant="outline" className="border-orange-500/50 text-orange-600 bg-orange-50/50">
-                              {t("lowStock", { count: item.stock })}
-                            </Badge>
-                          )}
-                        </>
-                      ) : (
-                        <Badge variant="outline" className="border-red-500/50 text-red-600 bg-red-50/50">
-                            ✗ {t("outOfStock")}
+                    {(item.inStock && item.stock > 0) ? (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="border-green-500/50 text-green-600 bg-green-50/50">
+                          ✓ {t("inStock")}
                         </Badge>
-                      )}
-                    </div>
+                        {isLowStock && (
+                          <Badge variant="outline" className="border-orange-500/50 text-orange-600 bg-orange-50/50">
+                            {t("lowStock", { count: item.stock })}
+                          </Badge>
+                        )}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -279,18 +265,16 @@ export default function WishlistPage() {
                     <span className="sm:hidden">{t("removeShort")}</span>
                   </Button>
 
-                  {item.inStock && item.stock > 0 && (
-                    <Button
-                      size="sm"
-                      aria-label={t("aria.addToCart")}
-                      onClick={(e) => { e.stopPropagation(); handleMoveToCart(item.id, item.name) }}
-                      disabled={isMoving}
-                      className="gap-2 shadow-md hover:shadow-lg transition-all flex-1 sm:flex-none"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      {t("addToCart")}
-                    </Button>
-                  )}
+                  <Button
+                    size="sm"
+                    aria-label={t("aria.addToCart")}
+                    onClick={(e) => { e.stopPropagation(); handleMoveToCart(item.id, item.name) }}
+                    disabled={isMoving}
+                    className="gap-2 shadow-md hover:shadow-lg transition-all flex-1 sm:flex-none"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    {t("addToCart")}
+                  </Button>
                 </div>
               </div>
             </div>

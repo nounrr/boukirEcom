@@ -83,7 +83,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
       toast.error(registerStatus?.error)
     } else if (registerStatus && registerStatus?.success) {
       console.log('[REGISTER FORM] Showing success toast')
-      const name = registerStatus.user?.prenom || registerStatus.user?.nom || registerStatus.user?.email || 'Utilisateur'
+      const name = registerStatus.user?.prenom || registerStatus.user?.nom || registerStatus.user?.email || tt('fallbackName')
       toast.success(tt('registerSuccess'), { description: tt('registerSuccessDesc', { name }) })
       console.log('[REGISTER FORM] Registration successful, accessToken:', registerStatus.accessToken)
       

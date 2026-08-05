@@ -157,14 +157,12 @@ export function Header() {
 
   const navLinks = [
     { href: `/${locale}`, label: t('home'), icon: Home },
-    { href: `/${locale}/shop`, label: t('shop'), icon: Store },
   ]
 
   const secondaryLinks = [
     { href: `/${locale}/shop`, label: t('shop') },
     { href: `/${locale}/shop?sort=promo`, label: tFilters('sort.bestPromos') },
     { href: `/${locale}/shop?sort=popular`, label: tFilters('sort.popular') },
-    { href: `/${locale}/shop`, label: tFilters('brands') },
     ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
   ]
 
@@ -212,6 +210,22 @@ export function Header() {
                       onSearchDone={() => setIsMobileMenuOpen(false)}
                     />
                   </div>
+
+                  {/* Mobile Shop */}
+                  <Link
+                    href={`/${locale}/shop`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="lg:hidden"
+                    aria-label={t('shop')}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-white/10 transition-all duration-200 h-10 w-10"
+                    >
+                      <Store className="w-5 h-5 text-white/85" aria-hidden="true" />
+                    </Button>
+                  </Link>
 
                   {/* Wishlist */}
                   <WishlistIcon tone="onPrimary" size="sm" />
@@ -500,6 +514,44 @@ export function Header() {
                           <span className="text-xs text-white/70">→</span>
                         </Link>
                       </nav>
+
+                      {/* Mobile Language */}
+                      <div className="mt-4 px-3">
+                        <p className="text-[11px] font-semibold text-white/70 mb-2">
+                          {tCommon('language')}
+                        </p>
+                        <div
+                          className={
+                            "flex flex-wrap gap-2 " + (isArabic ? "justify-end" : "justify-start")
+                          }
+                        >
+                          {supportedLocales.map((l) => {
+                            const isActive = l === (locale as any)
+                            return (
+                              <button
+                                key={l}
+                                type="button"
+                                onClick={() => handleLocaleChange(l)}
+                                className={
+                                  "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors " +
+                                  (isActive
+                                    ? "border-white/30 bg-white/15 text-white"
+                                    : "border-white/15 bg-white/5 text-white/85 hover:bg-white/10 hover:text-white")
+                                }
+                                aria-current={isActive ? "true" : undefined}
+                              >
+                                <img
+                                  src={`https://flagcdn.com/w20/${languageMeta[l].flagCode}.png`}
+                                  srcSet={`https://flagcdn.com/w40/${languageMeta[l].flagCode}.png 2x`}
+                                  alt={languageMeta[l].label}
+                                  className="w-4 h-auto shrink-0"
+                                />
+                                <span>{languageMeta[l].short}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
 
                       {/* Mobile Auth Buttons */}
                       {isAuthLoading ? (

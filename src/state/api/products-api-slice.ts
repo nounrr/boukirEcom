@@ -49,6 +49,15 @@ export const productsApi = createApi({
             ? filters.unit.join(',')
             : filters.unit;
         }
+
+        // Utility type (products.categorie_base)
+        // API supports both `categorie_base` and `utility_type` (alias)
+        const utilityType = filters.utility_type ?? filters.categorie_base;
+        if (utilityType) {
+          params.utility_type = Array.isArray(utilityType)
+            ? utilityType.join(',')
+            : utilityType;
+        }
         if (filters.search) params.search = filters.search;
         if (filters.min_price !== undefined) params.min_price = filters.min_price;
         if (filters.max_price !== undefined) params.max_price = filters.max_price;

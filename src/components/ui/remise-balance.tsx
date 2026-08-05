@@ -1,6 +1,7 @@
 "use client"
 
 import { Coins } from "lucide-react"
+import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 
 interface RemiseBalanceProps {
@@ -16,6 +17,8 @@ export function RemiseBalance({
   showLabel = true,
   className 
 }: RemiseBalanceProps) {
+  const locale = useLocale()
+
   const sizeClasses = {
     sm: {
       container: "gap-1.5",
@@ -41,6 +44,7 @@ export function RemiseBalance({
   }
 
   const classes = sizeClasses[size]
+  const currencyUnit = locale === "ar" ? "درهم" : "DH"
 
   return (
     <div className={cn("inline-flex items-center", classes.container, className)}>
@@ -52,7 +56,7 @@ export function RemiseBalance({
       </div>
       <div className="flex flex-col">
         <span className={cn("font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap", classes.amount)}>
-          {balance.toFixed(2)} DH
+          {balance.toFixed(2)} {currencyUnit}
         </span>
         {showLabel && (
           <span className={cn("text-muted-foreground", classes.label)}>

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { ChevronDown, ChevronRight, Menu } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -13,10 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 type CategoryByParent = Map<number, Category[]>
 
 function getCategoryLabel(category: Category, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 function byLabelThenId(locale: string) {

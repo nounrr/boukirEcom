@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { X, ChevronDown, ChevronRight, Tag, Package, DollarSign, Palette, Search, SlidersHorizontal, Ruler, ChevronLeft, ArrowUpDown } from 'lucide-react'
+import { X, ChevronDown, ChevronRight, Tag, Package, DollarSign, Palette, Search, SlidersHorizontal, Ruler, ChevronLeft, ArrowUpDown, Store } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,15 +11,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
 import { useTranslations } from 'next-intl'
 
 function getCategoryLabel(category: ProductCategory, locale: string) {
-  if (locale === 'ar') return category.nom_ar || category.nom
-  if (locale === 'en') return category.nom_en || category.nom
-  if (locale === 'zh') return category.nom_zh || category.nom
-  return category.nom
+  return getLocalizedCategoryName(category, locale)
 }
 
 interface ProductFiltersProps {
@@ -29,6 +27,7 @@ interface ProductFiltersProps {
   brands?: ProductBrand[]
   availableColors?: string[]
   availableUnits?: string[]
+  availableUtilityTypes?: string[]
   minPrice?: number
   maxPrice?: number
   isLoading?: boolean
@@ -44,6 +43,7 @@ export function ProductFilters({
   brands = [],
   availableColors = [],
   availableUnits = [],
+  availableUtilityTypes = [],
   minPrice = 0,
   maxPrice = 10000,
   isLoading = false,
@@ -64,19 +64,27 @@ export function ProductFilters({
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
     brands: true,
+    utilityTypes: true,
     price: true,
     colors: false,
     units: false
   })
 
+  const isPriceFilterActive = useCallback((range: [number, number]) => {
+    return range[0] > 0 || range[1] < 10000
+  }, [])
+
   const [filters, setFilters] = useState<FilterState>(() => ({
     categories: initialFilters?.categories ?? [],
     brands: initialFilters?.brands ?? [],
-    priceRange: initialFilters?.priceRange ?? [minPrice, maxPrice],
+    // IMPORTANT: keep a stable baseline unless user explicitly applies a price filter.
+    // We treat [0, 10000] as "unset" and avoid auto-applying API bounds.
+    priceRange: (initialFilters?.priceRange as [number, number] | undefined) ?? [0, 10000],
     colors: initialFilters?.colors ?? [],
     units: initialFilters?.units ?? [],
+    utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
     sort: initialFilters?.sort ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
@@ -84,9 +92,10 @@ export function ProductFilters({
 
   const [searchInput, setSearchInput] = useState(() => initialFilters?.search ?? '')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(() =>
-    (initialFilters?.priceRange as [number, number] | undefined) ?? [minPrice, maxPrice]
-  )
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(() => {
+    const initialRange = (initialFilters?.priceRange as [number, number] | undefined) ?? [0, 10000]
+    return isPriceFilterActive(initialRange) ? initialRange : [minPrice, maxPrice]
+  })
 
   // Refs for optimization
   const isInitialMount = useRef(true)
@@ -119,22 +128,24 @@ export function ProductFilters({
       JSON.stringify(sortNums(prev.categories)) !== JSON.stringify(sortNums(current.categories)) ||
       JSON.stringify(sortNums(prev.brands)) !== JSON.stringify(sortNums(current.brands)) ||
       JSON.stringify(sortStrings(prev.colors)) !== JSON.stringify(sortStrings(current.colors)) ||
-      JSON.stringify(sortStrings(prev.units)) !== JSON.stringify(sortStrings(current.units))
+      JSON.stringify(sortStrings(prev.units)) !== JSON.stringify(sortStrings(current.units)) ||
+      JSON.stringify(sortStrings(prev.utilityTypes)) !== JSON.stringify(sortStrings(current.utilityTypes))
     )
   }, [])
 
   const desiredFilters = useMemo<FilterState>(() => ({
     categories: initialFilters?.categories ?? [],
     brands: initialFilters?.brands ?? [],
-    priceRange: (initialFilters?.priceRange as [number, number] | undefined) ?? [minPrice, maxPrice],
+    priceRange: (initialFilters?.priceRange as [number, number] | undefined) ?? [0, 10000],
     colors: initialFilters?.colors ?? [],
     units: initialFilters?.units ?? [],
+    utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : true,
+    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
     sort: (initialFilters?.sort as SortOption | undefined) ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
-  }), [initialFilters, minPrice, maxPrice])
+  }), [initialFilters])
 
   // Keep UI in sync when URL params change (e.g., browser back/forward)
   useEffect(() => {
@@ -147,8 +158,8 @@ export function ProductFilters({
     })
 
     setSearchInput(desiredFilters.search)
-    setLocalPriceRange(desiredFilters.priceRange)
-  }, [desiredFilters, filtersChanged])
+    setLocalPriceRange(isPriceFilterActive(desiredFilters.priceRange) ? desiredFilters.priceRange : [minPrice, maxPrice])
+  }, [desiredFilters, filtersChanged, isPriceFilterActive, minPrice, maxPrice])
 
   // Debounced notification to parent (batches rapid changes)
   const notifyParent = useCallback((newFilters: FilterState) => {
@@ -192,8 +203,12 @@ export function ProductFilters({
       return [clampedMin, clampedMax]
     })
 
+    // IMPORTANT: don't auto-apply a price filter just because API bounds changed.
+    // Only clamp/notify if the user already has an active price filter.
     if (!isInitialMount.current) {
       setFilters((prev) => {
+        if (!isPriceFilterActive(prev.priceRange)) return prev
+
         const clampedMin = Math.max(newMin, prev.priceRange[0])
         const clampedMax = Math.min(newMax, prev.priceRange[1])
         const range: [number, number] =
@@ -203,11 +218,8 @@ export function ProductFilters({
         notifyParent(updated)
         return updated
       })
-    } else {
-      // On mount, just set without notifying
-      setFilters((prev) => ({ ...prev, priceRange: [newMin, newMax] as [number, number] }))
     }
-  }, [minPrice, maxPrice, notifyParent])
+  }, [minPrice, maxPrice, notifyParent, isPriceFilterActive])
 
   // Mark initial mount as complete and notify parent with initial filters
   useEffect(() => {
@@ -302,6 +314,20 @@ export function ProductFilters({
     })
   }, [notifyParent])
 
+  const handleUtilityTypeChange = useCallback((utilityType: string) => {
+    setFilters(prev => {
+      const updated = {
+        ...prev,
+        utilityTypes: prev.utilityTypes.includes(utilityType)
+          ? prev.utilityTypes.filter((u) => u !== utilityType)
+          : [...prev.utilityTypes, utilityType],
+        page: 1,
+      }
+      notifyParent(updated)
+      return updated
+    })
+  }, [notifyParent])
+
   const handlePriceChange = useCallback((value: number[]) => {
     setLocalPriceRange(value as [number, number])
   }, [])
@@ -338,11 +364,12 @@ export function ProductFilters({
     const resetFilters: FilterState = {
       categories: [],
       brands: [],
-      priceRange: [minPrice, maxPrice],
+      priceRange: [0, 10000],
       colors: [],
       units: [],
+      utilityTypes: [],
       search: '',
-      inStock: true,
+      inStock: false,
       sort: 'newest',
       page: 1,
       per_page: 20
@@ -357,11 +384,12 @@ export function ProductFilters({
       filters.brands.length +
       filters.colors.length +
       filters.units.length +
-      (filters.inStock !== true ? 1 : 0) +
-      (filters.priceRange[0] !== minPrice || filters.priceRange[1] !== maxPrice ? 1 : 0) +
+      filters.utilityTypes.length +
+      (filters.inStock === true ? 1 : 0) +
+      (isPriceFilterActive(filters.priceRange) ? 1 : 0) +
       (filters.search ? 1 : 0)
     )
-  }, [filters, minPrice, maxPrice])
+  }, [filters, isPriceFilterActive])
 
   // Helper function to render category tree recursively
   // Flatten categories to leaves for quick-pick grid
@@ -630,6 +658,49 @@ export function ProductFilters({
           </div>
         )}
 
+        {/* Utility Types - Only show if available */}
+        {availableUtilityTypes.length > 0 && (
+          <div className="space-y-3">
+            <button
+              onClick={() => toggleSection('utilityTypes')}
+              disabled={isLoading}
+              className="flex items-center justify-between w-full group"
+            >
+              <div className="flex items-center gap-2">
+                <Store className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">{t('utilityTypes')}</span>
+              </div>
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 text-muted-foreground transition-transform duration-200",
+                  expandedSections.utilityTypes && "rotate-180"
+                )}
+              />
+            </button>
+            {expandedSections.utilityTypes && (
+              <div className="space-y-2 pt-1">
+                {availableUtilityTypes.map((utilityType) => (
+                  <div key={utilityType} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`utility-type-${utilityType}`}
+                      checked={filters.utilityTypes.includes(utilityType)}
+                      onCheckedChange={() => handleUtilityTypeChange(utilityType)}
+                      disabled={isLoading}
+                      className="h-4 w-4"
+                    />
+                    <label
+                      htmlFor={`utility-type-${utilityType}`}
+                      className="text-sm cursor-pointer hover:text-foreground transition-colors"
+                    >
+                      {utilityType}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Price Range */}
         <div className="space-y-3">
           <button
@@ -810,14 +881,14 @@ export function ProductFilters({
         <div
           className={cn(
             // Clean container: no border, no shadow
-            "sticky top-20 bg-background rounded-2xl transition-all duration-300 ease-in-out",
+            "sticky top-24 h-[calc(100vh-8rem)] bg-background rounded-2xl transition-all duration-300 ease-in-out",
             // Keep in flex flow; when collapsed do not reserve width
             isCollapsed ? "w-0 p-0 overflow-visible" : "w-[360px] md:w-[400px] p-6 overflow-visible"
           )}
         >
           {/* Content with smooth opacity transition */}
           {!isCollapsed && (
-            <div className="transition-opacity duration-300">
+            <div className="transition-opacity duration-300 h-full">
               <FiltersContent />
             </div>
           )}

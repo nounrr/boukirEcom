@@ -30,6 +30,7 @@ export interface SearchSuggestionBrand {
 
 export interface SearchSuggestionProduct {
   id: number
+  reference?: string | null
   designation: string
   designation_ar?: string | null
   designation_en?: string | null
@@ -40,6 +41,7 @@ export interface SearchSuggestionProduct {
   has_promo: boolean
   image_url: string | null
   in_stock: boolean
+  purchase_limit?: number
   brand: SearchSuggestionBrand
   categorie: SearchSuggestionCategory
 }

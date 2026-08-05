@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, ShieldCheck, Truck, CreditCard } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
@@ -36,6 +36,7 @@ export type HeroSlide = {
   type: HeroSlideType
   title: string
   subtitle?: string
+  description?: string
   imageSrc: string
   imageAlt: string
   secondaryImageSrc?: string
@@ -56,7 +57,7 @@ export function HomeHero({
   const t = useTranslations('home')
   const detectedLocale = useLocale()
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
-  const heroApiLocale: 'fr' | 'ar' = activeLocale === 'ar' ? 'ar' : 'fr'
+  const isRtl = activeLocale === 'ar'
 
   const {
     data: apiSlides,
@@ -64,7 +65,7 @@ export function HomeHero({
     isFetching,
     isError,
   } = useGetHeroSlidesQuery(
-    { locale: heroApiLocale, limit: 4 },
+    { locale: activeLocale, limit: 4 },
     { skip: !!(slides && slides.length > 0) }
   )
 
@@ -78,9 +79,37 @@ export function HomeHero({
     const normalizeInternalHref = (href: string): string => {
       if (!href) return `/${activeLocale}/shop`
       if (/^https?:\/\//i.test(href)) return href
-      if (/^\/(fr|ar)(\/|$)/.test(href)) return href
+      if (/^\/(fr|ar|en|zh)(\/|$)/.test(href)) return href
       if (href.startsWith('/')) return `/${activeLocale}${href}`
       return `/${activeLocale}/${href}`
+    }
+
+    const resolveLocalizedText = (value: unknown): string | undefined => {
+      if (typeof value === 'string') return value
+      if (!value || typeof value !== 'object') return undefined
+
+      const record = value as Record<string, unknown>
+      const preferred =
+        record[activeLocale] ?? record.fr ?? record.en ?? record.ar ?? record.zh
+
+      if (typeof preferred === 'string') return preferred
+      return Object.values(record).find((v) => typeof v === 'string') as string | undefined
+    }
+
+    const resolveLocalizedCtaLabel = (value: unknown): string | undefined => {
+      if (!value || typeof value !== 'object') {
+        return typeof value === 'string' ? value : undefined
+      }
+
+      const obj = value as Record<string, unknown>
+      const base = obj.label
+      const localized =
+        (activeLocale === 'ar' ? obj.label_ar : undefined) ??
+        (activeLocale === 'en' ? obj.label_en : undefined) ??
+        (activeLocale === 'zh' ? obj.label_zh : undefined) ??
+        base
+
+      return typeof localized === 'string' ? localized : typeof base === 'string' ? base : undefined
     }
 
     const defaultHrefFor = (type: HeroSlideType, targetId?: string | number | null): string => {
@@ -138,8 +167,31 @@ export function HomeHero({
       const targetId = getTargetId(type, s.target)
       const legacyCtas = Array.isArray(s.ctas) ? s.ctas : []
 
-      const primaryLabel = s.cta?.primary?.label ?? legacyCtas[0]?.label ?? t('ctaShop')
-      const secondaryLabel = s.cta?.secondary?.label ?? legacyCtas[1]?.label
+      const primaryFromResolved = s.cta_resolved?.primary?.label
+      const secondaryFromResolved = s.cta_resolved?.secondary?.label
+
+      const primaryFromCtasResolved = Array.isArray(s.ctas_resolved)
+        ? s.ctas_resolved.find((c) => (c.style ?? 'primary') === 'primary')?.label ??
+        s.ctas_resolved[0]?.label
+        : undefined
+
+      const secondaryFromCtasResolved = Array.isArray(s.ctas_resolved)
+        ? s.ctas_resolved.find((c) => (c.style ?? 'secondary') === 'secondary')?.label ??
+        s.ctas_resolved[1]?.label
+        : undefined
+
+      const primaryLabel =
+        resolveLocalizedCtaLabel(s.cta?.primary) ??
+        resolveLocalizedCtaLabel(legacyCtas[0]) ??
+        primaryFromCtasResolved ??
+        primaryFromResolved ??
+        t('ctaShop')
+
+      const secondaryLabel =
+        resolveLocalizedCtaLabel(s.cta?.secondary) ??
+        resolveLocalizedCtaLabel(legacyCtas[1])
+        ?? secondaryFromCtasResolved
+        ?? secondaryFromResolved
 
       // Backend must NOT provide hrefs. We derive the href from the slide type + target.
       // Legacy payloads may still contain hrefs; in that case we accept them.
@@ -151,13 +203,19 @@ export function HomeHero({
         ? normalizeInternalHref(legacyCtas[1].href)
         : defaultSecondaryHrefFor(type)
 
+      const resolvedContent = s.content_resolved?.locale === activeLocale ? s.content_resolved : undefined
+      const title = resolvedContent?.title ?? resolveLocalizedText(s.content?.title) ?? t('heroTitle')
+      const subtitle = resolvedContent?.subtitle ?? resolveLocalizedText(s.content?.subtitle) ?? t('heroSubtitle')
+      const description = resolvedContent?.description ?? resolveLocalizedText(s.content?.description)
+
       return {
         id: String(s.id),
         type,
-        title: s.content?.title ?? t('heroTitle'),
-        subtitle: s.content?.subtitle ?? t('heroSubtitle'),
+        title,
+        subtitle: subtitle ?? undefined,
+        description: description ?? undefined,
         imageSrc: toAbsoluteImageUrl(s.media?.image_url),
-        imageAlt: s.media?.image_alt || 'Hero slide',
+        imageAlt: s.media?.image_alt || t('heroSlideAlt'),
         secondaryImageSrc: s.media?.secondary_image_url ? toAbsoluteImageUrl(s.media.secondary_image_url) : undefined,
         secondaryImageAlt: s.media?.secondary_image_alt || undefined,
         primaryCta: {
@@ -183,6 +241,8 @@ export function HomeHero({
   useEffect(() => {
     if (!api) return
     if (isPaused) return
+
+    if (api.scrollSnapList().length < 2) return
 
     const id = window.setInterval(() => {
       api.scrollNext()
@@ -210,13 +270,13 @@ export function HomeHero({
   const slideTag = (type: HeroSlideType) => {
     switch (type) {
       case 'category':
-        return 'Catégorie'
+        return t('heroTags.category')
       case 'brand':
-        return 'Marque'
+        return t('heroTags.brand')
       case 'campaign':
-        return 'Promo'
+        return t('heroTags.campaign')
       case 'product':
-        return 'Produit'
+        return t('heroTags.product')
     }
   }
 
@@ -264,8 +324,8 @@ export function HomeHero({
                   </h1>
                   <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-[60ch]">
                     {isError
-                      ? 'Impossible de charger les slides pour le moment.'
-                      : 'Aucune slide disponible pour le moment.'}
+                        ? t('heroLoadError')
+                        : t('heroEmpty')}
                   </p>
                   <div className="mt-6">
                     <Link href={`/${activeLocale}/shop`}>
@@ -285,66 +345,67 @@ export function HomeHero({
               onFocusCapture={() => setIsPaused(true)}
               onBlurCapture={() => setIsPaused(false)}
             >
+                  {(() => {
+                    const shouldLoop = resolvedSlides.length > 1
+
+                    return (
               <Carousel
-                className="relative"
-                opts={{ loop: true, align: 'start' }}
+                        className="relative w-full"
+                    dir={isRtl ? 'rtl' : 'ltr'}
+                    opts={{
+                      loop: shouldLoop,
+                      align: 'start',
+                      direction: isRtl ? 'rtl' : 'ltr',
+                    }}
                 setApi={(a) => setApi(a)}
               >
                 <CarouselContent className="ml-0">
                   {resolvedSlides.map((s, idx) => (
                     <CarouselItem key={s.id} className="pl-0">
-                      <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-muted/20 h-[420px] sm:h-[540px] lg:h-[640px]">
-                        <div className="absolute inset-0">
-                          <Image
-                            src={s.imageSrc}
-                            alt={s.imageAlt}
-                            fill
-                            priority={idx === 0}
-                            unoptimized={/^https?:\/\//i.test(s.imageSrc)}
-                            sizes="(min-width: 1024px) 1100px, 100vw"
-                            className="object-cover object-center"
-                            style={{ objectFit: 'cover' }}
-                          />
-                          {/* darken + soften for readable text */}
-                          <div className="absolute inset-0 bg-black/35" />
-                          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/35 to-transparent" />
-                        </div>
+                      <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-background/70 backdrop-blur-sm">
+                        <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-primary/10 via-background to-background" />
 
-                        <div className="relative h-full px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-14 flex items-center">
-                          <div className={cn(
-                            "grid gap-8 items-center w-full",
-                            s.secondaryImageSrc ? "lg:grid-cols-2" : "grid-cols-1"
-                          )}>
-                            <div className="max-w-[680px] ml-6">
-                              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur-sm">
+                        <div className="relative px-6 py-8 sm:px-10 sm:py-10 lg:px-14 lg:py-14">
+                          <div className="grid items-center gap-8 lg:grid-cols-2">
+                            {/* Left: copy + CTAs */}
+                            <div className="order-2 lg:order-1 max-w-[680px]">
+                              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs text-primary">
                                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                <span>{slideTag(s.type)}</span>
+                                <span className="font-semibold">{slideTag(s.type)}</span>
                               </div>
 
-                              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-white">
-                                {s.title}
-                              </h1>
+                              <div className="mt-4 space-y-2">
+                                {s.subtitle ? (
+                                  <p className="text-xs sm:text-sm text-muted-foreground max-w-[60ch]">
+                                    {s.subtitle}
+                                  </p>
+                                ) : null}
 
-                              {s.subtitle ? (
-                                <p className="mt-3 text-base sm:text-lg text-white/85 max-w-[52ch] sm:truncate">
-                                  {s.subtitle}
-                                </p>
-                              ) : null}
+                                <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-foreground">
+                                  {s.title}
+                                </h1>
 
-                              <div className="mt-7 flex flex-wrap items-center gap-3">
-                                <Link href={s.primaryCta.href}>
-                                  <Button size="lg" className="gap-2">
+                                {s.description ? (
+                                  <p className="text-xs sm:text-sm text-muted-foreground max-w-[70ch]">
+                                    {s.description}
+                                  </p>
+                                ) : null}
+                              </div>
+
+                              <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                                <Link href={s.primaryCta.href} className="w-full sm:w-auto flex justify-center sm:justify-start">
+                                  <Button size="lg" className="w-full sm:w-auto gap-2">
                                     {s.primaryCta.label}
                                     <ArrowRight className="h-4 w-4" />
                                   </Button>
                                 </Link>
 
                                 {s.secondaryCta ? (
-                                  <Link href={s.secondaryCta.href}>
+                                  <Link href={s.secondaryCta.href} className="w-full sm:w-auto flex justify-center sm:justify-start">
                                     <Button
                                       size="lg"
                                       variant="outline"
-                                      className="gap-2 border-white/30 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+                                      className="w-full sm:w-auto gap-2 border-primary/25 bg-background/60 hover:bg-primary/5"
                                     >
                                       {s.secondaryCta.label}
                                     </Button>
@@ -353,22 +414,36 @@ export function HomeHero({
                               </div>
                             </div>
 
-                            {/* {s.secondaryImageSrc ? (
-                              <div className="hidden lg:flex justify-end items-center">
-                                <div className="relative w-full h-[400px] lg:h-[500px]">
+                            {/* Right: square clickable product image */}
+                            <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+                              <Link
+                                href={s.primaryCta.href}
+                                aria-label={s.secondaryImageAlt || s.imageAlt || s.title}
+                                className="group"
+                              >
+                                <div
+                                  className={cn(
+                                    'relative aspect-square w-[min(320px,80vw)] sm:w-[380px] lg:w-[440px]',
+                                    'rounded-3xl overflow-hidden',
+                                    'border border-border/40 bg-muted/20',
+                                    'shadow-sm transition-all duration-300',
+                                    'group-hover:shadow-md group-hover:border-primary/25',
+                                    'group-focus-visible:outline-hidden group-focus-visible:ring-2 group-focus-visible:ring-primary/40'
+                                  )}
+                                >
                                   <Image
-                                    src={s.secondaryImageSrc}
-                                    alt={s.secondaryImageAlt || 'Featured product'}
+                                    src={s.secondaryImageSrc || s.imageSrc}
+                                    alt={s.secondaryImageAlt || s.imageAlt}
                                     fill
                                     priority={idx === 0}
-                                    unoptimized={/^https?:\/\//i.test(s.secondaryImageSrc)}
-                                    sizes="(min-width: 1024px) 500px, 0px"
-                                    className="object-contain object-center drop-shadow-2xl"
-                                    style={{ objectFit: 'contain' }}
+                                    unoptimized={/^https?:\/\//i.test((s.secondaryImageSrc || s.imageSrc) ?? '')}
+                                    sizes="(min-width: 1024px) 440px, (min-width: 640px) 380px, 80vw"
+                                    className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
                                   />
+                                  <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-background/15 via-transparent to-transparent" />
                                 </div>
-                              </div>
-                            ) : null} */}
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -377,10 +452,10 @@ export function HomeHero({
                     </CarouselContent>
 
                     <CarouselPrevious
-                      className="left-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
+                      className="hidden md:inline-flex left-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
                     />
                     <CarouselNext
-                      className="right-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
+                      className="hidden md:inline-flex right-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
                     />
 
                     {/* Pagination dots */}
@@ -391,7 +466,7 @@ export function HomeHero({
                           <button
                             key={i}
                             type="button"
-                            aria-label={`Go to slide ${i + 1}`}
+                            aria-label={t('heroGoToSlide', { index: i + 1 })}
                             className={cn(
                               'h-2.5 rounded-full transition-all',
                               isActive ? 'w-6 bg-white/90' : 'w-2.5 bg-white/40 hover:bg-white/60'
@@ -402,60 +477,12 @@ export function HomeHero({
                       })}
                     </div>
                   </Carousel>
+                    )
+                  })()}
                 </div>
           )}
-
-          {/* Ecommerce-style trust row under the hero */}
-          {!isLoading && resolvedSlides.length > 0 ? (
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              <TrustPill icon={Truck} title={t('trustDelivery')} />
-              <TrustPill icon={ShieldCheck} title={t('trustSecure')} />
-              <TrustPill icon={CreditCard} title={t('trustPayments')} />
-            </div>
-          ) : null}
         </div>
       </div>
     </section>
-  )
-}
-
-function TrustPill({
-  icon: Icon,
-  title,
-  tone = 'default',
-}: {
-  icon: typeof Truck
-  title: string
-    tone?: 'default' | 'onMedia'
-}) {
-  const isOnMedia = tone === 'onMedia'
-  return (
-    <div
-      className={cn(
-        'group flex items-center gap-3.5 rounded-full px-5 py-3.5 transition-all duration-300',
-        isOnMedia
-          ? 'border border-white/15 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
-          : 'border-2 border-border/40 bg-background/90 hover:bg-primary/5 hover:border-primary/30 shadow-sm hover:shadow-md'
-      )}
-    >
-      <div
-        className={cn(
-          'grid h-10 w-10 shrink-0 place-items-center rounded-full transition-all duration-300',
-          isOnMedia
-            ? 'bg-white/20 group-hover:bg-white/30'
-            : 'bg-primary/10 group-hover:bg-primary/20'
-        )}
-      >
-        <Icon
-          className={cn(
-            'h-5 w-5 transition-colors duration-300',
-            isOnMedia ? 'text-white' : 'text-primary group-hover:text-primary'
-          )}
-        />
-      </div>
-      <div className={cn('text-sm font-semibold leading-tight', isOnMedia ? 'text-white' : 'text-foreground')}>
-        {title}
-      </div>
-    </div>
   )
 }

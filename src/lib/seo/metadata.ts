@@ -109,7 +109,9 @@ export function getSiteUrl(): URL {
 }
 
 export function localePrefix(locale: AppLocale): string {
-  return locale === "fr" ? "" : `/${locale}`
+  // The app uses next-intl routing with `localePrefix: 'always'`,
+  // so every public URL must include the locale segment (including `fr`).
+  return `/${locale}`
 }
 
 export function localizedPath(locale: AppLocale, path: string): string {
@@ -124,6 +126,9 @@ export function buildPageMetadata(input: {
   keywords?: string[]
   path: string
   indexable?: boolean
+  imageUrl?: string | null
+  openGraphType?: "website" | "article" | "product" | string
+  twitterCard?: "summary" | "summary_large_image"
 }): Metadata {
   const locale = normalizeLocale(input.locale)
   const siteName = SITE_NAME[locale]
@@ -137,6 +142,34 @@ export function buildPageMetadata(input: {
   const keywords = (input.keywords && input.keywords.length > 0)
     ? input.keywords
     : DEFAULT_KEYWORDS[locale]
+
+  const images = input.imageUrl
+    ? [{ url: input.imageUrl }]
+    : [{ url: "/logo.png" }]
+
+  const OPEN_GRAPH_TYPES = [
+    "article",
+    "website",
+    "book",
+    "profile",
+    "music.song",
+    "music.album",
+    "music.playlist",
+    "music.radio_station",
+    "video.movie",
+    "video.episode",
+    "video.tv_show",
+    "video.other",
+  ] as const
+
+  type OpenGraphType = (typeof OPEN_GRAPH_TYPES)[number]
+
+  const openGraphType: OpenGraphType = (() => {
+    const raw = input.openGraphType
+    if (!raw) return "website"
+    if (raw === "product") return "website"
+    return (OPEN_GRAPH_TYPES as readonly string[]).includes(raw) ? (raw as OpenGraphType) : "website"
+  })()
 
   return {
     metadataBase: getSiteUrl(),
@@ -155,16 +188,16 @@ export function buildPageMetadata(input: {
     openGraph: {
       title: titleText,
       description,
-      type: "website",
+      type: openGraphType,
       locale: OG_LOCALE[locale],
       siteName,
-      images: [{ url: "/logo.png" }],
+      images,
     },
     twitter: {
-      card: "summary",
+      card: input.twitterCard ?? (input.imageUrl ? "summary_large_image" : "summary"),
       title: titleText,
       description,
-      images: ["/logo.png"],
+      images: images.map((img) => img.url),
     },
     robots: indexable
       ? {

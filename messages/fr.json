@@ -418,6 +418,16 @@
   },
   "shop": {
     "filters": "Filtres",
+    "viewToggle": {
+      "label": "Vue",
+      "aria": "Mode d'affichage",
+      "gridAria": "Grille compacte",
+      "listAria": "Liste"
+    },
+    "loadError": "Erreur lors du chargement",
+    "showing": "Affichage",
+    "of": "sur",
+    "pageXofY": "Page {current}/{total}",
     "productsLabel": "produits",
     "tagline": "Livraison rapide • Retours faciles • Paiement sécurisé",
     "taglineShort": "Livraison rapide • Paiement sécurisé",
@@ -458,6 +468,7 @@
     "wishlistAddedTitle": "Ajouté aux favoris",
     "wishlistRemovedTitle": "Retiré des favoris",
     "genericErrorTitle": "Une erreur est survenue",
+    "genericErrorDesc": "Veuillez réessayer.",
     "wishlistUpdateFailedDesc": "Impossible de mettre à jour les favoris",
     "variantRequiredTitle": "Veuillez sélectionner une variante",
     "variantRequiredDesc": "Cette variante est obligatoire.",
@@ -493,6 +504,7 @@
     "searchPlaceholder": "Rechercher un produit...",
     "categories": "Catégories",
     "brands": "Marques",
+    "utilityTypes": "Type d’usage",
     "price": "Prix",
     "colors": "Couleurs",
     "units": "Unités de mesure",
@@ -583,12 +595,26 @@
     "heroKicker": "Votre quincaillerie en ligne",
     "heroTitle": "Achetez vos produits pro, simplement",
     "heroSubtitle": "Des milliers d’articles pour les artisans et les particuliers, avec une expérience d’achat rapide, claire et sécurisée.",
+    "heroSlideAlt": "Diapositive d’accueil",
+    "heroLoadError": "Impossible de charger les slides pour le moment.",
+    "heroEmpty": "Aucune slide disponible pour le moment.",
+    "heroGoToSlide": "Aller à la diapositive {index}",
     "ctaShop": "Aller à la boutique",
     "ctaPromos": "Voir les promos",
     "ctaBrowse": "Parcourir",
     "trustDelivery": "Livraison rapide partout au Maroc",
     "trustSecure": "Paiement sécurisé",
     "trustPayments": "Plusieurs moyens de paiement",
+    "trustBar": {
+      "deliveryTitle": "Livraison",
+      "deliveryDesc": "Livraison rapide partout au Maroc.",
+      "securePaymentTitle": "Paiement sécurisé",
+      "securePaymentDesc": "Plusieurs options de paiement sécurisé.",
+      "supportTitle": "Service client",
+      "supportDesc": "Nous sommes disponibles tous les jours.",
+      "remiseTitle": "Remise & solde",
+      "remiseDesc": "Gagnez des remises et suivez votre solde."
+    },
     "heroCardSubtitle": "Sélection, prix et disponibilité",
     "heroCard1Title": "Catégories essentielles",
     "heroCard1Desc": "Accédez vite aux familles les plus demandées.",
@@ -597,6 +623,21 @@
     "heroCard3Title": "Promos du moment",
     "heroCard3Desc": "Profitez des meilleures offres.",
     "heroCardHint": "Astuce: utilisez la recherche en haut pour aller plus vite.",
+    "heroTags": {
+      "category": "Catégorie",
+      "brand": "Marque",
+      "campaign": "Promo",
+      "product": "Produit"
+    },
+    "utilityType": {
+      "kicker": "Par usage",
+      "title": "Maison ou Professionel ?",
+      "desc": "Filtrez la boutique en un clic et trouvez plus vite.",
+      "homeLabel": "Maison",
+      "homeDesc": "Produits pour la maison et le bricolage.",
+      "proLabel": "Professionel",
+      "proDesc": "Outillage et fournitures pour les pros."
+    },
     "categoriesTitle": "Catégories populaires",
     "categoriesDesc": "Accès rapide aux rayons les plus demandés.",
     "brandsTitle": "Marques",
@@ -869,6 +910,13 @@
       "subtitle": "Ajoutez des produits à votre panier avant de passer à la commande.",
       "backToShop": "Revenir à la boutique"
     },
+    "guestOrder": {
+      "title": "Commande reçue",
+      "subtitle": "Votre commande est prise en charge par notre équipe commerciale.",
+      "callout": "Vous recevrez un appel pour confirmer votre commande.",
+      "orderNumber": "Numéro de commande : {orderNumber}",
+      "backToShop": "Revenir à la boutique"
+    },
     "validation": {
       "deliveryMethodRequired": "Veuillez sélectionner un mode de livraison",
       "paymentMethodRequired": "Veuillez sélectionner une méthode de paiement",
@@ -1079,6 +1127,129 @@
     "orderStatus": "Statut",
     "orderTotal": "Total"
   },
+  "profile": {
+    "layoutTitle": "Mon compte",
+    "layoutSubtitle": "Gérez votre profil et vos préférences",
+    "headerTitle": "Mon profil",
+    "headerSubtitle": "Gérez vos informations personnelles",
+    "guest": {
+      "layoutTitle": "Mon profil",
+      "layoutSubtitle": "Connectez-vous pour accéder à votre compte",
+      "sessionRequiredTitle": "Session requise",
+      "sessionRequiredDesc": "Veuillez vous connecter pour voir votre profil et vos informations.",
+      "login": "Se connecter"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "sending": "Envoi..."
+    },
+    "artisan": {
+      "title": "Statut Artisan / Pro",
+      "badges": {
+        "approved": "Validé",
+        "pending": "En attente"
+      },
+      "approvedTitle": "Vous êtes Artisan/Promoteur.",
+      "approvedDesc": "Votre compte bénéficie des avantages Artisan/Pro.",
+      "pendingTitle": "Demande en cours de validation.",
+      "pendingDesc": "Un administrateur validera votre demande bientôt.",
+      "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.",
+      "requestAction": "Demander le statut Artisan"
+    },
+    "remise": {
+      "title": "Votre solde remise",
+      "desc": "Utilisez ce solde lors de vos prochaines commandes"
+    },
+    "sections": {
+      "personal": {
+        "title": "Informations personnelles",
+        "subtitle": "Vos données d'identification"
+      },
+      "billing": {
+        "title": "Adresse de facturation",
+        "subtitle": "Votre adresse principale"
+      },
+      "shipping": {
+        "title": "Adresse de livraison",
+        "subtitle": "Où recevoir vos commandes"
+      },
+      "status": {
+        "title": "Statut du compte",
+        "subtitle": "Informations sur votre compte"
+      }
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "accountType": "Type de compte",
+      "language": "Langue",
+      "company": "Société",
+      "ice": "ICE",
+      "address": "Adresse",
+      "shippingLine1": "Adresse ligne 1",
+      "shippingLine2": "Adresse ligne 2 (optionnel)",
+      "city": "Ville",
+      "state": "Région/État (optionnel)",
+      "postalCode": "Code postal",
+      "country": "Pays"
+    },
+    "placeholders": {
+      "firstName": "Votre prénom",
+      "lastName": "Votre nom",
+      "company": "Nom de la société",
+      "ice": "Numéro ICE",
+      "address": "Votre adresse complète",
+      "shippingLine1": "Rue, numéro, bâtiment",
+      "shippingLine2": "Appartement, étage",
+      "city": "Ville",
+      "state": "Région",
+      "postalCode": "Code postal",
+      "country": "Pays"
+    },
+    "verified": "Vérifié",
+    "notProvided": "Non renseigné",
+    "languages": {
+      "fr": "Français",
+      "ar": "العربية",
+      "en": "English",
+      "zh": "中文"
+    },
+    "accountTypes": {
+      "client": "Client",
+      "artisan": "Artisan/Promoteur"
+    },
+    "status": {
+      "authProvider": "Fournisseur d'auth",
+      "eligibleBalanceTitle": "Éligible au solde",
+      "eligibleBalanceDesc": "Achetez maintenant, payez plus tard",
+      "memberSince": "Membre depuis",
+      "lastLogin": "Dernière connexion"
+    },
+    "toasts": {
+      "noChanges": {
+        "title": "Aucune modification",
+        "desc": "Aucun champ n'a été modifié."
+      },
+      "updated": {
+        "title": "Profil mis à jour",
+        "desc": "Vos informations ont été enregistrées avec succès."
+      },
+      "requestArtisan": {
+        "sentTitle": "Demande envoyée",
+        "sentFallback": "Elle sera validée par un administrateur."
+      },
+      "error": {
+        "title": "Erreur",
+        "updateProfileFallback": "Impossible de mettre à jour le profil.",
+        "requestArtisanFallback": "Impossible d'envoyer la demande."
+      }
+    }
+  },
   "footer": {
     "about": "À propos",
     "contact": "Contactez-nous",
@@ -1141,6 +1312,7 @@
       "registerSuccess": "Compte créé avec succès",
       "registerSuccessDesc": "Bienvenue sur Boukir, {name}",
       "logoutSuccess": "Déconnexion réussie",
+      "fallbackName": "Utilisateur",
       "loginError": "Erreur de connexion",
       "registerError": "Erreur d'inscription",
       "networkError": "Erreur de connexion au serveur",
@@ -1163,9 +1335,24 @@
       "googleError": "Erreur Google OAuth",
       "googleLoadError": "Impossible de charger Google Sign-In",
       "googleLoadErrorDesc": "Veuillez vérifier votre connexion internet",
+      "missingTokenDesc": "Jeton manquant",
+      "originNotAllowedDesc": "Impossible de vérifier le jeton Google. Vérifiez que l'origine {origin} est autorisée dans Google Cloud Console et réessayez après 5–10 minutes.",
+      "initFailedDesc": "Impossible de démarrer Google Sign-In",
+      "unexpectedErrorDesc": "Une erreur inattendue s'est produite",
       "facebookError": "Erreur Facebook OAuth",
       "facebookLoadError": "Impossible de charger Facebook SDK",
       "facebookLoadErrorDesc": "Veuillez vérifier votre connexion internet"
+    },
+    "artisanRequestPrompt": {
+      "pendingTitle": "Demande déjà en attente",
+      "pendingDesc": "Votre demande Artisan est déjà enregistrée.",
+      "alreadyArtisanTitle": "Vous êtes déjà Artisan",
+      "alreadyArtisanDesc": "Votre compte est déjà Artisan/Promoteur.",
+      "sentTitle": "Demande envoyée",
+      "sentDesc": "Elle sera validée par un administrateur.",
+      "sentSuccessFallbackMessage": "Demande envoyée avec succès.",
+      "sendFailedTitle": "Impossible d'envoyer la demande",
+      "sendFailedDesc": "Réessayez dans un instant."
     }
   }
 }
