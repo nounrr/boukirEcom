@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import AutoScroll from 'embla-carousel-auto-scroll'
@@ -10,6 +10,7 @@ import AutoScroll from 'embla-carousel-auto-scroll'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
+  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -21,6 +22,7 @@ import { API_CONFIG } from '@/lib/api-config'
 import { normalizeLocale } from '@/i18n/locale'
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice'
 import type { Brand } from '@/types/brand'
+import { useCarouselRuntimeState } from '@/hooks/use-carousel-playback'
 
 type BrandShape = 'rounded' | 'circle'
 
@@ -106,14 +108,32 @@ export function HomeBrandsCarousel({
   const t = useTranslations('home')
   const detectedLocale = useLocale()
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
+  const isRtl = activeLocale === 'ar'
 
   const { data: brands = [], isLoading } = useGetBrandsQuery()
+  const [api, setApi] = useState<CarouselApi | null>(null)
+  const { isScrollable, isLooping } = useCarouselRuntimeState(api)
 
   const items = useMemo(() => {
     const list = Array.isArray(brands) ? brands : []
     const sorted = [...list].sort((a, b) => (a.nom || '').localeCompare(b.nom || ''))
     return sorted.slice(0, limit)
   }, [brands, limit])
+
+  const autoScrollPlugin = useMemo(
+    () =>
+      AutoScroll({
+        speed: 0.7,
+        startDelay: 600,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+        stopOnFocusIn: true,
+        breakpoints: {
+          '(prefers-reduced-motion: reduce)': { active: false },
+        },
+      }),
+    []
+  )
 
   return (
     <section className={cn('py-20', className)}>
@@ -145,27 +165,20 @@ export function HomeBrandsCarousel({
               <div className="mx-auto">
             <Carousel
                   className="relative mx-auto w-full"
+              data-looping={isLooping}
+              data-scrollable={isScrollable ?? 'pending'}
+              dir={isRtl ? 'rtl' : 'ltr'}
               opts={{
-                loop: items.length > 6,
+                loop: items.length > 1,
                 align: 'center',
                 dragFree: true,
                 skipSnaps: true,
+                direction: isRtl ? 'rtl' : 'ltr',
               }}
-                  plugins={
-                    items.length > 6
-                      ? [
-                        AutoScroll({
-                          speed: 0.7,
-                          startDelay: 600,
-                          stopOnInteraction: false,
-                          stopOnMouseEnter: true,
-                          stopOnFocusIn: true,
-                        }),
-                      ]
-                      : undefined
-                  }
+                  plugins={items.length > 1 ? [autoScrollPlugin] : undefined}
+                  setApi={setApi}
             >
-                  <CarouselContent className="justify-start sm:justify-center">
+                  <CarouselContent className={isScrollable === false ? 'justify-center' : 'justify-start'}>
                 {items.map((b) => (
                   <CarouselItem
                     key={b.id}
@@ -176,10 +189,10 @@ export function HomeBrandsCarousel({
                 ))}
               </CarouselContent>
 
-              {items.length > 6 && (
+              {isScrollable && (
                 <>
-                      <CarouselPrevious className="hidden! md:inline-flex! -left-4" />
-                      <CarouselNext className="hidden! md:inline-flex! -right-4" />
+                      <CarouselPrevious className={cn('hidden! md:inline-flex!', isRtl ? '-right-4' : '-left-4')} />
+                      <CarouselNext className={cn('hidden! md:inline-flex!', isRtl ? '-left-4' : '-right-4')} />
                 </>
               )}
             </Carousel>
@@ -188,7 +201,7 @@ export function HomeBrandsCarousel({
               <Link href={`/${activeLocale}/shop`}>
                 <Button variant="outline" className="gap-2">
                   {t('viewAll')}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className={cn('h-4 w-4', isRtl && 'rotate-180')} />
                 </Button>
               </Link>
             </div>

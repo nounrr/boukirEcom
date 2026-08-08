@@ -21,6 +21,10 @@ import { API_CONFIG } from '@/lib/api-config'
 import { normalizeLocale } from '@/i18n/locale'
 import { useGetHeroSlidesQuery } from '@/state/api/hero-slides-api-slice'
 import type { HeroSlideApi } from '@/types/api/hero-slides'
+import {
+  useCarouselAutoplay,
+  useCarouselRuntimeState,
+} from '@/hooks/use-carousel-playback'
 
 type HeroSlideType = 'category' | 'brand' | 'campaign' | 'product'
 
@@ -70,8 +74,10 @@ export function HomeHero({
   )
 
   const [api, setApi] = useState<CarouselApi | null>(null)
-  const [isPaused, setIsPaused] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isFocusWithin, setIsFocusWithin] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const { isScrollable, isLooping } = useCarouselRuntimeState(api)
 
   const resolvedSlides = useMemo<HeroSlide[]>(() => {
     if (slides && slides.length > 0) return slides
@@ -238,18 +244,12 @@ export function HomeHero({
     return []
   }, [activeLocale, apiSlides, slides, t])
 
-  useEffect(() => {
-    if (!api) return
-    if (isPaused) return
-
-    if (api.scrollSnapList().length < 2) return
-
-    const id = window.setInterval(() => {
-      api.scrollNext()
-    }, 2000)
-
-    return () => window.clearInterval(id)
-  }, [api, isPaused])
+  useCarouselAutoplay({
+    api,
+    delay: 5000,
+    enabled: isScrollable === true,
+    paused: isHovered || isFocusWithin,
+  })
 
   useEffect(() => {
     if (!api) return
@@ -264,6 +264,7 @@ export function HomeHero({
 
     return () => {
       api.off('select', onSelect)
+      api.off('reInit', onSelect)
     }
   }, [api])
 
@@ -340,10 +341,14 @@ export function HomeHero({
             </div>
           ) : (
             <div
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-              onFocusCapture={() => setIsPaused(true)}
-              onBlurCapture={() => setIsPaused(false)}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onFocusCapture={() => setIsFocusWithin(true)}
+              onBlurCapture={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setIsFocusWithin(false)
+                }
+              }}
             >
                   {(() => {
                     const shouldLoop = resolvedSlides.length > 1
@@ -351,17 +356,19 @@ export function HomeHero({
                     return (
               <Carousel
                         className="relative w-full"
+                    data-looping={isLooping}
+                    data-scrollable={isScrollable ?? 'pending'}
                     dir={isRtl ? 'rtl' : 'ltr'}
                     opts={{
                       loop: shouldLoop,
                       align: 'start',
                       direction: isRtl ? 'rtl' : 'ltr',
                     }}
-                setApi={(a) => setApi(a)}
+                setApi={setApi}
               >
-                <CarouselContent className="ml-0">
+                <CarouselContent className={isRtl ? 'mr-0' : 'ml-0'}>
                   {resolvedSlides.map((s, idx) => (
-                    <CarouselItem key={s.id} className="pl-0">
+                    <CarouselItem key={s.id} className={isRtl ? 'pr-0' : 'pl-0'}>
                       <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-background/70 backdrop-blur-sm">
                         <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-primary/10 via-background to-background" />
 
@@ -451,15 +458,25 @@ export function HomeHero({
                   ))}
                     </CarouselContent>
 
-                    <CarouselPrevious
-                      className="hidden md:inline-flex left-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
-                    />
-                    <CarouselNext
-                      className="hidden md:inline-flex right-4 top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25"
-                    />
+                    {isScrollable ? (
+                      <>
+                        <CarouselPrevious
+                          className={cn(
+                            'hidden md:inline-flex top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25',
+                            isRtl ? 'right-4' : 'left-4'
+                          )}
+                        />
+                        <CarouselNext
+                          className={cn(
+                            'hidden md:inline-flex top-1/2 -translate-y-1/2 bg-white/15 border-white/20 text-white hover:bg-white/25',
+                            isRtl ? 'left-4' : 'right-4'
+                          )}
+                        />
+                      </>
+                    ) : null}
 
                     {/* Pagination dots */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                    {isScrollable ? <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
                       {Array.from({ length: api?.scrollSnapList().length ?? resolvedSlides.length }).map((_, i) => {
                         const isActive = i === activeIndex
                         return (
@@ -475,7 +492,7 @@ export function HomeHero({
                           />
                         )
                       })}
-                    </div>
+                    </div> : null}
                   </Carousel>
                     )
                   })()}

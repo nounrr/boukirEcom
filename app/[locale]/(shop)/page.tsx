@@ -1,8 +1,7 @@
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { ArrowRight, BadgeCheck, ShieldCheck, Truck } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-import { Button } from '@/components/ui/button'
+import { HomeHeroBanner } from '@/components/home/home-hero-banner'
+import { HomeTrustStrip } from '@/components/home/home-trust-strip'
 import { HomeProductSections } from '@/components/home/home-product-sections'
 import { normalizeLocale } from '@/i18n/locale'
 import { buildPageMetadata } from '@/lib/seo/metadata'
@@ -54,68 +53,31 @@ export default async function HomePage({
 }) {
   const { locale: rawLocale } = await params
   const locale = normalizeLocale(rawLocale)
-  const tCommon = useTranslations('common')
-  const tShop = useTranslations('shop')
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+  const tShop = await getTranslations({ locale, namespace: 'shop' })
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-primary/10 via-primary/5 to-background" />
-        <div className="relative container mx-auto px-6 sm:px-8 lg:px-16 py-14 md:py-18">
-          <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              {tShop('tagline')}
-            </p>
-            <h1 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
-              {tCommon('home')}
-              <span className="text-primary"> Boukir</span>
-            </h1>
-            <p className="mt-4 text-base md:text-lg text-muted-foreground">
-              {tShop('heroDescription')}
-            </p>
+      <HomeHeroBanner
+        locale={locale}
+        tagline={tShop('tagline')}
+        title={tShop('heroTitle')}
+        titleAccent={tShop('heroTitleAccent')}
+        description={tShop('heroDescription')}
+        ctaProducts={tCommon('products')}
+        ctaPromo={tShop('featuredTitle')}
+        deliveryTitle={tShop('heroStatDelivery')}
+        deliveryDesc={tShop('heroStatDeliveryDesc')}
+      />
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href={`/${locale}/shop`}>
-                <Button size="lg" className="gap-2">
-                  {tCommon('products')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href={`/${locale}/shop?sort=promo`}>
-                <Button size="lg" variant="outline" className="gap-2">
-                  {tShop('featuredTitle')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-border/40 bg-card p-5">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Truck className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureDeliveryTitle')}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureDeliveryDesc')}</p>
-            </div>
-            <div className="rounded-2xl border border-border/40 bg-card p-5">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureSecurePaymentTitle')}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureSecurePaymentDesc')}</p>
-            </div>
-            <div className="rounded-2xl border border-border/40 bg-card p-5">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                <BadgeCheck className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="mt-3 font-semibold text-foreground">{tShop('featureQualityTitle')}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{tShop('featureQualityDesc')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeTrustStrip
+        deliveryTitle={tShop('featureDeliveryTitle')}
+        deliveryDesc={tShop('featureDeliveryDesc')}
+        paymentTitle={tShop('featureSecurePaymentTitle')}
+        paymentDesc={tShop('featureSecurePaymentDesc')}
+        qualityTitle={tShop('featureQualityTitle')}
+        qualityDesc={tShop('featureQualityDesc')}
+      />
 
       {/* Product sections */}
       <HomeProductSections
@@ -124,6 +86,8 @@ export default async function HomePage({
         featuredDesc={tShop('featuredDesc')}
         newArrivalsTitle={tShop('newArrivalsTitle')}
         newArrivalsDesc={tShop('newArrivalsDesc')}
+        viewAllLabel={tShop('viewAll')}
+        emptyLabel={tShop('noProducts')}
       />
     </div>
   )

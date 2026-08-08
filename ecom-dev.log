@@ -1,0 +1,104 @@
+
+> boukir-ecom@0.1.0 dev
+> next dev --webpack --disable-source-maps -p 3002
+
+   ▲ Next.js 16.0.10 (webpack)
+   - Local:         http://localhost:3002
+   - Network:       http://192.168.1.179:3002
+   - Environments: .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 5.8s
+ ○ Compiling /[locale] ...
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 16.7s (compile: 16.0s, proxy.ts: 11ms, render: 624ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 243ms (compile: 25ms, proxy.ts: 31ms, render: 187ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 532ms (compile: 47ms, proxy.ts: 28ms, render: 456ms)
+   Reload env: .env
+ GET /fr 200 in 367ms (compile: 178ms, proxy.ts: 21ms, render: 168ms)
+ GET /fr 200 in 369ms (compile: 179ms, proxy.ts: 20ms, render: 170ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 512ms (compile: 23ms, proxy.ts: 13ms, render: 476ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 376ms (compile: 23ms, proxy.ts: 13ms, render: 340ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 600ms (compile: 56ms, proxy.ts: 38ms, render: 506ms)
+[Google One Tap Wrapper] Pathname: /fr
+[Google One Tap Wrapper] Is Auth Page: false
+[Google One Tap Wrapper] Excluded Paths: [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/auth'
+]
+[Google One Tap Wrapper] Rendering GoogleOneTap component
+ GET /fr 200 in 394ms (compile: 37ms, proxy.ts: 21ms, render: 337ms)
+   Reload env: .env
+ GET /fr 200 in 339ms (compile: 171ms, proxy.ts: 13ms, render: 155ms)
+ GET /fr 200 in 89ms (compile: 20ms, proxy.ts: 15ms, render: 54ms)
+   Reload env: .env
+ GET /fr 200 in 274ms (compile: 148ms, proxy.ts: 14ms, render: 113ms)
+ GET /fr 200 in 276ms (compile: 147ms, proxy.ts: 14ms, render: 115ms)
+   Reload env: .env
+ GET /fr 200 in 177ms (compile: 84ms, proxy.ts: 10ms, render: 83ms)
+ GET /fr 200 in 88ms (compile: 20ms, proxy.ts: 13ms, render: 56ms)
+[?25h

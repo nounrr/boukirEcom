@@ -13,6 +13,10 @@ export function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
 
   if (/^https?:\/\//i.test(raw)) return raw
 
+  // Project-owned editorial fallbacks live in Next's public directory and
+  // must not be rewritten to the commerce API host.
+  if (raw.startsWith('/product-fallbacks/')) return raw
+
   const base = String(API_CONFIG.BASE_URL || "").replace(/\/+$/, "")
   const path = raw.startsWith("/") ? raw : `/${raw}`
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Package } from 'lucide-react'
 import { useLocale } from 'next-intl'
@@ -22,6 +22,10 @@ import {
 import type { ProductListItem } from '@/types/api/products'
 import { normalizeLocale } from '@/i18n/locale'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
+import {
+  useCarouselAutoplay,
+  useCarouselRuntimeState,
+} from '@/hooks/use-carousel-playback'
 
 function getCategoryLabel(
   category:
@@ -74,66 +78,140 @@ function toProductCardModel(product: ProductListItem, locale: string) {
   }
 }
 
+function ProductGrid({
+  title,
+  description,
+  products,
+  isLoading,
+  locale,
+  viewAllLabel,
+  emptyLabel,
+}: {
+  title: string
+  description?: string
+  products: ProductListItem[]
+  isLoading: boolean
+  locale: string
+  viewAllLabel: string
+  emptyLabel: string
+}) {
+  const cardProducts = useMemo(
+    () => products.slice(0, 8).map((product) => toProductCardModel(product, locale)),
+    [products, locale]
+  )
+  const isRtl = locale === 'ar'
+
+  return (
+    <section className="py-10 md:py-12" aria-busy={isLoading}>
+      <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+        <div className="mb-6 text-center md:mb-8">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">{title}</h2>
+          {description ? (
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
+              {description}
+            </p>
+          ) : null}
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                aria-hidden="true"
+                className="overflow-hidden rounded-2xl border border-border/30 bg-card shadow-sm motion-safe:animate-pulse"
+              >
+                <div className="aspect-square bg-muted" />
+                <div className="space-y-3 p-3 sm:p-4">
+                  <div className="h-3 w-2/5 rounded bg-muted/70" />
+                  <div className="h-4 rounded bg-muted/80" />
+                  <div className="h-5 w-1/2 rounded bg-muted/60" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : cardProducts.length === 0 ? (
+          <div className="rounded-xl border border-border/40 bg-card p-8 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50">
+              <Package className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">{emptyLabel}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 items-stretch gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+            {cardProducts.map((product) => (
+              <div key={product.id} className="min-w-0 [&>div]:h-full">
+                <ProductCardTile product={product} viewMode="grid" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-7 flex justify-center md:mt-9">
+          <Button asChild size="lg" className="min-w-40 gap-2 px-6 shadow-sm">
+            <Link href={`/${locale}/shop`}>
+              {viewAllLabel}
+              <ArrowRight className={`h-4 w-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ProductRail({
   title,
   description,
   href,
   products,
-  isLoading,
   locale,
+  viewAllLabel,
 }: {
   title: string
   description?: string
   href: string
   products: ProductListItem[]
-  isLoading: boolean
   locale: string
+  viewAllLabel: string
 }) {
   const cardProducts = useMemo(() => products.map((p) => toProductCardModel(p, locale)), [products, locale])
   const [api, setApi] = useState<CarouselApi | null>(null)
-  const [isPaused, setIsPaused] = useState(false)
-  const canLoop = cardProducts.length > 5
+  const [isHovered, setIsHovered] = useState(false)
+  const [isFocusWithin, setIsFocusWithin] = useState(false)
+  const { isScrollable, isLooping } = useCarouselRuntimeState(api)
   const isRtl = locale === 'ar'
 
   const contentClassName = useMemo(
     () =>
       [
-        'cursor-grab select-none active:cursor-grabbing justify-start sm:justify-center',
-        // Our shared Carousel uses -ml-4 + pl-4 spacing; for RTL we want the mirror.
-        // Override the base utilities via class order (these are appended last).
-        isRtl ? 'ml-0 -mr-4 flex-row-reverse' : '',
+        'cursor-grab select-none active:cursor-grabbing',
+        isScrollable === false ? 'justify-center' : 'justify-start',
       ]
         .filter(Boolean)
         .join(' '),
-    [isRtl]
+    [isScrollable]
   )
 
   const itemClassName = useMemo(
     () =>
       [
         'flex-none shrink-0 basis-[260px] sm:basis-[280px]',
-        // Mirror the base CarouselItem padding (pl-4) for RTL.
-        isRtl ? 'pl-0 pr-4' : '',
       ]
         .filter(Boolean)
         .join(' '),
-    [isRtl]
+    []
   )
 
-  useEffect(() => {
-    if (!api) return
-    if (isPaused) return
-    if (!canLoop) return
-
-    const id = window.setInterval(() => {
-      api.scrollNext()
-    }, 3200)
-
-    return () => window.clearInterval(id)
-  }, [api, canLoop, isPaused])
+  useCarouselAutoplay({
+    api,
+    delay: 3600,
+    enabled: isScrollable === true,
+    paused: isHovered || isFocusWithin,
+  })
 
   return (
-    <section className="py-10">
+    <section className="border-y border-border/30 bg-muted/20 py-10 md:py-12">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16">
         <div className="flex items-end justify-between gap-4 mb-6">
           <div className="min-w-0">
@@ -143,83 +221,54 @@ function ProductRail({
             ) : null}
           </div>
 
-          <Link href={href} className="shrink-0">
-            <Button variant="outline" className="gap-2">
-              Voir tout
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          <Button asChild variant="outline" className="shrink-0 gap-2">
+            <Link href={href}>
+              {viewAllLabel}
+              <ArrowRight className={`h-4 w-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </Link>
+          </Button>
         </div>
 
-        {isLoading ? (
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
-            <Carousel
-              className="relative w-full"
-              dir={isRtl ? 'rtl' : 'ltr'}
-              opts={{
-                align: 'center',
-                direction: isRtl ? 'rtl' : 'ltr',
-              }}
-            >
-              <CarouselContent className={contentClassName}>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <CarouselItem key={i} className={itemClassName}>
-                    <div className="w-full rounded-2xl border border-border/30 bg-card overflow-hidden">
-                      <div className="h-[280px] bg-muted animate-pulse" />
-                      <div className="p-4 space-y-3">
-                        <div className="h-4 bg-muted/70 animate-pulse rounded" />
-                        <div className="h-4 bg-muted/50 animate-pulse rounded w-2/3" />
-                        <div className="h-6 bg-muted/60 animate-pulse rounded w-1/3" />
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
-        ) : cardProducts.length === 0 ? (
-          <div className="border border-border/40 rounded-xl bg-card p-8 text-center">
-            <div className="mx-auto w-12 h-12 rounded-xl bg-muted/50 flex items-center justify-center mb-3">
-              <Package className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <p className="text-sm text-muted-foreground">Aucun produit pour le moment.</p>
-          </div>
-        ) : (
-              <div
-                className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-                onFocusCapture={() => setIsPaused(true)}
-                onBlurCapture={() => setIsPaused(false)}
-              >
-                <Carousel
-                  className="relative w-full"
-                  dir={isRtl ? 'rtl' : 'ltr'}
-                  opts={{
-                    loop: canLoop,
-                    align: 'center',
-                    direction: isRtl ? 'rtl' : 'ltr',
-                    slidesToScroll: 1,
-                  }}
-                  setApi={(a) => setApi(a)}
-                >
-                  <CarouselContent className={contentClassName}>
-                    {cardProducts.map((p) => (
-                      <CarouselItem key={p.id} className={itemClassName}>
-                        <ProductCardTile product={p} viewMode="grid" />
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
+        <div
+          className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onFocusCapture={() => setIsFocusWithin(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+              setIsFocusWithin(false)
+            }
+          }}
+        >
+          <Carousel
+            className="relative w-full"
+            data-looping={isLooping}
+            data-scrollable={isScrollable ?? 'pending'}
+            dir={isRtl ? 'rtl' : 'ltr'}
+            opts={{
+              loop: cardProducts.length > 1,
+              align: 'center',
+              direction: isRtl ? 'rtl' : 'ltr',
+              slidesToScroll: 1,
+            }}
+            setApi={setApi}
+          >
+            <CarouselContent className={contentClassName}>
+              {cardProducts.map((product) => (
+                <CarouselItem key={product.id} className={itemClassName}>
+                  <ProductCardTile product={product} viewMode="grid" />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
 
-                  {cardProducts.length > 5 && (
-                    <>
-                      <CarouselPrevious className="-left-4" />
-                      <CarouselNext className="-right-4" />
-                    </>
-                  )}
-                </Carousel>
-              </div>
-        )}
+            {isScrollable && (
+              <>
+                <CarouselPrevious className={isRtl ? '-right-4' : '-left-4'} />
+                <CarouselNext className={isRtl ? '-left-4' : '-right-4'} />
+              </>
+            )}
+          </Carousel>
+        </div>
       </div>
     </section>
   )
@@ -231,37 +280,51 @@ export function HomeProductSections({
   featuredDesc,
   newArrivalsTitle,
   newArrivalsDesc,
+  viewAllLabel,
+  emptyLabel,
 }: {
-    locale?: string
+  locale?: string
   featuredTitle: string
   featuredDesc?: string
   newArrivalsTitle: string
   newArrivalsDesc?: string
+  viewAllLabel: string
+  emptyLabel: string
 }) {
   const detectedLocale = useLocale()
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
 
-  const { data: featured, isLoading: isFeaturedLoading } = useGetFeaturedPromoQuery(12)
-  const { data: newArrivals, isLoading: isNewLoading } = useGetNewArrivalsQuery(12)
+  const {
+    data: featured,
+    isLoading: isFeaturedLoading,
+    isError: isFeaturedError,
+  } = useGetFeaturedPromoQuery(12)
+  const { data: newArrivals, isLoading: isNewLoading } = useGetNewArrivalsQuery(8)
+  const showFeatured =
+    !isFeaturedLoading && !isFeaturedError && (featured?.length ?? 0) > 0
 
   return (
-    <div>
-      <ProductRail
-        title={featuredTitle}
-        description={featuredDesc}
-        href={`/${activeLocale}/shop?sort=promo`}
-        products={featured ?? []}
-        isLoading={isFeaturedLoading}
-        locale={activeLocale}
-      />
-      <ProductRail
+    <>
+      <ProductGrid
         title={newArrivalsTitle}
         description={newArrivalsDesc}
-        href={`/${activeLocale}/shop?sort=newest`}
         products={newArrivals ?? []}
         isLoading={isNewLoading}
         locale={activeLocale}
+        viewAllLabel={viewAllLabel}
+        emptyLabel={emptyLabel}
       />
-    </div>
+
+      {showFeatured ? (
+        <ProductRail
+          title={featuredTitle}
+          description={featuredDesc}
+          href={`/${activeLocale}/shop?sort=promo`}
+          products={featured ?? []}
+          locale={activeLocale}
+          viewAllLabel={viewAllLabel}
+        />
+      ) : null}
+    </>
   )
 }

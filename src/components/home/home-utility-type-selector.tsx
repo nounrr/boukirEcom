@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
+import { ArrowRight } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { normalizeLocale } from '@/i18n/locale'
 
@@ -34,7 +34,7 @@ export function HomeUtilityTypeSelector({
   }> = [
     {
       value: 'Maison',
-      imageSrc: '/utility-types/home.png',
+      imageSrc: '/utility-types/home-diy-workshop.webp',
       title: t.has('utilityType.homeLabel') ? t('utilityType.homeLabel') : 'Maison',
       description: t.has('utilityType.homeDesc')
         ? t('utilityType.homeDesc')
@@ -42,7 +42,7 @@ export function HomeUtilityTypeSelector({
     },
     {
       value: 'Professionel',
-      imageSrc: '/utility-types/pro.png',
+      imageSrc: '/utility-types/professional-workshop.webp',
       title: t.has('utilityType.proLabel') ? t('utilityType.proLabel') : 'Professionel',
       description: t.has('utilityType.proDesc') ? t('utilityType.proDesc') : 'Outillage et fournitures pour les pros.',
     },
@@ -80,45 +80,44 @@ export function HomeUtilityTypeSelector({
                 key={item.value}
                 href={href}
                 className={cn(
-                  'group block rounded-3xl border border-border/40 bg-card/60 backdrop-blur-sm',
-                  'p-4 sm:p-6 transition-colors hover:bg-card'
+                  'group relative block h-[224px] overflow-hidden rounded-3xl border border-white/15 bg-black shadow-lg outline-none md:h-[276px]',
+                  'motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-500 motion-safe:ease-out',
+                  'hover:border-primary/55 hover:shadow-[0_22px_55px_-25px_rgba(0,0,0,0.8)] motion-safe:hover:-translate-y-1',
+                  'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-primary/5">
-                      <Image
-                        src={item.imageSrc}
-                        alt=""
-                        width={32}
-                        height={32}
-                        sizes="32px"
-                        className="h-8 w-8"
-                      />
-                    </div>
+                <Image
+                  src={item.imageSrc}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out group-hover:scale-[1.045] group-focus-visible:scale-[1.045]"
+                />
 
-                    <div className="min-w-0">
-                      <div className="truncate text-base font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {item.title}
-                      </div>
-                      <div className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
-                        {item.description}
-                      </div>
-                    </div>
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-linear-to-b from-black/35 via-black/50 to-black/75 transition-colors duration-500 group-hover:from-black/45 group-hover:via-black/55 group-focus-visible:from-black/45 group-focus-visible:via-black/55"
+                />
+
+                <div className="relative z-10 flex h-full items-center justify-center px-16 py-8 sm:px-20">
+                  <div className="max-w-sm text-center text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+                    <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{item.title}</h3>
+                    <p className="mx-auto mt-2 max-w-[32ch] text-sm leading-relaxed text-white/85 sm:text-base">
+                      {item.description}
+                    </p>
                   </div>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="h-9 w-9 p-0 rounded-full shrink-0"
-                    tabIndex={-1}
-                    aria-hidden="true"
-                  >
-                    <span className="text-base leading-none" aria-hidden="true">
-                      →
-                    </span>
-                  </Button>
                 </div>
+
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full',
+                    'border border-white/45 bg-primary text-primary-foreground shadow-[0_8px_30px_-10px_rgba(245,158,11,0.9)]',
+                    'motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 sm:right-5 sm:h-12 sm:w-12'
+                  )}
+                >
+                  <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
+                </span>
               </Link>
             )
           })}

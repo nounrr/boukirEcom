@@ -4,7 +4,11 @@
 }
 
 /* Auto-detect Arabic text and apply Arabic font */
-*[lang="ar"], .arabic-text {
+*[lang="ar"] {
+  font-family: var(--font-tajawal), "Tajawal", sans-serif;
+}
+
+.arabic-text {
   font-family: var(--font-tajawal), "Tajawal", sans-serif;
   direction: rtl;
   text-align: right;
@@ -131,7 +135,6 @@ td[lang="ar"], td.arabic-text {
 /* RTL layout support */
 [dir="rtl"] {
   direction: rtl;
-  text-align: right;
 }
 
 /* Utility classes for Arabic typography */
@@ -154,8 +157,6 @@ td[lang="ar"], td.arabic-text {
 /* Auto-detection for Arabic script using CSS lang attribute */
 *:lang(ar) {
   font-family: var(--font-tajawal), "Tajawal", sans-serif;
-  direction: rtl;
-  text-align: right;
 }
 
 /* IMPORTANT: Final override to ensure labels use Inter font */

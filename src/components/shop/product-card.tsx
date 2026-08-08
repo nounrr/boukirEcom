@@ -51,6 +51,7 @@ interface Product {
   price: number
   originalPrice?: number
   image: string
+  fallbackImage?: string
   images?: string[]
   category: string
   categoryObj?: {
@@ -143,10 +144,20 @@ export function ProductCard({
   }, [normalizedVariants, selectedVariant])
 
   const normalizedBaseImage = useMemo(() => toAbsoluteImageUrl(product.image) ?? '', [product.image])
+  const normalizedFallbackImage = useMemo(() => toAbsoluteImageUrl(product.fallbackImage) ?? '', [product.fallbackImage])
   const [currentImage, setCurrentImage] = useState(normalizedBaseImage)
   const [imageError, setImageError] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
   const locale = useLocale()
+
+  const handleImageError = useCallback(() => {
+    if (normalizedFallbackImage && currentImage !== normalizedFallbackImage) {
+      setCurrentImage(normalizedFallbackImage)
+      setImageError(false)
+    } else {
+      setImageError(true)
+    }
+  }, [currentImage, normalizedFallbackImage])
 
   const localizedProductName = useMemo(() => {
     if (product.designation || product.designation_ar || product.designation_en || product.designation_zh) {
@@ -412,7 +423,7 @@ export function ProductCard({
                   alt={localizedProductName}
                   fill
                   className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
-                  onError={() => setImageError(true)}
+                  onError={handleImageError}
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -559,7 +570,7 @@ export function ProductCard({
               alt={localizedProductName}
             fill
               className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
