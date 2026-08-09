@@ -2,11 +2,16 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryPublic } from '@/lib/base-query';
 import type { User } from '@/state/slices/user-slice';
 import type { LoginCredentials, RegisterData, AuthResponse } from '@/types/auth';
+import type {
+  MaalemProfile,
+  MaalemProfileCategory,
+  MaalemProfessionalData,
+} from '@/types/maalem-profile';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryPublic,
-  tagTypes: ['Auth'],
+  tagTypes: ['Auth', 'MaalemProfile', 'MaalemCategories'],
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginCredentials>({
       query: (credentials) => ({
@@ -58,6 +63,41 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Auth'],
     }),
+    getMaalemProfile: builder.query<MaalemProfile | null, void>({
+      query: () => '/api/maalem-profiles/me',
+      transformResponse: (response: { profile: MaalemProfile | null }) => response.profile,
+      providesTags: ['MaalemProfile'],
+    }),
+    getActiveMaalemCategories: builder.query<MaalemProfileCategory[], void>({
+      query: () => '/api/maalem-categories/active',
+      transformResponse: (
+        response: MaalemProfileCategory[] | { categories: MaalemProfileCategory[] }
+      ) => (Array.isArray(response) ? response : response.categories).map((category) => ({
+        ...category,
+        is_active: true,
+      })),
+      providesTags: ['MaalemCategories'],
+    }),
+    saveMaalemDraft: builder.mutation<
+      MaalemProfile,
+      { category_id: number | null; professional_data?: MaalemProfessionalData | null }
+    >({
+      query: (body) => ({
+        url: '/api/maalem-profiles/me',
+        method: 'PUT',
+        body,
+      }),
+      transformResponse: (response: { profile: MaalemProfile }) => response.profile,
+      invalidatesTags: ['MaalemProfile', 'Auth'],
+    }),
+    submitMaalemProfile: builder.mutation<MaalemProfile, void>({
+      query: () => ({
+        url: '/api/maalem-profiles/me/submit',
+        method: 'POST',
+      }),
+      transformResponse: (response: { profile: MaalemProfile }) => response.profile,
+      invalidatesTags: ['MaalemProfile', 'Auth'],
+    }),
   }),
 });
 
@@ -68,4 +108,8 @@ export const {
   useGetCurrentUserQuery,
   useUpdateProfileMutation,
   useRequestArtisanMutation,
+  useGetMaalemProfileQuery,
+  useGetActiveMaalemCategoriesQuery,
+  useSaveMaalemDraftMutation,
+  useSubmitMaalemProfileMutation,
 } = authApi;

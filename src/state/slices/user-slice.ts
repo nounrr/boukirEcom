@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
+import type { MaalemProfile } from '@/types/maalem-profile';
+
+export type EcommerceAccountType = 'Client' | 'Artisan/Promoteur';
 
 // Match backend user structure
 export interface User {
@@ -22,7 +25,7 @@ export interface User {
   shipping_state?: string | null;
   shipping_postal_code?: string | null;
   shipping_country?: string | null;
-  type_compte: string;  // "Client" | "Artisan/Promoteur"
+  type_compte: EcommerceAccountType;
   auth_provider?: string;
   email_verified?: boolean;
   avatar_url: string | null;
@@ -31,6 +34,9 @@ export interface User {
   created_at?: string;
   demande_artisan?: boolean;
   artisan_approuve?: boolean;
+  // Optional professional extension of the existing Artisan account.
+  // It never replaces type_compte or the Artisan pricing rules.
+  maalem_profile?: MaalemProfile | null;
   // Remise balance (loyalty credit)
   remise_balance?: number;
 

@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 import { apiClient, getErrorMessage } from "@/lib/axios"
+import type { EcommerceAccountType } from "@/state/slices/user-slice"
 
 type RegisterResponse = {
   success: true
@@ -13,7 +14,7 @@ type RegisterResponse = {
     nom: string
     email: string
     telephone: string | null
-    type_compte: string
+    type_compte: EcommerceAccountType
     avatar_url: string | null
     locale: string
   }

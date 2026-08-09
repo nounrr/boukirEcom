@@ -57,7 +57,8 @@
       "pendingTitle": "申请审核中。",
       "pendingDesc": "管理员将很快审核你的申请。",
       "requestHint": "申请工匠/专业状态以获得更多权益并提升折扣收益。",
-      "requestAction": "申请工匠状态"
+      "requestAction": "申请工匠状态",
+      "maalemAction": "完善 Maalem 申请"
     },
     "remise": {
       "title": "你的折扣余额",
@@ -714,9 +715,43 @@
     "removeShort": "移除",
     "addToCart": "加入购物车"
   },
+  "maalemApplication": {
+    "title": "Maalem 专业申请",
+    "auth": { "title": "需要登录", "description": "请登录工匠账号以准备 Maalem 申请。", "action": "登录" },
+    "access": { "title": "需要工匠账号", "description": "Maalem 申请附加于现有工匠账号。请先在个人资料中申请工匠认证；系统不会创建第二个账号。", "action": "返回个人资料" },
+    "errorState": { "title": "无法加载申请", "description": "请检查网络连接后重试。", "action": "重试" },
+    "statuses": { "draft": "草稿", "submitted": "已提交", "under_review": "审核中", "approved": "已通过", "rejected": "需要修改", "suspended": "已暂停" },
+    "header": { "secure": "私密专业申请", "title": "创建你的 Maalem 申请", "description": "介绍你的工种、经验和作品。你可以保存草稿并随时继续。", "artisanPreserved": "你的工匠账号、权益、折扣和历史记录保持不变。", "completion": "完成度", "completionHint": "提交前的必要内容" },
+    "statusMessages": {
+      "draft": { "title": "可编辑草稿", "description": "提交前请补充必填信息。" },
+      "submitted": { "title": "申请已提交", "description": "后台将进行处理。此阶段不会授予 Maalem 业务权限。" },
+      "under_review": { "title": "申请正在审核", "description": "审核期间信息为只读。" },
+      "approved": { "title": "Maalem 资料已通过", "description": "你的工匠账号保持不变并保留全部权益。" },
+      "rejected": { "title": "你可以修改申请", "description": "请查看原因，修改后重新提交。" },
+      "suspended": { "title": "Maalem 资料已暂停", "description": "你仍可正常使用工匠电商账号。" }
+    },
+    "rejection": { "title": "团队提供的原因" },
+    "identity": { "title": "复用账号身份", "description": "这些信息来自你的账号，无需重复填写。", "name": "姓名", "email": "邮箱", "accountPhone": "账号电话", "notProvided": "未提供" },
+    "trade": { "title": "工种与技能", "description": "选择有效分类并填写你的专长。", "inactiveCategory": "“{name}”分类已不可用。提交前请选择有效分类。", "noCategories": "目前没有可用的有效工种分类。分类开放后即可提交申请。" },
+    "coverage": { "title": "服务区域与时间", "description": "说明客户可以在哪里、何时联系你。" },
+    "experience": { "title": "介绍与经验", "description": "提供有助于团队了解你职业经历的信息。" },
+    "fields": { "category": "主要工种分类", "skills": "技能与专长", "phone": "工作电话", "city": "主要城市", "areas": "服务区域", "years": "从业年限", "availability": "可服务时间", "summary": "职业介绍", "experiences": "经验与案例", "other": "补充信息" },
+    "placeholders": { "category": "选择有效分类", "skills": "例如：维修、安装…", "phone": "+212 6…", "city": "例如：卡萨布兰卡", "areas": "例如：Maarif、市中心…", "availability": "选择可服务时间", "summary": "介绍你的技能、工作方式和承接的任务。", "experiences": "描述经验、主要项目、证书或推荐信息。", "other": "添加有助于审核申请的信息。" },
+    "hints": { "tags": "按 Enter 或逗号添加", "removeTag": "移除 {value}", "phone": "已从账号预填。仅在工作联系方式不同时修改。" },
+    "availability": { "immediate": "立即可服务", "weekdays": "工作日", "weekends": "周末", "evenings": "晚间", "on_request": "按需安排" },
+    "validation": { "category": "请选择有效分类。", "skills": "请至少添加一项技能。", "phone": "请输入有效电话号码。", "city": "请输入主要城市。", "years": "请输入从业年限。", "summary": "请添加职业介绍。", "availability": "请选择可服务时间。" },
+    "documents": {
+      "title": "文件与作品", "description": "添加有用的证明材料。审核期间文件保持私密。", "cvTitle": "个人简历", "cvHint": "仅 PDF，最大 5 MB。", "photosTitle": "作品照片", "photosHint": "JPEG、PNG 或 WebP，每张最大 5 MB，最多 8 张。",
+      "addCv": "添加简历", "replaceCv": "替换简历", "addPhotos": "添加照片 ({count}/{max})", "savedFiles": "已保存文件", "empty": "尚未添加文件。", "private": "简历和作品仅通过身份验证访问，不会公开发布。", "download": "下载", "delete": "删除", "kinds": { "cv": "简历", "realization": "作品" },
+      "invalidCvTitle": "简历不符合要求", "invalidCvDesc": "请选择不超过 5 MB 的 PDF。", "invalidPhotosTitle": "照片不符合要求", "invalidPhotosDesc": "请使用不超过 5 MB 的 JPEG、PNG 或 WebP，且总数不超过 8 个。", "cvUploaded": "简历已保存", "photosUploaded": "作品已保存", "deleted": "文件已删除", "uploadError": "无法上传文件。", "deleteError": "无法删除文件。", "downloadError": "无法下载文件。"
+    },
+    "actions": { "hint": "提交后申请将锁定，直到审核完成。", "save": "保存草稿", "saving": "正在保存…", "submit": "提交申请", "submitting": "正在提交…" },
+    "toasts": { "savedTitle": "草稿已保存", "savedDesc": "你可以稍后继续。", "submittedTitle": "申请已提交", "submittedDesc": "申请现已可供审核。", "errorTitle": "发生错误", "saveError": "无法保存草稿。", "submitError": "无法提交申请。", "incompleteTitle": "申请不完整", "incompleteDesc": "提交前请完成标记字段。" }
+  },
   "accountSidebar": {
     "activeAccount": "账号已激活",
     "profile": "我的资料",
+    "maalemApplication": "Maalem 申请",
     "orders": "我的订单",
     "soldeHistory": "余额记录",
     "wishlist": "心愿单",

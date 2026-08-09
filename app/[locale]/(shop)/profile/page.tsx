@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { useRequestArtisanMutation, useUpdateProfileMutation } from "@/state/api/auth-api-slice"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
-import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent } from "lucide-react"
+import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent, BriefcaseBusiness } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useMemo, useState, useEffect } from "react"
@@ -357,6 +357,12 @@ export default function ProfilePage() {
                       <div>
                         <p className="text-sm font-medium text-foreground">{t('artisan.approvedTitle')}</p>
                         <p className="text-xs text-muted-foreground">{t('artisan.approvedDesc')}</p>
+                        <Button asChild variant="outline" size="sm" className="mt-3">
+                          <Link href={`/${locale}/profile/maalem`}>
+                            <BriefcaseBusiness className="w-4 h-4" />
+                            {t('artisan.maalemAction')}
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   ) : user.demande_artisan ? (

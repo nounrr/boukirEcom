@@ -591,9 +591,164 @@
     "removeShort": "Retirer",
     "addToCart": "Ajouter au panier"
   },
+  "maalemApplication": {
+    "title": "Candidature Maalem",
+    "auth": {
+      "title": "Connexion requise",
+      "description": "Connectez-vous à votre compte Artisan pour préparer votre dossier Maalem.",
+      "action": "Se connecter"
+    },
+    "access": {
+      "title": "Un compte Artisan est nécessaire",
+      "description": "La candidature Maalem complète un compte Artisan existant. Demandez d’abord la validation Artisan depuis votre profil : aucun second compte ne sera créé.",
+      "action": "Retour à mon profil"
+    },
+    "errorState": {
+      "title": "Impossible de charger le dossier",
+      "description": "Vérifiez votre connexion puis réessayez.",
+      "action": "Réessayer"
+    },
+    "statuses": {
+      "draft": "Brouillon",
+      "submitted": "Demande envoyée",
+      "under_review": "En vérification",
+      "approved": "Validé",
+      "rejected": "À corriger",
+      "suspended": "Suspendu"
+    },
+    "header": {
+      "secure": "Dossier professionnel privé",
+      "title": "Construisez votre dossier Maalem",
+      "description": "Présentez votre métier, votre expérience et vos réalisations. Vous pouvez enregistrer un brouillon et revenir le compléter.",
+      "artisanPreserved": "Votre compte Artisan, vos avantages, vos remises et votre historique restent inchangés.",
+      "completion": "Progression",
+      "completionHint": "Les éléments essentiels avant envoi"
+    },
+    "statusMessages": {
+      "draft": { "title": "Brouillon modifiable", "description": "Complétez les informations requises avant l’envoi." },
+      "submitted": { "title": "Votre demande a bien été envoyée", "description": "Elle sera traitée dans le Back-office. Aucun droit Maalem opérationnel n’est accordé à ce stade." },
+      "under_review": { "title": "Votre dossier est en vérification", "description": "Les informations sont en lecture seule pendant l’examen." },
+      "approved": { "title": "Votre profil Maalem est validé", "description": "Votre compte Artisan reste le même et conserve tous ses avantages." },
+      "rejected": { "title": "Votre dossier peut être corrigé", "description": "Tenez compte du motif puis soumettez-le à nouveau." },
+      "suspended": { "title": "Votre profil Maalem est suspendu", "description": "Votre compte Artisan e-commerce reste utilisable normalement." }
+    },
+    "rejection": { "title": "Motif communiqué par l’équipe" },
+    "identity": {
+      "title": "Identité réutilisée",
+      "description": "Ces informations proviennent de votre compte : inutile de les saisir à nouveau.",
+      "name": "Nom complet",
+      "email": "E-mail",
+      "accountPhone": "Téléphone du compte",
+      "notProvided": "Non renseigné"
+    },
+    "trade": {
+      "title": "Métier et compétences",
+      "description": "Choisissez une catégorie active et précisez vos spécialités.",
+      "inactiveCategory": "La catégorie « {name} » n’est plus disponible. Choisissez une catégorie active avant l’envoi.",
+      "noCategories": "Aucune catégorie métier active n’est disponible pour le moment. Vous pourrez soumettre votre dossier dès qu’une catégorie sera proposée."
+    },
+    "coverage": {
+      "title": "Zone et disponibilité",
+      "description": "Indiquez où et quand les clients pourront faire appel à vous."
+    },
+    "experience": {
+      "title": "Présentation et expérience",
+      "description": "Donnez à l’équipe les éléments utiles pour comprendre votre parcours."
+    },
+    "fields": {
+      "category": "Catégorie métier principale",
+      "skills": "Compétences et spécialités",
+      "phone": "Téléphone professionnel",
+      "city": "Ville principale",
+      "areas": "Zones d’intervention",
+      "years": "Années d’expérience",
+      "availability": "Disponibilité",
+      "summary": "Présentation professionnelle",
+      "experiences": "Expériences et références",
+      "other": "Informations complémentaires"
+    },
+    "placeholders": {
+      "category": "Choisir une catégorie active",
+      "skills": "Ex. dépannage, installation…",
+      "phone": "+212 6…",
+      "city": "Ex. Casablanca",
+      "areas": "Ex. Maarif, Casablanca centre…",
+      "availability": "Choisir une disponibilité",
+      "summary": "Présentez votre savoir-faire, votre façon de travailler et les missions que vous acceptez.",
+      "experiences": "Décrivez vos expériences, chantiers importants, certifications ou références.",
+      "other": "Ajoutez toute information utile à l’étude de votre dossier."
+    },
+    "hints": {
+      "tags": "Entrée ou virgule pour ajouter",
+      "removeTag": "Retirer {value}",
+      "phone": "Prérempli depuis votre compte. Modifiez-le seulement si votre contact professionnel est différent."
+    },
+    "availability": {
+      "immediate": "Disponible immédiatement",
+      "weekdays": "En semaine",
+      "weekends": "Le week-end",
+      "evenings": "En soirée",
+      "on_request": "Sur demande"
+    },
+    "validation": {
+      "category": "Choisissez une catégorie active.",
+      "skills": "Ajoutez au moins une compétence.",
+      "phone": "Renseignez un téléphone valide.",
+      "city": "Renseignez votre ville principale.",
+      "years": "Renseignez vos années d’expérience.",
+      "summary": "Ajoutez une présentation professionnelle.",
+      "availability": "Choisissez votre disponibilité."
+    },
+    "documents": {
+      "title": "Documents et réalisations",
+      "description": "Ajoutez des preuves utiles. Les fichiers restent privés pendant l’étude du dossier.",
+      "cvTitle": "Curriculum vitae",
+      "cvHint": "PDF uniquement, 5 Mo maximum.",
+      "photosTitle": "Photos de réalisations",
+      "photosHint": "JPEG, PNG ou WebP, 5 Mo par image, 8 maximum.",
+      "addCv": "Ajouter mon CV",
+      "replaceCv": "Remplacer mon CV",
+      "addPhotos": "Ajouter des photos ({count}/{max})",
+      "savedFiles": "Fichiers enregistrés",
+      "empty": "Aucun document ajouté pour le moment.",
+      "private": "Le CV et les réalisations sont servis par un accès authentifié et ne sont pas publiés sur le site.",
+      "download": "Télécharger",
+      "delete": "Supprimer",
+      "kinds": { "cv": "CV", "realization": "Réalisation" },
+      "invalidCvTitle": "CV non accepté",
+      "invalidCvDesc": "Choisissez un PDF de 5 Mo maximum.",
+      "invalidPhotosTitle": "Photos non acceptées",
+      "invalidPhotosDesc": "Utilisez des images JPEG, PNG ou WebP de 5 Mo maximum, sans dépasser 8 fichiers.",
+      "cvUploaded": "CV enregistré",
+      "photosUploaded": "Réalisations enregistrées",
+      "deleted": "Document supprimé",
+      "uploadError": "Impossible d’envoyer le document.",
+      "deleteError": "Impossible de supprimer le document.",
+      "downloadError": "Impossible de télécharger le document."
+    },
+    "actions": {
+      "hint": "L’envoi verrouille le dossier jusqu’à son traitement.",
+      "save": "Enregistrer le brouillon",
+      "saving": "Enregistrement…",
+      "submit": "Envoyer la candidature",
+      "submitting": "Envoi…"
+    },
+    "toasts": {
+      "savedTitle": "Brouillon enregistré",
+      "savedDesc": "Vous pourrez reprendre votre dossier plus tard.",
+      "submittedTitle": "Candidature envoyée",
+      "submittedDesc": "Votre dossier est maintenant disponible pour vérification.",
+      "errorTitle": "Une erreur est survenue",
+      "saveError": "Impossible d’enregistrer le brouillon.",
+      "submitError": "Impossible d’envoyer la candidature.",
+      "incompleteTitle": "Dossier incomplet",
+      "incompleteDesc": "Complétez les champs signalés avant l’envoi."
+    }
+  },
   "accountSidebar": {
     "activeAccount": "Compte actif",
     "profile": "Mon profil",
+    "maalemApplication": "Dossier Maalem",
     "orders": "Mes commandes",
     "soldeHistory": "Solde historique",
     "wishlist": "Favoris",
@@ -1167,7 +1322,8 @@
       "pendingTitle": "Demande en cours de validation.",
       "pendingDesc": "Un administrateur validera votre demande bientôt.",
       "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.",
-      "requestAction": "Demander le statut Artisan"
+      "requestAction": "Demander le statut Artisan",
+      "maalemAction": "Compléter mon dossier Maalem"
     },
     "remise": {
       "title": "Votre solde remise",

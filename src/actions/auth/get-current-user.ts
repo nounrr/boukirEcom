@@ -4,6 +4,8 @@ import { cookies } from "next/headers"
 import { getErrorMessage } from "@/lib/axios"
 import { clearAuthCookies } from "@/lib/cookies"
 import axios from "axios"
+import type { MaalemProfile } from "@/types/maalem-profile"
+import type { EcommerceAccountType } from "@/state/slices/user-slice"
 
 type GetCurrentUserResponse = {
   success: true
@@ -13,7 +15,7 @@ type GetCurrentUserResponse = {
     nom: string
     email: string
     telephone: string | null
-    type_compte: string
+    type_compte: EcommerceAccountType
     auth_provider?: string
     email_verified?: boolean
     avatar_url: string | null
@@ -22,6 +24,7 @@ type GetCurrentUserResponse = {
     created_at?: string
     demande_artisan?: boolean
     artisan_approuve?: boolean
+    maalem_profile?: MaalemProfile | null
     remise_balance?: number
     is_solde?: boolean | number
   }
