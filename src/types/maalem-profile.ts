@@ -43,6 +43,22 @@ export interface MaalemProfileDocument {
   created_at: string
 }
 
+export interface MaalemNotification {
+  id: number
+  profile_id: number
+  notification_type: string
+  source_event: string
+  channel: 'IN_APP'
+  locale: 'fr' | 'ar'
+  status: 'sent'
+  attempts: number
+  title: string
+  body: string
+  created_at: string
+  sent_at: string | null
+  read_at: string | null
+}
+
 export interface MaalemProfile {
   id: number
   user_id: number
@@ -51,9 +67,12 @@ export interface MaalemProfile {
   category: MaalemProfileCategory | null
   status: MaalemProfileStatus
   status_label: string
+  origin: 'SELF_SERVICE' | 'NEW_REGISTRATION' | 'ARTISAN_CONVERSION' | 'TEAM_CREATED'
+  created_by_employee_id: number | null
   professional_data: MaalemProfessionalData | null
   documents?: MaalemProfileDocument[]
   status_reason: string | null
+  public_reason?: string | null
   submitted_at: string | null
   reviewed_at: string | null
   reviewed_by: number | null

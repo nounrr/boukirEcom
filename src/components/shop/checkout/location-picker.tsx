@@ -6,7 +6,8 @@ import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, MapPin, Loader2, Navigation, Check } from "lucide-react"
+import { Search, MapPin, Loader2, Navigation } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 // Interface for address results
 interface AddressResult {
@@ -69,6 +70,12 @@ interface LocationPickerProps {
   }) => void
   initialLat?: number
   initialLng?: number
+  className?: string
+  labels?: {
+    searchPlaceholder?: string
+    releaseToConfirm?: string
+    currentPosition?: string
+  }
 }
 
 // Controller to handle map movement events and expose center
@@ -107,6 +114,8 @@ export default function LocationPicker({
   onLocationSelect,
   initialLat,
   initialLng,
+  className,
+  labels,
 }: LocationPickerProps) {
   // Default to Casablanca
   const defaultLat = 33.5731
@@ -309,7 +318,7 @@ export default function LocationPicker({
   }
 
   return (
-    <div className="w-full relative z-0 h-[500px] rounded-xl overflow-hidden border border-border shadow-sm bg-muted/10 group" ref={wrapperRef}>
+    <div className={cn("w-full relative z-0 h-[500px] rounded-xl overflow-hidden border border-border shadow-sm bg-muted/10 group", className)} ref={wrapperRef}>
         
         {/* Top Search Bar Overlay */}
       <div className="absolute top-3 left-3 right-3 z-500 sm:top-4 sm:left-4 sm:right-auto sm:w-full sm:max-w-md">
@@ -323,7 +332,7 @@ export default function LocationPicker({
                     onFocus={() => {
                         if (searchQuery.length > 2) setShowSuggestions(true)
                     }}
-                    placeholder="Chercher votre adresse..."
+                    placeholder={labels?.searchPlaceholder || "Chercher votre adresse..."}
                     Icon={Search}
             className="h-10 text-sm shadow-none rounded-md bg-transparent [&>div>input]:bg-white"
                 />
@@ -394,7 +403,7 @@ export default function LocationPicker({
             {/* Context Tooltip near pin when moving */}
             {isMoving && (
                 <div className="absolute top-1/2 mt-8 bg-black/75 backdrop-blur text-white text-[10px] px-2 py-1 rounded-full font-medium shadow-lg animate-in fade-in zoom-in-95">
-                    Relâcher pour valider
+                    {labels?.releaseToConfirm || "Relâcher pour valider"}
                 </div>
             )}
         </div>
@@ -413,7 +422,7 @@ export default function LocationPicker({
                 ) : (
                     <Navigation className="w-4 h-4 text-primary fill-primary/20" />
                 )}
-                <span className="text-sm font-medium">Ma position actuelle</span>
+                <span className="text-sm font-medium">{labels?.currentPosition || "Ma position actuelle"}</span>
             </Button>
         </div>
     </div>

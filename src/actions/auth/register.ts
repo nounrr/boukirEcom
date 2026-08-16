@@ -1,26 +1,46 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { apiClient, getErrorMessage } from "@/lib/axios"
-import type { EcommerceAccountType } from "@/state/slices/user-slice"
+import { apiClient, axios, getErrorMessage } from "@/lib/axios"
+import type { User } from "@/state/slices/user-slice"
+
+type RegisterField =
+  | 'firstName'
+  | 'lastName'
+  | 'email'
+  | 'phone'
+  | 'password'
+  | 'confirmPassword'
+  | 'role'
+  | 'artisanPath'
+  | 'maalemCategoryId'
+  | 'companyName'
+  | 'ice'
+
+const BACKEND_FIELD_MAP: Record<string, RegisterField> = {
+  prenom: 'firstName',
+  nom: 'lastName',
+  email: 'email',
+  telephone: 'phone',
+  password: 'password',
+  confirm_password: 'confirmPassword',
+  type_compte: 'role',
+  artisan_path: 'artisanPath',
+  maalem_category_id: 'maalemCategoryId',
+  societe: 'companyName',
+  ice: 'ice',
+}
 
 type RegisterResponse = {
   success: true
   accessToken: string
   refreshToken: string | null
-  user: {
-    id: number
-    prenom: string
-    nom: string
-    email: string
-    telephone: string | null
-    type_compte: EcommerceAccountType
-    avatar_url: string | null
-    locale: string
-  }
+  user: User
+  nextPath: string | null
 } | {
   success: false
   error: string
+  field?: RegisterField
 }
 
 export async function register(formData: FormData): Promise<RegisterResponse> {
@@ -33,6 +53,11 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
     const confirmPassword = formData.get('confirmPassword') as string
 
     const role = formData.get('role') as string
+    const artisanPath = formData.get('artisanPath') === 'maalem' ? 'maalem' : 'ecommerce'
+    const maalemCategoryValue = formData.get('maalemCategoryId')
+    const maalemCategoryId = typeof maalemCategoryValue === 'string' && maalemCategoryValue
+      ? Number(maalemCategoryValue)
+      : null
 
     const isCompanyRaw = formData.get('isCompany')
     const isCompany = typeof isCompanyRaw === 'string' ? isCompanyRaw === 'true' : false
@@ -54,6 +79,13 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
       type_compte: typeCompte,
       password: password,
       confirm_password: confirmPassword,
+    }
+
+    if (typeCompte === 'Artisan/Promoteur') {
+      payload.artisan_path = artisanPath
+      if (artisanPath === 'maalem' && Number.isInteger(maalemCategoryId) && maalemCategoryId! > 0) {
+        payload.maalem_category_id = maalemCategoryId
+      }
     }
 
     // Client profile details (required by backend)
@@ -97,12 +129,17 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
       accessToken: data.token,
       refreshToken: null,
       user: data.user,
+      nextPath: typeof data.next_path === 'string' ? data.next_path : null,
     }
   } catch (error) {
     console.error('[REGISTER] Error:', error)
+    const backendField = axios.isAxiosError(error) && typeof error.response?.data?.field === 'string'
+      ? BACKEND_FIELD_MAP[error.response.data.field]
+      : undefined
     return {
       success: false,
       error: getErrorMessage(error),
+      field: backendField,
     }
   }
 }

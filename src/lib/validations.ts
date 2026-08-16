@@ -72,6 +72,15 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
     .enum(['client', 'artisan-promoter'], {
       message: t('roleRequired')
     }),
+  artisanPath: z
+    .enum(['ecommerce', 'maalem'])
+    .default('ecommerce'),
+  maalemCategoryId: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .default(null),
 }).refine((data) => data.password === data.confirmPassword, {
   message: t('passwordsNotMatch'),
   path: ['confirmPassword'],
@@ -94,6 +103,16 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
 }, {
   message: t('iceFormat'),
   path: ['ice'],
+}).refine((data) => {
+  return data.role === 'artisan-promoter' || data.artisanPath === 'ecommerce';
+}, {
+  message: t('artisanPathInvalid'),
+  path: ['artisanPath'],
+}).refine((data) => {
+  return data.artisanPath === 'maalem' || data.maalemCategoryId === null;
+}, {
+  message: t('maalemCategoryInvalid'),
+  path: ['maalemCategoryId'],
 });
 
 // Static schemas (legacy - for backward compatibility)

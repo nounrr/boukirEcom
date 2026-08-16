@@ -1,4 +1,245 @@
 {
+  "maalemsPage": {
+    "metadataTitle": "Verified Maalems",
+    "metadataDescription": "Discover Maalems published by Boukir Diamond.",
+    "eyebrow": "Verified expertise",
+    "title": "Find the right Maalem",
+    "description": "Explore approved, explicitly published profiles without automatic assignment.",
+    "count": "{count} Maalems",
+    "search": "Public name",
+    "category": "Category",
+    "allCategories": "All",
+    "service": "Service",
+    "allServices": "All services",
+    "city": "City",
+    "zone": "Declared area",
+    "experience": "Min. experience",
+    "interventions": "Min. interventions",
+    "sort": "Sort",
+    "recommended": "Recommended",
+    "interventionsSort": "Closed interventions",
+    "experienceSort": "Experience",
+    "nameSort": "Name",
+    "submit": "Apply",
+    "reset": "Reset",
+    "verified": "Verified Maalem",
+    "areas": "Areas",
+    "experienceLabel": "{years} years experience",
+    "noPhoto": "Initials",
+    "interventionsLabel": "{count} closed interventions",
+    "declared": "Declared areas do not guarantee availability.",
+    "profile": "View profile",
+    "request": "Request",
+    "empty": "No Maalem matches these filters.",
+    "error": "Directory temporarily unavailable.",
+    "quick": "Make a quick request",
+    "quickDescription": "Describe your need and we will guide you to the right service.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}",
+    "pagination": "Maalems pagination",
+    "sortNotice": "Current sort: {sort}"
+  },
+  "maalemDetailPage": {
+    "metadataFallback":"Public profile of a verified Maalem and compatible services.", "back":"Back to directory", "breadcrumb":"Maalem directory", "eyebrow":"Verified public profile", "verified":"Verified Maalem", "location":"City", "areas":"Declared areas", "experience":"{years} years of experience", "noPhoto":"Maalem initials", "closed":"{count} verified interventions", "proof":"Proof of work", "proofText":"This count only includes interventions closed and verified in Boukir Diamond.", "lastClosed":"Last verified closure: {date}", "about":"About", "aboutFallback":"This Maalem has not added a public introduction yet.", "expertise":"Experience and specialties", "expertiseText":"These details come from the validated public profile; no private record or narrative is shown.", "skillsFallback":"No public specialty provided.", "services":"Services offered", "servicesText":"Public services compatible with this Maalem’s main category.", "serviceView":"View service", "serviceRequest":"Request service", "moreCategories":"More categories", "servicesEmpty":"No compatible service is currently published.", "statistics":"Verified statistics", "byService":"Interventions by public service", "noBreakdown":"No public breakdown is available.", "realizations":"Work examples", "realizationsEmpty":"No public work example is available yet.", "reviews":"Reviews", "reviewsEmpty":"Public reviews are not available yet. No rating is calculated or displayed.", "ctaTitle":"Would you like to request this Maalem?", "ctaText":"Your choice expresses a preference. It does not guarantee availability or automatic assignment.", "cta":"Request this Maalem", "quick":"Make a quick request", "privacy":"Your contact details are never shown on this profile.", "jsonLdDescription":"Verified public profile of {name}.", "monthYear":"{date, date, ::MMMM y}"
+  },
+  "servicesPage": {
+    "metadata": {
+      "title": "Home services",
+      "description": "Discover available services and send your request to the Boukir Diamond team."
+    },
+    "eyebrow": "Services & expertise",
+    "title": "The right service for your need",
+    "description": "Explore our selected services, then share your request with our team. We review it before assigning a Maalem.",
+    "resultCount": "{count, plural, one {# service available} other {# services available}}",
+    "gridLabel": "Available services",
+    "filters": {
+      "title": "Find a service",
+      "searchLabel": "What do you need?",
+      "searchPlaceholder": "E.g. leak, painting, electricity…",
+      "categoryLabel": "Maalem category",
+      "allCategories": "All categories",
+      "submit": "Search",
+      "reset": "Reset"
+    },
+    "card": {
+      "view": "View Service",
+      "request": "Request this Service",
+      "moreCategories": "+{count}"
+    },
+    "guidance": {
+      "title": "I don’t know which Service to choose",
+      "description": "Simply describe your problem. Our team will help identify the right service and category.",
+      "action": "Make a quick request"
+    },
+    "empty": {
+      "title": "No services found",
+      "description": "No services are published at the moment.",
+      "filteredDescription": "Change your search or reset the filters to see other services."
+    },
+    "error": {
+      "title": "The catalogue is temporarily unavailable",
+      "description": "We could not load the services. You can retry or describe your need directly.",
+      "retry": "Try again"
+    },
+    "pagination": {
+      "label": "Services pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page}"
+    }
+  },
+  "serviceDetailPage": {
+    "metadataDescription": "Discover {service} and compatible Maalems selected by Boukir Diamond.",
+    "back": "Back to services",
+    "eyebrow": "Boukir Diamond service",
+    "requestService": "Request this service",
+    "quickRequest": "Make a quick request",
+    "categories": "Compatible categories",
+    "assuranceTitle": "Compatibility verified, availability to confirm",
+    "assuranceText": "These Maalems work in a category linked to this service. Your choice remains a preference; our team checks the need and availability before assignment.",
+    "maalemsTitle": "Compatible Maalems",
+    "maalemsCount": "{count} compatible Maalems",
+    "emptyTitle": "No compatible Maalem available",
+    "emptyText": "You can request this service without selecting a Maalem. Our team will find the right solution.",
+    "errorTitle": "Maalems are temporarily unavailable",
+    "profile": "View profile",
+    "choose": "Choose this Maalem",
+    "verified": "Verified Maalem",
+    "city": "City",
+    "areas": "Declared areas",
+    "missions": "{count} closed interventions for this service",
+    "availabilityNotice": "Declared areas do not guarantee immediate availability.",
+    "pagination": "Maalems pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}",
+    "jsonLdDescription": "Service provided by Boukir Diamond."
+  },
+  "serviceRequests": {
+    "summary": {
+      "verified": "Verified Maalem",
+      "location": "City",
+      "areas": "Service areas",
+      "experience": "{years} years of experience",
+      "noPhoto": "Maalem initials"
+    },
+    "publicProfile": {
+      "eyebrow": "Verified craftsmanship",
+      "title": "Meet {name}",
+      "intro": "Explore this public profile, then describe what you need. Our team reviews every request before confirming an intervention.",
+      "presentationTitle": "Professional profile",
+      "presentationFallback": "This Maalem can explain their approach with our team when your request is reviewed.",
+      "skillsTitle": "Skills",
+      "skillsFallback": "Detailed skills will be confirmed with our team.",
+      "ctaTitle": "Would you like their help?",
+      "ctaDescription": "Your choice is a preference. Assignment is confirmed only after we review your needs and availability.",
+      "cta": "Request this Maalem",
+      "privacy": "Private contact details stay protected. Boukir arranges the first contact."
+    },
+    "relay": {
+      "eyebrow": "What happens next",
+      "intro": "Your selected Maalem is requested, but not assigned yet.",
+      "requestTitle": "Your request",
+      "requestText": "Describe the need and tell us which Maalem you prefer.",
+      "reviewTitle": "Review by our team",
+      "reviewText": "We contact you and verify the useful details.",
+      "assignmentTitle": "Assignment confirmed later",
+      "assignmentText": "The final professional is confirmed after this review."
+    },
+    "form": {
+      "back": "Back",
+      "serviceUnavailable": "Service unavailable",
+      "quickEyebrow": "Quick request",
+      "quickTitle": "Simply describe your problem",
+      "quickIntro": "Our team will qualify the need with you.",
+      "serviceEyebrow": "Service request",
+      "serviceTitle": "Request this service",
+      "serviceIntro": "Describe your need. Our team will contact you to arrange the next step.",
+      "eyebrow": "Intervention request",
+      "title": "Tell us what you need",
+      "intro": "A few precise details will help us prepare the right conversation with you.",
+      "needSection": "Your need",
+      "contactSection": "Contact and intervention location",
+      "timingSection": "Preferred date and time",
+      "detailsSection": "Photos and details",
+      "submit": "Send my request",
+      "submitting": "Sending securely…",
+      "submitHint": "Sending this form never triggers an automatic assignment.",
+      "backToProfile": "Back to the Maalem profile"
+    },
+    "fields": {
+      "contactLegend": "How and where can we reach you?",
+      "contactName": "Name",
+      "optional": "optional",
+      "dateRequired": "Preferred date *",
+      "slotRequired": "Time or window *",
+      "description": "Problem or need description",
+      "descriptionPlaceholder": "E.g. A leak appeared under the sink and the water supply is difficult to shut off.",
+      "descriptionHint": "Describe the symptoms, urgency and any useful access constraints.",
+      "phone": "Contact phone",
+      "city": "City",
+      "address": "Intervention address",
+      "date": "Preferred date (optional)",
+      "slot": "Time or window (optional)",
+      "slotPlaceholder": "E.g. After 5 pm",
+      "sharedNote": "Additional information (optional)",
+      "sharedNotePlaceholder": "Building access, availability, useful instructions…",
+      "sharedNoteHint": "This information may be shared to prepare the intervention."
+    },
+    "map": {
+      "open": "Choose a position on the map (optional)",
+      "positionSaved": "GPS position saved",
+      "hint": "Move the map or search for an address. City and address update after selection.",
+      "search": "Search for your address…",
+      "release": "Release to confirm",
+      "current": "My current position",
+      "coordinates": "GPS: {latitude}, {longitude}",
+      "remove": "Remove position"
+    },
+    "uploads": {
+      "field": "Photos (optional)",
+      "action": "Add photos",
+      "hint": "JPG, PNG or WEBP · up to 8 · 8 MB per photo",
+      "previewAlt": "Preview of photo {index}",
+      "remove": "Remove photo {name}"
+    },
+    "validation": {
+      "dateRequired": "Choose a preferred date.",
+      "timeSlotRequired": "Enter a preferred time or window.",
+      "descriptionRequired": "Describe the problem or need.",
+      "phoneRequired": "Enter a phone number where we can reach you.",
+      "cityRequired": "Enter the intervention city.",
+      "addressRequired": "Enter the intervention address.",
+      "tooLong": "This text is longer than allowed.",
+      "datePast": "Choose today or a future date.",
+      "gpsPair": "Latitude and longitude must be provided together.",
+      "gpsInvalid": "The GPS position is invalid.",
+      "tooManyPhotos": "You can add up to 8 photos.",
+      "photoInvalid": "Each photo must be JPG, PNG or WEBP and no larger than 8 MB."
+    },
+    "errors": {
+      "unexpected": "An unexpected error occurred. Try again without closing this page.",
+      "modeUnavailable": "This request flow is not available yet."
+    },
+    "auth": {
+      "loading": "Checking your session",
+      "title": "Sign in to request this Maalem",
+      "description": "Your account lets us contact you and secure request tracking.",
+      "action": "Sign in"
+    },
+    "success": {
+      "title": "We received your request",
+      "description": "Our team will contact you to verify the need before any assignment.",
+      "requestNumber": "Request number",
+      "tracking": "View request status",
+      "trackingHint": "Status shows that we received your request, not that a mission is already assigned."
+    },
+    "trust": {
+      "title": "Your information is handled carefully",
+      "description": "The Maalem's private phone number is never displayed. Our team arranges contact after verification."
+    }
+  },
   "common": {
     "home": "Home",
     "products": "Products",
@@ -58,7 +299,9 @@
       "pendingDesc": "An admin will review your request soon.",
       "requestHint": "Request Artisan/Pro status to access more benefits and increase your discount earnings.",
       "requestAction": "Request Artisan status",
-      "maalemAction": "Complete my Maalem application"
+      "maalemAction": "View my Maalem application",
+      "maalemJoinAction": "Become a Maalem / Join our team",
+      "maalemOpeningAction": "Opening application…"
     },
     "remise": {
       "title": "Your discount balance",
@@ -147,7 +390,8 @@
       "error": {
         "title": "Error",
         "updateProfileFallback": "Unable to update the profile.",
-        "requestArtisanFallback": "Unable to send the request."
+        "requestArtisanFallback": "Unable to send the request.",
+        "joinMaalemFallback": "Unable to open your Maalem application."
       }
     }
   },
@@ -717,10 +961,29 @@
   },
   "maalemApplication": {
     "title": "Maalem application",
-    "auth": { "title": "Sign-in required", "description": "Sign in to your Artisan account to prepare your Maalem application.", "action": "Sign in" },
-    "access": { "title": "An Artisan account is required", "description": "A Maalem application extends an existing Artisan account. Request Artisan approval from your profile first; no second account will be created.", "action": "Back to my profile" },
-    "errorState": { "title": "Unable to load the application", "description": "Check your connection and try again.", "action": "Try again" },
-    "statuses": { "draft": "Draft", "submitted": "Submitted", "under_review": "Under review", "approved": "Approved", "rejected": "Needs changes", "suspended": "Suspended" },
+    "auth": {
+      "title": "Sign-in required",
+      "description": "Sign in to your Artisan account to prepare your Maalem application.",
+      "action": "Sign in"
+    },
+    "access": {
+      "title": "An Artisan account is required",
+      "description": "A Maalem application extends an existing Artisan account. Request Artisan approval from your profile first; no second account will be created.",
+      "action": "Back to my profile"
+    },
+    "errorState": {
+      "title": "Unable to load the application",
+      "description": "Check your connection and try again.",
+      "action": "Try again"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "under_review": "Under review",
+      "approved": "Approved",
+      "rejected": "Needs changes",
+      "suspended": "Suspended"
+    },
     "header": {
       "secure": "Private professional application",
       "title": "Build your Maalem application",
@@ -730,41 +993,155 @@
       "completionHint": "Essential items before submission"
     },
     "statusMessages": {
-      "draft": { "title": "Editable draft", "description": "Complete the required details before submitting." },
-      "submitted": { "title": "Your application was submitted", "description": "It will be handled in the Back office. No operational Maalem access is granted at this stage." },
-      "under_review": { "title": "Your application is being reviewed", "description": "The information is read-only during the review." },
-      "approved": { "title": "Your Maalem profile is approved", "description": "Your Artisan account remains unchanged and keeps all its benefits." },
-      "rejected": { "title": "You can update your application", "description": "Review the reason, make changes and submit again." },
-      "suspended": { "title": "Your Maalem profile is suspended", "description": "You can still use your Artisan ecommerce account normally." }
+      "draft": {
+        "title": "Editable draft",
+        "description": "Complete the required details before submitting."
+      },
+      "submitted": {
+        "title": "Your application was submitted",
+        "description": "It will be handled in the Back office. No operational Maalem access is granted at this stage."
+      },
+      "under_review": {
+        "title": "Your application is being reviewed",
+        "description": "The information is read-only during the review."
+      },
+      "approved": {
+        "title": "Your Maalem profile is approved",
+        "description": "Your Artisan account remains unchanged and keeps all its benefits."
+      },
+      "rejected": {
+        "title": "You can update your application",
+        "description": "Review the reason, make changes and submit again."
+      },
+      "suspended": {
+        "title": "Your Maalem profile is suspended",
+        "description": "You can still use your Artisan ecommerce account normally."
+      }
     },
-    "rejection": { "title": "Reason provided by the team" },
-    "identity": { "title": "Reused identity", "description": "These details come from your account, so you do not need to enter them again.", "name": "Full name", "email": "Email", "accountPhone": "Account phone", "notProvided": "Not provided" },
-    "trade": { "title": "Trade and skills", "description": "Choose an active category and describe your specialties.", "inactiveCategory": "The “{name}” category is no longer available. Choose an active category before submission.", "noCategories": "No active trade category is currently available. You can submit your application once a category is offered." },
-    "coverage": { "title": "Coverage and availability", "description": "Tell us where and when clients can call on you." },
-    "experience": { "title": "Introduction and experience", "description": "Give the team the useful details they need to understand your background." },
-    "fields": { "category": "Main trade category", "skills": "Skills and specialties", "phone": "Professional phone", "city": "Main city", "areas": "Service areas", "years": "Years of experience", "availability": "Availability", "summary": "Professional introduction", "experiences": "Experience and references", "other": "Additional information" },
-    "placeholders": { "category": "Choose an active category", "skills": "E.g. repairs, installation…", "phone": "+212 6…", "city": "E.g. Casablanca", "areas": "E.g. Maarif, central Casablanca…", "availability": "Choose availability", "summary": "Describe your expertise, how you work and the jobs you accept.", "experiences": "Describe your experience, key projects, certifications or references.", "other": "Add anything useful for reviewing your application." },
-    "hints": { "tags": "Press Enter or comma to add", "removeTag": "Remove {value}", "phone": "Pre-filled from your account. Change it only if your professional contact is different." },
-    "availability": { "immediate": "Available immediately", "weekdays": "Weekdays", "weekends": "Weekends", "evenings": "Evenings", "on_request": "On request" },
-    "validation": { "category": "Choose an active category.", "skills": "Add at least one skill.", "phone": "Enter a valid phone number.", "city": "Enter your main city.", "years": "Enter your years of experience.", "summary": "Add a professional introduction.", "availability": "Choose your availability." },
+    "rejection": {
+      "title": "Reason provided by the team"
+    },
+    "identity": {
+      "title": "Reused identity",
+      "description": "These details come from your account, so you do not need to enter them again.",
+      "name": "Full name",
+      "email": "Email",
+      "accountPhone": "Account phone",
+      "notProvided": "Not provided"
+    },
+    "trade": {
+      "title": "Trade and skills",
+      "description": "Choose an active category and describe your specialties.",
+      "inactiveCategory": "The “{name}” category is no longer available. Choose an active category before submission.",
+      "noCategories": "No active trade category is currently available. You can submit your application once a category is offered."
+    },
+    "coverage": {
+      "title": "Coverage and availability",
+      "description": "Tell us where and when clients can call on you."
+    },
+    "experience": {
+      "title": "Introduction and experience",
+      "description": "Give the team the useful details they need to understand your background."
+    },
+    "fields": {
+      "category": "Main trade category",
+      "skills": "Skills and specialties",
+      "phone": "Professional phone",
+      "city": "Main city",
+      "areas": "Service areas",
+      "years": "Years of experience",
+      "availability": "Availability",
+      "summary": "Professional introduction",
+      "experiences": "Experience and references",
+      "other": "Additional information"
+    },
+    "placeholders": {
+      "category": "Choose an active category",
+      "skills": "E.g. repairs, installation…",
+      "phone": "+212 6…",
+      "city": "E.g. Casablanca",
+      "areas": "E.g. Maarif, central Casablanca…",
+      "availability": "Choose availability",
+      "summary": "Describe your expertise, how you work and the jobs you accept.",
+      "experiences": "Describe your experience, key projects, certifications or references.",
+      "other": "Add anything useful for reviewing your application."
+    },
+    "hints": {
+      "tags": "Press Enter or comma to add",
+      "removeTag": "Remove {value}",
+      "phone": "Pre-filled from your account. Change it only if your professional contact is different."
+    },
+    "availability": {
+      "immediate": "Available immediately",
+      "weekdays": "Weekdays",
+      "weekends": "Weekends",
+      "evenings": "Evenings",
+      "on_request": "On request"
+    },
+    "validation": {
+      "category": "Choose an active category.",
+      "skills": "Add at least one skill.",
+      "phone": "Enter a valid phone number.",
+      "city": "Enter your main city.",
+      "years": "Enter your years of experience.",
+      "summary": "Add a professional introduction.",
+      "availability": "Choose your availability."
+    },
     "documents": {
       "title": "Documents and completed work",
       "description": "Add useful evidence. Files stay private while your application is reviewed.",
-      "cvTitle": "Curriculum vitae", "cvHint": "PDF only, up to 5 MB.", "photosTitle": "Completed work photos", "photosHint": "JPEG, PNG or WebP, 5 MB per image, 8 maximum.",
-      "addCv": "Add my CV", "replaceCv": "Replace my CV", "addPhotos": "Add photos ({count}/{max})", "savedFiles": "Saved files", "empty": "No documents added yet.",
-      "private": "Your CV and completed work are served through authenticated access and are not published on the site.", "download": "Download", "delete": "Delete",
-      "kinds": { "cv": "CV", "realization": "Completed work" },
-      "invalidCvTitle": "CV not accepted", "invalidCvDesc": "Choose a PDF up to 5 MB.", "invalidPhotosTitle": "Photos not accepted", "invalidPhotosDesc": "Use JPEG, PNG or WebP images up to 5 MB without exceeding 8 files.",
-      "cvUploaded": "CV saved", "photosUploaded": "Completed work saved", "deleted": "Document deleted", "uploadError": "Unable to upload the document.", "deleteError": "Unable to delete the document.", "downloadError": "Unable to download the document."
+      "cvTitle": "Curriculum vitae",
+      "cvHint": "PDF only, up to 5 MB.",
+      "photosTitle": "Completed work photos",
+      "photosHint": "JPEG, PNG or WebP, 5 MB per image, 8 maximum.",
+      "addCv": "Add my CV",
+      "replaceCv": "Replace my CV",
+      "addPhotos": "Add photos ({count}/{max})",
+      "savedFiles": "Saved files",
+      "empty": "No documents added yet.",
+      "private": "Your CV and completed work are served through authenticated access and are not published on the site.",
+      "download": "Download",
+      "delete": "Delete",
+      "kinds": {
+        "cv": "CV",
+        "realization": "Completed work"
+      },
+      "invalidCvTitle": "CV not accepted",
+      "invalidCvDesc": "Choose a PDF up to 5 MB.",
+      "invalidPhotosTitle": "Photos not accepted",
+      "invalidPhotosDesc": "Use JPEG, PNG or WebP images up to 5 MB without exceeding 8 files.",
+      "cvUploaded": "CV saved",
+      "photosUploaded": "Completed work saved",
+      "deleted": "Document deleted",
+      "uploadError": "Unable to upload the document.",
+      "deleteError": "Unable to delete the document.",
+      "downloadError": "Unable to download the document."
     },
-    "actions": { "hint": "Submitting locks the application until it is processed.", "save": "Save draft", "saving": "Saving…", "submit": "Submit application", "submitting": "Submitting…" },
-    "toasts": { "savedTitle": "Draft saved", "savedDesc": "You can continue your application later.", "submittedTitle": "Application submitted", "submittedDesc": "Your application is now available for review.", "errorTitle": "Something went wrong", "saveError": "Unable to save the draft.", "submitError": "Unable to submit the application.", "incompleteTitle": "Incomplete application", "incompleteDesc": "Complete the highlighted fields before submitting." }
+    "actions": {
+      "hint": "Submitting locks the application until it is processed.",
+      "save": "Save draft",
+      "saving": "Saving…",
+      "submit": "Submit application",
+      "submitting": "Submitting…"
+    },
+    "toasts": {
+      "savedTitle": "Draft saved",
+      "savedDesc": "You can continue your application later.",
+      "submittedTitle": "Application submitted",
+      "submittedDesc": "Your application is now available for review.",
+      "errorTitle": "Something went wrong",
+      "saveError": "Unable to save the draft.",
+      "submitError": "Unable to submit the application.",
+      "incompleteTitle": "Incomplete application",
+      "incompleteDesc": "Complete the highlighted fields before submitting."
+    }
   },
   "accountSidebar": {
     "activeAccount": "Active account",
     "profile": "My profile",
     "maalemApplication": "Maalem application",
     "orders": "My orders",
+    "serviceRequests": "My service requests",
     "soldeHistory": "Balance history",
     "wishlist": "Wishlist",
     "settings": "Settings"
@@ -855,6 +1232,8 @@
     "home": "Home",
     "categories": "Categories",
     "shop": "Shop",
+    "services": "Services",
+    "maalem": "Become a Maalem",
     "products": "Products",
     "searchPlaceholder": "Search products...",
     "profile": "My profile",
@@ -943,7 +1322,22 @@
     "companyInfoDesc": "Add your company details for invoicing.",
     "companyName": "Company name",
     "ice": "ICE",
-    "iceHint": "ICE must contain 15 digits."
+    "iceHint": "ICE must contain 15 digits.",
+    "artisanPathTitle": "Which Artisan path suits you?",
+    "artisanPathDescription": "In both cases, your Artisan request follows the current approval process.",
+    "artisanEcommerceTitle": "E-commerce Artisan",
+    "artisanEcommerceDescription": "Shop with Artisan benefits and discounts after your request is approved.",
+    "artisanMaalemTitle": "Become a Maalem",
+    "artisanMaalemDescription": "Join our team and complete your professional application next.",
+    "sameArtisanAccount": "Same Artisan account",
+    "maalemCategory": "Trade category (optional)",
+    "maalemCategoryHint": "Choose it now or complete it later in your application.",
+    "selectMaalemCategory": "Select a category",
+    "completeCategoryLater": "I’ll complete this later",
+    "loadingCategories": "Loading categories",
+    "categoriesUnavailable": "Categories are temporarily unavailable. You can complete this choice in your application.",
+    "noActiveCategories": "No category is available right now. Your draft can still be created.",
+    "maalemDraftNotice": "A draft will be created. Registration grants no Maalem rights before review and approval."
   },
   "validation": {
     "required": "This field is required",
@@ -970,7 +1364,9 @@
     "roleRequired": "Please select an account type",
     "companyNameRequired": "Company name is required",
     "iceRequired": "ICE is required",
-    "iceFormat": "ICE must contain 15 digits"
+    "iceFormat": "ICE must contain 15 digits",
+    "artisanPathInvalid": "The Maalem path requires an Artisan registration",
+    "maalemCategoryInvalid": "This category can only be used with the Maalem path"
   },
   "placeholders": {
     "email": "example@email.com",

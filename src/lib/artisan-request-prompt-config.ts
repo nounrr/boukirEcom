@@ -14,7 +14,7 @@ export const ARTISAN_REQUEST_PROMPT_CONFIG = {
   MAX_SHOWS_PER_SESSION: 3,
 
   // Pages where the prompt should not appear
-  EXCLUDED_PATHS: ["/login", "/register", "/forgot-password", "/reset-password", "/auth"],
+  EXCLUDED_PATHS: ["/login", "/register", "/forgot-password", "/reset-password", "/activate-account", "/auth"],
 
   STORAGE_KEY_PREFIX: "boukir_artisan_request_prompt_v1",
 } as const

@@ -6,12 +6,14 @@ import type {
   MaalemProfile,
   MaalemProfileCategory,
   MaalemProfessionalData,
+  MaalemNotification,
 } from '@/types/maalem-profile';
+import type { MaalemAccessDecision } from '@/types/maalem-access';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryPublic,
-  tagTypes: ['Auth', 'MaalemProfile', 'MaalemCategories'],
+  tagTypes: ['Auth', 'MaalemProfile', 'MaalemCategories', 'MaalemAccess', 'MaalemNotifications'],
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginCredentials>({
       query: (credentials) => ({
@@ -25,6 +27,16 @@ export const authApi = createApi({
         url: '/api/users/auth/register',
         method: 'POST',
         body: data,
+      }),
+    }),
+    activateAccount: builder.mutation<
+      { message: string },
+      { token: string; password: string; confirm_password: string }
+    >({
+      query: (body) => ({
+        url: '/api/users/auth/activate',
+        method: 'POST',
+        body,
       }),
     }),
     logout: builder.mutation<void, void>({
@@ -68,6 +80,30 @@ export const authApi = createApi({
       transformResponse: (response: { profile: MaalemProfile | null }) => response.profile,
       providesTags: ['MaalemProfile'],
     }),
+    getMaalemNotifications: builder.query<MaalemNotification[], void>({
+      query: () => '/api/maalem-profiles/me/notifications',
+      transformResponse: (response: { notifications: MaalemNotification[] }) => response.notifications || [],
+      providesTags: ['MaalemNotifications'],
+    }),
+    markMaalemNotificationRead: builder.mutation<void, number>({
+      query: (id) => ({ url: `/api/maalem-profiles/me/notifications/${id}/read`, method: 'POST' }),
+      invalidatesTags: ['MaalemNotifications'],
+    }),
+    getMaalemAccess: builder.query<MaalemAccessDecision, void>({
+      query: () => '/api/maalem-access/me',
+      providesTags: ['MaalemAccess'],
+      keepUnusedDataFor: 0,
+    }),
+    joinMaalemProgram: builder.mutation<
+      { profile: MaalemProfile; created: boolean },
+      void
+    >({
+      query: () => ({
+        url: '/api/maalem-profiles/me/join',
+        method: 'POST',
+      }),
+      invalidatesTags: ['MaalemProfile', 'MaalemAccess', 'Auth'],
+    }),
     getActiveMaalemCategories: builder.query<MaalemProfileCategory[], void>({
       query: () => '/api/maalem-categories/active',
       transformResponse: (
@@ -88,7 +124,7 @@ export const authApi = createApi({
         body,
       }),
       transformResponse: (response: { profile: MaalemProfile }) => response.profile,
-      invalidatesTags: ['MaalemProfile', 'Auth'],
+      invalidatesTags: ['MaalemProfile', 'MaalemAccess', 'Auth'],
     }),
     submitMaalemProfile: builder.mutation<MaalemProfile, void>({
       query: () => ({
@@ -96,7 +132,7 @@ export const authApi = createApi({
         method: 'POST',
       }),
       transformResponse: (response: { profile: MaalemProfile }) => response.profile,
-      invalidatesTags: ['MaalemProfile', 'Auth'],
+      invalidatesTags: ['MaalemProfile', 'MaalemAccess', 'Auth'],
     }),
   }),
 });
@@ -104,11 +140,16 @@ export const authApi = createApi({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useActivateAccountMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
   useUpdateProfileMutation,
   useRequestArtisanMutation,
   useGetMaalemProfileQuery,
+  useGetMaalemNotificationsQuery,
+  useMarkMaalemNotificationReadMutation,
+  useGetMaalemAccessQuery,
+  useJoinMaalemProgramMutation,
   useGetActiveMaalemCategoriesQuery,
   useSaveMaalemDraftMutation,
   useSubmitMaalemProfileMutation,

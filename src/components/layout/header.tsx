@@ -12,7 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearAuth } from "@/state/slices/user-slice"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronDown, Home, LogOut, Menu, Package, Store, UserCircle2 } from "lucide-react"
+import { BriefcaseBusiness, ChevronDown, Home, LogOut, Menu, Package, Store, UserCircle2, Wrench } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
@@ -157,12 +157,23 @@ export function Header() {
 
   const navLinks = [
     { href: `/${locale}`, label: t('home'), icon: Home },
+    { href: `/${locale}/services`, label: t('services'), icon: Wrench },
+    {
+      href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
+      label: t('maalem'),
+      icon: BriefcaseBusiness,
+    },
   ]
 
   const secondaryLinks = [
     { href: `/${locale}/shop`, label: t('shop') },
     { href: `/${locale}/shop?sort=promo`, label: tFilters('sort.bestPromos') },
     { href: `/${locale}/shop?sort=popular`, label: tFilters('sort.popular') },
+    { href: `/${locale}/services`, label: t('services') },
+    {
+      href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
+      label: t('maalem'),
+    },
     ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
   ]
 

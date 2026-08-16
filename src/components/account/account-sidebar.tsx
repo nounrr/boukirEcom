@@ -2,13 +2,13 @@
 
 import { Badge } from "@/components/ui/badge"
 import { useAppSelector } from "@/state/hooks"
-import { BriefcaseBusiness, Heart, Package, UserCircle2, Wallet } from "lucide-react"
+import { BriefcaseBusiness, ClipboardList, Heart, Package, UserCircle2, Wallet } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
-  active?: "profile" | "maalem" | "orders" | "solde" | "wishlist" | "settings"
+  active?: "profile" | "maalem" | "orders" | "requests" | "solde" | "wishlist" | "settings"
 }
 
 export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
@@ -17,7 +17,11 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
   const { user, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
   const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
-  const canApplyAsMaalem = user?.type_compte === "Artisan/Promoteur" || user?.artisan_approuve
+  const canApplyAsMaalem = Boolean(
+    user?.type_compte === "Artisan/Promoteur"
+    || user?.artisan_approuve
+    || (user?.demande_artisan && user?.maalem_profile)
+  )
 
   return (
     <aside className="lg:col-span-1">
@@ -77,6 +81,13 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
           >
             <Package className="w-4 h-4" />
             {t("orders")}
+          </Link>
+          <Link
+            href={`/${locale}/profile/requests`}
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "requests" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
+          >
+            <ClipboardList className="w-4 h-4" />
+            {t("serviceRequests")}
           </Link>
 
           {canUseSolde && (

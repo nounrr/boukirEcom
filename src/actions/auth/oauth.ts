@@ -2,26 +2,19 @@
 
 import { cookies } from "next/headers"
 import { apiClient, getErrorMessage } from "@/lib/axios"
-import type { EcommerceAccountType } from "@/state/slices/user-slice"
+import type { User } from "@/state/slices/user-slice"
 
 type GoogleAuthResponse = {
   success: true
   accessToken: string
   refreshToken: string | null
-  user: {
-    id: number
-    prenom: string
-    nom: string
-    email: string
-    telephone: string | null
-    type_compte: EcommerceAccountType
-    avatar_url: string | null
-    locale: string
-  }
+  user: User
   isNewUser: boolean
+  nextPath: string | null
 } | {
   success: false
   error: string
+  field?: string
 }
 
 /**
@@ -31,7 +24,9 @@ type GoogleAuthResponse = {
  */
 export async function googleAuth(
   credential: string,
-  role?: "client" | "artisan-promoter"
+  role?: "client" | "artisan-promoter",
+  artisanPath?: 'ecommerce' | 'maalem',
+  maalemCategoryId?: number | null,
 ): Promise<GoogleAuthResponse> {
   try {
     console.log('[GOOGLE AUTH] Action called')
@@ -51,9 +46,16 @@ export async function googleAuth(
     const typeCompte = role === "artisan-promoter" ? "Artisan/Promoteur" : "Client"
     
     // Backend expects 'credential' field (the JWT from Google)
-    const requestBody = {
+    const requestBody: Record<string, unknown> = {
       credential: credential,
       type_compte: typeCompte,
+    }
+
+    if (typeCompte === 'Artisan/Promoteur') {
+      requestBody.artisan_path = artisanPath === 'maalem' ? 'maalem' : 'ecommerce'
+      if (artisanPath === 'maalem' && Number.isInteger(maalemCategoryId) && maalemCategoryId! > 0) {
+        requestBody.maalem_category_id = maalemCategoryId
+      }
     }
     
     console.log('[GOOGLE AUTH] Sending to:', '/users/auth/google')
@@ -96,6 +98,7 @@ export async function googleAuth(
       refreshToken: null,
       user: data.user,
       isNewUser: data.isNewUser || false,
+      nextPath: typeof data.next_path === 'string' ? data.next_path : null,
     }
   } catch (error) {
     console.error('[GOOGLE AUTH] Error details:', error)
@@ -111,6 +114,9 @@ export async function googleAuth(
     return {
       success: false,
       error: getErrorMessage(error),
+      field: error && typeof error === 'object' && 'response' in error
+        ? (error as any).response?.data?.field
+        : undefined,
     }
   }
 }
@@ -170,6 +176,7 @@ export async function facebookAuth(
       refreshToken: null,
       user: data.user,
       isNewUser: data.isNewUser || false,
+      nextPath: null,
     }
   } catch (error) {
     console.error('[FACEBOOK AUTH] Error:', error)

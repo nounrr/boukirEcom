@@ -1,0 +1,93 @@
+'use client'
+
+import Link from 'next/link'
+import { useLocale } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, Camera, CheckCircle2, MapPin, Navigation, Phone, Play, Save } from 'lucide-react'
+import { AccountSidebar } from '@/components/account/account-sidebar'
+import { ShopPageLayout } from '@/components/layout/shop-page-layout'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { API_CONFIG } from '@/lib/api-config'
+import { useAppSelector } from '@/state/hooks'
+import {
+  useGetMaalemMissionQuery, useTransitionMaalemMissionMutation,
+  useUpdateMaalemMissionProgressMutation, useUpdateMaalemMissionReportMutation,
+  type MissionStatus,
+} from '@/state/api/maalem-missions-api-slice'
+
+const labels: Record<MissionStatus, string> = { scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé', work_in_progress: 'Travaux en cours', completed: 'Terminée — contrôle équipe requis' }
+const transitions: Partial<Record<MissionStatus, { status: MissionStatus; label: string; icon: typeof Navigation }>> = {
+  to_do: { status: 'en_route', label: 'Je suis en route', icon: Navigation },
+  en_route: { status: 'arrived', label: 'Je suis arrivé', icon: MapPin },
+  arrived: { status: 'work_in_progress', label: 'Démarrer les travaux', icon: Play },
+  work_in_progress: { status: 'completed', label: 'Terminer l’intervention', icon: CheckCircle2 },
+}
+
+function message(error: unknown) {
+  const value = error as { data?: { message?: string; errors?: Record<string, string> } }
+  return [value.data?.message, ...(value.data?.errors ? Object.values(value.data.errors) : [])].filter(Boolean).join(' · ') || 'Une erreur est survenue'
+}
+
+export default function MaalemMissionDetailPage() {
+  const locale = useLocale()
+  const id = Number(useParams<{ id: string }>().id)
+  const token = useAppSelector((state) => state.user.accessToken)
+  const query = useGetMaalemMissionQuery(id, { skip: !Number.isInteger(id) })
+  const mission = query.data?.mission
+  const [transition, transitionState] = useTransitionMaalemMissionMutation()
+  const [updateProgress, progressState] = useUpdateMaalemMissionProgressMutation()
+  const [updateReport, reportState] = useUpdateMaalemMissionReportMutation()
+  const [feedback, setFeedback] = useState('')
+  const [progress, setProgress] = useState(0)
+  const [report, setReport] = useState({ work_summary: '', maalem_observations: '', work_finished: true, additional_intervention_required: false, incomplete_reason: '' })
+
+  useEffect(() => { if (mission) { setProgress(Number(mission.progress_percent)); setReport({ work_summary: mission.work_summary || '', maalem_observations: mission.maalem_observations || '', work_finished: mission.work_finished == null ? true : Boolean(mission.work_finished), additional_intervention_required: Boolean(mission.additional_intervention_required), incomplete_reason: mission.incomplete_reason || '' }) } }, [mission])
+
+  async function run(action: () => Promise<unknown>, success: string) { setFeedback(''); try { await action(); setFeedback(success); await query.refetch() } catch (error) { setFeedback(message(error)) } }
+
+  async function uploadPhotos(files: FileList | null, phase: string) {
+    if (!files?.length) return
+    const body = new FormData(); body.append('phase', phase); Array.from(files).forEach((file) => body.append('photos', file))
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/maalem-missions/${id}/photos`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body })
+    if (!response.ok) { const value = await response.json().catch(() => ({})); setFeedback(value.message || 'Envoi impossible'); return }
+    setFeedback('Photos ajoutées à la mission.'); await query.refetch()
+  }
+
+  async function openPhoto(photoId: number) {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/maalem-missions/${id}/photos/${photoId}`, { headers: { Authorization: `Bearer ${token}` } })
+    if (!response.ok) return setFeedback('Photo inaccessible')
+    const url = URL.createObjectURL(await response.blob()); window.open(url, '_blank', 'noopener,noreferrer'); window.setTimeout(() => URL.revokeObjectURL(url), 30_000)
+  }
+
+  if (query.isLoading) return <ShopPageLayout title="Mission" showHeader={false}><p className="py-16 text-center text-muted-foreground">Chargement…</p></ShopPageLayout>
+  if (!mission || query.error) return <ShopPageLayout title="Mission" showHeader={false}><p className="py-16 text-center text-destructive">Mission introuvable, réaffectée ou accès refusé.</p></ShopPageLayout>
+  const next = transitions[mission.status]
+  const NextIcon = next?.icon
+  return <ShopPageLayout title={mission.request_number} showHeader={false}>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6"><AccountSidebar active="maalem" /><main className="min-w-0 space-y-4 lg:col-span-3">
+      <Link href={`/${locale}/profile/maalem/missions`} className="inline-flex items-center gap-2 text-sm font-semibold text-primary"><ArrowLeft className="size-4" />Mes missions</Link>
+      <Card className="rounded-2xl"><CardHeader><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs text-muted-foreground">{mission.request_number}</p><h1 className="text-2xl font-bold">{mission.service_name || mission.category_name || 'Intervention'}</h1></div><Badge>{labels[mission.status]}</Badge></div></CardHeader><CardContent className="space-y-4">
+        {feedback && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">{feedback}</p>}
+        <div className="grid gap-3 text-sm sm:grid-cols-2"><p><strong>Date :</strong> {mission.planned_date?.slice(0, 10)} · {mission.planned_time_slot}</p><p><strong>Ville :</strong> {mission.mission_city}</p><p className="sm:col-span-2"><strong>Adresse :</strong> {mission.mission_address}</p><p><strong>Contact :</strong> {mission.mission_contact_name}</p><a className="flex items-center gap-2 font-semibold text-primary" href={`tel:${mission.mission_contact_phone}`}><Phone className="size-4" />{mission.mission_contact_phone}</a></div>
+        {mission.mission_description && <div className="rounded-xl border bg-muted/30 p-4 text-sm"><strong>Mission :</strong><p className="mt-1 whitespace-pre-wrap">{mission.mission_description}</p></div>}
+        {mission.latitude != null && <a target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-semibold text-primary" href={`https://www.google.com/maps?q=${mission.latitude},${mission.longitude}`}><MapPin className="size-4" />Ouvrir la localisation</a>}
+        {mission.shared_instructions && <div className="rounded-xl border bg-muted/30 p-4 text-sm"><strong>Instructions :</strong><p className="mt-1 whitespace-pre-wrap">{mission.shared_instructions}</p></div>}
+        {mission.special_information && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"><strong>Information particulière :</strong><p className="mt-1 whitespace-pre-wrap">{mission.special_information}</p></div>}
+        {mission.status === 'scheduled' && <p className="rounded-lg bg-blue-50 p-3 text-sm text-blue-900">La mission est planifiée. Attendez que l’équipe la passe au statut « À faire ».</p>}
+        {next && NextIcon && <Button disabled={transitionState.isLoading || (next.status === 'completed' && !report.work_summary.trim())} className="w-full" onClick={() => void run(() => transition({ id, status: next.status }).unwrap(), `Statut mis à jour : ${next.label}`)}><NextIcon className="size-4" />{next.label}</Button>}
+      </CardContent></Card>
+
+      {['to_do', 'en_route', 'arrived', 'work_in_progress'].includes(mission.status) && <Card className="rounded-2xl"><CardHeader><h2 className="font-bold">Progression</h2></CardHeader><CardContent className="space-y-3"><div className="flex items-center gap-3"><Input type="number" min={0} max={100} step={1} value={progress} onChange={(e) => setProgress(Number(e.target.value))} /><span className="font-bold">%</span><Button disabled={progressState.isLoading || !Number.isInteger(progress) || progress < 0 || progress > 100} onClick={() => void run(() => updateProgress({ id, progress_percent: progress }).unwrap(), 'Progression enregistrée.')}><Save className="size-4" />Enregistrer</Button></div><p className="text-xs text-muted-foreground">100 % ne termine pas automatiquement la mission.</p></CardContent></Card>}
+
+      {mission.status === 'work_in_progress' && <Card className="rounded-2xl"><CardHeader><h2 className="font-bold">Compte-rendu obligatoire</h2></CardHeader><CardContent className="space-y-4"><div><Label>Résumé du travail *</Label><Textarea className="mt-2" rows={4} value={report.work_summary} onChange={(e) => setReport({ ...report, work_summary: e.target.value })} /></div><div><Label>Observations</Label><Textarea className="mt-2" rows={3} value={report.maalem_observations} onChange={(e) => setReport({ ...report, maalem_observations: e.target.value })} /></div><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={report.work_finished} onChange={(e) => setReport({ ...report, work_finished: e.target.checked })} />Travail terminé</label><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={report.additional_intervention_required} onChange={(e) => setReport({ ...report, additional_intervention_required: e.target.checked })} />Intervention supplémentaire nécessaire</label>{!report.work_finished && <div><Label>Motif de non-achèvement *</Label><Textarea className="mt-2" value={report.incomplete_reason} onChange={(e) => setReport({ ...report, incomplete_reason: e.target.value })} /></div>}<Button disabled={reportState.isLoading || !report.work_summary.trim() || (!report.work_finished && !report.incomplete_reason.trim())} onClick={() => void run(() => updateReport({ id, body: { ...report, progress_percent: progress } }).unwrap(), 'Compte-rendu enregistré.')}><Save className="size-4" />Enregistrer le compte-rendu</Button></CardContent></Card>}
+
+      {['to_do', 'en_route', 'arrived', 'work_in_progress', 'completed'].includes(mission.status) && <Card className="rounded-2xl"><CardHeader><h2 className="flex items-center gap-2 font-bold"><Camera className="size-5" />Photos de mission</h2></CardHeader><CardContent className="space-y-4"><div className="grid gap-2 sm:grid-cols-3">{(['BEFORE', 'DURING', 'AFTER'] as const).map((phase) => <label key={phase} className="cursor-pointer rounded-lg border border-dashed p-3 text-center text-sm font-semibold text-primary"><input type="file" className="hidden" multiple accept="image/jpeg,image/png,image/webp" onChange={(e) => { void uploadPhotos(e.target.files, phase); e.target.value = '' }} />Ajouter {phase === 'BEFORE' ? 'avant' : phase === 'DURING' ? 'pendant' : 'après'}</label>)}</div><div className="grid gap-2 sm:grid-cols-2">{query.data?.photos.map((photo) => <button key={photo.id} onClick={() => void openPhoto(photo.id)} className="rounded-lg border p-3 text-left text-xs"><strong>{photo.phase}</strong> · {photo.original_name}</button>)}</div></CardContent></Card>}
+    </main></div>
+  </ShopPageLayout>
+}

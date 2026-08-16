@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useCallback, useState } from "react"
+import { useEffect, useCallback, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { googleAuth } from "@/actions/auth/oauth"
 import { useToast } from "@/hooks/use-toast"
@@ -68,8 +68,11 @@ interface PromptNotification {
 
 interface UseGoogleAuthOptions {
   onSuccess?: (user: any) => void
-  onError?: (error: string) => void
+  onError?: (error: string, field?: string) => void
   role?: "client" | "artisan-promoter"
+  artisanPath?: 'ecommerce' | 'maalem'
+  maalemCategoryId?: number | null
+  maalemRedirectTo?: string
   redirectTo?: string
   autoSelect?: boolean
   context?: "signin" | "signup" | "use"
@@ -81,6 +84,9 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
     onSuccess,
     onError,
     role = "client",
+    artisanPath = 'ecommerce',
+    maalemCategoryId = null,
+    maalemRedirectTo = '/profile/maalem',
     redirectTo = "/",
     autoSelect = false,
     context = "signin",
@@ -93,6 +99,8 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
+  const credentialInFlightRef = useRef(false)
+  const signInInFlightRef = useRef(false)
 
   // Load Google Identity Services script
   useEffect(() => {
@@ -124,6 +132,8 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
   // Handle Google credential response
   const handleCredentialResponse = useCallback(
     async (response: GoogleCredentialResponse) => {
+      if (credentialInFlightRef.current) return
+      credentialInFlightRef.current = true
       console.log("[Google Auth] Credential received")
       console.log("[Google Auth] Response object:", response)
       console.log("[Google Auth] Credential exists:", !!response.credential)
@@ -138,7 +148,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           return
         }
 
-        const result = await googleAuth(response.credential, role)
+        const result = await googleAuth(response.credential, role, artisanPath, maalemCategoryId)
         console.log("[Google Auth] Backend response:", result)
 
         if (result.success) {
@@ -169,8 +179,14 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             onSuccess(result.user)
           }
 
-          // Redirect after short delay (unless skipRedirect is true)
-          if (!skipRedirect) {
+          // A newly-created Maalem draft must always continue to KAN-5, including
+          // registrations started from an AuthDialog.
+          if (result.nextPath && result.isNewUser) {
+            setTimeout(() => {
+              router.push(maalemRedirectTo)
+              router.refresh()
+            }, 300)
+          } else if (!skipRedirect) {
             setTimeout(() => {
               router.push(redirectTo)
               router.refresh()
@@ -189,7 +205,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           toast.error(t("googleError"), { description })
           
           if (onError) {
-            onError(description)
+            onError(description, result.field)
           }
         }
       } catch (error) {
@@ -201,10 +217,11 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           onError(errorMessage)
         }
       } finally {
+        credentialInFlightRef.current = false
         setIsLoading(false)
       }
     },
-    [role, router, redirectTo, toast, t, dispatch, onSuccess, onError, skipRedirect]
+    [role, artisanPath, maalemCategoryId, maalemRedirectTo, router, redirectTo, toast, t, dispatch, onSuccess, onError, skipRedirect]
   )
 
   // Initialize Google Identity Services
@@ -290,12 +307,14 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
 
   // Programmatically trigger Google Sign-In (for custom buttons)
   const signIn = useCallback(() => {
+    if (signInInFlightRef.current) return
     if (!isScriptLoaded || !window.google) {
       console.warn("[Google Auth] Cannot sign in - Google not loaded")
       toast.error(t("googleLoadError"), { description: t("googleLoadErrorDesc") })
       return
     }
 
+    signInInFlightRef.current = true
     setIsLoading(true)
 
     try {
@@ -326,6 +345,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             if (hiddenContainer.parentNode) {
               hiddenContainer.parentNode.removeChild(hiddenContainer)
             }
+            signInInFlightRef.current = false
             setIsLoading(false)
           }, 1000)
         } else {
@@ -333,12 +353,14 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           if (hiddenContainer.parentNode) {
             hiddenContainer.parentNode.removeChild(hiddenContainer)
           }
+          signInInFlightRef.current = false
           setIsLoading(false)
           toast.error(t("googleError"), { description: t("initFailedDesc") })
         }
       }, 100)
     } catch (error) {
       console.error("[Google Auth] Sign-in trigger error:", error)
+      signInInFlightRef.current = false
       setIsLoading(false)
       toast.error(t("googleError"), { description: t("initFailedDesc") })
     }

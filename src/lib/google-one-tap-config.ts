@@ -13,6 +13,7 @@ export const GOOGLE_ONE_TAP_CONFIG = {
     '/register',
     '/forgot-password',
     '/reset-password',
+    '/activate-account',
     '/auth', // Exclude all auth routes
   ],
   

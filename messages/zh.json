@@ -1,4 +1,245 @@
 {
+  "maalemsPage": {
+    "metadataTitle": "认证 Maalem",
+    "metadataDescription": "浏览 Boukir Diamond 已发布的 Maalem。",
+    "eyebrow": "认证技能",
+    "title": "寻找合适的 Maalem",
+    "description": "浏览已审核并明确发布的资料，不会自动指派。",
+    "count": "{count} 位 Maalem",
+    "search": "公开姓名",
+    "category": "类别",
+    "allCategories": "全部",
+    "service": "服务",
+    "allServices": "全部服务",
+    "city": "城市",
+    "zone": "声明区域",
+    "experience": "最低经验",
+    "interventions": "最低完成次数",
+    "sort": "排序",
+    "recommended": "推荐",
+    "interventionsSort": "已完成服务",
+    "experienceSort": "经验",
+    "nameSort": "姓名",
+    "submit": "应用",
+    "reset": "重置",
+    "verified": "认证 Maalem",
+    "areas": "区域",
+    "experienceLabel": "{years} 年经验",
+    "noPhoto": "首字母",
+    "interventionsLabel": "已完成 {count} 次",
+    "declared": "声明区域不保证即时可用。",
+    "profile": "查看资料",
+    "request": "申请",
+    "empty": "没有符合条件的 Maalem。",
+    "error": "目录暂时不可用。",
+    "quick": "快速申请",
+    "quickDescription": "请描述您的需求，我们会引导您选择合适的服务。",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {page} 页",
+    "pagination": "Maalem 分页",
+    "sortNotice": "当前排序：{sort}"
+  },
+  "maalemDetailPage": {
+    "metadataFallback":"认证 Maalem 及其兼容服务的公开资料。", "back":"返回名录", "breadcrumb":"Maalem 名录", "eyebrow":"认证公开资料", "verified":"认证 Maalem", "location":"城市", "areas":"声明区域", "experience":"{years} 年经验", "noPhoto":"Maalem 姓名首字母", "closed":"{count} 次已验证服务", "proof":"工作证明", "proofText":"此数字仅包含 Boukir Diamond 中已关闭并验证的服务。", "lastClosed":"最近验证完成：{date}", "about":"简介", "aboutFallback":"该 Maalem 尚未添加公开简介。", "expertise":"经验与专长", "expertiseText":"这些信息来自已验证的公开资料；不会显示任何私人档案或叙述。", "skillsFallback":"暂无公开专长。", "services":"提供的服务", "servicesText":"与该 Maalem 主要类别兼容的公开服务。", "serviceView":"查看服务", "serviceRequest":"申请服务", "moreCategories":"更多类别", "servicesEmpty":"目前没有已发布的兼容服务。", "statistics":"验证统计", "byService":"按公开服务统计", "noBreakdown":"暂无公开明细。", "realizations":"案例", "realizationsEmpty":"目前没有公开案例。", "reviews":"评价", "reviewsEmpty":"公开评价尚不可用。不会计算或显示评分。", "ctaTitle":"想申请这位 Maalem 吗？", "ctaText":"您的选择仅表示偏好，不保证可用性或自动指派。", "cta":"申请这位 Maalem", "quick":"快速申请", "privacy":"您的联系方式绝不会显示在此资料中。", "jsonLdDescription":"{name} 的认证公开资料。", "monthYear":"{date, date, ::MMMM y}"
+  },
+  "servicesPage": {
+    "metadata": {
+      "title": "上门服务",
+      "description": "浏览可用服务，并向 Boukir Diamond 团队提交您的需求。"
+    },
+    "eyebrow": "服务与专业技能",
+    "title": "为您的需求找到合适服务",
+    "description": "浏览我们精选的服务并提交需求。团队会先进行确认，再安排合适的 Maalem。",
+    "resultCount": "共 {count} 项可用服务",
+    "gridLabel": "可用服务列表",
+    "filters": {
+      "title": "查找服务",
+      "searchLabel": "您需要什么？",
+      "searchPlaceholder": "例如：漏水、油漆、电力…",
+      "categoryLabel": "Maalem 类别",
+      "allCategories": "全部类别",
+      "submit": "搜索",
+      "reset": "重置"
+    },
+    "card": {
+      "view": "查看服务",
+      "request": "申请此服务",
+      "moreCategories": "+{count}"
+    },
+    "guidance": {
+      "title": "我不知道该选择哪项服务",
+      "description": "只需描述您的问题，我们的团队会帮助您确定合适的服务和类别。",
+      "action": "快速提交需求"
+    },
+    "empty": {
+      "title": "未找到服务",
+      "description": "目前没有已发布的服务。",
+      "filteredDescription": "请调整搜索条件或重置筛选，查看其他服务。"
+    },
+    "error": {
+      "title": "服务目录暂时不可用",
+      "description": "无法加载服务。您可以重试，或直接描述您的需求。",
+      "retry": "重试"
+    },
+    "pagination": {
+      "label": "服务分页",
+      "previous": "上一页",
+      "next": "下一页",
+      "page": "第 {page} 页"
+    }
+  },
+  "serviceDetailPage": {
+    "metadataDescription": "了解 {service} 以及 Boukir Diamond 精选的匹配 Maalem。",
+    "back": "返回服务目录",
+    "eyebrow": "Boukir Diamond 服务",
+    "requestService": "申请此服务",
+    "quickRequest": "快速提交需求",
+    "categories": "匹配类别",
+    "assuranceTitle": "类别匹配，档期仍需确认",
+    "assuranceText": "这些 Maalem 属于与本服务关联的类别。您的选择仅代表偏好，团队会在指派前核实需求和档期。",
+    "maalemsTitle": "匹配的 Maalem",
+    "maalemsCount": "{count} 位匹配 Maalem",
+    "emptyTitle": "暂无匹配 Maalem",
+    "emptyText": "您可以不选择 Maalem 直接申请服务，团队会寻找合适方案。",
+    "errorTitle": "暂时无法加载 Maalem",
+    "profile": "查看资料",
+    "choose": "选择此 Maalem",
+    "verified": "认证 Maalem",
+    "city": "城市",
+    "areas": "声明服务区域",
+    "missions": "该服务已完成 {count} 次",
+    "availabilityNotice": "声明区域不代表即时可用。",
+    "pagination": "Maalem 分页",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {page} 页",
+    "jsonLdDescription": "Boukir Diamond 提供的服务。"
+  },
+  "serviceRequests": {
+    "summary": {
+      "verified": "认证 Maalem",
+      "location": "城市",
+      "areas": "服务区域",
+      "experience": "{years} 年经验",
+      "noPhoto": "Maalem 姓名首字母"
+    },
+    "publicProfile": {
+      "eyebrow": "专业技能已认证",
+      "title": "认识 {name}",
+      "intro": "查看公开资料并说明您的需求。确认上门服务前，我们的团队会审核每一项申请。",
+      "presentationTitle": "职业介绍",
+      "presentationFallback": "审核申请时，该 Maalem 可通过我们的团队进一步说明工作方式。",
+      "skillsTitle": "技能",
+      "skillsFallback": "详细技能将由我们的团队与您确认。",
+      "ctaTitle": "希望由这位 Maalem 提供服务？",
+      "ctaDescription": "您的选择仅代表偏好。我们会在核实需求和档期后确认最终指派。",
+      "cta": "申请这位 Maalem",
+      "privacy": "其私人联系方式始终受到保护，首次联系由 Boukir 团队协调。"
+    },
+    "relay": {
+      "eyebrow": "服务流程",
+      "intro": "您选择的是意向 Maalem，目前尚未正式指派。",
+      "requestTitle": "提交需求",
+      "requestText": "说明需求并告诉我们您偏好的 Maalem。",
+      "reviewTitle": "团队审核",
+      "reviewText": "我们会联系您并核实必要信息。",
+      "assignmentTitle": "稍后确认指派",
+      "assignmentText": "审核完成后才会确认最终服务人员。"
+    },
+    "form": {
+      "back": "返回",
+      "serviceUnavailable": "服务不可用",
+      "quickEyebrow": "快速申请",
+      "quickTitle": "简单描述您的问题",
+      "quickIntro": "我们的团队会与您一起明确需求。",
+      "serviceEyebrow": "服务申请",
+      "serviceTitle": "申请此服务",
+      "serviceIntro": "请说明需求，我们的团队会联系您安排下一步。",
+      "eyebrow": "上门服务申请",
+      "title": "请告诉我们您的需求",
+      "intro": "提供几项准确的信息，有助于我们为您安排合适的沟通。",
+      "needSection": "您的需求",
+      "contactSection": "联系方式和服务地点",
+      "timingSection": "期望日期和时间",
+      "detailsSection": "照片和补充说明",
+      "submit": "提交申请",
+      "submitting": "正在安全提交…",
+      "submitHint": "提交表单不会触发自动指派。",
+      "backToProfile": "返回 Maalem 资料"
+    },
+    "fields": {
+      "contactLegend": "如何联系您以及服务地点？",
+      "contactName": "姓名",
+      "optional": "选填",
+      "dateRequired": "期望日期 *",
+      "slotRequired": "时间或时段 *",
+      "description": "问题或需求说明",
+      "descriptionPlaceholder": "例如：水槽下方出现漏水，进水阀似乎难以关闭。",
+      "descriptionHint": "请说明现象、紧急程度以及进入现场的注意事项。",
+      "phone": "联系电话",
+      "city": "城市",
+      "address": "服务地址",
+      "date": "期望日期（选填）",
+      "slot": "时间或时段（选填）",
+      "slotPlaceholder": "例如：下午 5 点后",
+      "sharedNote": "补充信息（选填）",
+      "sharedNotePlaceholder": "楼宇出入、可联系时间、其他说明…",
+      "sharedNoteHint": "该信息可能会用于服务准备。"
+    },
+    "map": {
+      "open": "在地图上选择位置（选填）",
+      "positionSaved": "GPS 位置已保存",
+      "hint": "移动地图或搜索地址，选择后城市和地址会自动更新。",
+      "search": "搜索您的地址…",
+      "release": "松开以确认",
+      "current": "我的当前位置",
+      "coordinates": "GPS：{latitude}, {longitude}",
+      "remove": "移除位置"
+    },
+    "uploads": {
+      "field": "照片（选填）",
+      "action": "添加照片",
+      "hint": "JPG、PNG 或 WEBP · 最多 8 张 · 每张 8 MB",
+      "previewAlt": "照片 {index} 预览",
+      "remove": "移除照片 {name}"
+    },
+    "validation": {
+      "dateRequired": "请选择期望日期。",
+      "timeSlotRequired": "请输入期望时间或时段。",
+      "descriptionRequired": "请说明问题或需求。",
+      "phoneRequired": "请输入可联系到您的电话号码。",
+      "cityRequired": "请输入服务城市。",
+      "addressRequired": "请输入服务地址。",
+      "tooLong": "文本超过允许长度。",
+      "datePast": "请选择今天或未来的日期。",
+      "gpsPair": "纬度和经度必须同时提供。",
+      "gpsInvalid": "GPS 位置无效。",
+      "tooManyPhotos": "最多可添加 8 张照片。",
+      "photoInvalid": "照片必须为 JPG、PNG 或 WEBP 格式，且每张不超过 8 MB。"
+    },
+    "errors": {
+      "unexpected": "发生意外错误。请不要关闭页面并重试。",
+      "modeUnavailable": "该申请流程尚未开放。"
+    },
+    "auth": {
+      "loading": "正在验证您的会话",
+      "title": "登录后申请这位 Maalem",
+      "description": "账户用于联系我们与您沟通，并保障申请进度安全。",
+      "action": "登录"
+    },
+    "success": {
+      "title": "您的申请已收到",
+      "description": "正式指派前，我们的团队会联系您核实需求。",
+      "requestNumber": "申请编号",
+      "tracking": "查看申请状态",
+      "trackingHint": "状态仅表示申请已收到，并不代表任务已经指派。"
+    },
+    "trust": {
+      "title": "您的信息受到妥善保护",
+      "description": "我们绝不会显示 Maalem 的私人电话。审核后由团队安排联系。"
+    }
+  },
   "common": {
     "home": "首页",
     "products": "产品",
@@ -58,7 +299,9 @@
       "pendingDesc": "管理员将很快审核你的申请。",
       "requestHint": "申请工匠/专业状态以获得更多权益并提升折扣收益。",
       "requestAction": "申请工匠状态",
-      "maalemAction": "完善 Maalem 申请"
+      "maalemAction": "查看我的 Maalem 申请",
+      "maalemJoinAction": "成为 Maalem / 加入我们的团队",
+      "maalemOpeningAction": "正在打开申请…"
     },
     "remise": {
       "title": "你的折扣余额",
@@ -147,7 +390,8 @@
       "error": {
         "title": "错误",
         "updateProfileFallback": "无法更新资料。",
-        "requestArtisanFallback": "无法发送申请。"
+        "requestArtisanFallback": "无法发送申请。",
+        "joinMaalemFallback": "无法打开您的 Maalem 申请。"
       }
     }
   },
@@ -717,42 +961,187 @@
   },
   "maalemApplication": {
     "title": "Maalem 专业申请",
-    "auth": { "title": "需要登录", "description": "请登录工匠账号以准备 Maalem 申请。", "action": "登录" },
-    "access": { "title": "需要工匠账号", "description": "Maalem 申请附加于现有工匠账号。请先在个人资料中申请工匠认证；系统不会创建第二个账号。", "action": "返回个人资料" },
-    "errorState": { "title": "无法加载申请", "description": "请检查网络连接后重试。", "action": "重试" },
-    "statuses": { "draft": "草稿", "submitted": "已提交", "under_review": "审核中", "approved": "已通过", "rejected": "需要修改", "suspended": "已暂停" },
-    "header": { "secure": "私密专业申请", "title": "创建你的 Maalem 申请", "description": "介绍你的工种、经验和作品。你可以保存草稿并随时继续。", "artisanPreserved": "你的工匠账号、权益、折扣和历史记录保持不变。", "completion": "完成度", "completionHint": "提交前的必要内容" },
+    "auth": {
+      "title": "需要登录",
+      "description": "请登录工匠账号以准备 Maalem 申请。",
+      "action": "登录"
+    },
+    "access": {
+      "title": "需要工匠账号",
+      "description": "Maalem 申请附加于现有工匠账号。请先在个人资料中申请工匠认证；系统不会创建第二个账号。",
+      "action": "返回个人资料"
+    },
+    "errorState": {
+      "title": "无法加载申请",
+      "description": "请检查网络连接后重试。",
+      "action": "重试"
+    },
+    "statuses": {
+      "draft": "草稿",
+      "submitted": "已提交",
+      "under_review": "审核中",
+      "approved": "已通过",
+      "rejected": "需要修改",
+      "suspended": "已暂停"
+    },
+    "header": {
+      "secure": "私密专业申请",
+      "title": "创建你的 Maalem 申请",
+      "description": "介绍你的工种、经验和作品。你可以保存草稿并随时继续。",
+      "artisanPreserved": "你的工匠账号、权益、折扣和历史记录保持不变。",
+      "completion": "完成度",
+      "completionHint": "提交前的必要内容"
+    },
     "statusMessages": {
-      "draft": { "title": "可编辑草稿", "description": "提交前请补充必填信息。" },
-      "submitted": { "title": "申请已提交", "description": "后台将进行处理。此阶段不会授予 Maalem 业务权限。" },
-      "under_review": { "title": "申请正在审核", "description": "审核期间信息为只读。" },
-      "approved": { "title": "Maalem 资料已通过", "description": "你的工匠账号保持不变并保留全部权益。" },
-      "rejected": { "title": "你可以修改申请", "description": "请查看原因，修改后重新提交。" },
-      "suspended": { "title": "Maalem 资料已暂停", "description": "你仍可正常使用工匠电商账号。" }
+      "draft": {
+        "title": "可编辑草稿",
+        "description": "提交前请补充必填信息。"
+      },
+      "submitted": {
+        "title": "申请已提交",
+        "description": "后台将进行处理。此阶段不会授予 Maalem 业务权限。"
+      },
+      "under_review": {
+        "title": "申请正在审核",
+        "description": "审核期间信息为只读。"
+      },
+      "approved": {
+        "title": "Maalem 资料已通过",
+        "description": "你的工匠账号保持不变并保留全部权益。"
+      },
+      "rejected": {
+        "title": "你可以修改申请",
+        "description": "请查看原因，修改后重新提交。"
+      },
+      "suspended": {
+        "title": "Maalem 资料已暂停",
+        "description": "你仍可正常使用工匠电商账号。"
+      }
     },
-    "rejection": { "title": "团队提供的原因" },
-    "identity": { "title": "复用账号身份", "description": "这些信息来自你的账号，无需重复填写。", "name": "姓名", "email": "邮箱", "accountPhone": "账号电话", "notProvided": "未提供" },
-    "trade": { "title": "工种与技能", "description": "选择有效分类并填写你的专长。", "inactiveCategory": "“{name}”分类已不可用。提交前请选择有效分类。", "noCategories": "目前没有可用的有效工种分类。分类开放后即可提交申请。" },
-    "coverage": { "title": "服务区域与时间", "description": "说明客户可以在哪里、何时联系你。" },
-    "experience": { "title": "介绍与经验", "description": "提供有助于团队了解你职业经历的信息。" },
-    "fields": { "category": "主要工种分类", "skills": "技能与专长", "phone": "工作电话", "city": "主要城市", "areas": "服务区域", "years": "从业年限", "availability": "可服务时间", "summary": "职业介绍", "experiences": "经验与案例", "other": "补充信息" },
-    "placeholders": { "category": "选择有效分类", "skills": "例如：维修、安装…", "phone": "+212 6…", "city": "例如：卡萨布兰卡", "areas": "例如：Maarif、市中心…", "availability": "选择可服务时间", "summary": "介绍你的技能、工作方式和承接的任务。", "experiences": "描述经验、主要项目、证书或推荐信息。", "other": "添加有助于审核申请的信息。" },
-    "hints": { "tags": "按 Enter 或逗号添加", "removeTag": "移除 {value}", "phone": "已从账号预填。仅在工作联系方式不同时修改。" },
-    "availability": { "immediate": "立即可服务", "weekdays": "工作日", "weekends": "周末", "evenings": "晚间", "on_request": "按需安排" },
-    "validation": { "category": "请选择有效分类。", "skills": "请至少添加一项技能。", "phone": "请输入有效电话号码。", "city": "请输入主要城市。", "years": "请输入从业年限。", "summary": "请添加职业介绍。", "availability": "请选择可服务时间。" },
+    "rejection": {
+      "title": "团队提供的原因"
+    },
+    "identity": {
+      "title": "复用账号身份",
+      "description": "这些信息来自你的账号，无需重复填写。",
+      "name": "姓名",
+      "email": "邮箱",
+      "accountPhone": "账号电话",
+      "notProvided": "未提供"
+    },
+    "trade": {
+      "title": "工种与技能",
+      "description": "选择有效分类并填写你的专长。",
+      "inactiveCategory": "“{name}”分类已不可用。提交前请选择有效分类。",
+      "noCategories": "目前没有可用的有效工种分类。分类开放后即可提交申请。"
+    },
+    "coverage": {
+      "title": "服务区域与时间",
+      "description": "说明客户可以在哪里、何时联系你。"
+    },
+    "experience": {
+      "title": "介绍与经验",
+      "description": "提供有助于团队了解你职业经历的信息。"
+    },
+    "fields": {
+      "category": "主要工种分类",
+      "skills": "技能与专长",
+      "phone": "工作电话",
+      "city": "主要城市",
+      "areas": "服务区域",
+      "years": "从业年限",
+      "availability": "可服务时间",
+      "summary": "职业介绍",
+      "experiences": "经验与案例",
+      "other": "补充信息"
+    },
+    "placeholders": {
+      "category": "选择有效分类",
+      "skills": "例如：维修、安装…",
+      "phone": "+212 6…",
+      "city": "例如：卡萨布兰卡",
+      "areas": "例如：Maarif、市中心…",
+      "availability": "选择可服务时间",
+      "summary": "介绍你的技能、工作方式和承接的任务。",
+      "experiences": "描述经验、主要项目、证书或推荐信息。",
+      "other": "添加有助于审核申请的信息。"
+    },
+    "hints": {
+      "tags": "按 Enter 或逗号添加",
+      "removeTag": "移除 {value}",
+      "phone": "已从账号预填。仅在工作联系方式不同时修改。"
+    },
+    "availability": {
+      "immediate": "立即可服务",
+      "weekdays": "工作日",
+      "weekends": "周末",
+      "evenings": "晚间",
+      "on_request": "按需安排"
+    },
+    "validation": {
+      "category": "请选择有效分类。",
+      "skills": "请至少添加一项技能。",
+      "phone": "请输入有效电话号码。",
+      "city": "请输入主要城市。",
+      "years": "请输入从业年限。",
+      "summary": "请添加职业介绍。",
+      "availability": "请选择可服务时间。"
+    },
     "documents": {
-      "title": "文件与作品", "description": "添加有用的证明材料。审核期间文件保持私密。", "cvTitle": "个人简历", "cvHint": "仅 PDF，最大 5 MB。", "photosTitle": "作品照片", "photosHint": "JPEG、PNG 或 WebP，每张最大 5 MB，最多 8 张。",
-      "addCv": "添加简历", "replaceCv": "替换简历", "addPhotos": "添加照片 ({count}/{max})", "savedFiles": "已保存文件", "empty": "尚未添加文件。", "private": "简历和作品仅通过身份验证访问，不会公开发布。", "download": "下载", "delete": "删除", "kinds": { "cv": "简历", "realization": "作品" },
-      "invalidCvTitle": "简历不符合要求", "invalidCvDesc": "请选择不超过 5 MB 的 PDF。", "invalidPhotosTitle": "照片不符合要求", "invalidPhotosDesc": "请使用不超过 5 MB 的 JPEG、PNG 或 WebP，且总数不超过 8 个。", "cvUploaded": "简历已保存", "photosUploaded": "作品已保存", "deleted": "文件已删除", "uploadError": "无法上传文件。", "deleteError": "无法删除文件。", "downloadError": "无法下载文件。"
+      "title": "文件与作品",
+      "description": "添加有用的证明材料。审核期间文件保持私密。",
+      "cvTitle": "个人简历",
+      "cvHint": "仅 PDF，最大 5 MB。",
+      "photosTitle": "作品照片",
+      "photosHint": "JPEG、PNG 或 WebP，每张最大 5 MB，最多 8 张。",
+      "addCv": "添加简历",
+      "replaceCv": "替换简历",
+      "addPhotos": "添加照片 ({count}/{max})",
+      "savedFiles": "已保存文件",
+      "empty": "尚未添加文件。",
+      "private": "简历和作品仅通过身份验证访问，不会公开发布。",
+      "download": "下载",
+      "delete": "删除",
+      "kinds": {
+        "cv": "简历",
+        "realization": "作品"
+      },
+      "invalidCvTitle": "简历不符合要求",
+      "invalidCvDesc": "请选择不超过 5 MB 的 PDF。",
+      "invalidPhotosTitle": "照片不符合要求",
+      "invalidPhotosDesc": "请使用不超过 5 MB 的 JPEG、PNG 或 WebP，且总数不超过 8 个。",
+      "cvUploaded": "简历已保存",
+      "photosUploaded": "作品已保存",
+      "deleted": "文件已删除",
+      "uploadError": "无法上传文件。",
+      "deleteError": "无法删除文件。",
+      "downloadError": "无法下载文件。"
     },
-    "actions": { "hint": "提交后申请将锁定，直到审核完成。", "save": "保存草稿", "saving": "正在保存…", "submit": "提交申请", "submitting": "正在提交…" },
-    "toasts": { "savedTitle": "草稿已保存", "savedDesc": "你可以稍后继续。", "submittedTitle": "申请已提交", "submittedDesc": "申请现已可供审核。", "errorTitle": "发生错误", "saveError": "无法保存草稿。", "submitError": "无法提交申请。", "incompleteTitle": "申请不完整", "incompleteDesc": "提交前请完成标记字段。" }
+    "actions": {
+      "hint": "提交后申请将锁定，直到审核完成。",
+      "save": "保存草稿",
+      "saving": "正在保存…",
+      "submit": "提交申请",
+      "submitting": "正在提交…"
+    },
+    "toasts": {
+      "savedTitle": "草稿已保存",
+      "savedDesc": "你可以稍后继续。",
+      "submittedTitle": "申请已提交",
+      "submittedDesc": "申请现已可供审核。",
+      "errorTitle": "发生错误",
+      "saveError": "无法保存草稿。",
+      "submitError": "无法提交申请。",
+      "incompleteTitle": "申请不完整",
+      "incompleteDesc": "提交前请完成标记字段。"
+    }
   },
   "accountSidebar": {
     "activeAccount": "账号已激活",
     "profile": "我的资料",
     "maalemApplication": "Maalem 申请",
     "orders": "我的订单",
+    "serviceRequests": "我的服务请求",
     "soldeHistory": "余额记录",
     "wishlist": "心愿单",
     "settings": "设置"
@@ -842,6 +1231,8 @@
     "home": "首页",
     "categories": "分类",
     "shop": "商店",
+    "services": "服务",
+    "maalem": "成为 Maalem",
     "products": "产品",
     "searchPlaceholder": "搜索产品...",
     "profile": "我的资料",
@@ -930,7 +1321,22 @@
     "companyInfoDesc": "添加公司信息用于开票。",
     "companyName": "公司名称",
     "ice": "ICE",
-    "iceHint": "ICE 必须为 15 位数字。"
+    "iceHint": "ICE 必须为 15 位数字。",
+    "artisanPathTitle": "请选择工匠账户方向",
+    "artisanPathDescription": "两种方向都会沿用现有的工匠申请审核流程。",
+    "artisanEcommerceTitle": "电商工匠",
+    "artisanEcommerceDescription": "申请通过后，可享受现有工匠购物权益与折扣。",
+    "artisanMaalemTitle": "成为 Maalem",
+    "artisanMaalemDescription": "加入我们的团队，并继续完善职业申请资料。",
+    "sameArtisanAccount": "同一工匠账户",
+    "maalemCategory": "职业分类（可选）",
+    "maalemCategoryHint": "可现在选择，也可稍后在申请资料中补充。",
+    "selectMaalemCategory": "选择分类",
+    "completeCategoryLater": "稍后补充",
+    "loadingCategories": "正在加载分类",
+    "categoriesUnavailable": "分类暂时不可用，您可以稍后在申请资料中完成选择。",
+    "noActiveCategories": "当前没有可用分类，但仍可创建草稿。",
+    "maalemDraftNotice": "系统将创建草稿。审核批准前，注册不会授予任何 Maalem 权限。"
   },
   "validation": {
     "required": "此项为必填",
@@ -957,7 +1363,9 @@
     "roleRequired": "请选择账户类型",
     "companyNameRequired": "公司名称为必填",
     "iceRequired": "ICE 为必填",
-    "iceFormat": "ICE 必须为 15 位数字"
+    "iceFormat": "ICE 必须为 15 位数字",
+    "artisanPathInvalid": "选择 Maalem 方向必须注册为工匠",
+    "maalemCategoryInvalid": "该分类仅可用于 Maalem 方向"
   },
   "placeholders": {
     "email": "example@email.com",

@@ -1,4 +1,245 @@
 {
+  "maalemsPage": {
+    "metadataTitle": "Maalems vérifiés",
+    "metadataDescription": "Découvrez les Maalems publiés par Boukir Diamond.",
+    "eyebrow": "Savoir-faire vérifié",
+    "title": "Trouvez le Maalem adapté",
+    "description": "Explorez des profils validés et publiés explicitement, sans affectation automatique.",
+    "count": "{count} Maalems",
+    "search": "Nom public",
+    "category": "Catégorie",
+    "allCategories": "Toutes",
+    "service": "Service",
+    "allServices": "Tous les services",
+    "city": "Ville",
+    "zone": "Zone déclarée",
+    "experience": "Expérience min.",
+    "interventions": "Interventions min.",
+    "sort": "Tri",
+    "recommended": "Recommandé",
+    "interventionsSort": "Interventions clôturées",
+    "experienceSort": "Expérience",
+    "nameSort": "Nom",
+    "submit": "Appliquer",
+    "reset": "Réinitialiser",
+    "verified": "Maalem vérifié",
+    "areas": "Zones",
+    "experienceLabel": "{years} ans d’expérience",
+    "noPhoto": "Initiales",
+    "interventionsLabel": "{count} interventions clôturées",
+    "declared": "Zones déclaratives, sans garantie de disponibilité.",
+    "profile": "Voir le profil",
+    "request": "Demander",
+    "empty": "Aucun Maalem ne correspond à ces filtres.",
+    "error": "L’annuaire est momentanément indisponible.",
+    "quick": "Faire une demande rapide",
+    "quickDescription": "Décrivez votre besoin et nous vous guiderons vers le service adapté.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page}",
+    "pagination": "Pagination des Maalems",
+    "sortNotice": "Tri actuel : {sort}"
+  },
+  "maalemDetailPage": {
+    "metadataFallback":"Profil public d’un Maalem vérifié et de ses services compatibles.", "back":"Retour à l’annuaire", "breadcrumb":"Annuaire des Maalems", "eyebrow":"Profil public vérifié", "verified":"Maalem vérifié", "location":"Ville", "areas":"Zones déclarées", "experience":"{years} ans d’expérience", "noPhoto":"Initiales du Maalem", "closed":"{count} interventions vérifiées", "proof":"Preuve de travail", "proofText":"Ce compteur provient uniquement des interventions clôturées et validées dans Boukir Diamond.", "lastClosed":"Dernière clôture vérifiée : {date}", "about":"À propos", "aboutFallback":"Ce Maalem n’a pas encore ajouté de présentation publique.", "expertise":"Expérience et spécialités", "expertiseText":"Ces éléments proviennent du profil public validé; aucun dossier ni récit privé n’est affiché.", "skillsFallback":"Aucune spécialité publique renseignée.", "services":"Services proposés", "servicesText":"Services publics compatibles avec la catégorie principale de ce Maalem.", "serviceView":"Voir le service", "serviceRequest":"Demander ce service", "moreCategories":"Autres catégories", "servicesEmpty":"Aucun service compatible n’est actuellement publié.", "statistics":"Statistiques vérifiées", "byService":"Interventions par service public", "noBreakdown":"Aucune ventilation publique disponible.", "realizations":"Réalisations", "realizationsEmpty":"Aucune réalisation publique n’est disponible pour le moment.", "reviews":"Avis", "reviewsEmpty":"Les avis publics ne sont pas encore disponibles. Aucune note n’est calculée ou affichée.", "ctaTitle":"Vous souhaitez demander ce Maalem ?", "ctaText":"Votre choix exprime une préférence. Il ne garantit ni disponibilité ni affectation automatique.", "cta":"Demander ce Maalem", "quick":"Faire une demande rapide", "privacy":"Vos coordonnées ne sont jamais affichées sur ce profil.", "jsonLdDescription":"Profil public vérifié de {name}.", "monthYear":"{date, date, ::MMMM y}"
+  },
+  "servicesPage": {
+    "metadata": {
+      "title": "Services à domicile",
+      "description": "Découvrez les services disponibles et envoyez votre demande à l’équipe Boukir Diamond."
+    },
+    "eyebrow": "Interventions & savoir-faire",
+    "title": "Le bon service, pour votre besoin",
+    "description": "Explorez nos services sélectionnés, puis confiez votre demande à notre équipe. Nous la qualifions avant toute affectation.",
+    "resultCount": "{count, plural, one {# service disponible} other {# services disponibles}}",
+    "gridLabel": "Liste des services disponibles",
+    "filters": {
+      "title": "Trouver un service",
+      "searchLabel": "Votre besoin",
+      "searchPlaceholder": "Ex. fuite, peinture, électricité…",
+      "categoryLabel": "Catégorie Maalem",
+      "allCategories": "Toutes les catégories",
+      "submit": "Rechercher",
+      "reset": "Réinitialiser"
+    },
+    "card": {
+      "view": "Voir le Service",
+      "request": "Demander ce Service",
+      "moreCategories": "+{count}"
+    },
+    "guidance": {
+      "title": "Je ne sais pas quel Service choisir",
+      "description": "Décrivez simplement votre problème. Notre équipe identifiera avec vous le service et la catégorie adaptés.",
+      "action": "Faire une demande rapide"
+    },
+    "empty": {
+      "title": "Aucun service trouvé",
+      "description": "Aucun service n’est publié pour le moment.",
+      "filteredDescription": "Modifiez votre recherche ou réinitialisez les filtres pour voir les autres services."
+    },
+    "error": {
+      "title": "Le catalogue est momentanément indisponible",
+      "description": "Nous n’avons pas pu charger les services. Vous pouvez réessayer ou décrire directement votre besoin.",
+      "retry": "Réessayer"
+    },
+    "pagination": {
+      "label": "Pagination des services",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page}"
+    }
+  },
+  "serviceDetailPage": {
+    "metadataDescription": "Découvrez {service} et les Maalems compatibles sélectionnés par Boukir Diamond.",
+    "back": "Retour au catalogue",
+    "eyebrow": "Service Boukir Diamond",
+    "requestService": "Demander ce service",
+    "quickRequest": "Faire une demande rapide",
+    "categories": "Catégories compatibles",
+    "assuranceTitle": "Compatibilité vérifiée, disponibilité à confirmer",
+    "assuranceText": "Ces Maalems exercent dans une catégorie liée à ce service. Votre choix reste une préférence : notre équipe vérifie le besoin et la disponibilité avant toute affectation.",
+    "maalemsTitle": "Maalems compatibles",
+    "maalemsCount": "{count, plural, one {# Maalem compatible} other {# Maalems compatibles}}",
+    "emptyTitle": "Aucun Maalem compatible disponible",
+    "emptyText": "Vous pouvez demander ce service sans choisir de Maalem. Notre équipe cherchera la solution adaptée.",
+    "errorTitle": "Les Maalems sont momentanément indisponibles",
+    "profile": "Voir le profil",
+    "choose": "Choisir ce Maalem",
+    "verified": "Maalem vérifié",
+    "city": "Ville",
+    "areas": "Zones déclarées",
+    "missions": "{count, plural, one {# intervention clôturée pour ce service} other {# interventions clôturées pour ce service}}",
+    "availabilityNotice": "Zones déclaratives, sans garantie de disponibilité immédiate.",
+    "pagination": "Pagination des Maalems",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page}",
+    "jsonLdDescription": "Service proposé par Boukir Diamond."
+  },
+  "serviceRequests": {
+    "summary": {
+      "verified": "Maalem vérifié",
+      "location": "Ville",
+      "areas": "Zones d’intervention",
+      "experience": "{years} ans d’expérience",
+      "noPhoto": "Initiales du Maalem"
+    },
+    "publicProfile": {
+      "eyebrow": "Savoir-faire vérifié",
+      "title": "Rencontrez {name}",
+      "intro": "Découvrez son profil public, puis décrivez votre besoin. Notre équipe vérifie chaque demande avant de confirmer une intervention.",
+      "presentationTitle": "Présentation professionnelle",
+      "presentationFallback": "Ce Maalem pourra préciser son approche avec notre équipe lors de l’étude de votre demande.",
+      "skillsTitle": "Compétences",
+      "skillsFallback": "Les compétences détaillées seront confirmées avec notre équipe.",
+      "ctaTitle": "Vous souhaitez son intervention ?",
+      "ctaDescription": "Votre choix exprime une préférence. L’affectation sera confirmée seulement après vérification de votre besoin et des disponibilités.",
+      "cta": "Demander ce Maalem",
+      "privacy": "Ses coordonnées privées restent protégées. Boukir organise le premier contact."
+    },
+    "relay": {
+      "eyebrow": "Comment ça se passe",
+      "intro": "Le Maalem choisi est souhaité, pas encore affecté.",
+      "requestTitle": "Votre demande",
+      "requestText": "Vous décrivez le besoin et indiquez le Maalem souhaité.",
+      "reviewTitle": "Vérification par notre équipe",
+      "reviewText": "Nous vous contactons et vérifions les informations utiles.",
+      "assignmentTitle": "Affectation confirmée plus tard",
+      "assignmentText": "L’intervenant définitif sera confirmé après cette vérification."
+    },
+    "form": {
+      "back": "Retour",
+      "serviceUnavailable": "Service indisponible",
+      "quickEyebrow": "Demande rapide",
+      "quickTitle": "Décrivez simplement votre problème",
+      "quickIntro": "Notre équipe qualifiera votre besoin avec vous.",
+      "serviceEyebrow": "Demande de service",
+      "serviceTitle": "Demander ce service",
+      "serviceIntro": "Précisez votre besoin. Notre équipe vous contactera pour organiser la suite.",
+      "eyebrow": "Demande d’intervention",
+      "title": "Parlez-nous de votre besoin",
+      "intro": "Quelques informations précises nous aideront à préparer le bon échange avec vous.",
+      "needSection": "Votre besoin",
+      "contactSection": "Contact et lieu d’intervention",
+      "timingSection": "Date et créneau souhaités",
+      "detailsSection": "Photos et précisions",
+      "submit": "Envoyer ma demande",
+      "submitting": "Envoi sécurisé en cours…",
+      "submitHint": "L’envoi ne déclenche aucune affectation automatique.",
+      "backToProfile": "Retour au profil du Maalem"
+    },
+    "fields": {
+      "contactLegend": "Comment et où vous joindre ?",
+      "contactName": "Nom",
+      "optional": "facultatif",
+      "dateRequired": "Date souhaitée *",
+      "slotRequired": "Heure ou créneau *",
+      "description": "Description du problème ou du besoin",
+      "descriptionPlaceholder": "Ex. Une fuite est apparue sous l’évier et l’arrivée d’eau semble difficile à fermer.",
+      "descriptionHint": "Décrivez les symptômes, l’urgence et toute contrainte d’accès utile.",
+      "phone": "Téléphone de contact",
+      "city": "Ville",
+      "address": "Adresse d’intervention",
+      "date": "Date souhaitée (facultatif)",
+      "slot": "Heure ou créneau (facultatif)",
+      "slotPlaceholder": "Ex. Après 17 h",
+      "sharedNote": "Information complémentaire (facultatif)",
+      "sharedNotePlaceholder": "Accès à l’immeuble, disponibilité, consigne utile…",
+      "sharedNoteHint": "Cette information pourra être partagée pour préparer l’intervention."
+    },
+    "map": {
+      "open": "Choisir la position sur la carte (facultatif)",
+      "positionSaved": "Position GPS enregistrée",
+      "hint": "Déplacez la carte ou recherchez une adresse. La ville et l’adresse seront mises à jour après sélection.",
+      "search": "Rechercher votre adresse…",
+      "release": "Relâcher pour valider",
+      "current": "Ma position actuelle",
+      "coordinates": "GPS : {latitude}, {longitude}",
+      "remove": "Retirer la position"
+    },
+    "uploads": {
+      "field": "Photos (facultatif)",
+      "action": "Ajouter des photos",
+      "hint": "JPG, PNG ou WEBP · 8 maximum · 8 Mo par photo",
+      "previewAlt": "Aperçu de la photo {index}",
+      "remove": "Retirer la photo {name}"
+    },
+    "validation": {
+      "dateRequired": "Choisissez une date souhaitée.",
+      "timeSlotRequired": "Indiquez une heure ou un créneau souhaité.",
+      "descriptionRequired": "Décrivez le problème ou le besoin.",
+      "phoneRequired": "Indiquez un numéro auquel nous pouvons vous joindre.",
+      "cityRequired": "Indiquez la ville de l’intervention.",
+      "addressRequired": "Indiquez l’adresse de l’intervention.",
+      "tooLong": "Ce texte dépasse la longueur autorisée.",
+      "datePast": "Choisissez aujourd’hui ou une date future.",
+      "gpsPair": "La latitude et la longitude doivent être renseignées ensemble.",
+      "gpsInvalid": "La position GPS n’est pas valide.",
+      "tooManyPhotos": "Vous pouvez ajouter jusqu’à 8 photos.",
+      "photoInvalid": "Chaque photo doit être au format JPG, PNG ou WEBP et peser au maximum 8 Mo."
+    },
+    "errors": {
+      "unexpected": "Une erreur inattendue est survenue. Réessayez sans fermer cette page.",
+      "modeUnavailable": "Ce parcours n’est pas encore disponible."
+    },
+    "auth": {
+      "loading": "Vérification de votre session",
+      "title": "Connectez-vous pour demander ce Maalem",
+      "description": "Votre compte nous permet de vous recontacter et de sécuriser le suivi de la demande.",
+      "action": "Se connecter"
+    },
+    "success": {
+      "title": "Votre demande a bien été reçue",
+      "description": "Notre équipe vous contactera pour vérifier le besoin avant toute affectation.",
+      "requestNumber": "Numéro de demande",
+      "tracking": "Accéder au suivi",
+      "trackingHint": "Le suivi affiche la réception de la demande, pas une mission déjà affectée."
+    },
+    "trust": {
+      "title": "Vos informations restent encadrées",
+      "description": "Le téléphone privé du Maalem n’est jamais affiché. Notre équipe organise la mise en relation après vérification."
+    }
+  },
   "common": {
     "home": "Accueil",
     "products": "Produits",
@@ -625,14 +866,34 @@
       "completionHint": "Les éléments essentiels avant envoi"
     },
     "statusMessages": {
-      "draft": { "title": "Brouillon modifiable", "description": "Complétez les informations requises avant l’envoi." },
-      "submitted": { "title": "Votre demande a bien été envoyée", "description": "Elle sera traitée dans le Back-office. Aucun droit Maalem opérationnel n’est accordé à ce stade." },
-      "under_review": { "title": "Votre dossier est en vérification", "description": "Les informations sont en lecture seule pendant l’examen." },
-      "approved": { "title": "Votre profil Maalem est validé", "description": "Votre compte Artisan reste le même et conserve tous ses avantages." },
-      "rejected": { "title": "Votre dossier peut être corrigé", "description": "Tenez compte du motif puis soumettez-le à nouveau." },
-      "suspended": { "title": "Votre profil Maalem est suspendu", "description": "Votre compte Artisan e-commerce reste utilisable normalement." }
+      "draft": {
+        "title": "Brouillon modifiable",
+        "description": "Complétez les informations requises avant l’envoi."
+      },
+      "submitted": {
+        "title": "Votre demande a bien été envoyée",
+        "description": "Elle sera traitée dans le Back-office. Aucun droit Maalem opérationnel n’est accordé à ce stade."
+      },
+      "under_review": {
+        "title": "Votre dossier est en vérification",
+        "description": "Les informations sont en lecture seule pendant l’examen."
+      },
+      "approved": {
+        "title": "Votre profil Maalem est validé",
+        "description": "Votre compte Artisan reste le même et conserve tous ses avantages."
+      },
+      "rejected": {
+        "title": "Votre dossier peut être corrigé",
+        "description": "Tenez compte du motif puis soumettez-le à nouveau."
+      },
+      "suspended": {
+        "title": "Votre profil Maalem est suspendu",
+        "description": "Votre compte Artisan e-commerce reste utilisable normalement."
+      }
     },
-    "rejection": { "title": "Motif communiqué par l’équipe" },
+    "rejection": {
+      "title": "Motif communiqué par l’équipe"
+    },
     "identity": {
       "title": "Identité réutilisée",
       "description": "Ces informations proviennent de votre compte : inutile de les saisir à nouveau.",
@@ -714,7 +975,10 @@
       "private": "Le CV et les réalisations sont servis par un accès authentifié et ne sont pas publiés sur le site.",
       "download": "Télécharger",
       "delete": "Supprimer",
-      "kinds": { "cv": "CV", "realization": "Réalisation" },
+      "kinds": {
+        "cv": "CV",
+        "realization": "Réalisation"
+      },
       "invalidCvTitle": "CV non accepté",
       "invalidCvDesc": "Choisissez un PDF de 5 Mo maximum.",
       "invalidPhotosTitle": "Photos non acceptées",
@@ -750,6 +1014,7 @@
     "profile": "Mon profil",
     "maalemApplication": "Dossier Maalem",
     "orders": "Mes commandes",
+    "serviceRequests": "Mes demandes de service",
     "soldeHistory": "Solde historique",
     "wishlist": "Favoris",
     "settings": "Paramètres"
@@ -840,6 +1105,8 @@
     "home": "Accueil",
     "categories": "Catégories",
     "shop": "Boutique",
+    "services": "Services",
+    "maalem": "Devenir Maalem",
     "products": "Produits",
     "searchPlaceholder": "Rechercher des produits...",
     "profile": "Mon profil",
@@ -928,7 +1195,22 @@
     "companyInfoDesc": "Ajoutez les informations de votre entreprise pour la facturation.",
     "companyName": "Nom de la société",
     "ice": "ICE",
-    "iceHint": "L’ICE doit contenir 15 chiffres."
+    "iceHint": "L’ICE doit contenir 15 chiffres.",
+    "artisanPathTitle": "Quel parcours Artisan choisissez-vous ?",
+    "artisanPathDescription": "Votre demande Artisan suit dans les deux cas le processus de validation actuel.",
+    "artisanEcommerceTitle": "Artisan e-commerce",
+    "artisanEcommerceDescription": "Achetez avec les avantages et remises Artisan après validation de votre demande.",
+    "artisanMaalemTitle": "Devenir Maalem",
+    "artisanMaalemDescription": "Rejoignez notre équipe et préparez ensuite votre dossier professionnel.",
+    "sameArtisanAccount": "Même compte Artisan",
+    "maalemCategory": "Catégorie métier (facultatif)",
+    "maalemCategoryHint": "Choisissez-la maintenant ou complétez-la dans votre dossier.",
+    "selectMaalemCategory": "Sélectionner une catégorie",
+    "completeCategoryLater": "Je compléterai plus tard",
+    "loadingCategories": "Chargement des catégories",
+    "categoriesUnavailable": "Les catégories sont momentanément indisponibles. Vous pourrez compléter ce choix dans votre dossier.",
+    "noActiveCategories": "Aucune catégorie n’est disponible actuellement. Votre brouillon peut tout de même être créé.",
+    "maalemDraftNotice": "Un brouillon sera créé. Votre inscription ne vous accorde aucun droit Maalem avant étude et validation."
   },
   "validation": {
     "required": "Ce champ est requis",
@@ -955,7 +1237,9 @@
     "roleRequired": "Veuillez sélectionner un type de compte",
     "companyNameRequired": "Le nom de la société est requis",
     "iceRequired": "L'ICE est requis",
-    "iceFormat": "L'ICE doit contenir 15 chiffres"
+    "iceFormat": "L'ICE doit contenir 15 chiffres",
+    "artisanPathInvalid": "Le parcours Maalem nécessite une inscription Artisan",
+    "maalemCategoryInvalid": "Cette catégorie ne peut être associée qu’au parcours Maalem"
   },
   "placeholders": {
     "email": "exemple@email.com",
@@ -1323,7 +1607,9 @@
       "pendingDesc": "Un administrateur validera votre demande bientôt.",
       "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.",
       "requestAction": "Demander le statut Artisan",
-      "maalemAction": "Compléter mon dossier Maalem"
+      "maalemAction": "Consulter mon dossier Maalem",
+      "maalemJoinAction": "Devenir Maalem / Rejoindre notre équipe",
+      "maalemOpeningAction": "Ouverture du dossier…"
     },
     "remise": {
       "title": "Votre solde remise",
@@ -1412,7 +1698,8 @@
       "error": {
         "title": "Erreur",
         "updateProfileFallback": "Impossible de mettre à jour le profil.",
-        "requestArtisanFallback": "Impossible d'envoyer la demande."
+        "requestArtisanFallback": "Impossible d'envoyer la demande.",
+        "joinMaalemFallback": "Impossible d’ouvrir votre dossier Maalem."
       }
     }
   },

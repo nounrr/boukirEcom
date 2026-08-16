@@ -26,6 +26,9 @@ import {
 import {
   useGetActiveMaalemCategoriesQuery,
   useGetMaalemProfileQuery,
+  useGetMaalemNotificationsQuery,
+  useJoinMaalemProgramMutation,
+  useMarkMaalemNotificationReadMutation,
   useSaveMaalemDraftMutation,
   useSubmitMaalemProfileMutation,
 } from '@/state/api/auth-api-slice'
@@ -38,6 +41,7 @@ import type {
 } from '@/types/maalem-profile'
 import {
   AlertCircle,
+  Bell,
   BriefcaseBusiness,
   Check,
   ChevronRight,
@@ -238,6 +242,8 @@ export default function MaalemApplicationPage() {
     isError: isProfileError,
     refetch: refetchProfile,
   } = useGetMaalemProfileQuery(undefined, queryOptions)
+  const { data: notifications = [] } = useGetMaalemNotificationsQuery(undefined, queryOptions)
+  const [markNotificationRead] = useMarkMaalemNotificationReadMutation()
   const {
     data: categories = [],
     isLoading: isCategoriesLoading,
@@ -245,18 +251,48 @@ export default function MaalemApplicationPage() {
   } = useGetActiveMaalemCategoriesQuery(undefined, queryOptions)
   const [saveDraft, { isLoading: isSaving }] = useSaveMaalemDraftMutation()
   const [submitProfile, { isLoading: isSubmitting }] = useSubmitMaalemProfileMutation()
+  const [
+    joinMaalemProgram,
+    { isError: isJoinError, error: joinError },
+  ] = useJoinMaalemProgramMutation()
   const [categoryId, setCategoryId] = useState<number | null>(null)
   const [data, setData] = useState<MaalemProfessionalData>(EMPTY_PROFESSIONAL_DATA)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [uploadKind, setUploadKind] = useState<'cv' | 'realizations' | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [downloadingId, setDownloadingId] = useState<number | null>(null)
-  const initializedProfileId = useRef<number | 'empty' | null>(null)
+  const initializedProfileId = useRef<number | null>(null)
+  const joinAttempted = useRef(false)
   const cvInputRef = useRef<HTMLInputElement>(null)
   const realizationInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (!user || isProfileLoading || isCategoriesLoading || initializedProfileId.current !== null) return
+    if (
+      !canApply
+      || !accessToken
+      || isProfileLoading
+      || isProfileError
+      || profile
+      || joinAttempted.current
+    ) return
+
+    joinAttempted.current = true
+    joinMaalemProgram()
+      .unwrap()
+      .then(() => refetchProfile())
+      .catch(() => undefined)
+  }, [
+    accessToken,
+    canApply,
+    isProfileError,
+    isProfileLoading,
+    joinMaalemProgram,
+    profile,
+    refetchProfile,
+  ])
+
+  useEffect(() => {
+    if (!user || !profile || isProfileLoading || isCategoriesLoading || initializedProfileId.current === profile.id) return
     const existingData = profile?.professional_data
     setData({
       ...EMPTY_PROFESSIONAL_DATA,
@@ -268,10 +304,10 @@ export default function MaalemApplicationPage() {
     })
     const activeCategory = categories.some((category) => category.id === profile?.category_id)
     setCategoryId(activeCategory ? profile?.category_id ?? null : null)
-    initializedProfileId.current = profile?.id ?? 'empty'
+    initializedProfileId.current = profile.id
   }, [categories, isCategoriesLoading, isProfileLoading, profile, user])
 
-  const editable = !profile || profile.status === 'draft' || profile.status === 'rejected'
+  const editable = profile?.status === 'draft' || profile?.status === 'rejected'
   const documents = profile?.documents || []
   const cv = documents.find((document) => document.kind === 'cv')
   const realizations = documents.filter((document) => document.kind === 'realization')
@@ -494,7 +530,7 @@ export default function MaalemApplicationPage() {
     )
   }
 
-  if (!user || isProfileLoading || isCategoriesLoading) {
+  if (!user || isProfileLoading || isCategoriesLoading || (canApply && !profile && !isJoinError)) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
@@ -537,7 +573,7 @@ export default function MaalemApplicationPage() {
     )
   }
 
-  if (isProfileError || isCategoriesError) {
+  if (isProfileError || isCategoriesError || isJoinError) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
@@ -546,7 +582,11 @@ export default function MaalemApplicationPage() {
             <CardContent className="py-10 text-center">
               <AlertCircle className="mx-auto size-10 text-destructive" />
               <h1 className="mt-4 text-lg font-semibold">{t('errorState.title')}</h1>
-              <p className="mt-2 text-sm text-muted-foreground">{t('errorState.description')}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {isJoinError
+                  ? messageFromError(joinError, t('errorState.description'))
+                  : t('errorState.description')}
+              </p>
               <Button className="mt-5" onClick={() => window.location.reload()}>{t('errorState.action')}</Button>
             </CardContent>
           </Card>
@@ -604,6 +644,15 @@ export default function MaalemApplicationPage() {
             </div>
           )}
 
+          {status === 'approved' && (
+            <Card className="rounded-2xl border-emerald-200 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/20">
+              <CardContent className="flex flex-col items-start justify-between gap-4 py-5 sm:flex-row sm:items-center">
+                <div><p className="font-semibold">Missions Maalem</p><p className="mt-1 text-sm text-muted-foreground">Consultez uniquement vos affectations actuelles, suivez l’intervention et déposez votre compte-rendu.</p></div>
+                <Button asChild><Link href={`/${locale}/profile/maalem/missions`}>Ouvrir mes missions <ChevronRight className="size-4" /></Link></Button>
+              </CardContent>
+            </Card>
+          )}
+
           {status === 'rejected' && profile?.status_reason && (
             <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-950 dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
               <AlertCircle className="mt-0.5 size-5 shrink-0" />
@@ -612,6 +661,37 @@ export default function MaalemApplicationPage() {
                 <p className="mt-1 text-sm leading-5">{profile.status_reason}</p>
               </div>
             </div>
+          )}
+
+          {notifications.length > 0 && (
+            <Card className="rounded-2xl">
+              <CardHeader className="border-b pb-5">
+                <SectionHeading
+                  icon={Bell}
+                  title={locale === 'ar' ? 'إشعارات ملف المعلم' : 'Notifications de votre dossier'}
+                  description={locale === 'ar' ? 'آخر مراحل معالجة طلبك.' : 'Les dernières étapes importantes du traitement de votre candidature.'}
+                />
+              </CardHeader>
+              <CardContent className="divide-y p-0">
+                {notifications.map((notification) => (
+                  <button
+                    key={notification.id}
+                    type="button"
+                    onClick={() => { if (!notification.read_at) markNotificationRead(notification.id) }}
+                    className="block w-full px-5 py-4 text-start hover:bg-muted/40 sm:px-6"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{notification.title}</p>
+                        <p className="mt-1 whitespace-pre-line text-sm leading-6 text-muted-foreground">{notification.body}</p>
+                      </div>
+                      {!notification.read_at && <span className="mt-1 size-2.5 shrink-0 rounded-full bg-primary" aria-label={locale === 'ar' ? 'غير مقروء' : 'Non lu'} />}
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground">{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(notification.created_at))}</p>
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
           )}
 
           <Card className="rounded-2xl">

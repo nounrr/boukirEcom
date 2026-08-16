@@ -9,11 +9,12 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RemiseBalance } from "@/components/ui/remise-balance"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
-import { useRequestArtisanMutation, useUpdateProfileMutation } from "@/state/api/auth-api-slice"
+import { useJoinMaalemProgramMutation, useRequestArtisanMutation, useUpdateProfileMutation } from "@/state/api/auth-api-slice"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
-import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent, BriefcaseBusiness } from "lucide-react"
+import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent, BriefcaseBusiness, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useMemo, useState, useEffect } from "react"
 
@@ -43,12 +44,14 @@ const PHONE_COUNTRIES = [
 export default function ProfilePage() {
   const locale = useLocale()
   const t = useTranslations('profile')
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
   
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
   const [requestArtisan, { isLoading: isRequestingArtisan }] = useRequestArtisanMutation()
+  const [joinMaalemProgram, { isLoading: isJoiningMaalem }] = useJoinMaalemProgramMutation()
   const [isEditing, setIsEditing] = useState(false)
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
   const [localPhoneNumber, setLocalPhoneNumber] = useState("")
@@ -244,6 +247,23 @@ export default function ProfilePage() {
     }
   }
 
+  const handleJoinMaalem = async () => {
+    if (!user) return
+    try {
+      const result = await joinMaalemProgram().unwrap()
+      dispatch(setUser({ ...user, maalem_profile: result.profile }))
+      router.push(`/${locale}/profile/maalem`)
+    } catch (error: any) {
+      toast.error(t('toasts.error.title'), {
+        description:
+          error?.data?.message
+          || error?.error?.message
+          || error?.message
+          || t('toasts.error.joinMaalemFallback'),
+      })
+    }
+  }
+
   if (!isAuthenticated && !isAuthLoading) {
     return (
       <ShopPageLayout
@@ -357,11 +377,21 @@ export default function ProfilePage() {
                       <div>
                         <p className="text-sm font-medium text-foreground">{t('artisan.approvedTitle')}</p>
                         <p className="text-xs text-muted-foreground">{t('artisan.approvedDesc')}</p>
-                        <Button asChild variant="outline" size="sm" className="mt-3">
-                          <Link href={`/${locale}/profile/maalem`}>
-                            <BriefcaseBusiness className="w-4 h-4" />
-                            {t('artisan.maalemAction')}
-                          </Link>
+                        <Button
+                          type="button"
+                          size="lg"
+                          className="mt-3 w-full gap-2 bg-gradient-to-r from-primary via-primary to-primary/80 text-white font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.01] sm:w-auto"
+                          disabled={isJoiningMaalem || isEditing}
+                          onClick={handleJoinMaalem}
+                        >
+                          {isJoiningMaalem
+                            ? <Loader2 className="w-5 h-5 animate-spin" />
+                            : <BriefcaseBusiness className="w-5 h-5" />}
+                          {isJoiningMaalem
+                            ? t('artisan.maalemOpeningAction')
+                            : user.maalem_profile
+                              ? t('artisan.maalemAction')
+                              : t('artisan.maalemJoinAction')}
                         </Button>
                       </div>
                     </div>
