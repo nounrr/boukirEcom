@@ -40,6 +40,15 @@ export interface OperationalNotification {
   body: string
   created_at: string
   read_at: string | null
+  action_url: string | null
+  cta_label: string | null
+}
+
+export interface ReviewInvitationResolution {
+  already_reviewed: boolean
+  request: { id: number; request_number: string }
+  maalem?: { id: number; public_name: string }
+  expires_at?: string
 }
 
 export type ServiceRequestMode =
@@ -69,20 +78,28 @@ export interface PublicMaalemSummary {
   professional_summary: string | null
 }
 
+export interface PublicMaalemReviewSummary {
+  average_rating: number | null
+  review_count: number
+}
+
 export interface PublicMaalemDetail extends PublicMaalemSummary {
   statistics: {
     closed_interventions: number
     last_closed_intervention_at: string | null
     by_service: Array<{ id: number; name: string | null; closed_interventions: number }>
     by_category: Array<{ id: number; name: string | null; closed_interventions: number }>
+    average_rating: number | null
+    review_count: number
+    rating_distribution: Record<1 | 2 | 3 | 4 | 5, number>
   }
   compatible_services: PublicService[]
 }
 
 export interface PublicMaalemsResponse {
-  maalems: Array<PublicMaalemSummary & { statistics: { closed_interventions: number; last_closed_intervention_at: string | null } }>
+  maalems: Array<PublicMaalemSummary & { statistics: { closed_interventions: number; last_closed_intervention_at: string | null; average_rating: number | null; review_count: number } }>
   pagination: PublicServicesResponse['pagination']
-  filters: { categories: PublicServiceCategory[]; services: Array<Pick<PublicService, 'id' | 'nom' | 'nom_ar'>> }
+  filters: { categories: PublicServiceCategory[]; services: Array<Pick<PublicService, 'id' | 'nom' | 'nom_ar'>>; rating_sort_min_reviews: number }
 }
 
 export interface PublicServiceCategory {
@@ -128,10 +145,25 @@ export interface CompatibleServiceMaalem {
   city: string | null
   intervention_areas: string[]
   closed_interventions_for_service: number
+  average_rating: number | null
+  review_count: number
 }
 
 export interface CompatibleServiceMaalemsResponse {
   maalems: CompatibleServiceMaalem[]
+  pagination: PublicServicesResponse['pagination']
+}
+
+export interface PublicMaalemReview {
+  rating: number
+  comment: string | null
+  submitted_at: string
+  author_name: string | null
+  verified_intervention: true
+}
+
+export interface PublicMaalemReviewsResponse {
+  reviews: PublicMaalemReview[]
   pagination: PublicServicesResponse['pagination']
 }
 
@@ -189,4 +221,37 @@ export interface ServiceRequestDetails extends CreateServiceRequestResponse {
     actor_name: string
     created_at: string
   }>
+}
+
+export interface MaalemReview {
+  id: number
+  service_request_id: number
+  rating: number
+  comment: string | null
+  status: 'pending' | 'published' | 'hidden' | 'rejected'
+  submitted_at: string
+  created_at: string
+}
+
+export interface MaalemReviewContext {
+  eligible: boolean
+  reason: string | null
+  request: {
+    id: number
+    request_number: string
+    status: string
+  }
+  maalem: {
+    id: number
+    public_name: string
+  } | null
+  review: MaalemReview | null
+  constraints: {
+    rating_min: number
+    rating_max: number
+    comment_min: number
+    comment_max: number
+    comment_required: false
+    editable_after_publication: false
+  }
 }

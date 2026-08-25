@@ -7,6 +7,7 @@ export interface SimpleVariant {
   id: number
   name?: string
   value?: string
+  colorName?: string
   type?: string
   available?: boolean
   image?: string
@@ -102,7 +103,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
   const detectVariantType = (variant: SimpleVariant): 'color' | 'size' | 'other' => {
     // Prefer the variant value (actual option like "Beige Sable")
     // and fall back to name only if value is missing
-    const key = (variant.value || variant.name || '').toString().toLowerCase()
+    const key = (variant.colorName || variant.value || variant.name || '').toString().toLowerCase()
     const type = (variant.type || '').toString().toLowerCase()
 
     // Check if it's a color
@@ -133,11 +134,15 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
       {list.map((variant) => {
         // Use the variant value (e.g. "Beige Sable") as the color key,
         // just like product-filters does when mapping availableColors
-        const keyRaw = (variant.value || variant.name || '').toString()
+        const keyRaw = (variant.colorName || variant.value || variant.name || '').toString()
         const keyLc = keyRaw.toLowerCase()
         const colorHex = colorMap[keyLc] || getColorHex(keyLc)
         const variantType = assumeColor ? 'color' : detectVariantType(variant)
         const available = variant.available !== false
+        const technicalLabel = (variant.value || variant.name || '').toString()
+        const colorTitle = variant.colorName && variant.colorName !== technicalLabel
+          ? `${technicalLabel} — ${variant.colorName}`
+          : technicalLabel
 
         if (variantType === 'color' && colorHex) {
           if (style === 'pill') {
@@ -153,10 +158,10 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
                   !available && "opacity-50 cursor-not-allowed line-through"
                 )}
                 style={{ backgroundColor: colorHex, color: fg }}
-                title={variant.name || variant.value}
+                title={colorTitle}
               >
                 <Box className="w-3 h-3 opacity-80" />
-                <span>{variant.value || variant.name}</span>
+                <span>{technicalLabel}</span>
               </button>
             )
           }
@@ -172,7 +177,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
                 !available && "opacity-30 cursor-not-allowed"
               )}
               style={{ backgroundColor: colorHex }}
-              title={variant.name || variant.value}
+              title={colorTitle}
             >
               {(keyLc === 'blanc' || keyLc === 'blanc pur' || keyLc === 'white') && (
                 <div className="absolute inset-0 rounded-full border border-border/30" />

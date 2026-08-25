@@ -346,7 +346,7 @@ export default function ProductPage() {
     return t === 'couleur' || t === 'color' || t === 'coloris' || t === 'couleurs'
   })
   const colorVariantsByName = allVariants.filter((v: any) => {
-    const key = v.variant_name?.toLowerCase?.()
+    const key = (v.color_name?.trim() || v.variant_name)?.toLowerCase?.()
     return !!key && !!(
       key in {
         'blanc': 1,'blanc pur': 1,'beige': 1,'beige sable': 1,'noir': 1,'gris': 1,'gris perle': 1,'rouge': 1,'bleu': 1,'bleu ciel': 1,'vert': 1,'jaune': 1,'orange': 1,'violet': 1,'marron': 1

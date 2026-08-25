@@ -56,14 +56,13 @@ function GuidanceCard({ locale, title, description, action }: {
   action: string
 }) {
   return (
-    <aside className="relative isolate overflow-hidden border-y border-primary/25 bg-primary px-5 py-7 text-primary-foreground shadow-[0_20px_55px_-35px_hsl(var(--primary))] sm:px-8 lg:col-span-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-6 lg:px-10">
-      <div className="absolute -end-10 -top-16 size-44 rounded-full border-[28px] border-white/10" aria-hidden="true" />
-      <Compass className="relative size-9 text-white/85" aria-hidden="true" />
+    <aside className="grid gap-5 rounded-[14px] border border-emerald-900/15 bg-emerald-950 px-6 py-7 text-white sm:px-8 lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-6">
+      <Compass className="size-8 text-amber-300" aria-hidden="true" />
       <div className="relative mt-4 lg:mt-0">
         <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">{description}</p>
       </div>
-      <Button asChild variant="secondary" className="relative mt-5 h-11 bg-white px-5 text-primary hover:bg-white/90 lg:mt-0">
+      <Button asChild className="h-11 rounded-[6px] bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300">
         <Link href={quickServiceRequestHref(locale)}>
           {action}
           <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
@@ -118,7 +117,7 @@ export default async function ServicesPage({
           )}
         </header>
 
-        <section className="relative z-10 -mt-px border border-border bg-card p-4 shadow-[0_18px_45px_-35px_rgba(43,38,28,0.7)] sm:p-5" aria-labelledby="services-filters-title">
+        <section className="relative z-10 -mt-px rounded-b-[14px] border border-stone-200 bg-card p-4 shadow-[0_16px_40px_-34px_rgba(43,38,28,0.45)] sm:p-5 dark:border-border" aria-labelledby="services-filters-title">
           <div className="mb-4 flex items-center gap-2">
             <SlidersHorizontal className="size-4 text-primary" aria-hidden="true" />
             <h2 id="services-filters-title" className="text-sm font-bold text-foreground">{t('filters.title')}</h2>
@@ -129,18 +128,19 @@ export default async function ServicesPage({
               <span className="relative">
                 <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                 <input
+                  suppressHydrationWarning
                   type="search"
                   name="q"
                   defaultValue={q}
                   maxLength={100}
                   placeholder={t('filters.searchPlaceholder')}
-                  className="h-11 w-full border border-input bg-background px-10 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="h-11 w-full rounded-[6px] border border-input bg-background px-10 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                 />
               </span>
             </label>
             <label className="grid gap-1.5 text-sm font-semibold text-foreground">
               {t('filters.categoryLabel')}
-              <select name="category_id" defaultValue={categoryId || ''} className="h-11 w-full border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+              <select name="category_id" defaultValue={categoryId || ''} className="h-11 w-full rounded-[6px] border border-input bg-background px-3 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20">
                 <option value="">{t('filters.allCategories')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>{localizedCategoryName(category, locale)}</option>
@@ -155,14 +155,11 @@ export default async function ServicesPage({
         </section>
 
         {!catalogue ? (
-          <div className="mt-10 space-y-8">
-            <section className="border border-destructive/25 bg-card p-7 text-center" role="alert">
-              <h2 className="text-xl font-bold text-foreground">{t('error.title')}</h2>
-              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p>
-              <Button asChild variant="outline" className="mt-5"><Link href={catalogueHref(locale, { q, category_id: categoryId, page })}>{t('error.retry')}</Link></Button>
-            </section>
-            <GuidanceCard locale={locale} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} />
-          </div>
+          <section className="mt-8 rounded-[14px] border border-stone-200 bg-card p-5 shadow-[0_14px_34px_-30px_rgba(41,37,32,.5)] sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>
+            <div className="mt-4 min-w-0 flex-1 sm:mt-0"><h2 className="text-lg font-bold text-foreground">{t('error.title')}</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p></div>
+            <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={catalogueHref(locale, { q, category_id: categoryId, page })}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
+          </section>
         ) : services.length === 0 ? (
           <section className="mt-10 border border-dashed border-border bg-card/70 p-8 text-center sm:p-12">
             <Search className="mx-auto size-9 text-primary" aria-hidden="true" />
@@ -173,28 +170,20 @@ export default async function ServicesPage({
         ) : (
           <section className="mt-10" aria-label={t('gridLabel')}>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-              {services.map((service, index) => (
-                <div key={service.id} className="contents">
-                  <ServiceCard
-                    service={service}
-                    locale={locale}
-                    viewLabel={t('card.view')}
-                    requestLabel={t('card.request')}
-                    moreCategoriesLabel={t('card.moreCategories', {
-                      count: Math.max(0, service.categories.length - 2),
-                    })}
-                  />
-                  {index === Math.min(2, services.length - 1) && (
-                    <GuidanceCard
-                      locale={locale}
-                      title={t('guidance.title')}
-                      description={t('guidance.description')}
-                      action={t('guidance.action')}
-                    />
-                  )}
-                </div>
+              {services.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  locale={locale}
+                  viewLabel={t('card.view')}
+                  requestLabel={t('card.request')}
+                  moreCategoriesLabel={t('card.moreCategories', {
+                    count: Math.max(0, service.categories.length - 2),
+                  })}
+                />
               ))}
             </div>
+            <div className="mt-8"><GuidanceCard locale={locale} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} /></div>
           </section>
         )}
 

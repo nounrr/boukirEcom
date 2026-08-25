@@ -234,6 +234,7 @@ function SearchField({
         )}
       />
       <input
+        suppressHydrationWarning
         ref={inputRef}
         type="search"
         value={value}

@@ -6,8 +6,12 @@ import type {
   PublicMaalemDetail,
   PublicMaalemSummary,
   PublicMaalemsResponse,
+  PublicMaalemReviewsResponse,
   PublicService,
   PublicServicesResponse,
+  MaalemReview,
+  MaalemReviewContext,
+  ReviewInvitationResolution,
   ServiceRequest,
   ServiceRequestDetails,
 } from '@/types/service-request'
@@ -198,7 +202,14 @@ export async function getPublicMaalem(id: number): Promise<PublicMaalemDetail | 
       }) : []
       return [{ id: Number(row.id), nom: nullableString(row.nom)!, nom_ar: nullableString(row.nom_ar) || '', description: nullableString(row.description), description_ar: nullableString(row.description_ar), image_url: nullableString(row.image_url), categories }]
     }) : []
-    return { ...summary, statistics: { closed_interventions: Math.max(0, Number(statistics.closed_interventions) || 0), last_closed_intervention_at: nullableString(statistics.last_closed_intervention_at), by_service: breakdown(statistics.by_service), by_category: breakdown(statistics.by_category) }, compatible_services: compatibleServices }
+    const distributionSource = statistics.rating_distribution && typeof statistics.rating_distribution === 'object'
+      ? statistics.rating_distribution as Record<string, unknown>
+      : {}
+    const reviewCount = Math.max(0, Number(statistics.review_count) || 0)
+    const averageRating = reviewCount > 0 && Number.isFinite(Number(statistics.average_rating))
+      ? Math.min(5, Math.max(1, Number(statistics.average_rating)))
+      : null
+    return { ...summary, statistics: { closed_interventions: Math.max(0, Number(statistics.closed_interventions) || 0), last_closed_intervention_at: nullableString(statistics.last_closed_intervention_at), by_service: breakdown(statistics.by_service), by_category: breakdown(statistics.by_category), average_rating: averageRating, review_count: reviewCount, rating_distribution: { 1: Math.max(0, Number(distributionSource['1']) || 0), 2: Math.max(0, Number(distributionSource['2']) || 0), 3: Math.max(0, Number(distributionSource['3']) || 0), 4: Math.max(0, Number(distributionSource['4']) || 0), 5: Math.max(0, Number(distributionSource['5']) || 0) } }, compatible_services: compatibleServices }
   } catch {
     return null
   }
@@ -216,6 +227,18 @@ export async function getPublicMaalems(filters: Record<string, string | number |
   const params = new URLSearchParams(); for (const [key, value] of Object.entries(filters)) if (value !== undefined && value !== '') params.set(key, String(value))
   const response = await fetch(`${API_CONFIG.BASE_URL}/api/maalems?${params}`, { cache: 'no-store', headers: { Platform: 'web' } })
   return parseResponse<PublicMaalemsResponse>(response)
+}
+
+export async function getPublicMaalemReviews(id: number, page = 1, perPage = 6): Promise<PublicMaalemReviewsResponse | null> {
+  if (!Number.isSafeInteger(id) || id <= 0) return null
+  try {
+    const params = new URLSearchParams({ page: String(page), per_page: String(perPage) })
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/maalems/${id}/reviews?${params}`, {
+      cache: 'no-store', headers: { Platform: 'web' },
+    })
+    if (!response.ok) return null
+    return parseResponse<PublicMaalemReviewsResponse>(response)
+  } catch { return null }
 }
 
 export async function createSelectedMaalemServiceRequest(
@@ -327,6 +350,52 @@ export async function getServiceRequestDetails(
     cache: 'no-store',
   })
   return parseResponse<ServiceRequestDetails>(response)
+}
+
+export async function getServiceRequestReviewContext(
+  requestId: number,
+  accessToken: string,
+): Promise<MaalemReviewContext> {
+  const response = await fetch(`${API_CONFIG.BASE_URL}/api/service-requests/${requestId}/review`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Platform: 'web',
+    },
+    cache: 'no-store',
+  })
+  return parseResponse<MaalemReviewContext>(response)
+}
+
+export async function createServiceRequestReview(
+  requestId: number,
+  input: { rating: number; comment: string | null },
+  accessToken: string,
+): Promise<MaalemReview> {
+  const response = await fetch(`${API_CONFIG.BASE_URL}/api/service-requests/${requestId}/review`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+      Platform: 'web',
+    },
+    body: JSON.stringify(input),
+  })
+  const payload = await parseResponse<{ review: MaalemReview }>(response)
+  return payload.review
+}
+
+export async function resolveReviewInvitation(
+  token: string,
+  accessToken: string,
+): Promise<ReviewInvitationResolution> {
+  const response = await fetch(`${API_CONFIG.BASE_URL}/api/review-invitations/${encodeURIComponent(token)}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Platform: 'web',
+    },
+    cache: 'no-store',
+  })
+  return parseResponse<ReviewInvitationResolution>(response)
 }
 
 export async function getMyServiceRequests(accessToken: string): Promise<ServiceRequest[]> {

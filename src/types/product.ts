@@ -19,6 +19,7 @@ export interface Product {
   variants?: Array<{
     id: number;
     variant_name?: string;
+    color_name?: string | null;
     variant_type?: string;
     value?: string;
     prix_vente?: number;

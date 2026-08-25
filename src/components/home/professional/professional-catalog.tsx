@@ -84,6 +84,8 @@ function productModel(product: ProductListItem, locale: string) {
       id: variant.id,
       name: variant.type,
       type: variant.type,
+      variant_name: variant.variant_name ?? variant.name,
+      color_name: variant.color_name,
       value: variant.name,
       available: variant.available,
       image: variant.image_url ?? undefined,

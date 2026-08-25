@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import { Facebook, Instagram, Youtube, Truck, CreditCard, ShieldCheck } from 'lucide-react';
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice';
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice';
@@ -22,9 +23,11 @@ export function Footer({
   variant?: 'full' | 'compact';
 }) {
   const locale = useLocale();
+  const pathname = usePathname();
   const t = useTranslations('footer');
   const tCommon = useTranslations('common');
-  const isCompact = variant === 'compact';
+  const isServiceJourney = /\/(services|maalems|service-requests)(\/|$)/.test(pathname);
+  const isCompact = variant === 'compact' || isServiceJourney;
 
   const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesQuery(undefined, {
     skip: isCompact,
@@ -44,8 +47,8 @@ export function Footer({
 
   if (isCompact) {
     return (
-      <footer className={cn('bg-primary text-white', className)}>
-        <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-4">
+      <footer className={cn(isServiceJourney ? 'border-t border-stone-700 bg-[#2d2a24] text-white' : 'bg-primary text-white', className)}>
+        <div className="container mx-auto px-6 py-6 sm:px-8 lg:px-16">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
             <div className="font-semibold">Boukir</div>
             <div className="flex items-center gap-4">

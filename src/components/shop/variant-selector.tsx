@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 export interface ApiVariant {
   id: number
   variant_name: string
+  color_name?: string | null
   variant_type: string
   available: boolean
   image_url?: string | null
@@ -62,7 +63,11 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
           </div>
           <div className="flex flex-wrap gap-2">
             {colorVariants.map((variant) => {
-              const hex = getColorHex(variant.variant_name)
+              const canonicalColor = variant.color_name?.trim() || variant.variant_name
+              const hex = getColorHex(canonicalColor)
+              const colorTitle = canonicalColor === variant.variant_name
+                ? variant.variant_name
+                : `${variant.variant_name} — ${canonicalColor}`
               if (style === 'pill') {
                 const fg = getForeground(hex)
                 return (
@@ -79,7 +84,7 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                       !variant.available && "opacity-50 cursor-not-allowed line-through"
                     )}
                     style={{ backgroundColor: hex, color: fg }}
-                    title={variant.variant_name}
+                    title={colorTitle}
                   >
                     <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: hex, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)' }} />
                     <span>{variant.variant_name}</span>
@@ -101,9 +106,9 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                     !variant.available && "opacity-30 cursor-not-allowed"
                   )}
                   style={{ backgroundColor: hex }}
-                  title={variant.variant_name}
+                  title={colorTitle}
                 >
-                  {["blanc", "blanc pur", "white"].includes(variant.variant_name?.toLowerCase?.() || '') && (
+                  {["blanc", "blanc pur", "white"].includes(canonicalColor.toLowerCase()) && (
                     <div className="absolute inset-0 rounded-full border border-border/30" />
                   )}
                   {!variant.available && (

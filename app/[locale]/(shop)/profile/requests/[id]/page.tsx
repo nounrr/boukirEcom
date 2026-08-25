@@ -29,6 +29,7 @@ import {
 } from 'lucide-react'
 
 import { AccountSidebar } from '@/components/account/account-sidebar'
+import { MaalemReviewForm } from '@/components/service-requests/maalem-review-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getServiceRequestStatusPresentation } from '@/lib/service-request-display'
@@ -311,6 +312,8 @@ export default function ServiceRequestTrackingPage() {
                   </div>
                 </div>
               </section>
+
+              <MaalemReviewForm requestId={request.id} accessToken={accessToken!} />
 
               <div className="grid gap-4 xl:grid-cols-2">
                 <SectionCard icon={ClipboardList} title={t('needSection')} className="xl:col-span-2">

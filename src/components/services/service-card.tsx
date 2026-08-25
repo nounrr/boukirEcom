@@ -36,7 +36,7 @@ export function ServiceCard({
   const extraCategories = Math.max(0, service.categories.length - 2)
 
   return (
-    <article className="group flex min-h-full flex-col overflow-hidden border border-border/80 bg-card shadow-[0_14px_38px_-30px_rgba(49,42,31,0.5)] transition duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_22px_48px_-30px_rgba(49,42,31,0.65)] focus-within:border-primary/50">
+    <article className="group flex min-h-full flex-col overflow-hidden rounded-[14px] border border-stone-200/90 bg-card shadow-[0_16px_40px_-34px_rgba(41,37,32,0.55)] transition motion-safe:duration-300 motion-safe:hover:-translate-y-0.5 hover:border-amber-400/60 hover:shadow-[0_20px_45px_-34px_rgba(41,37,32,0.7)] focus-within:border-amber-500 dark:border-border">
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {imageUrl ? (
           <Image
@@ -52,13 +52,12 @@ export function ServiceCard({
             <ImageIcon className="size-10 text-muted-foreground/60" aria-hidden="true" />
           </div>
         )}
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/25 to-transparent" aria-hidden="true" />
       </div>
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex min-h-7 flex-wrap items-center gap-1.5">
           {service.categories.slice(0, 2).map((category) => (
-            <span key={category.id} className="border border-primary/15 bg-primary/7 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">
+            <span key={category.id} className="rounded-[3px] bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
               {localizedCategoryName(category, locale)}
             </span>
           ))}
@@ -71,10 +70,10 @@ export function ServiceCard({
         <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{description}</p>
 
         <div className="mt-auto grid grid-cols-2 gap-2 pt-6">
-          <Button asChild variant="outline" className="h-auto min-h-10 whitespace-normal px-3 text-center leading-4">
+          <Button asChild variant="outline" className="h-auto min-h-11 whitespace-normal rounded-[6px] px-3 text-center leading-4">
             <Link href={serviceDetailHref(locale, service.id)}>{viewLabel}</Link>
           </Button>
-          <Button asChild className="h-auto min-h-10 whitespace-normal px-3 text-center leading-4">
+          <Button asChild className="h-auto min-h-11 whitespace-normal rounded-[6px] px-3 text-center leading-4">
             <Link href={serviceRequestHref(locale, service.id)}>
               {requestLabel}
               <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />

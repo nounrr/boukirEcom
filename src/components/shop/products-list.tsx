@@ -116,6 +116,8 @@ export function ProductsList({
         variants: product.variants?.all?.map(v => ({
           id: v.id,
           name: v.type,
+          variant_name: v.variant_name ?? v.name,
+          color_name: v.color_name,
           value: v.name,
           available: v.available,
           image: v.image_url ?? undefined

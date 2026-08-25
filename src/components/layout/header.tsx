@@ -12,7 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearAuth } from "@/state/slices/user-slice"
 import { AnimatePresence, motion } from "framer-motion"
-import { BriefcaseBusiness, ChevronDown, Home, LogOut, Menu, Package, Store, UserCircle2, Wrench } from "lucide-react"
+import { BriefcaseBusiness, ChevronDown, HardHat, Home, LogOut, Menu, Package, Store, UserCircle2, Wrench } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
@@ -41,6 +41,7 @@ export function Header() {
   const isArabic = locale === 'ar'
   const router = useRouter()
   const pathname = usePathname()
+  const isServiceJourney = /\/(services|maalems|service-requests)(\/|$)/.test(pathname)
   const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
@@ -158,6 +159,7 @@ export function Header() {
   const navLinks = [
     { href: `/${locale}`, label: t('home'), icon: Home },
     { href: `/${locale}/services`, label: t('services'), icon: Wrench },
+    { href: `/${locale}/maalems`, label: t('maalems'), icon: HardHat },
     {
       href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
       label: t('maalem'),
@@ -170,6 +172,7 @@ export function Header() {
     { href: `/${locale}/shop?sort=promo`, label: tFilters('sort.bestPromos') },
     { href: `/${locale}/shop?sort=popular`, label: tFilters('sort.popular') },
     { href: `/${locale}/services`, label: t('services') },
+    { href: `/${locale}/maalems`, label: t('maalems') },
     {
       href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
       label: t('maalem'),
@@ -188,13 +191,13 @@ export function Header() {
       >
         <header className="w-full shadow-xs shadow-black/10 overflow-x-clip">
           {/* Primary Bar */}
-          <div className="bg-primary text-white border-b border-white/15">
+          <div className={`${isServiceJourney ? 'bg-[#2d2a24]' : 'bg-primary'} border-b border-white/15 text-white`}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-16">
               <div className="flex h-[75px] items-center justify-between gap-2 sm:gap-3">
                 {/* Logo */}
                 <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
                   <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center shadow-md shadow-black/15 group-hover:shadow-lg group-hover:shadow-black/20 transition-all duration-300 ring-1 ring-black/10 group-hover:ring-black/15">
-                    <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain h-auto" />
+                    <Image src="/logo.png" alt="Logo" width={32} height={32} priority className="size-8 object-contain" />
                   </div>
                   <span className="font-bold text-lg hidden sm:block text-white tracking-tight">
                     Boukir
@@ -480,7 +483,7 @@ export function Header() {
           </div>
 
           {/* Mobile Menu (within primary background) */}
-          <div className="bg-primary text-white lg:hidden">
+          <div className={`${isServiceJourney ? 'bg-[#2d2a24]' : 'bg-primary'} text-white lg:hidden`}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-16">
               <AnimatePresence>
                 {isMobileMenuOpen && (

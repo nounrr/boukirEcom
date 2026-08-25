@@ -27,6 +27,7 @@ interface ProductVariant {
   // We normalize these fields before passing to VariantSwatches.
   name?: string
   variant_name?: string
+  color_name?: string | null
   variant_type?: string
   type?: string
   value?: string
@@ -118,6 +119,7 @@ export function ProductCard({
       name: v.variant_type ?? v.type ?? v.name ?? v.variant_name,
       // Prefer the option value (e.g. Beige Sable), fall back to variant_name/name.
       value: v.value ?? v.variant_name ?? v.name,
+      colorName: v.color_name?.trim() || undefined,
       type: v.variant_type ?? v.type,
       available: normalizeAvailable(v),
       image: v.image ?? v.image_url,
@@ -342,8 +344,8 @@ export function ProductCard({
   }, [])
 
   const isColorVariant = useCallback((variant: ProductVariant) => {
-    const label = getVariantLabel(variant).toLowerCase()
-    const type = variant.name?.toLowerCase?.() || ''
+    const label = (variant.color_name?.trim() || getVariantLabel(variant)).toLowerCase()
+    const type = (variant.variant_type ?? variant.type ?? variant.name)?.toLowerCase?.() || ''
     if (['couleur', 'color', 'coloris', 'couleurs'].includes(type)) return true
     return ['blanc', 'noir', 'rouge', 'bleu', 'vert', 'jaune', 'orange', 'violet', 'marron', 'gris', 'beige', 'argent', 'doré', 'or', 'rose', 'turquoise', 'kaki'].some(color => label.includes(color))
   }, [getVariantLabel])

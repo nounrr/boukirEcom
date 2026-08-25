@@ -133,13 +133,25 @@ export default function MyServiceRequestsPage() {
                 <Badge variant="secondary">{notifications.filter((item) => !item.read_at).length}</Badge>
               </div>
               <div className="divide-y">{notifications.slice(0, 8).map((item) => (
-                <button key={item.id} type="button" onClick={() => {
-                  if (!accessToken || item.read_at) return
-                  void markServiceRequestNotificationRead(item.id, accessToken).then(() => setNotifications((current) => current.map((notification) => notification.id === item.id ? { ...notification, read_at: new Date().toISOString() } : notification)))
-                }} className={cn('block w-full px-4 py-3 text-start sm:px-5', !item.read_at && 'bg-primary/5')}>
+                <article key={item.id} className={cn('block w-full px-4 py-3 text-start sm:px-5', !item.read_at && 'bg-primary/5')}>
                   <div className="flex items-start justify-between gap-3"><div><p className="text-sm font-semibold">{item.title}</p><p className="mt-1 whitespace-pre-line text-xs leading-5 text-muted-foreground">{item.body}</p></div>{!item.read_at && <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />}</div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{formatDate(locale, item.created_at, true)}</p>
-                </button>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[11px] text-muted-foreground">{formatDate(locale, item.created_at, true)}</p>
+                    {item.action_url ? (
+                      <a href={item.action_url} onClick={() => {
+                        if (!accessToken || item.read_at) return
+                        void markServiceRequestNotificationRead(item.id, accessToken).then(() => setNotifications((current) => current.map((notification) => notification.id === item.id ? { ...notification, read_at: new Date().toISOString() } : notification)))
+                      }} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                        {item.cta_label || (isArabic ? 'إضافة تقييم' : 'Donner mon avis')} <ArrowUpRight className="size-3.5" />
+                      </a>
+                    ) : !item.read_at ? (
+                      <button type="button" onClick={() => {
+                        if (!accessToken) return
+                        void markServiceRequestNotificationRead(item.id, accessToken).then(() => setNotifications((current) => current.map((notification) => notification.id === item.id ? { ...notification, read_at: new Date().toISOString() } : notification)))
+                      }} className="text-xs font-medium text-primary hover:underline">{isArabic ? 'تحديد كمقروء' : 'Marquer comme lu'}</button>
+                    ) : null}
+                  </div>
+                </article>
               ))}</div>
             </section>
           )}

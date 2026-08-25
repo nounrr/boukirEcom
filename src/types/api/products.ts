@@ -42,6 +42,8 @@ export interface ProductFiltersRequest {
 export interface ProductVariant {
   id: number;
   name: string;
+  variant_name: string;
+  color_name: string | null;
   type: string;
   prix_vente: number;
   remise_client: number;
@@ -56,6 +58,8 @@ export interface ProductVariants {
   colors: {
     id: number;
     name: string;
+    variant_name: string;
+    color_name: string | null;
     image_url: string | null;
     available: boolean;
   }[] | null;
@@ -149,6 +153,7 @@ export interface ProductDetail extends Omit<ProductListItem, 'variants'> {
   variants: {
     id: number;
     variant_name: string;
+    color_name: string | null;
     variant_type: string;
     reference: string;
     prix_vente: number;

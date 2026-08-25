@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Home, Store, Package, ShoppingCart, Heart, CreditCard, UserCircle, Settings as SettingsIcon, LogIn, UserPlus, Tag } from 'lucide-react'
+import { ChevronRight, Home, Store, Package, ShoppingCart, Heart, CreditCard, UserCircle, Settings as SettingsIcon, LogIn, UserPlus, Tag, Wrench, HardHat } from 'lucide-react'
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import * as React from "react"
@@ -58,6 +58,8 @@ export function DynamicBreadcrumb() {
     'category': Tag,
     'login': LogIn,
     'register': UserPlus,
+    'services': Wrench,
+    'maalems': HardHat,
   }
 
   const segments = React.useMemo(() => {
@@ -144,6 +146,8 @@ export function DynamicBreadcrumb() {
         'category': t('category'),
         'login': t('login'),
         'register': t('register'),
+        'services': t('services'),
+        'maalems': t('maalems'),
       }
 
       return {
