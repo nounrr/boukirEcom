@@ -423,7 +423,7 @@ export default function ProductPage() {
     : baseDesignation
 
   return (
-    <div className="bg-background">
+    <div className="bg-white">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left: Image Gallery */}

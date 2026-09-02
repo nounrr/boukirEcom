@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
+import { getImageEdgeColor } from "@/lib/image-edge-color"
 import { ChevronLeft, ChevronRight, Package } from "lucide-react"
 
 export interface GalleryImage { id: number; image_url: string }
@@ -40,6 +41,14 @@ export function ProductGallery({
   thumbsOnLeft = false,
 }: ProductGalleryProps) {
   const [brokenIds, setBrokenIds] = useState<Set<number>>(() => new Set())
+  const [imageBackgrounds, setImageBackgrounds] = useState<Record<string, string>>({})
+  const analyzedSources = useRef(new Set<string>())
+  const detectBackground = useCallback((source: string, image: HTMLImageElement) => {
+    if (analyzedSources.current.has(source)) return
+    analyzedSources.current.add(source)
+    const color = getImageEdgeColor(image) || '#ffffff'
+    setImageBackgrounds(previous => ({ ...previous, [source]: color }))
+  }, [])
   const swipeRef = useRef<{
     pointerId: number | null
     startX: number
@@ -151,12 +160,12 @@ export function ProductGallery({
             key={image.id}
             onClick={() => onSelectedChange(index)}
             className={cn(
-              "relative rounded-md overflow-hidden bg-muted border transition-all cursor-pointer",
+              "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer",
               selectedIndex === index
                 ? "border-primary border-2 ring-1 ring-primary/20"
                 : "border-border hover:border-primary/50"
             )}
-            style={{ width: thumbSize, height: thumbSize }}
+            style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
           >
             {image.resolvedSrc && !brokenIds.has(image.id) ? (
               <Image
@@ -164,6 +173,7 @@ export function ProductGallery({
                 alt={`Image ${index + 1}`}
                 fill
                 className="object-contain"
+                onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
                 onError={() => markBroken(image.id)}
               />
             ) : (
@@ -187,12 +197,12 @@ export function ProductGallery({
                 key={image.id}
                 onClick={() => onSelectedChange(index)}
                 className={cn(
-                  "relative rounded-md overflow-hidden bg-muted border transition-all cursor-pointer shrink-0",
+                  "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer shrink-0",
                   selectedIndex === index
                     ? "border-primary border-2 ring-1 ring-primary/20"
                     : "border-border hover:border-primary/50"
                 )}
-                style={{ width: thumbSize, height: thumbSize }}
+                style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
               >
                 {image.resolvedSrc && !brokenIds.has(image.id) ? (
                   <Image
@@ -200,6 +210,7 @@ export function ProductGallery({
                     alt={`Image ${index + 1}`}
                     fill
                     className="object-contain"
+                    onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
                     onError={() => markBroken(image.id)}
                   />
                 ) : (
@@ -221,9 +232,9 @@ export function ProductGallery({
         {thumbsOnLeft && <div className="hidden md:block">{verticalThumbs}</div>}
         <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex-1 w-full" : "w-full")}>
           <div
-            className="relative aspect-square w-full rounded-md overflow-hidden bg-muted border border-border/40 group cursor-pointer"
+            className="relative aspect-square w-full rounded-md overflow-hidden bg-white border border-border/40 group cursor-pointer"
             tabIndex={0}
-            style={{ maxHeight: maxHeight, touchAction: "pan-y" }}
+            style={{ maxHeight: maxHeight, touchAction: "pan-y", backgroundColor: imageBackgrounds[current?.resolvedSrc || ''] || '#ffffff' }}
             onKeyDown={(e) => {
               if (e.key === "ArrowLeft") goPrev()
               if (e.key === "ArrowRight") goNext()
@@ -248,6 +259,7 @@ export function ProductGallery({
               alt={altText}
             fill
             className="object-contain"
+            onLoad={(event) => detectBackground(current.resolvedSrc!, event.currentTarget)}
             priority
               onError={() => markBroken(current.id)}
           />
@@ -322,12 +334,12 @@ export function ProductGallery({
                   key={image.id}
                   onClick={() => onSelectedChange(index)}
                   className={cn(
-                    "relative rounded-md overflow-hidden bg-muted border transition-all cursor-pointer",
+                    "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer",
                     selectedIndex === index
                       ? "border-primary border-2 ring-1 ring-primary/20"
                       : "border-border hover:border-primary/50"
                   )}
-                  style={{ width: thumbSize, height: thumbSize }}
+                  style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
                 >
                   {image.resolvedSrc && !brokenIds.has(image.id) ? (
                     <Image
@@ -335,6 +347,7 @@ export function ProductGallery({
                       alt={`Image ${index + 1}`}
                       fill
                       className="object-contain"
+                      onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
                       onError={() => markBroken(image.id)}
                     />
                   ) : (

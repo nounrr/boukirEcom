@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { Package, Box } from "lucide-react"
 import { getVariantColor, resolveColorHex } from "@/lib/variant-color"
+import { MobileVariantSelect } from "./mobile-variant-select"
 
 export interface SimpleVariant {
   id: number
@@ -55,7 +56,22 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
   }
 
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+    <>
+      <MobileVariantSelect
+        options={variants.map(variant => ({
+          id: variant.id,
+          label: variant.colorName?.trim() && variant.colorName.trim() !== (variant.value || variant.name)
+            ? `${variant.value || variant.name || ''} — ${variant.colorName.trim()}`
+            : variant.value || variant.name || '',
+          available: variant.available !== false,
+        }))}
+        selectedId={selectedId}
+        onSelect={id => {
+          const variant = variants.find(option => option.id === id)
+          if (variant) onSelect(variant)
+        }}
+      />
+    <div className={cn("flex items-center gap-1.5 sm:gap-2 flex-wrap", variants.length > 1 && "hidden md:flex")}>
       {list.map((variant) => {
         // Use the variant value (e.g. "Beige Sable") as the color key,
         // just like product-filters does when mapping availableColors
@@ -161,5 +177,6 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
         <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground px-1.5 py-0.5 bg-muted/50 rounded">+{variants.length - max}</span>
       )}
     </div>
+    </>
   )
 }

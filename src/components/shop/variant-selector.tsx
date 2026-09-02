@@ -3,6 +3,7 @@
 import { getVariantColor } from "@/lib/variant-color"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { MobileVariantSelect } from "./mobile-variant-select"
 
 export interface ApiVariant {
   id: number
@@ -25,9 +26,27 @@ interface VariantSelectorProps {
 
 export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVariants = [], selectedId, onChange, onPreviewImage, style = 'circle' }: VariantSelectorProps) {
   const t = useTranslations("productPage")
+  const variants = [...colorVariants, ...sizeVariants, ...otherVariants]
 
   return (
-    <div className="space-y-4">
+    <>
+      <MobileVariantSelect
+        options={variants.map(variant => ({
+          id: variant.id,
+          label: variant.color_name?.trim() && variant.color_name.trim() !== variant.variant_name
+            ? `${variant.variant_name} — ${variant.color_name.trim()}`
+            : variant.variant_name,
+          available: variant.available,
+        }))}
+        selectedId={selectedId}
+        onSelect={id => {
+          const variant = variants.find(option => option.id === id)
+          if (!variant) return
+          onChange(id, variant)
+          onPreviewImage?.(variant.image_url || null)
+        }}
+      />
+    <div className={cn("space-y-4", variants.length > 1 && "hidden md:block")}>
       {colorVariants.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -143,5 +162,6 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
         </div>
       )}
     </div>
+    </>
   )
 }
