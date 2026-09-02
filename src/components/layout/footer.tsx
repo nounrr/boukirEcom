@@ -143,12 +143,28 @@ export function Footer({
                 className="h-7 w-auto opacity-95"
               />
               <Image
-                src="/payments/naps.png"
-                alt="NAPS"
-                width={52}
-                height={32}
-                sizes="52px"
-                className="h-7 w-auto opacity-95"
+                src="/payments/chaabi-payment.jpeg"
+                alt="Chaabi Payment"
+                width={180}
+                height={120}
+                sizes="72px"
+                className="h-12 w-auto rounded object-contain"
+              />
+              <Image
+                src="/payments/mastercard-securecode.jpeg"
+                alt="Mastercard SecureCode"
+                width={503}
+                height={232}
+                sizes="104px"
+                className="h-12 w-auto rounded object-contain"
+              />
+              <Image
+                src="/payments/verified-by-visa.jpeg"
+                alt="Verified by Visa"
+                width={600}
+                height={265}
+                sizes="109px"
+                className="h-12 w-auto rounded object-contain"
               />
             </div>
           </div>
