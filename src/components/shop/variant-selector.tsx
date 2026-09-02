@@ -1,6 +1,6 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { getVariantColor } from "@/lib/variant-color"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
@@ -23,34 +23,6 @@ interface VariantSelectorProps {
   style?: 'circle' | 'pill'
 }
 
-const colorMap: Record<string, string> = {
-  'blanc': '#FFFFFF','blanc pur': '#FAFAFA','beige': '#D4C5B9','beige sable': '#C9B99B','noir': '#000000','gris': '#6B7280','gris perle': '#D3D3D3','rouge': '#EF4444','bleu': '#3B82F6','bleu ciel': '#87CEEB','vert': '#10B981','jaune': '#FBBF24','orange': '#F97316','violet': '#8B5CF6','marron': '#92400E'
-}
-
-function getColorHex(name?: string) {
-  if (!name) return '#e5e7eb'
-  const key = name.trim().toLowerCase()
-  if (colorMap[key]) return colorMap[key]
-  let hash = 0
-  for (let i = 0; i < key.length; i++) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
-  }
-  const hue = hash % 360
-  return `hsl(${hue}, 70%, 85%)`
-}
-
-function getForeground(hex: string): string {
-  let h = hex.replace('#', '')
-  if (h.length === 3) {
-    h = h.split('').map((c) => c + c).join('')
-  }
-  const r = parseInt(h.substring(0, 2), 16)
-  const g = parseInt(h.substring(2, 4), 16)
-  const b = parseInt(h.substring(4, 6), 16)
-  const brightness = (r * 0.299 + g * 0.587 + b * 0.114)
-  return brightness > 180 ? '#111111' : '#ffffff'
-}
-
 export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVariants = [], selectedId, onChange, onPreviewImage, style = 'circle' }: VariantSelectorProps) {
   const t = useTranslations("productPage")
 
@@ -64,12 +36,11 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
           <div className="flex flex-wrap gap-2">
             {colorVariants.map((variant) => {
               const canonicalColor = variant.color_name?.trim() || variant.variant_name
-              const hex = getColorHex(canonicalColor)
+              const { background: hex, foreground: fg } = getVariantColor(variant.color_name, variant.variant_name)
               const colorTitle = canonicalColor === variant.variant_name
                 ? variant.variant_name
                 : `${variant.variant_name} — ${canonicalColor}`
               if (style === 'pill') {
-                const fg = getForeground(hex)
                 return (
                   <button
                     key={variant.id}
@@ -101,13 +72,16 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                   }}
                   disabled={!variant.available}
                   className={cn(
-                    "relative w-10 h-10 rounded-full border-2 transition-all cursor-pointer",
+                    "relative flex w-12 h-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[10px] font-semibold leading-tight break-all transition-all cursor-pointer",
                     selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
                     !variant.available && "opacity-30 cursor-not-allowed"
                   )}
-                  style={{ backgroundColor: hex }}
+                  style={{ backgroundColor: hex, color: fg }}
                   title={colorTitle}
+                  aria-label={colorTitle}
+                  aria-pressed={selectedId === variant.id}
                 >
+                  <span>{variant.variant_name}</span>
                   {["blanc", "blanc pur", "white"].includes(canonicalColor.toLowerCase()) && (
                     <div className="absolute inset-0 rounded-full border border-border/30" />
                   )}

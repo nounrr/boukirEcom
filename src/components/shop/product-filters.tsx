@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { getVariantColor } from '@/lib/variant-color'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
@@ -503,24 +504,6 @@ export function ProductFilters({
     })
   }, [autoExpanded])
 
-  const colorMap: Record<string, string> = {
-    'Blanc': '#FFFFFF',
-    'Blanc Pur': '#FAFAFA',
-    'Beige': '#D4C5B9',
-    'Beige Sable': '#C9B99B',
-    'Noir': '#000000',
-    'Gris': '#6B7280',
-    'Gris Perle': '#D3D3D3',
-    'Rouge': '#EF4444',
-    'Bleu': '#3B82F6',
-    'Bleu Ciel': '#87CEEB',
-    'Vert': '#10B981',
-    'Jaune': '#FBBF24',
-    'Orange': '#F97316',
-    'Violet': '#8B5CF6',
-    'Marron': '#92400E'
-  }
-
   const FiltersContent = () => (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -769,7 +752,7 @@ export function ProductFilters({
                         ? "border-primary scale-110 shadow-md"
                         : "border-border hover:border-border/60 hover:scale-105"
                     )}
-                    style={{ backgroundColor: colorMap[color] || color }}
+                    style={{ backgroundColor: getVariantColor(color).background }}
                     title={color}
                   >
                     {filters.colors.includes(color) && (

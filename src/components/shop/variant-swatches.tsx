@@ -1,7 +1,8 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Ruler, Package, Box } from "lucide-react"
+import { Package, Box } from "lucide-react"
+import { getVariantColor, resolveColorHex } from "@/lib/variant-color"
 
 export interface SimpleVariant {
   id: number
@@ -23,79 +24,6 @@ interface VariantSwatchesProps {
   assumeColor?: boolean
 }
 
-// Color map matching product-filters.tsx exactly
-const colorMap: Record<string, string> = {
-  'blanc': '#FFFFFF',
-  'blanc pur': '#FAFAFA',
-  'beige': '#D4C5B9',
-  'beige sable': '#C9B99B',
-  'noir': '#000000',
-  'gris': '#6B7280',
-  'gris perle': '#D3D3D3',
-  'rouge': '#EF4444',
-  'bleu': '#3B82F6',
-  'bleu ciel': '#87CEEB',
-  'vert': '#10B981',
-  'jaune': '#FBBF24',
-  'orange': '#F97316',
-  'violet': '#8B5CF6',
-  'marron': '#92400E'
-}
-
-function getForeground(hex: string): string {
-  let h = hex.replace('#', '')
-  if (h.length === 3) {
-    h = h.split('').map((c) => c + c).join('')
-  }
-  const r = parseInt(h.substring(0, 2), 16)
-  const g = parseInt(h.substring(2, 4), 16)
-  const b = parseInt(h.substring(4, 6), 16)
-  // Perceived brightness
-  const brightness = (r * 0.299 + g * 0.587 + b * 0.114)
-  return brightness > 180 ? '#111111' : '#ffffff'
-}
-
-function getColorHex(name?: string) {
-  if (!name) return '#e5e7eb'
-  const keyRaw = name.trim()
-  const key = keyRaw.toLowerCase()
-  // Direct CSS color support
-  const isHex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(keyRaw)
-  const isRgb = /^rgb\s*\(/i.test(keyRaw)
-  const isHsl = /^hsl\s*\(/i.test(keyRaw)
-  if (isHex || isRgb || isHsl) return keyRaw
-
-  if (colorMap[key]) return colorMap[key]
-  // Also handle common English color names
-  const english: Record<string, string> = {
-    white: '#FFFFFF',
-    black: '#000000',
-    red: '#EF4444',
-    blue: '#3B82F6',
-    green: '#10B981',
-    yellow: '#FBBF24',
-    orange: '#F97316',
-    purple: '#8B5CF6',
-    brown: '#92400E',
-    gray: '#6B7280',
-    grey: '#6B7280',
-    beige: '#D4C5B9',
-    // Extra explicit mappings for product card colors
-    pink: '#ec4899',
-    'light blue': '#60a5fa',
-    lightblue: '#60a5fa'
-  }
-  if (english[key]) return english[key]
-
-  // Pastel HSL fallback based on name hash
-  let hash = 0
-  for (let i = 0; i < key.length; i++) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
-  }
-  const hue = hash % 360
-  return `hsl(${hue}, 70%, 85%)`
-}
-
 export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style = 'circle', assumeColor = false }: VariantSwatchesProps) {
   const list = variants.slice(0, max)
 
@@ -106,10 +34,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
     const key = (variant.colorName || variant.value || variant.name || '').toString().toLowerCase()
     const type = (variant.type || '').toString().toLowerCase()
 
-    // Check if it's a color
-    const isCssColor = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(key) || /^rgb\s*\(/i.test(key) || /^hsl\s*\(/i.test(key)
-    const englishColorKeys = ['white', 'black', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'brown', 'gray', 'grey', 'beige']
-    if (isCssColor || Object.keys(colorMap).some(color => key.includes(color)) || englishColorKeys.some(color => key.includes(color))) {
+    if (['couleur', 'color', 'coloris', 'couleurs'].includes(type) || resolveColorHex(key)) {
       return 'color'
     }
 
@@ -136,7 +61,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
         // just like product-filters does when mapping availableColors
         const keyRaw = (variant.colorName || variant.value || variant.name || '').toString()
         const keyLc = keyRaw.toLowerCase()
-        const colorHex = colorMap[keyLc] || getColorHex(keyLc)
+        const { background: colorHex, foreground: fg } = getVariantColor(variant.colorName, variant.value || variant.name)
         const variantType = assumeColor ? 'color' : detectVariantType(variant)
         const available = variant.available !== false
         const technicalLabel = (variant.value || variant.name || '').toString()
@@ -146,7 +71,6 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
 
         if (variantType === 'color' && colorHex) {
           if (style === 'pill') {
-            const fg = getForeground(colorHex)
             return (
               <button
                 key={variant.id}
@@ -172,13 +96,16 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               onClick={() => available && onSelect(variant)}
               disabled={!available}
               className={cn(
-                "w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 relative",
+                "flex w-10 h-10 sm:w-11 sm:h-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[9px] sm:text-[10px] font-semibold leading-tight break-all transition-all duration-200 hover:scale-110 relative",
                 selectedId === variant.id ? "border-primary scale-110 shadow-md" : "border-border hover:border-border/60 hover:scale-105",
                 !available && "opacity-30 cursor-not-allowed"
               )}
-              style={{ backgroundColor: colorHex }}
+              style={{ backgroundColor: colorHex, color: fg }}
               title={colorTitle}
+              aria-label={colorTitle}
+              aria-pressed={selectedId === variant.id}
             >
+              <span>{technicalLabel}</span>
               {(keyLc === 'blanc' || keyLc === 'blanc pur' || keyLc === 'white') && (
                 <div className="absolute inset-0 rounded-full border border-border/30" />
               )}

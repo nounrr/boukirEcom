@@ -163,7 +163,7 @@ export function ProductGallery({
                 src={image.resolvedSrc}
                 alt={`Image ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-contain"
                 onError={() => markBroken(image.id)}
               />
             ) : (
@@ -199,7 +199,7 @@ export function ProductGallery({
                     src={image.resolvedSrc}
                     alt={`Image ${index + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     onError={() => markBroken(image.id)}
                   />
                 ) : (
@@ -247,7 +247,7 @@ export function ProductGallery({
               src={current.resolvedSrc}
               alt={altText}
             fill
-            className="object-cover"
+            className="object-contain"
             priority
               onError={() => markBroken(current.id)}
           />
@@ -334,7 +334,7 @@ export function ProductGallery({
                       src={image.resolvedSrc}
                       alt={`Image ${index + 1}`}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       onError={() => markBroken(image.id)}
                     />
                   ) : (
