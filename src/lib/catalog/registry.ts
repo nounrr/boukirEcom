@@ -1,9 +1,11 @@
 import brands from './brands.json'
+import { categoryTranslations } from './translations'
+import { isCatalogLocale } from './i18n'
 
 export type CatalogKind = 'categories' | 'marques'
-export type CatalogPage = { id: number; slug: string; fr: string; ar: string; adviceFr: string; adviceAr: string; search?: string }
+export type CatalogPage = { id: number; slug: string; fr: string; ar: string; en: string; zh: string; adviceFr: string; adviceAr: string; adviceEn: string; adviceZh: string; search?: string }
 // Slugs are permanent editorial identifiers. Renaming a label must not change them.
-export const categories: CatalogPage[] = [
+const definitions: Omit<CatalogPage, 'en' | 'zh' | 'adviceEn' | 'adviceZh'>[] = [
   { id: 73, slug: '73-matieres-de-construction', fr: 'Ciment, sable et matériaux de construction', ar: 'الإسمنت والرمل ومواد البناء', adviceFr: 'Comparez les liants, granulats et matériaux selon leur usage. Vérifiez le conditionnement et les quantités nécessaires avant de préparer votre chantier à Tanger.', adviceAr: 'قارن مواد الربط والرمل ومواد البناء حسب الاستعمال. تحقق من التعبئة والكميات اللازمة قبل تجهيز ورشك في طنجة.' },
   { id: 73, slug: '73-ciment', search: 'ciment', fr: 'Ciment', ar: 'الإسمنت', adviceFr: 'Pour choisir un ciment, comparez sa classe et son conditionnement. Consultez la fiche de la référence pour vérifier son usage et adaptez le dosage aux prescriptions de votre chantier.', adviceAr: 'لاختيار الإسمنت، قارن الصنف وطريقة التعبئة. راجع معلومات المنتج واستعماله المناسب، وحدد الجرعات حسب متطلبات ورشك.' },
   { id: 73, slug: '73-sable', search: 'sable', fr: 'Sable de construction', ar: 'رمل البناء', adviceFr: 'Vérifiez la provenance, la granulométrie et la propreté du sable selon le mortier ou le béton prévu. Confirmez l’unité vendue et les conditions de livraison avant de calculer le volume à commander.', adviceAr: 'تحقق من مصدر الرمل وحجم حبيباته ونظافته حسب الملاط أو الخرسانة المطلوبة. تأكد من وحدة البيع وشروط التوصيل قبل حساب الكمية.' },
@@ -19,17 +21,25 @@ export const categories: CatalogPage[] = [
   { id: 10, slug: '10-outillage', fr: 'Outillage', ar: 'الأدوات والمعدات', adviceFr: 'Choisissez vos outils selon la tâche et la fréquence d’utilisation. Vérifiez les dimensions, la compatibilité des accessoires et les caractéristiques de chaque référence.', adviceAr: 'اختر أدواتك حسب المهمة وتكرار الاستعمال. تحقق من المقاسات وتوافق الملحقات وخصائص كل منتج.' },
 ]
 
+export const categories: CatalogPage[] = definitions.map(page => {
+  const translated = categoryTranslations[page.slug]
+  if (!translated) throw new Error(`Missing catalogue translation: ${page.slug}`)
+  return { ...page, ...translated }
+})
+
 export function catalogPage(kind: CatalogKind, slug: string): CatalogPage | undefined {
   if (kind === 'categories') return categories.find(c => c.slug === slug)
   const brand = brands.find(b => b.slug === slug)
   if (!brand) return undefined
-  return { id: brand.id, slug: brand.slug, fr: brand.name, ar: brand.name,
+  return { id: brand.id, slug: brand.slug, fr: brand.name, ar: brand.name, en: brand.name, zh: brand.name,
+    adviceEn: `Compare ${brand.name} products in our catalogue by use, dimensions, packaging and compatible accessories. Open each product page for its specifications and displayed price.`,
+    adviceZh: `按用途、尺寸、包装和兼容配件比较目录中的 ${brand.name} 产品。查看各产品页面，了解规格和展示价格。`,
     adviceFr: `Comparez les références ${brand.name} présentes dans notre catalogue : usage, dimensions, conditionnement et accessoires compatibles. Consultez chaque fiche pour les caractéristiques et le prix affiché.`,
     adviceAr: `قارن منتجات ${brand.name} الموجودة في كتالوجنا حسب الاستعمال والمقاسات والتعبئة والملحقات المتوافقة. راجع كل منتج لمعرفة خصائصه وسعره المعروض.` }
 }
 
 export function catalogHref(locale: string, kind: CatalogKind, id: number | string) {
   const page = kind === 'categories' ? categories.find(c => c.id === Number(id) && !c.search) : brands.find(b => b.id === Number(id))
-  return page && ['fr', 'ar'].includes(locale) ? `/${locale}/${kind}/${page.slug}` : `/${locale}/shop?${kind === 'categories' ? 'category_id' : 'brand_id'}=${encodeURIComponent(String(id))}`
+  return page && isCatalogLocale(locale) ? `/${locale}/${kind}/${page.slug}` : `/${locale}/shop?${kind === 'categories' ? 'category_id' : 'brand_id'}=${encodeURIComponent(String(id))}`
 }
 export { brands }

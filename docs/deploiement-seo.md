@@ -40,3 +40,11 @@ Pour le sitemap complet, déployer également les endpoints backend des lots 03/
 et résoudre la migration de publication des services décrite dans le rapport 03.
 Les pages catégories utilisent les endpoints catalogue déjà existants ; le nouvel
 endpoint `/api/ecommerce/products/catalog-pages` sert au comptage du sitemap.
+
+La mise à jour du 9 septembre étend les pages catégories et marques à `fr`,
+`ar`, `en` et `zh` : contenu éditorial, navigation, metadata et sitemap.
+Après déploiement, vérifier que les URL `/en/categories/75-etancheite-bitume`
+et `/zh/marques/37-danosa` répondent 200 sans redirection vers `/shop`, avec
+quatre alternates et des liens produits dans le HTML initial. Les désignations
+produits utilisent les traductions du catalogue lorsqu'elles existent, puis
+le texte de repli : cette mise à jour ne traduit pas toute la base produits.

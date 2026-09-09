@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { API_CONFIG } from '@/lib/api-config'
 import { localizedUrl } from '@/lib/seo/metadata'
 import { categories, brands } from './registry'
+import { CATALOG_LOCALES } from './i18n'
 
 export async function catalogSitemap(): Promise<MetadataRoute.Sitemap> {
   const response = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/products/catalog-pages`, { cache: 'no-store', signal: AbortSignal.timeout(15000) })
@@ -12,7 +13,7 @@ export async function catalogSitemap(): Promise<MetadataRoute.Sitemap> {
   }
   const entries: MetadataRoute.Sitemap = []
   function add(path: string) {
-    const languages = { fr: localizedUrl('fr', path), ar: localizedUrl('ar', path) }
+    const languages = Object.fromEntries(CATALOG_LOCALES.map(locale => [locale, localizedUrl(locale, path)]))
     // No timestamp invented for editorial text or membership changes.
     for (const url of Object.values(languages)) entries.push({ url, alternates: { languages } })
   }

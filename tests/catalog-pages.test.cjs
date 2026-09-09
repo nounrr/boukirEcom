@@ -41,7 +41,8 @@ const props = (locale, slug, query = {}) => ({ params: Promise.resolve({ locale,
 test('stable slugs, scoped links and strict page numbers', () => {
   assert.equal(catalogHref('fr', 'categories', 75), '/fr/categories/75-etancheite-bitume');
   assert.equal(catalogHref('ar', 'marques', 37), '/ar/marques/37-danosa');
-  assert.match(catalogHref('en', 'marques', 37), /\/en\/shop\?brand_id=37/);
+  assert.equal(catalogHref('en', 'marques', 37), '/en/marques/37-danosa');
+  assert.equal(catalogHref('zh', 'categories', 75), '/zh/categories/75-etancheite-bitume');
   assert.match(catalogHref('fr', 'categories', 999), /shop\?category_id=999/);
   assert.equal(catalogPage('categories', '75-fake-slug'), undefined);
   assert.equal(new Set(categories.map(x => x.slug)).size, categories.length);
@@ -49,16 +50,16 @@ test('stable slugs, scoped links and strict page numbers', () => {
   for (const value of ['0', '-1', '1.5', 'x', ['1'], '100001']) assert.equal(catalogPageNumber(value), null);
 });
 test('real server route emits product links and localized metadata before hydration, unknown slugs 404', async () => {
-  for (const locale of ['fr', 'ar']) {
+  for (const locale of ['fr', 'ar', 'en', 'zh']) {
     const input = props(locale, '75-etancheite-bitume');
     const html = renderToStaticMarkup(await catalogRoute('categories', input));
     assert.ok(html.includes(`href="/${locale}/product/6696"`));
-    assert.ok(html.includes(locale === 'ar' ? 'العزل المائي' : 'Étanchéité'));
+    assert.ok(html.includes({ fr: 'Étanchéité', ar: 'العزل المائي', en: 'Waterproofing', zh: '防水材料' }[locale]));
     assert.equal((html.match(/<h1/g) || []).length, 1);
     assert.ok(html.includes('category_id=75'));
     const metadata = await catalogMetadata('categories', input);
     assert.equal(metadata.alternates.canonical, `https://boukirdiamond.com/${locale}/categories/75-etancheite-bitume`);
-    assert.deepEqual(Object.keys(metadata.alternates.languages), ['fr', 'ar']);
+    assert.deepEqual(Object.keys(metadata.alternates.languages), ['fr', 'ar', 'en', 'zh']);
     assert.equal(metadata.robots.index, true);
     fs.writeFileSync(path.join(root, '../docs/seo-2026-09-08', `correction-04-ssr-${locale}.html`), '<!doctype html><meta charset="utf-8">' + html);
   }
@@ -81,8 +82,8 @@ test('empty selections noindex, sitemap excludes empty pages, API errors are not
   assert.deepEqual(await catalogSitemap(), []);
   total = 1;
   const entries = await catalogSitemap();
-  assert.equal(entries.length, 4);
-  assert.equal(new Set(entries.map(x => x.url)).size, 4);
+  assert.equal(entries.length, 8);
+  assert.equal(new Set(entries.map(x => x.url)).size, 8);
   assert.ok(entries.some(x => x.url.endsWith('/marques/37-danosa')));
   unavailable = true;
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume')), /indisponible/);
