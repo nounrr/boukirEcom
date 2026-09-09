@@ -961,6 +961,7 @@
     }
   },
   "productCard": {
+    "inStock": "In stock",
     "quickView": "Quick view",
     "addToCart": "Add to cart",
     "outOfStock": "Out of stock",

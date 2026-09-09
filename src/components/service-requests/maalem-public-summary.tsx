@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Award, BriefcaseBusiness, CheckCircle2, MapPin } from 'lucide-react'
+import { Award, CheckCircle2, MapPin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { resolvePublicMaalemPhoto } from '@/lib/service-requests'
 import { cn } from '@/lib/utils'
@@ -42,14 +42,14 @@ export function MaalemPublicSummary({
 
   return (
     <article className={cn(
-      'overflow-hidden border border-amber-200/80 bg-[#fffdf7] shadow-[0_18px_45px_-34px_rgba(66,48,17,0.5)] dark:border-amber-900/60 dark:bg-card',
-      compact ? 'rounded-xl' : 'rounded-2xl',
+      'overflow-hidden border-y bg-background',
+      'rounded-none',
       className,
     )}>
-      <div className={cn('flex items-center gap-4', compact ? 'p-4' : 'p-5 sm:p-6')}>
+      <div className={cn('flex items-center gap-4', compact ? 'py-5' : 'py-6')}>
         <div className={cn(
-          'relative shrink-0 overflow-hidden border-2 border-white bg-amber-100 shadow-md dark:border-zinc-800 dark:bg-amber-950',
-          compact ? 'h-16 w-16 rounded-xl' : 'h-24 w-24 rounded-2xl sm:h-28 sm:w-28',
+          'relative shrink-0 overflow-hidden bg-muted',
+          compact ? 'h-16 w-16 rounded-md' : 'h-24 w-24 rounded-md sm:h-28 sm:w-28',
         )}>
           {photoUrl ? (
             <Image
@@ -61,7 +61,7 @@ export function MaalemPublicSummary({
             />
           ) : (
             <div
-              className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-amber-300 text-xl font-bold text-amber-950 sm:text-2xl"
+              className="flex h-full w-full items-center justify-center bg-muted text-xl font-medium text-muted-foreground sm:text-2xl"
               role="img"
               aria-label={labels.noPhoto}
             >
@@ -71,14 +71,13 @@ export function MaalemPublicSummary({
         </div>
 
         <div className="min-w-0 flex-1">
-          <Badge className="mb-2 gap-1 border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
+          <Badge className="mb-2 gap-1 border-0 bg-transparent p-0 text-xs font-medium text-emerald-700 hover:bg-transparent dark:text-emerald-400">
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
             {labels.verified}
           </Badge>
-          <h2 className={cn('truncate font-bold tracking-tight', compact ? 'text-lg' : 'text-2xl')}>{maalem.public_name}</h2>
+          <h2 className={cn('break-words font-medium', compact ? 'text-lg' : 'text-2xl')}>{maalem.public_name}</h2>
           {categoryName && (
-            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-amber-800 dark:text-amber-300">
-              <BriefcaseBusiness className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
               {categoryName}
             </p>
           )}
@@ -87,18 +86,18 @@ export function MaalemPublicSummary({
 
       {(maalem.city || maalem.intervention_areas.length > 0 || maalem.experience_years != null) && (
         <div className={cn(
-          'grid gap-2 border-t border-amber-200/70 bg-amber-50/60 text-sm text-muted-foreground dark:border-amber-900/60 dark:bg-amber-950/20',
-          compact ? 'px-4 py-3' : 'px-5 py-4 sm:grid-cols-2 sm:px-6',
+          'grid gap-3 border-t text-sm text-muted-foreground',
+          compact ? 'py-4' : 'py-5 sm:grid-cols-2',
         )}>
           {maalem.city && (
             <p className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span><span className="sr-only">{labels.location}: </span>{maalem.city}</span>
             </p>
           )}
           {maalem.experience_years != null && (
             <p className="flex items-start gap-2">
-              <Award className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+              <Award className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               {labels.experience(maalem.experience_years)}
             </p>
           )}

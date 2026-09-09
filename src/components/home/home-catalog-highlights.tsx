@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { useMemo } from 'react'
 import Image from 'next/image'
@@ -51,7 +52,7 @@ function FeaturedCategoryCard({
   saleLabel: string
   discountLabel: string
 }) {
-  const href = `/${locale}/shop?category_id=${encodeURIComponent(String(category.id))}`
+  const href = catalogHref(locale, 'categories', category.id)
   const imageSrc = toAbsoluteImageUrl(category.image_url)
   const label = getCategoryLabel(category, locale)
 
@@ -99,7 +100,7 @@ function GridCategoryCard({
   locale: string
   isRtl: boolean
 }) {
-  const href = `/${locale}/shop?category_id=${encodeURIComponent(String(category.id))}`
+  const href = catalogHref(locale, 'categories', category.id)
   const imageSrc = toAbsoluteImageUrl(category.image_url)
   const label = getCategoryLabel(category, locale)
   const categoryInitial = label?.[0]?.toUpperCase() ?? 'C'

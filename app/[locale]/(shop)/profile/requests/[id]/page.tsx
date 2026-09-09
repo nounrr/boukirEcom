@@ -103,12 +103,12 @@ function SectionCard({
   className?: string
 }) {
   return (
-    <section className={cn('rounded-2xl border bg-card p-4 shadow-sm sm:p-5', className)}>
-      <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+    <section className={cn('min-w-0 rounded-2xl border border-amber-200/60 bg-card p-5 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)] sm:p-6 dark:border-border', className)}>
+      <div className="mb-5 flex items-center gap-2.5">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
           <Icon className="size-4" />
         </span>
-        <h2 className="font-semibold text-foreground">{title}</h2>
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
       </div>
       {children}
     </section>
@@ -199,44 +199,44 @@ export default function ServiceRequestTrackingPage() {
   const BackIcon = isArabic ? ArrowRight : ArrowLeft
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" dir={isArabic ? 'rtl' : undefined}>
-      <div className="grid gap-6 lg:grid-cols-4">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" dir={isArabic ? 'rtl' : undefined}>
+      <div className="grid gap-8 lg:grid-cols-4 lg:gap-10">
         <AccountSidebar active="requests" />
 
-        <main className="min-w-0 lg:col-span-3">
+        <main className="min-w-0 rounded-3xl bg-[#fbf8ef] p-4 sm:p-6 lg:col-span-3 dark:bg-muted/20">
           <Link
             href={`/${locale}/profile/requests`}
-            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-emerald-800 dark:text-emerald-300"
           >
             <BackIcon className="size-4" />
             {t('backToList')}
           </Link>
 
           {!isAuthenticated && !accessToken ? (
-            <section className="rounded-2xl border bg-card px-6 py-10 text-center shadow-sm">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <section className="rounded-2xl border border-amber-200/60 bg-card dark:border-border px-6 py-10 text-center shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+              <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
                 <LogIn className="size-6" />
               </div>
               <h1 className="mt-4 text-lg font-semibold">{t('authTitle')}</h1>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{t('authDescription')}</p>
-              <Button asChild className="mt-5">
+              <Button asChild className="mt-6 min-h-11 rounded-md">
                 <Link href={`/${locale}/login`}>{t('login')}</Link>
               </Button>
             </section>
           ) : loading ? (
             <div className="space-y-4" aria-label={t('loading')} aria-live="polite">
-              <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+              <div className="overflow-hidden rounded-2xl border border-amber-200/60 bg-card dark:border-border shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
                 <div className="h-24 animate-pulse border-b bg-muted/50" />
                 <div className="grid grid-cols-5 gap-3 p-5">
                   {workflowSteps.map((step) => <div key={step} className="h-12 animate-pulse rounded-lg bg-muted" />)}
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                {[1, 2, 3, 4].map((item) => <div key={item} className="h-44 animate-pulse rounded-2xl border bg-muted/40" />)}
+                {[1, 2, 3, 4].map((item) => <div key={item} className="h-44 animate-pulse rounded-lg border bg-muted/40" />)}
               </div>
             </div>
           ) : errorKey || !request || !details ? (
-            <section className="rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-10 text-center">
+            <section className="rounded-lg border border-destructive/20 bg-destructive/5 px-6 py-10 text-center">
               <AlertCircle className="mx-auto size-9 text-destructive" />
               <h1 className="mt-4 text-lg font-semibold text-foreground">{t(errorKey || 'loadError')}</h1>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
@@ -257,11 +257,11 @@ export default function ServiceRequestTrackingPage() {
           ) : (
             <div className="space-y-4">
               <section className={cn('overflow-hidden rounded-2xl border border-s-4 bg-card shadow-sm', status.accent)}>
-                <div className="border-b border-border/40 bg-muted/30 px-4 py-4 sm:px-6">
+                <div className="border-b border-amber-200/50 bg-amber-50/70 p-5 sm:p-6 dark:border-border dark:bg-amber-950/15">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('detailEyebrow')}</p>
-                      <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">{request.request_number}</h1>
+                      <p className="text-xs font-medium text-emerald-800 dark:text-emerald-300">{t('detailEyebrow')}</p>
+                      <h1 className="mt-1 text-3xl font-bold tracking-tight rtl:tracking-normal text-foreground">{request.request_number}</h1>
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span>{t('sourceLabel')} <strong className="font-medium text-foreground">{t(`source.${request.request_source}`)}</strong></span>
                         <span>{t('createdLabel')} <strong className="font-medium text-foreground">{formatDateTime(locale, request.created_at) || t('notProvided')}</strong></span>
@@ -273,7 +273,7 @@ export default function ServiceRequestTrackingPage() {
                   </div>
                 </div>
 
-                <div className="p-4 sm:p-6">
+                <div className="p-5 sm:p-6">
                   <div className="grid grid-cols-5 gap-1 sm:gap-3" aria-label={t('workflow.label')}>
                     {workflowSteps.map((step, index) => {
                       const isComplete = !status.terminal && status.progressIndex > index
@@ -298,7 +298,7 @@ export default function ServiceRequestTrackingPage() {
                               <Circle className="size-2.5 text-muted-foreground/45" />
                             )}
                           </span>
-                          <span className={cn('mt-2 line-clamp-2 text-[10px] leading-tight sm:text-xs', isCurrent || isComplete ? 'font-semibold text-foreground' : 'text-muted-foreground')}>
+                          <span className={cn('mt-2 line-clamp-2 text-xs leading-5', isCurrent || isComplete ? 'font-semibold text-foreground' : 'text-muted-foreground')}>
                             {step}
                           </span>
                         </div>
@@ -306,7 +306,7 @@ export default function ServiceRequestTrackingPage() {
                     })}
                   </div>
                   <p className="mt-4 text-center text-xs text-muted-foreground">{t('workflow.hint')}</p>
-                  <div className={cn('mt-4 rounded-xl border px-4 py-3', status.background, status.border)}>
+                  <div className={cn('mt-6 rounded-xl border p-4', status.background, status.border)}>
                     <p className={cn('text-sm font-semibold', status.color)}>{t(`statusMessage.${status.key}`)}</p>
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('teamMessage')}</p>
                   </div>
@@ -315,9 +315,9 @@ export default function ServiceRequestTrackingPage() {
 
               <MaalemReviewForm requestId={request.id} accessToken={accessToken!} />
 
-              <div className="grid gap-4 xl:grid-cols-2">
+              <div className="grid gap-5 xl:grid-cols-2">
                 <SectionCard icon={ClipboardList} title={t('needSection')} className="xl:col-span-2">
-                  <h2 className="text-lg font-bold text-foreground">{getRequestTitle(request)}</h2>
+                  <h2 className="text-lg font-semibold text-foreground">{getRequestTitle(request)}</h2>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-foreground/85">
                     {request.problem_description || t('descriptionFallback')}
                   </p>
@@ -340,11 +340,11 @@ export default function ServiceRequestTrackingPage() {
                     <DetailField label={t('nameLabel')} value={request.requester_name || t('notProvided')} />
                     <DetailField
                       label={t('phoneLabel')}
-                      value={request.requester_phone ? <a href={`tel:${request.requester_phone}`} className="inline-flex items-center gap-1.5 text-primary hover:underline"><Phone className="size-3.5" />{request.requester_phone}</a> : t('notProvided')}
+                      value={request.requester_phone ? <a href={`tel:${request.requester_phone}`} className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 hover:underline"><Phone className="size-3.5" />{request.requester_phone}</a> : t('notProvided')}
                     />
                     <DetailField
                       label={t('emailLabel')}
-                      value={request.requester_email ? <a href={`mailto:${request.requester_email}`} className="inline-flex items-center gap-1.5 text-primary hover:underline"><Mail className="size-3.5" />{request.requester_email}</a> : t('notProvided')}
+                      value={request.requester_email ? <a href={`mailto:${request.requester_email}`} className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 hover:underline"><Mail className="size-3.5" />{request.requester_email}</a> : t('notProvided')}
                     />
                   </dl>
                 </SectionCard>
@@ -404,7 +404,7 @@ export default function ServiceRequestTrackingPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="shrink-0 gap-2 self-start sm:self-auto"
+                            className="min-h-11 shrink-0 gap-2 self-start rounded-md sm:self-auto"
                             disabled={downloadingId === attachment.id}
                             onClick={() => handleDownload(attachment)}
                           >

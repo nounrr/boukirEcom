@@ -79,7 +79,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
         const keyLc = keyRaw.toLowerCase()
         const { background: colorHex, foreground: fg } = getVariantColor(variant.colorName, variant.value || variant.name)
         const variantType = assumeColor ? 'color' : detectVariantType(variant)
-        const available = variant.available !== false
+
         const technicalLabel = (variant.value || variant.name || '').toString()
         const colorTitle = variant.colorName && variant.colorName !== technicalLabel
           ? `${technicalLabel} — ${variant.colorName}`
@@ -90,12 +90,10 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
             return (
               <button
                 key={variant.id}
-                onClick={() => available && onSelect(variant)}
-                disabled={!available}
+                onClick={() => onSelect(variant)}
                 className={cn(
                   "px-2.5 py-0.5 text-xs font-semibold rounded-full border transition-all duration-200 flex items-center gap-1",
                   selectedId === variant.id ? "ring-2 ring-primary/20 scale-[1.02]" : "",
-                  !available && "opacity-50 cursor-not-allowed line-through"
                 )}
                 style={{ backgroundColor: colorHex, color: fg }}
                 title={colorTitle}
@@ -109,12 +107,10 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
           return (
             <button
               key={variant.id}
-              onClick={() => available && onSelect(variant)}
-              disabled={!available}
+              onClick={() => onSelect(variant)}
               className={cn(
                 "flex w-10 h-10 sm:w-11 sm:h-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[9px] sm:text-[10px] font-semibold leading-tight break-all transition-all duration-200 hover:scale-110 relative",
                 selectedId === variant.id ? "border-primary scale-110 shadow-md" : "border-border hover:border-border/60 hover:scale-105",
-                !available && "opacity-30 cursor-not-allowed"
               )}
               style={{ backgroundColor: colorHex, color: fg }}
               title={colorTitle}
@@ -125,11 +121,6 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               {(keyLc === 'blanc' || keyLc === 'blanc pur' || keyLc === 'white') && (
                 <div className="absolute inset-0 rounded-full border border-border/30" />
               )}
-              {!available && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-full h-0.5 bg-destructive rotate-45" />
-                </div>
-              )}
             </button>
           )
         }
@@ -138,14 +129,12 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
           return (
             <button
               key={variant.id}
-              onClick={() => available && onSelect(variant)}
-              disabled={!available}
+              onClick={() => onSelect(variant)}
               className={cn(
                 "px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-xs font-semibold rounded-md border transition-all duration-200 min-w-7 sm:min-w-8 flex items-center justify-center gap-1",
                 selectedId === variant.id
                   ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
                   : "border-border hover:border-primary/50 hover:bg-muted/50 text-foreground",
-                !available && "opacity-30 cursor-not-allowed line-through"
               )}
               title={variant.name || variant.value}
             >
@@ -157,14 +146,12 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
         return (
           <button
             key={variant.id}
-            onClick={() => available && onSelect(variant)}
-            disabled={!available}
+            onClick={() => onSelect(variant)}
             className={cn(
               "px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-xs font-medium rounded-md border transition-all duration-200 flex items-center gap-1",
               selectedId === variant.id
                 ? "bg-primary text-primary-foreground border-primary"
                 : "border-border hover:border-primary/50 hover:bg-muted/50",
-              !available && "opacity-30 cursor-not-allowed line-through"
             )}
             title={variant.name || variant.value}
           >

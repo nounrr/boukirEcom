@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -133,7 +134,7 @@ export function CategoriesMobileMenu({
                 <div key={c.id} className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/${locale}/shop?category_id=${encodeURIComponent(String(c.id))}`}
+                      href={catalogHref(locale, 'categories', c.id)}
                       onClick={() => {
                         onNavigate?.()
                         setOpen(false)
@@ -183,7 +184,7 @@ export function CategoriesMobileMenu({
                       {children.slice(0, 24).map((child) => (
                         <Link
                           key={child.id}
-                          href={`/${locale}/shop?category_id=${encodeURIComponent(String(child.id))}`}
+                          href={catalogHref(locale, 'categories', child.id)}
                           onClick={() => {
                             onNavigate?.()
                             setOpen(false)

@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
@@ -687,7 +688,7 @@ export function HeaderSearch({
         const raw = normalized.slice('__category__:'.length)
         close()
         onSearchDone?.()
-        router.push(`/${locale}/shop?category_id=${encodeURIComponent(raw)}`)
+        router.push(catalogHref(locale, 'categories', raw))
         return
       }
 
@@ -696,7 +697,7 @@ export function HeaderSearch({
         const raw = normalized.slice('__brand__:'.length)
         close()
         onSearchDone?.()
-        router.push(`/${locale}/shop?brand_id=${encodeURIComponent(raw)}`)
+        router.push(catalogHref(locale, 'marques', raw))
         return
       }
 

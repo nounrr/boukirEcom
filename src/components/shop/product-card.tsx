@@ -103,14 +103,6 @@ export function ProductCard({
 }: ProductCardProps) {
   const t = useTranslations('productCard')
   const tCommon = useTranslations('common')
-  const normalizeAvailable = useCallback((v: ProductVariant) => {
-    const raw = (v as any)?.available
-    if (raw === undefined || raw === null) return true
-    if (typeof raw === 'boolean') return raw
-    if (typeof raw === 'number') return raw !== 0
-    if (typeof raw === 'string') return raw !== '0' && raw.toLowerCase() !== 'false'
-    return true
-  }, [])
 
   const normalizedVariants = useMemo<SimpleVariant[]>(() => {
     return (product.variants ?? []).map((v) => ({
@@ -121,13 +113,13 @@ export function ProductCard({
       value: v.value ?? v.variant_name ?? v.name,
       colorName: v.color_name?.trim() || undefined,
       type: v.variant_type ?? v.type,
-      available: normalizeAvailable(v),
+      available: true,
       image: v.image ?? v.image_url,
     }))
-  }, [normalizeAvailable, product.variants])
+  }, [product.variants])
 
   const [selectedVariant, setSelectedVariant] = useState<number | null>(() => {
-    const firstAvailable = normalizedVariants.find((v) => v.available !== false)
+    const firstAvailable = normalizedVariants[0]
     return firstAvailable?.id ?? normalizedVariants[0]?.id ?? null
   })
 
@@ -141,7 +133,7 @@ export function ProductCard({
     const stillExists = selectedVariant != null && normalizedVariants.some((v) => v.id === selectedVariant)
     if (stillExists) return
 
-    const firstAvailable = normalizedVariants.find((v) => v.available !== false)
+    const firstAvailable = normalizedVariants[0]
     setSelectedVariant(firstAvailable?.id ?? normalizedVariants[0].id)
   }, [normalizedVariants, selectedVariant])
 
@@ -504,14 +496,18 @@ export function ProductCard({
               </div>
             </div>
 
-            {/* Price */}
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+          {t('inStock')}
+        </span>
+
+        {/* Price */}
             <div className="mt-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-lg sm:text-xl font-bold text-foreground">
+                  <span className="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-400">
                     {currentPrice.toFixed(2)}
                   </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">{tCommon('currency')}</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{tCommon('currency')}</span>
                 </div>
                 {discountPercentage > 0 && (
                   <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">
@@ -679,14 +675,18 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Price */}
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              {t('inStock')}
+            </span>
+
+            {/* Price */}
         <div className="mb-2">
           <div className="flex items-center gap-2">
             <div className="flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-bold text-foreground">
+              <span className="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-400">
                 {currentPrice.toFixed(2)}
               </span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">{tCommon('currency')}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{tCommon('currency')}</span>
             </div>
             {discountPercentage > 0 && (
               <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">

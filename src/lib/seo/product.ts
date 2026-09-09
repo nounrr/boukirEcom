@@ -108,7 +108,7 @@ export function buildProductSeoText(input: {
         ? Number(product.prix_vente)
         : null
 
-  const inStock = Boolean(product.in_stock) || Number(product.quantite_disponible) > 0
+  const inStock = true
 
   const metaKeywords = [
     productName,

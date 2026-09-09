@@ -85,7 +85,7 @@ export function ProductFilters({
     units: initialFilters?.units ?? [],
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
+    inStock: false,
     sort: initialFilters?.sort ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
@@ -142,7 +142,7 @@ export function ProductFilters({
     units: initialFilters?.units ?? [],
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
-    inStock: typeof initialFilters?.inStock === 'boolean' ? initialFilters.inStock : false,
+    inStock: false,
     sort: (initialFilters?.sort as SortOption | undefined) ?? 'newest',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
@@ -343,13 +343,6 @@ export function ProductFilters({
     })
   }, [notifyParent])
 
-  const handleInStockChange = useCallback((checked: boolean) => {
-    setFilters(prev => {
-      const updated = { ...prev, inStock: checked, page: 1 }
-      notifyParent(updated)
-      return updated
-    })
-  }, [notifyParent])
 
   const handleSortChange = useCallback((value: SortOption) => {
     setFilters(prev => {
@@ -808,23 +801,6 @@ export function ProductFilters({
             )}
           </div>
         )}
-
-        {/* In Stock */}
-        <div className="flex items-center gap-2 pt-2">
-          <Checkbox
-            id="in-stock"
-            checked={filters.inStock}
-            onCheckedChange={handleInStockChange}
-            disabled={isLoading}
-            className="h-4 w-4"
-          />
-          <label
-            htmlFor="in-stock"
-            className="text-sm cursor-pointer hover:text-foreground transition-colors"
-          >
-            {t('inStockOnly')}
-          </label>
-        </div>
       </div>
     </div>
   )

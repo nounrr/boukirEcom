@@ -1,0 +1,307 @@
+[
+  {
+    "id": 61,
+    "slug": "61-soprema",
+    "name": "SOPREMA"
+  },
+  {
+    "id": 60,
+    "slug": "60-monaco",
+    "name": "MONACO"
+  },
+  {
+    "id": 59,
+    "slug": "59-kynko",
+    "name": "KYNKO"
+  },
+  {
+    "id": 58,
+    "slug": "58-diamond-clips",
+    "name": "Diamond Clips"
+  },
+  {
+    "id": 57,
+    "slug": "57-jafep-amouaj",
+    "name": "Jafep Amouaj"
+  },
+  {
+    "id": 56,
+    "slug": "56-voohette",
+    "name": "Voohette"
+  },
+  {
+    "id": 55,
+    "slug": "55-tonal",
+    "name": "Tonal"
+  },
+  {
+    "id": 54,
+    "slug": "54-yindon",
+    "name": "Yindon"
+  },
+  {
+    "id": 53,
+    "slug": "53-ravena",
+    "name": "RAVENA"
+  },
+  {
+    "id": 52,
+    "slug": "52-simon",
+    "name": "Simon"
+  },
+  {
+    "id": 51,
+    "slug": "51-tiler",
+    "name": "Tiler"
+  },
+  {
+    "id": 50,
+    "slug": "50-genvana",
+    "name": "Genvana"
+  },
+  {
+    "id": 49,
+    "slug": "49-mavoplus",
+    "name": "Mavoplus"
+  },
+  {
+    "id": 48,
+    "slug": "48-mbh-project",
+    "name": "mbh project"
+  },
+  {
+    "id": 47,
+    "slug": "47-cecrops",
+    "name": "CECROPS"
+  },
+  {
+    "id": 46,
+    "slug": "46-codaflex",
+    "name": "CODAFLEX"
+  },
+  {
+    "id": 45,
+    "slug": "45-casalino",
+    "name": "CASALINO"
+  },
+  {
+    "id": 44,
+    "slug": "44-armano",
+    "name": "Armano"
+  },
+  {
+    "id": 43,
+    "slug": "43-dingqi",
+    "name": "DINGQI"
+  },
+  {
+    "id": 42,
+    "slug": "42-gabka",
+    "name": "GABKA"
+  },
+  {
+    "id": 41,
+    "slug": "41-abc-power",
+    "name": "ABC POWER"
+  },
+  {
+    "id": 40,
+    "slug": "40-index",
+    "name": "INDEX"
+  },
+  {
+    "id": 39,
+    "slug": "39-ferri",
+    "name": "FERRI"
+  },
+  {
+    "id": 38,
+    "slug": "38-akro",
+    "name": "AKRO"
+  },
+  {
+    "id": 37,
+    "slug": "37-danosa",
+    "name": "DANOSA"
+  },
+  {
+    "id": 36,
+    "slug": "36-rubi",
+    "name": "RUBI"
+  },
+  {
+    "id": 35,
+    "slug": "35-vidal",
+    "name": "VIDAL"
+  },
+  {
+    "id": 34,
+    "slug": "34-velar",
+    "name": "VELAR"
+  },
+  {
+    "id": 33,
+    "slug": "33-dakota",
+    "name": "DAKOTA"
+  },
+  {
+    "id": 32,
+    "slug": "32-wdlink",
+    "name": "WDLINK"
+  },
+  {
+    "id": 31,
+    "slug": "31-mpc",
+    "name": "MPC"
+  },
+  {
+    "id": 30,
+    "slug": "30-one-bond",
+    "name": "ONE BOND"
+  },
+  {
+    "id": 29,
+    "slug": "29-basila",
+    "name": "basila"
+  },
+  {
+    "id": 28,
+    "slug": "28-ablago",
+    "name": "ABLAGO"
+  },
+  {
+    "id": 27,
+    "slug": "27-ingelec",
+    "name": "INGELEC"
+  },
+  {
+    "id": 26,
+    "slug": "26-diamflex",
+    "name": "DIAMFLEX"
+  },
+  {
+    "id": 25,
+    "slug": "25-cat",
+    "name": "CAT"
+  },
+  {
+    "id": 24,
+    "slug": "24-lasica",
+    "name": "Lasica"
+  },
+  {
+    "id": 23,
+    "slug": "23-atlas",
+    "name": "Atlas"
+  },
+  {
+    "id": 22,
+    "slug": "22-bellota",
+    "name": "BELLOTA"
+  },
+  {
+    "id": 21,
+    "slug": "21-jadever",
+    "name": "JADEVER"
+  },
+  {
+    "id": 20,
+    "slug": "20-top-led",
+    "name": "TOP LED"
+  },
+  {
+    "id": 19,
+    "slug": "19-anfa-lighting",
+    "name": "ANFA LIGHTING"
+  },
+  {
+    "id": 18,
+    "slug": "18-swift",
+    "name": "SWIFT"
+  },
+  {
+    "id": 17,
+    "slug": "17-ilim",
+    "name": "Ilim"
+  },
+  {
+    "id": 16,
+    "slug": "16-handiron",
+    "name": "HANDIRON"
+  },
+  {
+    "id": 15,
+    "slug": "15-den-braven",
+    "name": "DEN BRAVEN"
+  },
+  {
+    "id": 14,
+    "slug": "14-ita-abrasivi",
+    "name": "ITA ABRASIVI"
+  },
+  {
+    "id": 13,
+    "slug": "13-fratelle-brasive",
+    "name": "Fratelle Brasive"
+  },
+  {
+    "id": 12,
+    "slug": "12-lap",
+    "name": "LAP"
+  },
+  {
+    "id": 11,
+    "slug": "11-astral",
+    "name": "ASTRAL"
+  },
+  {
+    "id": 10,
+    "slug": "10-dima-tube",
+    "name": "DIMA TUBE"
+  },
+  {
+    "id": 9,
+    "slug": "9-total",
+    "name": "Total"
+  },
+  {
+    "id": 8,
+    "slug": "8-ingco",
+    "name": "INGCO"
+  },
+  {
+    "id": 7,
+    "slug": "7-xcort",
+    "name": "Xcort"
+  },
+  {
+    "id": 6,
+    "slug": "6-bosch",
+    "name": "Bosch"
+  },
+  {
+    "id": 5,
+    "slug": "5-generall",
+    "name": "Generall"
+  },
+  {
+    "id": 4,
+    "slug": "4-mortecol",
+    "name": "Mortecol"
+  },
+  {
+    "id": 3,
+    "slug": "3-groupo-puma",
+    "name": "Groupo puma"
+  },
+  {
+    "id": 2,
+    "slug": "2-sika",
+    "name": "Sika"
+  },
+  {
+    "id": 1,
+    "slug": "1-kerakoll",
+    "name": "Kerakoll"
+  }
+]

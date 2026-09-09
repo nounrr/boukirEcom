@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -121,9 +122,9 @@ export function HomeHero({
     const defaultHrefFor = (type: HeroSlideType, targetId?: string | number | null): string => {
       switch (type) {
         case 'category':
-          return `/${activeLocale}/shop?category_id=${targetId ?? 23}`
+          return catalogHref(activeLocale, 'categories', targetId ?? 23)
         case 'brand':
-          return `/${activeLocale}/shop?brand_id=${targetId ?? DEFAULT_BRAND_ID}`
+          return catalogHref(activeLocale, 'marques', targetId ?? DEFAULT_BRAND_ID)
         case 'product':
           return targetId != null ? `/${activeLocale}/product/${targetId}` : `/${activeLocale}/shop`
         case 'campaign':

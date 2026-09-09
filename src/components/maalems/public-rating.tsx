@@ -16,9 +16,9 @@ export function PublicRating({ rating, count, locale, labels, showEmpty = true, 
   const accessible = labels.rating.replace('{rating}', formatted).replace('{count}', String(count))
   return <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5 text-xs' : 'gap-2 text-sm'}`} role="img" aria-label={accessible}>
     <span className="inline-flex gap-0.5" aria-hidden="true">
-      {Array.from({ length: 5 }, (_, index) => <Star key={index} className={`${compact ? 'size-3.5' : 'size-4'} ${index < Math.round(value) ? 'fill-amber-400 text-amber-500' : 'fill-transparent text-stone-300 dark:text-stone-600'}`} />)}
+      <Star className={`${compact ? 'size-3.5' : 'size-4'} fill-amber-500 text-amber-600 dark:fill-amber-400 dark:text-amber-400`} />
     </span>
-    <strong className="tabular-nums text-foreground">{formatted}/5</strong>
+    <strong className="font-medium tabular-nums text-foreground">{formatted}/5</strong>
     <span className="text-muted-foreground">· {count} {labels.verified}</span>
   </div>
 }

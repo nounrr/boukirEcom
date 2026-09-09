@@ -77,11 +77,7 @@ export default function ShopPageClient() {
       ? (sortRaw as FilterState["sort"])
       : "newest"
 
-    const inStockRaw = searchParams.get("inStock")
-    const inStock =
-      inStockRaw == null
-        ? false
-        : inStockRaw === "1" || inStockRaw === "true" || inStockRaw === "yes"
+    const inStock = false
 
     const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1)
     const per_page = Math.max(
@@ -152,8 +148,6 @@ export default function ShopPageClient() {
       if (filterState.search) next.set("search", filterState.search)
 
       if (filterState.sort && filterState.sort !== "newest") next.set("sort", filterState.sort)
-      if (filterState.inStock === true) next.set("inStock", "1")
-
       if (filterState.page && filterState.page !== 1) next.set("page", String(filterState.page))
       if (filterState.per_page && filterState.per_page !== 20) {
         next.set("per_page", String(filterState.per_page))
@@ -377,6 +371,7 @@ export default function ShopPageClient() {
             isLoading={isLoading}
             isFetching={isFetching}
             error={error}
+            onRetry={() => void refetch()}
             selectedCategoryLabels={selectedCategoryLabels}
             selectedBrandLabels={selectedBrandLabels}
             pagination={pagination}

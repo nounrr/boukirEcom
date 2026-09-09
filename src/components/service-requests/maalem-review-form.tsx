@@ -49,12 +49,12 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
   }, [accessToken, reloadKey, requestId])
 
   if (loading) {
-    return <div className="h-36 animate-pulse rounded-2xl border bg-muted/40" aria-label={t('loading')} />
+    return <div className="h-36 animate-pulse rounded-md border bg-muted/40" aria-label={t('loading')} />
   }
 
   if (loadFailed) {
     return (
-      <section className="rounded-2xl border border-destructive/20 bg-destructive/5 p-5">
+      <section className="rounded-md border border-destructive/20 bg-destructive/5 p-5">
         <div className="flex items-start gap-3">
           <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
           <div>
@@ -73,9 +73,9 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
   const review = context.review
   if (review) {
     return (
-      <section className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-sm dark:border-emerald-900 dark:bg-emerald-950/20">
+      <section className="rounded-md border-y bg-background py-7">
         <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+          <span className="flex size-6 shrink-0 items-center justify-center text-emerald-700 dark:text-emerald-400">
             <CheckCircle2 className="size-5" />
           </span>
           <div className="min-w-0">
@@ -138,13 +138,13 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-sm">
-      <div className="border-b border-border/50 bg-primary/5 px-5 py-4 sm:px-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('eyebrow')}</p>
-        <h2 className="mt-1 text-xl font-bold tracking-tight text-foreground">{t('title')}</h2>
+    <section className="border-y bg-background">
+      <div className="pt-7">
+        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t('eyebrow')}</p>
+        <h2 className="mt-2 text-2xl font-medium text-foreground">{t('title')}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t('subtitle', { maalem: context.maalem?.public_name || '', request: context.request.request_number })}</p>
       </div>
-      <form className="space-y-5 p-5 sm:p-6" onSubmit={submit} noValidate>
+      <form className="space-y-6 py-7" onSubmit={submit} noValidate>
         <fieldset disabled={submitting}>
           <legend className="text-sm font-semibold text-foreground">{t('ratingLabel')}</legend>
           <div className="mt-3 flex w-fit gap-1" role="radiogroup" aria-label={t('ratingLabel')}>
@@ -155,10 +155,10 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
                 role="radio"
                 aria-checked={rating === value}
                 aria-label={t('starLabel', { count: value })}
-                className="rounded-md p-1 outline-none transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-11 w-11 items-center justify-center rounded-md outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => { setRating(value); setError(null) }}
               >
-                <Star className={cn('size-8 transition-colors', value <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/35 hover:text-amber-300')} />
+                <Star className={cn('size-7 transition-colors', value <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/35 hover:text-amber-300')} />
               </button>
             ))}
           </div>
@@ -169,6 +169,7 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
             {t('commentLabel')} <span className="font-normal text-muted-foreground">({t('optional')})</span>
           </Label>
           <Textarea
+            className="min-h-32 rounded-md px-4 py-3 leading-6"
             id={`maalem-review-${requestId}`}
             value={comment}
             maxLength={context.constraints.comment_max}
@@ -187,10 +188,10 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-start gap-2 text-xs leading-5 text-muted-foreground">
-            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             {t('moderation')}
           </p>
-          <Button type="submit" className="shrink-0 gap-2" disabled={submitting}>
+          <Button type="submit" className="min-h-11 shrink-0 gap-2 rounded-md bg-emerald-700 px-5 text-white hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700" disabled={submitting}>
             {submitting && <Loader2 className="size-4 animate-spin" />}
             {submitting ? t('submitting') : t('submit')}
           </Button>

@@ -16,11 +16,11 @@ export const productsApi = createApi({
     // GET All Products with comprehensive filters and pagination
     getProducts: builder.query<ProductsListResponse, ProductFiltersRequest | void>({
       query: (filters) => {
-        const params: Record<string, any> = {};
+        const params: Record<string, any> = { in_stock_only: false };
 
         // Handle void case
         if (!filters) {
-          return { url: API_CONFIG.ENDPOINTS.PRODUCTS };
+          return { url: API_CONFIG.ENDPOINTS.PRODUCTS, params };
         }
 
         // Pagination
@@ -61,7 +61,6 @@ export const productsApi = createApi({
         if (filters.search) params.search = filters.search;
         if (filters.min_price !== undefined) params.min_price = filters.min_price;
         if (filters.max_price !== undefined) params.max_price = filters.max_price;
-        if (filters.in_stock_only !== undefined) params.in_stock_only = filters.in_stock_only;
         if (filters.sort) params.sort = filters.sort;
 
         return {

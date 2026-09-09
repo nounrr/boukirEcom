@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
 import type React from "react"
+import Link from 'next/link'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { normalizeLocale } from "@/i18n/locale"
-import { buildPageMetadata, getSiteUrl, localizedPath } from "@/lib/seo/metadata"
+import { buildPageMetadata, localizedUrl, seoImageUrl } from "@/lib/seo/metadata"
 import { getProductForSeo, buildProductSeoText } from "@/lib/seo/product"
 
 export async function generateMetadata({
@@ -69,14 +71,15 @@ export default async function ProductDetailsRouteLayout({
   if (!product) return children
 
   const seo = buildProductSeoText({ product, locale })
-  const productUrl = new URL(localizedPath(locale, `/product/${product.id}`), getSiteUrl()).toString()
+  const productUrl = localizedUrl(locale, `/product/${product.id}`)
+  const imageUrl = seoImageUrl(seo.imageUrl)
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: seo.productName,
     description: seo.metaDescription,
-    image: seo.imageUrl ? [seo.imageUrl] : undefined,
+    image: imageUrl ? [imageUrl] : undefined,
     sku: String(product.id),
     brand: seo.brandName ? { "@type": "Brand", name: seo.brandName } : undefined,
     category: seo.categoryName || undefined,
@@ -95,6 +98,10 @@ export default async function ProductDetailsRouteLayout({
 
   return (
     <>
+      <nav className="container mx-auto px-6 pt-4 flex gap-4 text-sm" aria-label={locale === 'ar' ? 'الفئة والعلامة' : 'Catégorie et marque'}>
+        {product.categorie?.id && <Link href={catalogHref(locale, 'categories', product.categorie.id)}>{locale === 'ar' ? product.categorie.nom_ar || product.categorie.nom : product.categorie.nom}</Link>}
+        {product.brand?.id && <Link href={catalogHref(locale, 'marques', product.brand.id)}>{product.brand.nom}</Link>}
+      </nav>
       {children}
       <script
         type="application/ld+json"

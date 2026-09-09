@@ -21,13 +21,13 @@ export function MobileVariantSelect({ options, selectedId, onSelect }: MobileVar
       onKeyDown={event => event.stopPropagation()}
       onChange={event => {
         const selected = options.find(option => option.id === Number(event.target.value))
-        if (selected?.available) onSelect(selected.id)
+        if (selected) onSelect(selected.id)
       }}
     >
       <option value="" disabled>{t("variantLabelFallback")}</option>
       {options.map(option => (
-        <option key={option.id} value={option.id} disabled={!option.available}>
-          {option.label}{option.available ? "" : ` — ${t("outOfStock")}`}
+        <option key={option.id} value={option.id}>
+          {option.label}
         </option>
       ))}
     </select>

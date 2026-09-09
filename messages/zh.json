@@ -961,6 +961,7 @@
     }
   },
   "productCard": {
+    "inStock": "有货",
     "quickView": "快速查看",
     "addToCart": "加入购物车",
     "outOfStock": "缺货",

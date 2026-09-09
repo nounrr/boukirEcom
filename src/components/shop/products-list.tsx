@@ -14,6 +14,7 @@ interface ProductsListProps {
   isLoading: boolean
   isFetching: boolean
   error: any
+  onRetry: () => void
   selectedCategoryLabels?: string[]
   selectedBrandLabels?: string[]
   pagination?: {
@@ -39,6 +40,7 @@ export function ProductsList({
   isLoading,
   isFetching,
   error,
+  onRetry,
   selectedCategoryLabels,
   selectedBrandLabels,
   pagination,
@@ -198,7 +200,7 @@ export function ProductsList({
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
             {t('errorDescription')}
           </p>
-          <Button onClick={() => window.location.reload()} className="shadow-md">
+          <Button onClick={onRetry} disabled={isFetching} className="shadow-md">
             {t('retry')}
           </Button>
         </div>

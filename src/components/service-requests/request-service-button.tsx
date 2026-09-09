@@ -9,7 +9,7 @@ interface Props {
 
 export function RequestServiceButton({ serviceId, locale, label }: Props) {
   return (
-    <Button asChild>
+    <Button asChild className="min-h-11 rounded-md bg-emerald-700 text-white hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700">
       <Link href={`/${locale}/services/${serviceId}/request`}>{label}</Link>
     </Button>
   )

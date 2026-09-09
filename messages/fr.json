@@ -832,6 +832,7 @@
     }
   },
   "productCard": {
+    "inStock": "En stock",
     "quickView": "Aperçu rapide",
     "addToCart": "Ajouter au panier",
     "outOfStock": "Rupture de stock",

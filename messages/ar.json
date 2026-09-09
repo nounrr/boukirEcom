@@ -959,6 +959,7 @@
     }
   },
   "productCard": {
+    "inStock": "متوفر",
     "quickView": "عرض سريع",
     "addToCart": "أضف إلى السلة",
     "outOfStock": "نفد من المخزون",

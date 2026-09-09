@@ -146,8 +146,6 @@ export default function WishlistPage() {
           const hasPromo = item.hasPromo && item.priceAfterPromo && item.priceAfterPromo < item.price
           const discount = hasPromo && item.priceAfterPromo ? Math.round(((item.price - item.priceAfterPromo) / item.price) * 100) : 0
           const productHref = `/${locale}/product/${item.productId}`
-          const isLowStock = item.inStock && item.stock > 0 && item.stock <= 5
-
           return (
             <div
               key={item.id}
@@ -236,18 +234,11 @@ export default function WishlistPage() {
                     </div>
 
                     {/* Stock Status - Enhanced */}
-                    {(item.inStock && item.stock > 0) ? (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-green-500/50 text-green-600 bg-green-50/50">
-                          ✓ {t("inStock")}
-                        </Badge>
-                        {isLowStock && (
-                          <Badge variant="outline" className="border-orange-500/50 text-orange-600 bg-orange-50/50">
-                            {t("lowStock", { count: item.stock })}
-                          </Badge>
-                        )}
-                      </div>
-                    ) : null}
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="border-green-500/50 text-green-600 bg-green-50/50">
+                        ✓ {t("inStock")}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
 

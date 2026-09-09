@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -85,8 +86,8 @@ function targetId(slide: HeroSlideApi) {
 }
 
 function defaultHref(type: HeroSlideTypeApi, id: number | string | null, locale: string) {
-  if (type === 'category') return `/${locale}/shop?category_id=${id ?? 23}`
-  if (type === 'brand') return `/${locale}/shop?brand_id=${id ?? 1}`
+  if (type === 'category') return catalogHref(locale, 'categories', id ?? 23)
+  if (type === 'brand') return catalogHref(locale, 'marques', id ?? 1)
   if (type === 'product' && id != null) return `/${locale}/product/${id}`
   return `/${locale}/shop?sort=promo`
 }

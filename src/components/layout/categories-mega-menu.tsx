@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -181,7 +182,10 @@ export function CategoriesMegaMenu({
               'w-[min(980px,calc(100vw-3rem))]'
             )}
           >
-            <div className={cn('grid', isArabic ? 'grid-cols-[1fr_280px]' : 'grid-cols-[280px_1fr]')}>
+            <div
+              dir={isArabic ? 'rtl' : 'ltr'}
+              className="grid grid-cols-[280px_minmax(0,1fr)] text-start"
+            >
               {/* Parents */}
               <div className="border-border/50 bg-muted/30">
                 <div className="px-4 py-3 text-sm font-bold text-foreground/90 flex items-center justify-between">
@@ -211,7 +215,7 @@ export function CategoriesMegaMenu({
                       return (
                         <Link
                           key={c.id}
-                          href={`/${locale}/shop?category_id=${encodeURIComponent(String(c.id))}`}
+                          href={catalogHref(locale, 'categories', c.id)}
                           onMouseEnter={() => setActiveParentId(c.id)}
                           onFocus={() => setActiveParentId(c.id)}
                           onClick={() => setOpen(false)}
@@ -225,7 +229,7 @@ export function CategoriesMegaMenu({
                           <span className="truncate">{getCategoryLabel(c, locale)}</span>
                           <ChevronRight
                             className={cn(
-                              'h-4 w-4 shrink-0',
+                              'h-4 w-4 shrink-0 rtl:rotate-180',
                               isActive ? 'text-primary' : 'text-muted-foreground'
                             )}
                           />
@@ -237,7 +241,7 @@ export function CategoriesMegaMenu({
               </div>
 
               {/* Children */}
-              <div className="p-5">
+              <div className="min-w-0 p-5">
                 {isLoading ? (
                   <div className="space-y-3">
                     <div className="h-5 w-48 bg-muted rounded animate-pulse" />
@@ -256,7 +260,7 @@ export function CategoriesMegaMenu({
                             <div className="text-sm font-bold text-foreground truncate">{getCategoryLabel(activeParent, locale)}</div>
                       </div>
                       <Link
-                        href={`/${locale}/shop?category_id=${encodeURIComponent(String(activeParent.id))}`}
+                        href={catalogHref(locale, 'categories', activeParent.id)}
                         className="text-xs font-semibold text-primary hover:underline underline-offset-4 shrink-0"
                         onClick={() => setOpen(false)}
                       >
@@ -272,7 +276,7 @@ export function CategoriesMegaMenu({
                           return (
                             <div key={group.id} className="min-w-0">
                               <Link
-                                href={`/${locale}/shop?category_id=${encodeURIComponent(String(group.id))}`}
+                                href={catalogHref(locale, 'categories', group.id)}
                                 className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
                                 onClick={() => setOpen(false)}
                               >
@@ -282,7 +286,7 @@ export function CategoriesMegaMenu({
                                 {grand.slice(0, 10).map((leaf) => (
                                   <li key={leaf.id}>
                                     <Link
-                                      href={`/${locale}/shop?category_id=${encodeURIComponent(String(leaf.id))}`}
+                                      href={catalogHref(locale, 'categories', leaf.id)}
                                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                                       onClick={() => setOpen(false)}
                                     >
@@ -300,7 +304,7 @@ export function CategoriesMegaMenu({
                         {level1.slice(0, 24).map((child) => (
                           <Link
                             key={child.id}
-                            href={`/${locale}/shop?category_id=${encodeURIComponent(String(child.id))}`}
+                            href={catalogHref(locale, 'categories', child.id)}
                             className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/85 hover:text-foreground hover:bg-muted/50 transition-colors"
                             onClick={() => setOpen(false)}
                           >

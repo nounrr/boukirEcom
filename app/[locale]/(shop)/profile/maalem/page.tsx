@@ -191,7 +191,7 @@ function TagInput({
           <button
             type="button"
             onClick={addValue}
-            className="inline-flex size-7 items-center justify-center rounded-md text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex size-7 items-center justify-center rounded-md text-emerald-800 dark:text-emerald-300 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={addLabel}
           >
             <Plus className="size-4" />
@@ -217,12 +217,12 @@ function SectionHeading({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+      <span className="flex size-5 shrink-0 items-center justify-center pt-0.5 text-muted-foreground">
         <Icon className="size-5" />
       </span>
       <div>
         <h2 className="font-semibold text-foreground">{title}</h2>
-        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
       </div>
     </div>
   )
@@ -516,12 +516,12 @@ export default function MaalemApplicationPage() {
   if (!isAuthenticated && !accessToken) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
-        <Card className="mx-auto max-w-xl rounded-2xl">
+        <Card className="mx-auto my-8 max-w-xl rounded-none border-0 border-y bg-transparent py-6 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
           <CardContent className="flex flex-col items-center py-8 text-center">
-            <LockKeyhole className="mb-4 size-10 text-primary" />
+            <LockKeyhole className="mb-4 size-10 text-emerald-800 dark:text-emerald-300" />
             <h1 className="text-xl font-semibold">{t('auth.title')}</h1>
             <p className="mt-2 text-sm text-muted-foreground">{t('auth.description')}</p>
-            <Button asChild className="mt-5">
+            <Button asChild className="mt-6 min-h-11 rounded-md">
               <Link href={`/${locale}/login`}>{t('auth.action')}</Link>
             </Button>
           </CardContent>
@@ -533,11 +533,11 @@ export default function MaalemApplicationPage() {
   if (!user || isProfileLoading || isCategoriesLoading || (canApply && !profile && !isJoinError)) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-4 lg:grid-cols-4 lg:gap-10">
           <AccountSidebar active="maalem" />
           <div className="space-y-4 lg:col-span-3">
             {[180, 280, 240].map((height) => (
-              <div key={height} className="animate-pulse rounded-2xl border bg-card" style={{ height }} />
+              <div key={height} className="animate-pulse rounded-2xl border border-amber-200/60 bg-card dark:border-border" style={{ height }} />
             ))}
           </div>
         </div>
@@ -548,11 +548,11 @@ export default function MaalemApplicationPage() {
   if (!canApply) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-4 lg:grid-cols-4 lg:gap-10">
           <AccountSidebar active="profile" />
-          <Card className="rounded-2xl lg:col-span-3">
+          <Card className="rounded-none border-0 border-y bg-transparent py-6 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)] lg:col-span-3">
             <CardContent className="flex flex-col items-start py-8 sm:flex-row sm:gap-5">
-              <span className="mb-4 flex size-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 sm:mb-0">
+              <span className="mb-4 flex size-8 shrink-0 items-center justify-center text-emerald-800 dark:text-emerald-300 sm:mb-0">
                 <ShieldCheck className="size-6" />
               </span>
               <div>
@@ -560,7 +560,7 @@ export default function MaalemApplicationPage() {
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                   {t('access.description')}
                 </p>
-                <Button asChild className="mt-5">
+                <Button asChild className="mt-6 min-h-11 rounded-md">
                   <Link href={`/${locale}/profile`}>
                     {t('access.action')} <ChevronRight className="rtl:rotate-180" />
                   </Link>
@@ -576,9 +576,9 @@ export default function MaalemApplicationPage() {
   if (isProfileError || isCategoriesError || isJoinError) {
     return (
       <ShopPageLayout title={t('title')} showHeader={false}>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-4 lg:grid-cols-4 lg:gap-10">
           <AccountSidebar active="maalem" />
-          <Card className="rounded-2xl lg:col-span-3">
+          <Card className="rounded-none border-0 border-y bg-transparent py-6 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)] lg:col-span-3">
             <CardContent className="py-10 text-center">
               <AlertCircle className="mx-auto size-10 text-destructive" />
               <h1 className="mt-4 text-lg font-semibold">{t('errorState.title')}</h1>
@@ -587,7 +587,7 @@ export default function MaalemApplicationPage() {
                   ? messageFromError(joinError, t('errorState.description'))
                   : t('errorState.description')}
               </p>
-              <Button className="mt-5" onClick={() => window.location.reload()}>{t('errorState.action')}</Button>
+              <Button className="mt-6 min-h-11 rounded-md" onClick={() => window.location.reload()}>{t('errorState.action')}</Button>
             </CardContent>
           </Card>
         </div>
@@ -599,11 +599,11 @@ export default function MaalemApplicationPage() {
 
   return (
     <ShopPageLayout title={t('title')} showHeader={false}>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-4 lg:grid-cols-4 lg:gap-10">
         <AccountSidebar active="maalem" />
-        <main className="min-w-0 space-y-4 lg:col-span-3 lg:space-y-6">
-          <Card className="overflow-hidden rounded-2xl border-primary/20 py-0">
-            <div className="border-s-4 border-primary px-5 py-5 sm:px-7 sm:py-6">
+        <main className="min-w-0 space-y-6 rounded-3xl bg-[#fbf8ef] p-4 sm:p-6 lg:col-span-3 dark:bg-muted/20">
+          <header className="border-b border-border pb-8">
+            <div>
               <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
                 <div className="max-w-2xl">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -613,29 +613,29 @@ export default function MaalemApplicationPage() {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{t('header.secure')}</span>
                   </div>
-                  <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                  <h1 className="text-3xl font-bold tracking-tight rtl:tracking-normal text-foreground sm:text-3xl">
                     {t('header.title')}
                   </h1>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('header.description')}</p>
-                  <div className="mt-4 flex items-start gap-2 rounded-xl bg-primary/5 p-3 text-sm text-foreground">
-                    <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div className="mt-4 flex items-start gap-2 text-xs leading-6 text-muted-foreground">
+                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-800 dark:text-emerald-300" />
                     <span>{t('header.artisanPreserved')}</span>
                   </div>
                 </div>
-                <div className="w-full rounded-xl border bg-muted/20 p-4 sm:w-48">
+                <div className="w-full shrink-0 border-t border-border pt-4 sm:w-44 sm:border-t-0 sm:border-s sm:ps-5 sm:pt-0">
                   <div className="flex items-end justify-between gap-2">
                     <span className="text-xs font-medium text-muted-foreground">{t('header.completion')}</span>
-                    <strong className="text-xl tabular-nums text-primary">{completion}%</strong>
+                    <strong className="text-xl tabular-nums text-emerald-800 dark:text-emerald-300">{completion}%</strong>
                   </div>
                   <Progress value={completion} className="mt-3" />
                   <p className="mt-2 text-[11px] leading-4 text-muted-foreground">{t('header.completionHint')}</p>
                 </div>
               </div>
             </div>
-          </Card>
+          </header>
 
           {!editable && (
-            <div className={`flex items-start gap-3 rounded-2xl border p-4 ${STATUS_MESSAGE_CLASSES[status] || STATUS_MESSAGE_CLASSES.submitted}`}>
+            <div className={`flex items-start gap-3 rounded-lg border p-4 ${STATUS_MESSAGE_CLASSES[status] || STATUS_MESSAGE_CLASSES.submitted}`}>
               <LockKeyhole className="mt-0.5 size-5 shrink-0" />
               <div>
                 <p className="text-sm font-semibold">{t(`statusMessages.${status}.title`)}</p>
@@ -645,16 +645,16 @@ export default function MaalemApplicationPage() {
           )}
 
           {status === 'approved' && (
-            <Card className="rounded-2xl border-emerald-200 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/20">
-              <CardContent className="flex flex-col items-start justify-between gap-4 py-5 sm:flex-row sm:items-center">
+            <Card className="rounded-md border-border bg-card py-0 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+              <CardContent className="flex flex-col items-start justify-between gap-5 p-5 sm:flex-row sm:items-center">
                 <div><p className="font-semibold">Missions Maalem</p><p className="mt-1 text-sm text-muted-foreground">Consultez uniquement vos affectations actuelles, suivez l’intervention et déposez votre compte-rendu.</p></div>
-                <Button asChild><Link href={`/${locale}/profile/maalem/missions`}>Ouvrir mes missions <ChevronRight className="size-4" /></Link></Button>
+                <Button asChild><Link href={`/${locale}/profile/maalem/missions`}>Ouvrir mes missions <ChevronRight className="size-4 rtl:rotate-180" /></Link></Button>
               </CardContent>
             </Card>
           )}
 
           {status === 'rejected' && profile?.status_reason && (
-            <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-950 dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
+            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-950 dark:border-red-900 dark:bg-red-950/30 dark:text-red-100">
               <AlertCircle className="mt-0.5 size-5 shrink-0" />
               <div>
                 <p className="text-sm font-semibold">{t('rejection.title')}</p>
@@ -664,8 +664,8 @@ export default function MaalemApplicationPage() {
           )}
 
           {notifications.length > 0 && (
-            <Card className="rounded-2xl">
-              <CardHeader className="border-b pb-5">
+            <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+              <CardHeader className="px-0 pb-0">
                 <SectionHeading
                   icon={Bell}
                   title={locale === 'ar' ? 'إشعارات ملف المعلم' : 'Notifications de votre dossier'}
@@ -678,7 +678,7 @@ export default function MaalemApplicationPage() {
                     key={notification.id}
                     type="button"
                     onClick={() => { if (!notification.read_at) markNotificationRead(notification.id) }}
-                    className="block w-full px-5 py-4 text-start hover:bg-muted/40 sm:px-6"
+                    className="block w-full px-2 py-4 text-start hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -694,31 +694,31 @@ export default function MaalemApplicationPage() {
             </Card>
           )}
 
-          <Card className="rounded-2xl">
-            <CardHeader className="border-b pb-5">
+          <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+            <CardHeader className="px-0 pb-0">
               <SectionHeading icon={UserRound} title={t('identity.title')} description={t('identity.description')} />
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border bg-muted/20 p-3.5">
+            <CardContent className="grid gap-4 md:grid-cols-3 px-0">
+              <div className="py-1">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground"><UserRound className="size-3.5" />{t('identity.name')}</span>
                 <p className="mt-1.5 font-medium">{user.prenom} {user.nom}</p>
               </div>
-              <div className="min-w-0 rounded-xl border bg-muted/20 p-3.5">
+              <div className="min-w-0 py-1">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground"><Mail className="size-3.5" />{t('identity.email')}</span>
                 <p className="mt-1.5 truncate font-medium" title={user.email}>{user.email}</p>
               </div>
-              <div className="rounded-xl border bg-muted/20 p-3.5">
+              <div className="py-1">
                 <span className="flex items-center gap-2 text-xs text-muted-foreground"><Phone className="size-3.5" />{t('identity.accountPhone')}</span>
                 <p className="mt-1.5 font-medium" dir="ltr">{user.telephone || t('identity.notProvided')}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
-            <CardHeader className="border-b pb-5">
+          <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+            <CardHeader className="px-0 pb-0">
               <SectionHeading icon={Wrench} title={t('trade.title')} description={t('trade.description')} />
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-5 px-0">
               <div className="space-y-2">
                 <Label htmlFor="maalem-category">{t('fields.category')} <span className="text-destructive">*</span></Label>
                 <Select
@@ -772,11 +772,11 @@ export default function MaalemApplicationPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
-            <CardHeader className="border-b pb-5">
+          <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+            <CardHeader className="px-0 pb-0">
               <SectionHeading icon={MapPin} title={t('coverage.title')} description={t('coverage.description')} />
             </CardHeader>
-            <CardContent className="grid gap-5 md:grid-cols-2">
+            <CardContent className="grid gap-5 md:grid-cols-2 px-0">
               <div className="space-y-2">
                 <Label htmlFor="maalem-phone">{t('fields.phone')} <span className="text-destructive">*</span></Label>
                 <Input
@@ -850,11 +850,11 @@ export default function MaalemApplicationPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
-            <CardHeader className="border-b pb-5">
+          <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+            <CardHeader className="px-0 pb-0">
               <SectionHeading icon={BriefcaseBusiness} title={t('experience.title')} description={t('experience.description')} />
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-5 px-0">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="professional-summary">{t('fields.summary')} <span className="text-destructive">*</span></Label>
@@ -904,36 +904,36 @@ export default function MaalemApplicationPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
-            <CardHeader className="border-b pb-5">
+          <Card className="gap-6 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]">
+            <CardHeader className="px-0 pb-0">
               <SectionHeading icon={FileText} title={t('documents.title')} description={t('documents.description')} />
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 px-0">
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-dashed p-4">
+                <div className="rounded-md border border-dashed border-border p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">{t('documents.cvTitle')}</p>
                       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('documents.cvHint')}</p>
                     </div>
-                    <FileText className="size-5 shrink-0 text-primary" />
+                    <FileText className="size-5 shrink-0 text-emerald-800 dark:text-emerald-300" />
                   </div>
                   <input ref={cvInputRef} type="file" accept="application/pdf,.pdf" className="hidden" onChange={(event) => handleCvUpload(event.target.files?.[0])} />
-                  <Button type="button" variant="outline" size="sm" className="mt-4 w-full" disabled={!editable || busy} onClick={() => cvInputRef.current?.click()}>
+                  <Button type="button" variant="outline" size="sm" className="mt-4 min-h-11 w-full rounded-md" disabled={!editable || busy} onClick={() => cvInputRef.current?.click()}>
                     {uploadKind === 'cv' ? <Loader2 className="animate-spin" /> : <Plus />}
                     {cv ? t('documents.replaceCv') : t('documents.addCv')}
                   </Button>
                 </div>
-                <div className="rounded-xl border border-dashed p-4">
+                <div className="rounded-md border border-dashed border-border p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">{t('documents.photosTitle')}</p>
                       <p className="mt-1 text-xs leading-5 text-muted-foreground">{t('documents.photosHint')}</p>
                     </div>
-                    <ImagePlus className="size-5 shrink-0 text-primary" />
+                    <ImagePlus className="size-5 shrink-0 text-emerald-800 dark:text-emerald-300" />
                   </div>
                   <input ref={realizationInputRef} type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple className="hidden" onChange={(event) => handleRealizationsUpload(Array.from(event.target.files || []))} />
-                  <Button type="button" variant="outline" size="sm" className="mt-4 w-full" disabled={!editable || busy || realizations.length >= MAX_REALIZATIONS} onClick={() => realizationInputRef.current?.click()}>
+                  <Button type="button" variant="outline" size="sm" className="mt-4 min-h-11 w-full rounded-md" disabled={!editable || busy || realizations.length >= MAX_REALIZATIONS} onClick={() => realizationInputRef.current?.click()}>
                     {uploadKind === 'realizations' ? <Loader2 className="animate-spin" /> : <Plus />}
                     {t('documents.addPhotos', { count: realizations.length, max: MAX_REALIZATIONS })}
                   </Button>
@@ -944,8 +944,8 @@ export default function MaalemApplicationPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold">{t('documents.savedFiles')}</p>
                   {documents.map((document) => (
-                    <div key={document.id} className="flex flex-col gap-3 rounded-xl border bg-muted/10 p-3 sm:flex-row sm:items-center">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div key={document.id} className="flex flex-col gap-3 border-b border-border py-4 sm:flex-row sm:items-center">
+                      <span className="flex size-7 shrink-0 items-center justify-center text-muted-foreground">
                         {document.kind === 'cv' ? <FileText className="size-4" /> : <ImagePlus className="size-4" />}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -978,7 +978,7 @@ export default function MaalemApplicationPage() {
           </Card>
 
           {editable && (
-            <div className="flex flex-col gap-3 rounded-2xl border bg-background/95 p-3 shadow-lg backdrop-blur sm:sticky sm:bottom-3 sm:z-10 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-t border-border bg-background py-4 sm:sticky sm:bottom-0 sm:z-10 sm:flex-row sm:items-center sm:justify-between">
               <p className="px-1 text-xs leading-5 text-muted-foreground">{t('actions.hint')}</p>
               <div className="flex shrink-0 flex-col-reverse gap-2 sm:flex-row">
                 <Button type="button" variant="outline" disabled={busy} onClick={handleSave}>

@@ -1,4 +1,6 @@
 "use client"
+import Link from 'next/link'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useAuthDialog } from "@/components/providers/auth-dialog-provider"
@@ -449,11 +451,11 @@ export default function ProductPage() {
             {categoryLabel && (
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
-                  <span className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {categoryLabel}</span>
+                  <Link href={catalogHref(locale, 'categories', product.categorie.id)} className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {categoryLabel}</Link>
                 </Badge>
                 {product.brand?.nom && (
                   <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
-                    <span className="inline-flex items-center gap-1 text-muted-foreground">{product.brand.nom}</span>
+                    <Link href={catalogHref(locale, 'marques', product.brand.id)} className="inline-flex items-center gap-1 text-muted-foreground">{product.brand.nom}</Link>
                   </Badge>
                 )}
               </div>
@@ -467,7 +469,7 @@ export default function ProductPage() {
             {/* Price */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-foreground">
+                <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                   {currentPrice.toFixed(2)} {currency}
                 </span>
                 {hasDiscount && product.pourcentage_promo && (
@@ -574,7 +576,7 @@ export default function ProductPage() {
                   </Button>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {t("totalLabel")}: <span className="font-semibold text-foreground">{(currentPrice * quantity).toFixed(2)} {currency}</span>
+                  {t("totalLabel")}: <span className="font-semibold text-emerald-700 dark:text-emerald-400">{(currentPrice * quantity).toFixed(2)} {currency}</span>
                 </span>
               </div>
             </div>

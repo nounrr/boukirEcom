@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -47,7 +48,7 @@ function BrandCard({
   locale: string
   shape: BrandShape
 }) {
-  const href = `/${locale}/shop?brand_id=${encodeURIComponent(String(brand.id))}`
+  const href = catalogHref(locale, 'marques', brand.id)
   const imageSrc = toAbsoluteImageUrl(brand.image_url)
   const isCircle = shape === 'circle'
   const brandInitial = brand.nom?.[0]?.toUpperCase() ?? 'B'

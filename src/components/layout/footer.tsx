@@ -1,4 +1,5 @@
 'use client';
+import { catalogHref } from '@/lib/catalog/registry'
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -182,7 +183,7 @@ export function Footer({
                 topCategories.map((c) => (
                   <li key={c.id}>
                     <Link
-                      href={`/${locale}/shop?category_id=${encodeURIComponent(String(c.id))}`}
+                      href={catalogHref(locale, 'categories', c.id)}
                       className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
                     >
                       {getCategoryLabel(c, locale)}
@@ -212,7 +213,7 @@ export function Footer({
                 topBrands.map((b) => (
                   <li key={b.id}>
                     <Link
-                      href={`/${locale}/shop?brand_id=${encodeURIComponent(String(b.id))}`}
+                      href={catalogHref(locale, 'marques', b.id)}
                       className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
                     >
                       {b.nom}

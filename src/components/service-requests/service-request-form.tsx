@@ -5,12 +5,12 @@ import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } 
 import {
   AlertCircle,
   ArrowLeft,
-  ArrowRight,
+  CalendarDays,
   ClipboardList,
-  Loader2,
+  Paperclip,
   Send,
+  Loader2,
   ShieldCheck,
-  UsersRound,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -69,30 +69,26 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 function RequestRelay() {
   const t = useTranslations('serviceRequests.relay')
   const steps = [
-    { icon: ClipboardList, title: t('requestTitle'), text: t('requestText') },
-    { icon: UsersRound, title: t('reviewTitle'), text: t('reviewText') },
-    { icon: ShieldCheck, title: t('assignmentTitle'), text: t('assignmentText') },
+    { title: t('requestTitle'), text: t('requestText') },
+    { title: t('reviewTitle'), text: t('reviewText') },
+    { title: t('assignmentTitle'), text: t('assignmentText') },
   ]
   return (
-    <section aria-labelledby="service-request-relay" className="overflow-hidden rounded-2xl border border-amber-200 bg-[#2d2a24] text-white shadow-sm dark:border-amber-900">
-      <div className="border-b border-white/10 px-5 py-4 sm:px-6">
-        <p id="service-request-relay" className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-300">{t('eyebrow')}</p>
-        <p className="mt-1 text-sm text-white/75">{t('intro')}</p>
+    <section aria-labelledby="service-request-relay" className="rounded-2xl border border-amber-200/70 bg-amber-50/70 p-5 dark:border-amber-900/50 dark:bg-amber-950/20">
+      <div>
+        <h2 id="service-request-relay" className="text-sm font-semibold">{t('eyebrow')}</h2>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('intro')}</p>
       </div>
-      <ol className="grid md:grid-cols-3">
-        {steps.map((step, index) => {
-          const Icon = step.icon
-          return (
-            <li key={step.title} className="relative flex gap-3 border-white/10 px-5 py-5 md:border-e md:last:border-e-0">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-amber-300/30 bg-amber-300/10 text-amber-300"><Icon className="h-4 w-4" aria-hidden="true" /></span>
+      <ol className="mt-5 space-y-5">
+        {steps.map((step, index) => (
+            <li key={step.title} className="flex gap-4">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-xs font-semibold tabular-nums text-amber-800 dark:bg-amber-900/50 dark:text-amber-300" aria-hidden="true">0{index + 1}</span>
               <div>
-                <p className="text-sm font-semibold"><span className="me-1 text-amber-300">0{index + 1}</span> {step.title}</p>
-                <p className="mt-1 text-xs leading-relaxed text-white/65">{step.text}</p>
+                <p className="text-sm font-medium">{step.title}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.text}</p>
               </div>
-              {index < 2 && <ArrowRight className="absolute -end-2 top-1/2 z-10 hidden h-4 w-4 -translate-y-1/2 text-amber-300 md:block rtl:rotate-180" aria-hidden="true" />}
             </li>
-          )
-        })}
+          ))}
       </ol>
     </section>
   )
@@ -291,38 +287,38 @@ export function ServiceRequestForm({
   if (authLoading) return <div className="flex min-h-72 items-center justify-center" role="status" aria-label={t('auth.loading')}><Loader2 className="h-7 w-7 animate-spin text-primary" aria-hidden="true" /></div>
   if (!isAuthenticated || !accessToken) {
     return (
-      <section className="mx-auto max-w-lg rounded-2xl border bg-card px-6 py-14 text-center shadow-sm">
-        <ShieldCheck className="mx-auto h-11 w-11 text-primary" aria-hidden="true" />
-        <h1 className="mt-5 text-2xl font-bold">{t('auth.title')}</h1>
+      <section className="mx-auto my-10 max-w-lg rounded-3xl border border-amber-200/80 bg-[#fffaf0] px-7 py-10 shadow-[0_16px_50px_-30px_rgba(125,90,26,0.4)] sm:my-16 sm:p-10 dark:border-amber-900/50 dark:bg-card">
+        <p className="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-3 py-1.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"><ShieldCheck className="h-4 w-4" aria-hidden="true" />{eyebrow || modeCopy.eyebrow}</p>
+        <h1 className="mt-4 text-3xl font-semibold">{context.mode === 'selected_maalem' ? t('auth.title') : t('auth.action')}</h1>
         <p className="mt-3 text-muted-foreground">{t('auth.description')}</p>
-        <Button asChild size="lg" className="mt-6"><Link href={`/${locale}/login`}>{t('auth.action')}</Link></Button>
+        <Button asChild size="lg" className="mt-7 rounded-xl bg-primary px-6 font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"><Link href={`/${locale}/login`}>{t('auth.action')}</Link></Button>
       </section>
     )
   }
   if (createdRequest) return <RequestConfirmation request={createdRequest} locale={locale} subjectName={context.mode === 'selected_service' ? context.serviceName : undefined} />
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto max-w-6xl rounded-3xl bg-[#fbf8f0] px-5 py-8 sm:px-8 sm:py-12 lg:py-14 dark:bg-background">
       {backHref && (
-        <Link href={backHref} className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4">
-          <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> {t('form.back')}
+        <Link href={backHref} className="mb-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4">
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> {context.mode === 'selected_maalem' ? t('form.backToProfile') : t('form.back')}
         </Link>
       )}
-      {context.mode === 'selected_maalem' && <RequestRelay />}
 
-      <div className={`${context.mode === 'selected_maalem' ? 'mt-6' : ''} grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:gap-8`}>
-        <form onSubmit={submit} noValidate className="overflow-hidden rounded-2xl border border-amber-200/70 bg-card shadow-[0_24px_70px_-48px_rgba(52,40,17,0.65)] dark:border-amber-900/60">
-          <header className="border-b bg-[#fffaf0] px-5 py-6 dark:bg-amber-950/15 sm:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">{eyebrow || modeCopy.eyebrow}</p>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{title || modeCopy.title}</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{description || modeCopy.description}</p>
-          </header>
+      <header className="mb-10 max-w-3xl sm:mb-12">
+        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{eyebrow || modeCopy.eyebrow}</p>
+        <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">{title || modeCopy.title}</h1>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{description || modeCopy.description}</p>
+      </header>
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
+        <form onSubmit={submit} noValidate className="min-w-0 [&_input]:min-h-11 [&_input]:bg-background [&_input]:rounded-xl [&_textarea]:rounded-xl [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:leading-6">
 
-          <div className="space-y-9 px-5 py-7 sm:px-8 sm:py-9">
-            <div aria-live="assertive">{errors.form && <div role="alert" className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"><AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" /> {errors.form}</div>}</div>
 
-            <fieldset className="space-y-4">
-              <legend className="flex items-center gap-3 text-lg font-semibold"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-sm text-amber-900">01</span>{t('form.needSection')}</legend>
+          <div className="space-y-5">
+            <div aria-live="assertive">{errors.form && <div role="alert" className="flex gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"><AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" /> {errors.form}</div>}</div>
+
+            <fieldset className="space-y-4 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
+              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"><ClipboardList className="h-5 w-5" aria-hidden="true" /></span>{t('form.needSection')}</legend>
               <div className="space-y-2">
                 <Label htmlFor={`${idPrefix}-description`}>{t('fields.description')} <span className="text-destructive">*</span></Label>
                 <Textarea id={`${idPrefix}-description`} value={problemDescription} onChange={(event) => setProblemDescription(event.target.value)} placeholder={t('fields.descriptionPlaceholder')} rows={5} maxLength={SERVICE_REQUEST_LIMITS.description} aria-invalid={Boolean(errors.problemDescription)} aria-describedby={`${idPrefix}-description-hint${errors.problemDescription ? ` ${idPrefix}-description-error` : ''}`} required />
@@ -331,12 +327,12 @@ export function ServiceRequestForm({
               </div>
             </fieldset>
 
-            <div className="border-t pt-8">
+            <div className="rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
               <RequestContactLocationFields value={contact} onChange={setContact} addressRequired={addressRequired} idPrefix={idPrefix} errors={{ contactPhone: errors.contactPhone, city: errors.city, address: errors.address }} />
             </div>
 
-            <fieldset className="space-y-4 border-t pt-8">
-              <legend className="text-lg font-semibold">{t('form.timingSection')}</legend>
+            <fieldset className="space-y-4 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
+              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span>{t('form.timingSection')}</legend>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor={`${idPrefix}-date`}>{selectedService ? t('fields.dateRequired') : t('fields.date')}</Label>
@@ -351,8 +347,8 @@ export function ServiceRequestForm({
               </div>
             </fieldset>
 
-            <fieldset className="space-y-5 border-t pt-8">
-              <legend className="text-lg font-semibold">{t('form.detailsSection')}</legend>
+            <fieldset className="space-y-5 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
+              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"><Paperclip className="h-5 w-5" aria-hidden="true" /></span>{t('form.detailsSection')}</legend>
               <RequestPhotoField id={`${idPrefix}-photos`} photos={photos} onChange={setPhotos} onError={(message) => setErrors((current) => ({ ...current, photos: message || undefined }))} />
               <FieldError id={`${idPrefix}-photos-error`} message={errors.photos} />
               <div className="space-y-2">
@@ -363,22 +359,24 @@ export function ServiceRequestForm({
               </div>
             </fieldset>
 
-            <div className="border-t pt-7">
-              <Button type="submit" size="lg" className="h-12 w-full text-base font-semibold" disabled={submitting || serviceUnavailable} aria-describedby={`${idPrefix}-submit-hint`}>
-                {submitting ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Send className="h-5 w-5" aria-hidden="true" />}
+            <div className="rounded-2xl border border-amber-200/70 bg-amber-50/70 p-5 dark:border-amber-900/40 dark:bg-amber-950/20">
+              <Button type="submit" size="lg" className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90" disabled={submitting || serviceUnavailable} aria-describedby={`${idPrefix}-submit-hint`}>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
                 {serviceUnavailable ? t('form.serviceUnavailable') : submitting ? t('form.submitting') : t('form.submit')}
               </Button>
-              <p id={`${idPrefix}-submit-hint`} className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">{t('form.submitHint')}</p>
+              <p id={`${idPrefix}-submit-hint`} className="mt-3 max-w-xl text-xs leading-relaxed text-muted-foreground">{t('form.submitHint')}</p>
               <div className="sr-only" aria-live="polite">{submitting ? t('form.submitting') : ''}</div>
             </div>
           </div>
         </form>
 
-        <aside className="space-y-4 lg:sticky lg:top-24">
+        <aside className="min-w-0 space-y-5 lg:sticky lg:top-24">
           {resolvedSummary}
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-100">
-            <div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" /><div><h2 className="font-semibold">{t('trust.title')}</h2><p className="mt-1 leading-relaxed text-emerald-900/75 dark:text-emerald-100/70">{t('trust.description')}</p></div></div>
-          </div>
+          <section className="rounded-2xl border border-emerald-800 bg-emerald-900 p-6 text-white shadow-sm dark:border-emerald-700">
+            <h2 className="flex items-center gap-2 text-sm font-semibold"><ShieldCheck className="h-5 w-5 text-amber-300" aria-hidden="true" />{t('trust.title')}</h2>
+            <p className="mt-3 text-sm leading-6 text-emerald-50/85">{t('trust.description')}</p>
+          </section>
+          <RequestRelay />
         </aside>
       </div>
     </div>

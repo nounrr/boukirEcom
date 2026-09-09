@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { ArrowLeft, ArrowRight, Compass, Search, SlidersHorizontal, Wrench } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Compass, Search, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
@@ -56,13 +56,12 @@ function GuidanceCard({ locale, title, description, action }: {
   action: string
 }) {
   return (
-    <aside className="grid gap-5 rounded-[14px] border border-emerald-900/15 bg-emerald-950 px-6 py-7 text-white sm:px-8 lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-6">
-      <Compass className="size-8 text-amber-300" aria-hidden="true" />
-      <div className="relative mt-4 lg:mt-0">
-        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">{description}</p>
+    <aside className="grid gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10 sm:p-8">
+      <div className="max-w-2xl">
+        <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight sm:text-2xl"><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-300/15 text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>{title}</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{description}</p>
       </div>
-      <Button asChild className="h-11 rounded-[6px] bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300">
+      <Button asChild className="min-h-11 rounded-md bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300">
         <Link href={quickServiceRequestHref(locale)}>
           {action}
           <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
@@ -99,34 +98,30 @@ export default async function ServicesPage({
   const hasFilters = Boolean(q || categoryId)
 
   return (
-    <div className="min-h-[70vh] bg-[#fbf8f0] py-9 dark:bg-background sm:py-12 lg:py-16">
+    <div className="min-h-[70vh] bg-[#fbf8ef] dark:bg-background py-9 sm:py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="grid items-end gap-7 border-b border-foreground/10 pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:pb-10">
+        <header className="grid items-end gap-6 pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:pb-12">
           <div className="max-w-3xl">
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              <Wrench className="size-4" aria-hidden="true" />
+            <p className="flex items-center gap-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300"><span className="flex size-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"><Wrench className="size-5" aria-hidden="true" /></span>
               {t('eyebrow')}
             </p>
-            <h1 className="mt-4 text-4xl font-black tracking-[-0.035em] text-foreground sm:text-5xl lg:text-6xl">{t('title')}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">{t('description')}</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">{t('title')}</h1>
+            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p>
           </div>
           {pagination && (
-            <p className="w-fit border-s-2 border-primary ps-4 text-sm font-semibold text-foreground" aria-live="polite">
+            <p className="w-fit rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300" aria-live="polite">
               {t('resultCount', { count: pagination.total_items })}
             </p>
           )}
         </header>
 
-        <section className="relative z-10 -mt-px rounded-b-[14px] border border-stone-200 bg-card p-4 shadow-[0_16px_40px_-34px_rgba(43,38,28,0.45)] sm:p-5 dark:border-border" aria-labelledby="services-filters-title">
-          <div className="mb-4 flex items-center gap-2">
-            <SlidersHorizontal className="size-4 text-primary" aria-hidden="true" />
-            <h2 id="services-filters-title" className="text-sm font-bold text-foreground">{t('filters.title')}</h2>
-          </div>
+        <section className="rounded-2xl border border-amber-900/10 bg-card p-5 shadow-[0_12px_30px_-22px_rgba(83,60,19,.3)] sm:p-6 dark:border-border" aria-labelledby="services-filters-title">
+          <h2 id="services-filters-title" className="sr-only">{t('filters.title')}</h2>
           <form action={`/${locale}/services`} method="get" className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.45fr)_auto] lg:items-end">
-            <label className="grid gap-1.5 text-sm font-semibold text-foreground">
+            <label className="grid min-w-0 gap-2 text-xs font-medium text-foreground">
               {t('filters.searchLabel')}
               <span className="relative">
-                <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-amber-700" aria-hidden="true" />
                 <input
                   suppressHydrationWarning
                   type="search"
@@ -134,13 +129,13 @@ export default async function ServicesPage({
                   defaultValue={q}
                   maxLength={100}
                   placeholder={t('filters.searchPlaceholder')}
-                  className="h-11 w-full rounded-[6px] border border-input bg-background px-10 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                  className="h-11 w-full rounded-[6px] border border-input bg-background px-10 text-sm outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15"
                 />
               </span>
             </label>
-            <label className="grid gap-1.5 text-sm font-semibold text-foreground">
+            <label className="grid min-w-0 gap-2 text-xs font-medium text-foreground">
               {t('filters.categoryLabel')}
-              <select name="category_id" defaultValue={categoryId || ''} className="h-11 w-full rounded-[6px] border border-input bg-background px-3 text-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20">
+              <select name="category_id" defaultValue={categoryId || ''} className="h-11 w-full rounded-[6px] border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15">
                 <option value="">{t('filters.allCategories')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>{localizedCategoryName(category, locale)}</option>
@@ -148,28 +143,28 @@ export default async function ServicesPage({
               </select>
             </label>
             <div className="flex flex-wrap gap-2">
-              <Button type="submit" className="h-11 px-5">{t('filters.submit')}</Button>
+              <Button type="submit" className="h-11 rounded-md bg-amber-400 px-6 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300">{t('filters.submit')}</Button>
               {hasFilters && <Button asChild variant="outline" className="h-11"><Link href={`/${locale}/services`}>{t('filters.reset')}</Link></Button>}
             </div>
           </form>
         </section>
 
         {!catalogue ? (
-          <section className="mt-8 rounded-[14px] border border-stone-200 bg-card p-5 shadow-[0_14px_34px_-30px_rgba(41,37,32,.5)] sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
+          <section className="mt-8 rounded-lg border border-border bg-card p-5  sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>
-            <div className="mt-4 min-w-0 flex-1 sm:mt-0"><h2 className="text-lg font-bold text-foreground">{t('error.title')}</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p></div>
+            <div className="mt-4 min-w-0 flex-1 sm:mt-0"><h2 className="text-lg font-semibold text-foreground">{t('error.title')}</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p></div>
             <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={catalogueHref(locale, { q, category_id: categoryId, page })}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
           </section>
         ) : services.length === 0 ? (
-          <section className="mt-10 border border-dashed border-border bg-card/70 p-8 text-center sm:p-12">
+          <section className="mt-10 border-y border-border bg-muted/20 p-8 text-center sm:p-12">
             <Search className="mx-auto size-9 text-primary" aria-hidden="true" />
-            <h2 className="mt-4 text-xl font-bold text-foreground">{t('empty.title')}</h2>
+            <h2 className="mt-4 text-xl font-semibold text-foreground">{t('empty.title')}</h2>
             <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">{t(hasFilters ? 'empty.filteredDescription' : 'empty.description')}</p>
             {hasFilters && <Button asChild variant="outline" className="mt-5"><Link href={`/${locale}/services`}>{t('filters.reset')}</Link></Button>}
           </section>
         ) : (
           <section className="mt-10" aria-label={t('gridLabel')}>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            <div className="grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-9">
               {services.map((service) => (
                 <ServiceCard
                   key={service.id}

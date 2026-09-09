@@ -67,11 +67,9 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                       onChange(variant.id, variant)
                       onPreviewImage?.(variant.image_url || null)
                     }}
-                    disabled={!variant.available}
                     className={cn(
                       "px-3 py-1.5 text-sm font-semibold rounded-full border transition-all flex items-center gap-2 cursor-pointer",
                       selectedId === variant.id ? "ring-2 ring-primary/20 scale-[1.02]" : "",
-                      !variant.available && "opacity-50 cursor-not-allowed line-through"
                     )}
                     style={{ backgroundColor: hex, color: fg }}
                     title={colorTitle}
@@ -89,11 +87,9 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                     onChange(variant.id, variant)
                     onPreviewImage?.(variant.image_url || null)
                   }}
-                  disabled={!variant.available}
                   className={cn(
                     "relative flex w-12 h-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[10px] font-semibold leading-tight break-all transition-all cursor-pointer",
                     selectedId === variant.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-border hover:border-primary/50",
-                    !variant.available && "opacity-30 cursor-not-allowed"
                   )}
                   style={{ backgroundColor: hex, color: fg }}
                   title={colorTitle}
@@ -103,11 +99,6 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
                   <span>{variant.variant_name}</span>
                   {["blanc", "blanc pur", "white"].includes(canonicalColor.toLowerCase()) && (
                     <div className="absolute inset-0 rounded-full border border-border/30" />
-                  )}
-                  {!variant.available && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-full h-0.5 bg-destructive rotate-45" />
-                    </div>
                   )}
                 </button>
               )
@@ -126,11 +117,9 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
               <button
                 key={variant.id}
                 onClick={() => onChange(variant.id, variant)}
-                disabled={!variant.available}
                 className={cn(
                   "px-3 py-2 text-sm font-medium rounded-md border transition-all cursor-pointer",
                   selectedId === variant.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50 hover:bg-muted/50",
-                  !variant.available && "opacity-30 cursor-not-allowed line-through"
                 )}
               >
                 {variant.variant_name}
@@ -148,11 +137,9 @@ export function VariantSelector({ colorVariants = [], sizeVariants = [], otherVa
               <button
                 key={variant.id}
                 onClick={() => onChange(variant.id, variant)}
-                disabled={!variant.available}
                 className={cn(
                   "px-3 py-1.5 text-sm font-medium rounded-md border transition-all cursor-pointer",
                   selectedId === variant.id ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50 hover:bg-muted/50",
-                  !variant.available && "opacity-30 cursor-not-allowed line-through"
                 )}
               >
                 {variant.variant_name}

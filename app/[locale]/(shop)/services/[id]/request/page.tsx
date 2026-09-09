@@ -38,17 +38,17 @@ export default function SelectedServiceRequestPage() {
 
   if (error) {
     return (
-      <section className="mx-auto max-w-lg px-4 py-16 text-center">
-        <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
-        <h1 className="mt-5 text-2xl font-bold">{t('serviceUnavailable')}</h1>
+      <section className="mx-auto my-10 max-w-lg border-y px-5 py-12 sm:my-16 sm:px-8">
+        <AlertCircle className="h-7 w-7 text-destructive" />
+        <h1 className="mt-5 text-3xl font-medium">{t('serviceUnavailable')}</h1>
         <p className="mt-3 text-muted-foreground">{error}</p>
-        <Button asChild className="mt-6"><Link href={`/${locale}/services`}>{catalogue('filters.reset')}</Link></Button>
+        <Button asChild className="mt-7 min-h-11 rounded-md bg-emerald-700 text-white hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700"><Link href={`/${locale}/services`}>{catalogue('filters.reset')}</Link></Button>
       </section>
     )
   }
 
   if (!service) {
-    return <div className="flex min-h-72 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
+    return <div className="flex min-h-72 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
   }
 
   const serviceName = (locale === 'ar' ? service.nom_ar : service.nom) || service.nom

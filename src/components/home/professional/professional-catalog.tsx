@@ -1,4 +1,5 @@
 'use client'
+import { catalogHref } from '@/lib/catalog/registry'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -282,7 +283,7 @@ function BrandsSection({ locale }: { locale: string }) {
           ) : (
             <div className="grid grid-cols-3 gap-px bg-border sm:grid-cols-4 lg:grid-cols-6">
               {items.map((brand, index) => (
-                <Link key={brand.id} href={`/${locale}/shop?brand_id=${encodeURIComponent(String(brand.id))}`} className={cn('group relative flex h-20 items-center justify-center overflow-hidden bg-background px-2 outline-none transition-colors hover:bg-muted/40 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-primary md:h-24 md:px-3', index > 11 && 'hidden md:flex')}>
+                <Link key={brand.id} href={catalogHref(locale, 'marques', brand.id)} className={cn('group relative flex h-20 items-center justify-center overflow-hidden bg-background px-2 outline-none transition-colors hover:bg-muted/40 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-primary md:h-24 md:px-3', index > 11 && 'hidden md:flex')}>
                   <BrandLogo brand={brand} />
                 </Link>
               ))}

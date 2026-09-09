@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useGetProductQuery } from '@/state/api/products-api-slice'
 import { useGetOrderQuery } from '@/state/api/orders-api-slice'
 import { getSupportedLocales } from '@/components/i18n/locale-preference-initializer'
+import { catalogPage } from '@/lib/catalog/registry'
 
 import { 
   Breadcrumb,
@@ -30,6 +31,7 @@ export function DynamicBreadcrumb() {
   const searchParams = useSearchParams()
   const locale = useLocale()
   const t = useTranslations('breadcrumb')
+  const requestText = useTranslations('serviceRequests')
 
   const supportedLocales = getSupportedLocales()
 
@@ -66,6 +68,26 @@ export function DynamicBreadcrumb() {
     const parts = pathname.split('/').filter(Boolean)
     // Filter out locale segments (fr/ar/en/zh)
     const filteredParts = parts.filter(part => !(supportedLocales as readonly string[]).includes(part))
+    if (filteredParts[0] === 'categories' || filteredParts[0] === 'marques') {
+      const page = catalogPage(filteredParts[0], filteredParts[1])
+      return [
+        { title: t('shop'), href: `/${locale}/shop`, active: false, icon: iconMap.shop },
+        ...(page ? [{ title: locale === 'ar' ? page.ar : page.fr, href: pathname, active: true, icon: iconMap.category }] : []),
+      ]
+    }
+
+    // Request route segments are implementation details, not visitor-facing destinations.
+    if (filteredParts[0] === 'service-requests' || (filteredParts[0] === 'services' && filteredParts.includes('request'))) {
+      const title = filteredParts.includes('quick')
+        ? requestText('form.quickEyebrow')
+        : filteredParts.includes('review')
+          ? requestText('review.eyebrow')
+          : requestText('form.eyebrow')
+      return [
+        { title: t('services'), href: `/${locale}/services`, active: false, icon: iconMap.services },
+        { title, href: pathname, active: true, icon: iconMap.services },
+      ]
+    }
 
     return filteredParts.map((part, index) => {
       // Check if we're in shop context
@@ -157,7 +179,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, productData?.designation, orderData?.orderNumber, locale, supportedLocales])
+  }, [pathname, searchParams, t, requestText, productData?.designation, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)

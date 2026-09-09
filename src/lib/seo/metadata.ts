@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
 
 import { normalizeLocale, type AppLocale } from "@/i18n/locale"
+import { getSiteUrl, localizedUrl, seoImageUrl } from "./urls"
+
+export { getSiteUrl, localePrefix, localizedPath, localizedUrl, seoImageUrl } from "./urls"
 
 const SITE_NAME: Record<AppLocale, string> = {
   fr: "Boukir Diamond",
@@ -96,29 +99,6 @@ const OG_LOCALE: Record<AppLocale, string> = {
   zh: "zh_CN",
 }
 
-export function getSiteUrl(): URL {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  if (raw) {
-    try {
-      return new URL(raw)
-    } catch {
-      // fall through
-    }
-  }
-  return new URL("http://localhost:3000")
-}
-
-export function localePrefix(locale: AppLocale): string {
-  // The app uses next-intl routing with `localePrefix: 'always'`,
-  // so every public URL must include the locale segment (including `fr`).
-  return `/${locale}`
-}
-
-export function localizedPath(locale: AppLocale, path: string): string {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`
-  return `${localePrefix(locale)}${normalizedPath}`
-}
-
 export function buildPageMetadata(input: {
   locale?: string | null
   title?: string
@@ -136,16 +116,15 @@ export function buildPageMetadata(input: {
   const titleText = input.title ? `${input.title} | ${siteName}` : siteName
   const description = input.description ?? DEFAULT_DESCRIPTION[locale]
 
-  const canonical = localizedPath(locale, input.path)
+  const canonical = localizedUrl(locale, input.path)
 
   const indexable = input.indexable ?? true
   const keywords = (input.keywords && input.keywords.length > 0)
     ? input.keywords
     : DEFAULT_KEYWORDS[locale]
 
-  const images = input.imageUrl
-    ? [{ url: input.imageUrl }]
-    : [{ url: "/logo.png" }]
+  const imageUrl = seoImageUrl(input.imageUrl) ?? new URL("/logo.png", getSiteUrl()).toString()
+  const images = [{ url: imageUrl }]
 
   const OPEN_GRAPH_TYPES = [
     "article",
@@ -179,13 +158,14 @@ export function buildPageMetadata(input: {
     alternates: {
       canonical,
       languages: {
-        fr: localizedPath("fr", input.path),
-        ar: localizedPath("ar", input.path),
-        en: localizedPath("en", input.path),
-        zh: localizedPath("zh", input.path),
+        fr: localizedUrl("fr", input.path),
+        ar: localizedUrl("ar", input.path),
+        en: localizedUrl("en", input.path),
+        zh: localizedUrl("zh", input.path),
       },
     },
     openGraph: {
+      url: canonical,
       title: titleText,
       description,
       type: openGraphType,
