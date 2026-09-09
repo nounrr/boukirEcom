@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildSitemap, loadSitemapData } from '../src/lib/seo/sitemap-data.ts';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+require('../scripts/register-project.cjs');
+const { buildSitemap, loadSitemapData } = require('../src/lib/seo/sitemap-data.ts');
 import { resolveSitemap } from 'next/dist/build/webpack/loaders/metadata/resolve-route-data.js';
 
 const site = new URL('https://boukirdiamond.com');
-const data = { products: Array.from({ length: 3737 }, (_, i) => ({ id: i + 1, updated_at: '2026-09-01T12:00:00.000Z' })), services: [{ id: 1, updated_at: null }], maalems: [{ id: 2, updated_at: '2026-08-20' }] };
+const data = { products: Array.from({ length: 3737 }, (_, i) => ({ id: i + 1, designation: 'Ciment', updated_at: '2026-09-01T12:00:00.000Z' })), services: [{ id: 1, updated_at: null }], maalems: [{ id: 2, updated_at: '2026-08-20' }] };
 const fetcher = (overrides = {}) => async url => {
   const key = url.includes('/products/') ? 'products' : url.includes('/services/') ? 'services' : 'maalems';
   if (overrides[key] instanceof Error) throw overrides[key];
@@ -24,7 +27,7 @@ test('exports every eligible product in all four locales, stable real dates and 
   }
   assert.equal(entries[0].lastModified, undefined);
   assert.equal(entries.find(x => x.url.endsWith('/services/1')).lastModified, undefined);
-  assert.equal(entries.find(x => x.url.endsWith('/product/1')).lastModified, '2026-09-01T12:00:00.000Z');
+  assert.equal(entries.find(x => x.url.endsWith('/product/1-ciment')).lastModified, '2026-09-01T12:00:00.000Z');
   assert.deepEqual(buildSitemap(loaded, site), entries);
   const xml = resolveSitemap(entries);
   assert.equal((xml.match(/<loc>/g) || []).length, entries.length);
@@ -40,7 +43,7 @@ test('fail closed on unavailable API, missing lists, truncation, duplicates and 
   ]) await assert.rejects(loadSitemapData('https://api.example', fetcher(overrides)));
   await assert.rejects(loadSitemapData('https://api.example', async () => new Response('', { status: 503 })), /HTTP 503/);
 });
-test('bad dates and protocol limit are rejected instead of silently dropping entries', () => {
+test('bad dates and missing names are rejected instead of silently dropping entries', () => {
   assert.throws(() => buildSitemap({ ...data, services: [{ id: 1, updated_at: 'invalid' }] }, site), /date/);
-  assert.throws(() => buildSitemap({ ...data, products: Array.from({ length: 12500 }, (_, i) => ({ id: i + 1, updated_at: null })) }, site), /50,000/);
+  assert.throws(() => buildSitemap({ ...data, products: [{ id: 1, updated_at: null }] }, site), /names missing/);
 });

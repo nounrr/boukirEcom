@@ -6,6 +6,8 @@ import { usePathname, useSearchParams } from "next/navigation"
 import * as React from "react"
 import { useLocale, useTranslations } from 'next-intl'
 import { useGetProductQuery } from '@/state/api/products-api-slice'
+import { productIdFromSegment } from '@/lib/seo/product-url'
+import { getLocalizedProductName } from '@/lib/localized-fields'
 import { useGetOrderQuery } from '@/state/api/orders-api-slice'
 import { getSupportedLocales } from '@/components/i18n/locale-preference-initializer'
 import { catalogPage } from '@/lib/catalog/registry'
@@ -40,7 +42,7 @@ export function DynamicBreadcrumb() {
   const pathParts = pathname.split('/').filter(Boolean)
   const filteredPartsForId = pathParts.filter(part => !(supportedLocales as readonly string[]).includes(part))
   const productIdx = filteredPartsForId.indexOf('product')
-  const productId = productIdx !== -1 ? filteredPartsForId[productIdx + 1] : undefined
+  const productId = productIdx !== -1 ? productIdFromSegment(filteredPartsForId[productIdx + 1]) : undefined
   const { data: productData } = useGetProductQuery(productId as string, { skip: !productId })
 
   // Detect order ID from the current path to fetch order number
@@ -132,8 +134,8 @@ export function DynamicBreadcrumb() {
       }
 
       // Handle product ID (skip it as a segment since it's part of product route)
-      if (filteredParts[index - 1] === 'product' && !isNaN(Number(part))) {
-        const productName = productData?.designation || searchParams.get('name') || t('productNumber', { id: part })
+      if (filteredParts[index - 1] === 'product' && productIdFromSegment(part)) {
+        const productName = (productData && getLocalizedProductName(productData, locale)) || searchParams.get('name') || t('productNumber', { id: productIdFromSegment(part) ?? part })
         const partIndex = parts.indexOf(part)
         return {
           title: productName,
@@ -180,7 +182,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, requestText, productData?.designation, orderData?.orderNumber, locale, supportedLocales])
+  }, [pathname, searchParams, t, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)

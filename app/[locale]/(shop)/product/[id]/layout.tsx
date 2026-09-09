@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import type React from "react"
 import Link from 'next/link'
+import { productPath, productSlug } from '@/lib/seo/product-url'
 import { catalogHref } from '@/lib/catalog/registry'
 
 import { normalizeLocale } from "@/i18n/locale"
@@ -44,9 +45,9 @@ export async function generateMetadata({
 
   const seo = buildProductSeoText({ product, locale })
 
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     locale,
-    path: `/product/${product.id}`,
+    path: productPath(product, locale),
     title: seo.metaTitle,
     description: seo.metaDescription,
     keywords: seo.metaKeywords,
@@ -54,6 +55,11 @@ export async function generateMetadata({
     openGraphType: "product",
     indexable: true,
   })
+  metadata.alternates = {
+    canonical: localizedUrl(locale, productPath(product, locale)),
+    languages: Object.fromEntries((['fr', 'ar', 'en', 'zh'] as const).map(l => [l, localizedUrl(l, productPath(product, l))])),
+  }
+  return metadata
 }
 
 export default async function ProductDetailsRouteLayout({
@@ -71,7 +77,7 @@ export default async function ProductDetailsRouteLayout({
   if (!product) return children
 
   const seo = buildProductSeoText({ product, locale })
-  const productUrl = localizedUrl(locale, `/product/${product.id}`)
+  const productUrl = localizedUrl(locale, productPath(product, locale))
   const imageUrl = seoImageUrl(seo.imageUrl)
 
   const jsonLd = {
@@ -96,6 +102,28 @@ export default async function ProductDetailsRouteLayout({
         : undefined,
   }
 
+  const variants = product.variants || []
+  const structuredData = variants.length ? {
+    '@context': 'https://schema.org', '@type': 'ProductGroup',
+    name: seo.productName, description: seo.metaDescription, url: productUrl,
+    productGroupID: String(product.id), brand: jsonLd.brand,
+    ...(variants.some(v => v.color_name) ? { variesBy: ['https://schema.org/color'] } : {}),
+    hasVariant: variants.map(variant => {
+      const label = variant.variant_name || String(variant.id)
+      const url = `${productUrl}?variant=${encodeURIComponent(`${variant.id}-${productSlug({ id: variant.id, name: label }, locale)}`)}`
+      const price = Number(variant.prix_vente)
+      const image = seoImageUrl(variant.image_url) || imageUrl
+      return { '@type': 'Product', name: `${seo.productName} — ${label}`,
+        sku: `${product.id}-${variant.id}`, inProductGroupWithID: String(product.id), url,
+        image: image ? [image] : undefined, color: variant.color_name || undefined,
+        offers: variant.prix_vente != null && Number.isFinite(price) && price >= 0 ? {
+          '@type': 'Offer', url, price, priceCurrency: 'MAD',
+          availability: variant.available === false ? 'https://schema.org/OutOfStock' : variant.available === true ? 'https://schema.org/InStock' : undefined,
+        } : undefined,
+      }
+    }),
+  } : jsonLd
+
   return (
     <>
       <nav className="container mx-auto px-6 pt-4 flex gap-4 text-sm" aria-label={locale === 'ar' ? 'الفئة والعلامة' : 'Catégorie et marque'}>
@@ -107,7 +135,7 @@ export default async function ProductDetailsRouteLayout({
         type="application/ld+json"
         // JSON-LD is required to be a raw JSON string.
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
       />
     </>
   )

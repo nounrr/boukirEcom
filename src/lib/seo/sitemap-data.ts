@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
+import { productPath, type ProductUrlData } from './product-url'
 
-export type SitemapRecord = { id: number; updated_at: string | null }
+export type SitemapRecord = ProductUrlData & { id: number; updated_at: string | null }
 export type SitemapData = { products: SitemapRecord[]; services: SitemapRecord[]; maalems: SitemapRecord[] }
 const LOCALES = ['fr', 'ar', 'en', 'zh'] as const
 const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact']
@@ -16,7 +17,9 @@ function records(value: unknown, name: string): SitemapRecord[] {
     if (row.updated_at != null && (typeof row.updated_at !== 'string' || !Number.isFinite(Date.parse(row.updated_at)))) {
       throw new Error(`Sitemap: invalid ${name} modification date`)
     }
-    return { id: row.id, updated_at: row.updated_at ?? null }
+    if (name === 'products' && (typeof row.designation !== 'string' || !row.designation.trim())) throw new Error('Sitemap: product names missing; deploy the product export first')
+    return { id: row.id, updated_at: row.updated_at ?? null,
+      ...(name === 'products' ? { designation: row.designation, designation_ar: row.designation_ar, designation_en: row.designation_en, designation_zh: row.designation_zh } : {}) }
   })
 }
 
@@ -44,8 +47,8 @@ export async function loadSitemapData(baseUrl: string, fetcher: typeof fetch = f
 
 export function buildSitemap(data: SitemapData, site: URL): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = []
-  function add(path: string, modified?: string | null) {
-    const languages = Object.fromEntries(LOCALES.map(locale => [locale, new URL(`/${locale}${path === '/' ? '' : path}`, site).toString()]))
+  function add(path: string | ((locale: string) => string), modified?: string | null) {
+    const languages = Object.fromEntries(LOCALES.map(locale => { const p = typeof path === 'function' ? path(locale) : path; return [locale, new URL(`/${locale}${p === '/' ? '' : p}`, site).toString()] }))
     for (const locale of LOCALES) entries.push({
       url: languages[locale],
       ...(modified ? { lastModified: new Date(modified).toISOString() } : {}),
@@ -55,12 +58,8 @@ export function buildSitemap(data: SitemapData, site: URL): MetadataRoute.Sitema
   // No fabricated lastmod without a reliable content timestamp.
   for (const path of STATIC_PATHS) add(path)
   for (const [key, segment] of [['products', 'product'], ['services', 'services'], ['maalems', 'maalems']] as const) {
-    for (const row of records(data[key], key)) add(`/${segment}/${row.id}`, row.updated_at)
+    for (const row of records(data[key], key)) add(key === 'products' ? locale => productPath(row, locale) : `/${segment}/${row.id}`, row.updated_at)
   }
-  if (entries.length > 50000) throw new Error('Sitemap exceeds 50,000 URLs: split before publishing')
-  // Conservative byte budget including XML markup/escaping.
-  if (Buffer.byteLength(JSON.stringify(entries), 'utf8') * 2 > 50 * 1024 * 1024) {
-    throw new Error('Sitemap size requires splitting before publishing')
-  }
+  // Publication partitions entries and checks each serialized XML file.
   return entries
 }

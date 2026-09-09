@@ -53,7 +53,7 @@ test('real server route emits product links and localized metadata before hydrat
   for (const locale of ['fr', 'ar', 'en', 'zh']) {
     const input = props(locale, '75-etancheite-bitume');
     const html = renderToStaticMarkup(await catalogRoute('categories', input));
-    assert.ok(html.includes(`href="/${locale}/product/6696"`));
+    assert.ok(html.includes(`href="/${locale}/product/6696-`));
     assert.ok(html.includes({ fr: 'Étanchéité', ar: 'العزل المائي', en: 'Waterproofing', zh: '防水材料' }[locale]));
     assert.equal((html.match(/<h1/g) || []).length, 1);
     assert.ok(html.includes('category_id=75'));

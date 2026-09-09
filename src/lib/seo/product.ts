@@ -1,4 +1,5 @@
 import { cache } from "react"
+import { productIdFromSegment } from './product-url'
 
 import { API_CONFIG } from "@/lib/api-config"
 import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
@@ -24,6 +25,7 @@ function clampDescription(input: string, maxLen = 160): string {
 }
 
 export const getProductForSeo = cache(async (id: string | undefined | null): Promise<ProductDetail | null> => {
+  id = productIdFromSegment(id)
   if (!isNumericId(id)) return null
 
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS}/${id}`
@@ -38,14 +40,16 @@ export const getProductForSeo = cache(async (id: string | undefined | null): Pro
       },
     })
 
-    if (!res.ok) return null
+    if (res.status === 404) return null
+    if (!res.ok) throw new Error(`Product API HTTP ${res.status}`)
 
     const data = (await res.json()) as ProductDetail
-    if (!data || typeof (data as any).id !== "number") return null
+    if (!data || typeof (data as any).id !== "number") throw new Error('Invalid product API response')
 
     return data
-  } catch {
-    return null
+  } catch (error) {
+    // A temporary API outage must not turn an existing indexed product into a 404.
+    throw error
   }
 })
 
@@ -116,7 +120,8 @@ export function buildProductSeoText(input: {
     brandName,
     "droguerie",
     "outillage",
-    "maison",
+    ...(product.variants || []).map(variant => variant.variant_name),
+    locale === 'ar' ? 'طنجة' : locale === 'zh' ? '丹吉尔' : locale === 'en' ? 'Tangier' : 'Tanger',
     "Maroc",
     "Boukir Diamond",
   ].filter((x): x is string => typeof x === "string" && x.trim().length > 0)

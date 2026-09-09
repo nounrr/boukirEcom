@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh and verify the Boukir sitemap snapshot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /var/www/boukirEcom/scripts/refresh-sitemap.sh

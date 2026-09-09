@@ -17,7 +17,7 @@ const {CatalogLanding}=require('../src/components/shop/catalog-landing.tsx');
   try{const loaded=await loadCatalogPage(kind,page.slug,1);if(!loaded) throw new Error('Missing catalog ID');
    for(const locale of ['fr','ar','en','zh']){
     const html=renderToStaticMarkup(React.createElement(CatalogLanding,{kind,...loaded,locale,pageNumber:1}));
-    const productIds=[...html.matchAll(new RegExp(`href="/${locale}/product/(\\d+)"`,'g'))].map(m=>Number(m[1]));
+    const productIds=[...html.matchAll(new RegExp(`href="/${locale}/product/(\\d+)-[^"\\s]+"`,'g'))].map(m=>Number(m[1]));
     const valid=loaded.data.products.every(p=>productIds.includes(p.id))&&productIds.length===loaded.data.products.length;
     results.push({kind,slug:page.slug,locale,total:loaded.data.pagination.total_items,renderedProducts:productIds.length,allLinksInInitialHtml:valid,productIds});
     if(page.slug==='75-etancheite-bitume'||page.slug==='37-danosa') fs.writeFileSync(path.join(outputDir,`correction-04-live-${kind}-${locale}.html`),'<!doctype html><meta charset="utf-8">'+html);

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
+import { productHref } from '@/lib/seo/product-url'
 import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -302,8 +303,8 @@ export function ProductCard({
     e.preventDefault()
     e.stopPropagation()
     // Navigate to product page instead of quick view modal
-    window.location.href = `/${locale}/product/${product.id}`
-  }, [product.id, locale])
+    window.location.href = productHref(product, locale)
+  }, [product, locale])
 
   const handleVariantClick = useCallback((variant: SimpleVariant) => {
     setSelectedVariant(variant.id)
@@ -402,7 +403,7 @@ export function ProductCard({
         "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full",
         isWide ? "max-w-none" : "max-w-none"
       )}>
-        <Link href={`/${locale}/product/${product.id}`} className="flex gap-3 p-2.5 sm:p-3">
+        <Link href={productHref(product, locale)} className="flex gap-3 p-2.5 sm:p-3">
           {/* Image */}
           <div className="relative h-24 w-24 sm:h-28 sm:w-28 shrink-0">
             <ProductImageMask className="h-full w-full bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
@@ -556,7 +557,7 @@ export function ProductCard({
     )}>
       {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
-      <Link href={`/${locale}/product/${product.id}`} className="block">
+      <Link href={productHref(product, locale)} className="block">
         <ProductImageMask className="aspect-square bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
         {/* Subtle backdrop pattern for better visibility */}
         <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
@@ -637,7 +638,7 @@ export function ProductCard({
       </Link>
 
       {/* Content Section - Compact */}
-      <Link href={`/${locale}/product/${product.id}`} className="block p-2.5 sm:p-3">
+      <Link href={productHref(product, locale)} className="block p-2.5 sm:p-3">
         {/* Category */}
         <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 sm:mb-1">
           {localizedCategoryName}

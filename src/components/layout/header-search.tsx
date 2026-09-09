@@ -1,5 +1,6 @@
 'use client'
 import { catalogHref } from '@/lib/catalog/registry'
+import { productHref } from '@/lib/seo/product-url'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
@@ -662,9 +663,10 @@ export function HeaderSearch({
       recordTypedQuery()
       close()
       onSearchDone?.()
-      router.push(`/${locale}/product/${id}`)
+      const product = data?.products?.find(p => p.id === id)
+      router.push(product ? productHref(product, locale) : `/${locale}/product/${id}`)
     },
-    [close, locale, onSearchDone, recordTypedQuery, router]
+    [close, data?.products, locale, onSearchDone, recordTypedQuery, router]
   )
 
   const submitSearch = useCallback(

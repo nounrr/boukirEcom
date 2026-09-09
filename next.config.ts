@@ -8,6 +8,9 @@ const siteUrl = getSiteUrl();
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [{ source: '/sitemap-:file.xml', destination: '/sitemaps/:file.xml' }];
+  },
   async redirects() {
     return siteUrl.hostname === 'boukirdiamond.com' ? [{
       source: '/:path*',

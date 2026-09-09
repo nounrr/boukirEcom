@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { productHref } from '@/lib/seo/product-url'
 import type { CatalogKind, CatalogPage } from '@/lib/catalog/registry'
 import { catalogHref, categories } from '@/lib/catalog/registry'
 import type { ProductsListResponse } from '@/types/api/products'
@@ -20,7 +21,7 @@ export function CatalogLanding({ kind, page, data, locale, pageNumber }: { kind:
     <div className="flex flex-wrap items-center justify-between gap-4 mb-8"><p>{data.pagination.total_items} {t.count}</p><Link className="underline" href={`/${locale}/shop?${filter}`}>{t.refine}</Link></div>
     {data.products.length === 0 ? <p role="status">{t.empty}</p> :
       <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">{data.products.map(product => <li key={product.id} className="rounded-xl border p-4 bg-card">
-        <Link href={`/${locale}/product/${product.id}`} className="block font-semibold">
+        <Link href={productHref(product, locale)} className="block font-semibold">
           {toAbsoluteImageUrl(product.image_url) && <img src={toAbsoluteImageUrl(product.image_url)!} alt="" loading="lazy" width={280} height={280} className="mb-4 w-full aspect-square object-contain" />}
           <h2>{getLocalizedProductName(product, locale)}</h2>
         </Link>
