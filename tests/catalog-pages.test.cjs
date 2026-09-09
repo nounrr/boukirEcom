@@ -35,7 +35,7 @@ global.fetch = async url => {
   if (String(url).endsWith('/catalog-pages')) return Response.json({ categories: [{ id: 75, total }, { id: 73, total: 0 }], brands: [{ id: 37, total }] });
   if (String(url).endsWith('/categories')) return Response.json([{ id: 75 }, { id: 73 }]);
   if (String(url).endsWith('/brands')) return Response.json([{ id: 37 }]);
-  return Response.json({ products: total ? [{ id: 6696, designation: 'Membrane bitume', designation_ar: 'غشاء بيتومين', prix_vente: 89.78, brand: { id: 37, nom: 'DANOSA' } }] : [], pagination: { total_items: total, total_pages: total ? 1 : 0, has_next: false } });
+  return Response.json({ products: total ? [{ id: 6696, designation: 'Membrane bitume', designation_ar: 'غشاء بيتومين', prix_vente: 89.78, brand: { id: 37, nom: 'DANOSA' } }] : [], pagination: { total_items: total, total_pages: Math.ceil(total / 24), has_next: Number(new URL(url).searchParams.get('page') || 1) < Math.ceil(total / 24) } });
 };
 const props = (locale, slug, query = {}) => ({ params: Promise.resolve({ locale, slug }), searchParams: Promise.resolve(query) });
 test('stable slugs, scoped links and strict page numbers', () => {
@@ -65,6 +65,14 @@ test('real server route emits product links and localized metadata before hydrat
   await assert.rejects(catalogRoute('categories', props('fr', '75-unknown')), e => e.digest?.includes('404'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { page: '2' })), e => e.digest?.includes('404'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { brand_id: '37' })), e => e.digest?.includes('/fr/shop?brand_id=37&category_id=75'));
+  total = 49;
+  const second = props('ar', '75-etancheite-bitume', { page: '2' });
+  assert.equal((await catalogMetadata('categories', second)).alternates.canonical, 'https://boukirdiamond.com/ar/categories/75-etancheite-bitume?page=2');
+  const html = renderToStaticMarkup(await catalogRoute('categories', second));
+  assert.ok(html.includes('href="/ar/categories/75-etancheite-bitume"'));
+  assert.ok(html.includes('href="/ar/categories/75-etancheite-bitume?page=3"'));
+  assert.ok(requests.some(url => url.includes('page=2')));
+  total = 1;
 });
 test('empty selections noindex, sitemap excludes empty pages, API errors are not 404', async () => {
   total = 0;

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { buildSitemap, loadSitemapData } from '../src/lib/seo/sitemap-data.ts';
 import { resolveSitemap } from 'next/dist/build/webpack/loaders/metadata/resolve-route-data.js';
 const option = key => process.argv.find(x => x.startsWith(`--${key}=`))?.slice(key.length + 3);
@@ -13,7 +14,14 @@ try {
     products: Array.from({ length: 3737 }, (_, i) => ({ id: i + 1, updated_at: '2026-09-01T12:00:00.000Z' })),
     services: [{ id: 1, updated_at: null }], maalems: [{ id: 1, updated_at: null }],
   } : await loadSitemapData(api);
-  const entries = buildSitemap(data, site);
+  let entries = buildSitemap(data, site);
+  if (!fixture) {
+    process.env.NEXT_PUBLIC_SITE_URL = site.origin;
+    process.env.NEXT_PUBLIC_API_URL = api;
+    const require = createRequire(import.meta.url);
+    require('./register-project.cjs');
+    entries = [...entries, ...await require('../src/lib/catalog/sitemap.ts').catalogSitemap()];
+  }
   const xml = resolveSitemap(entries);
   assert.equal(entries.length, new Set(entries.map(x => x.url)).size);
   assert.ok(entries.every(x => new URL(x.url).origin === site.origin));

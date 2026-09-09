@@ -29,14 +29,13 @@ async function resolve(kind: CatalogKind, props: CatalogProps) {
   if (!pageNumber) notFound()
   const result = await loadCatalogPage(kind, slug, pageNumber)
   if (!result || (pageNumber > 1 && pageNumber > result.data.pagination.total_pages)) notFound()
-  return { ...result, locale, slug, pageNumber, query }
+  return { ...result, locale: locale as 'fr' | 'ar', slug, pageNumber, query }
 }
 export async function catalogMetadata(kind: CatalogKind, props: CatalogProps): Promise<Metadata> {
-  const { page, data, locale, slug, pageNumber, query } = await resolve(kind, props)
+  const { page, data, locale, slug, pageNumber } = await resolve(kind, props)
   const path = `/${kind}/${slug}${pageNumber > 1 ? `?page=${pageNumber}` : ''}`
-  const hasFilters = Object.keys(query).some(key => key !== 'page' && !key.startsWith('utm_') && !['gclid', 'fbclid'].includes(key))
   const title = `${locale === 'ar' ? `${page.ar} في طنجة` : `${page.fr} à Tanger`}${pageNumber > 1 ? ` — ${pageNumber}` : ''}`
-  const metadata = buildPageMetadata({ locale, path, title, description: (locale === 'ar' ? page.adviceAr : page.adviceFr).slice(0, 160), keywords: [page.fr, page.ar, 'Tanger', 'طنجة'], indexable: data.pagination.total_items > 0 && !hasFilters })
+  const metadata = buildPageMetadata({ locale, path, title, description: (locale === 'ar' ? page.adviceAr : page.adviceFr).slice(0, 160), keywords: [page.fr, page.ar, 'Tanger', 'طنجة'], indexable: data.pagination.total_items > 0 })
   metadata.alternates = { canonical: localizedUrl(locale, path), languages: { fr: localizedUrl('fr', path), ar: localizedUrl('ar', path) } }
   return metadata
 }
