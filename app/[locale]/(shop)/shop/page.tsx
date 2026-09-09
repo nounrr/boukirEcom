@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import { normalizeLocale } from "@/i18n/locale"
+import { constructionCopy } from "@/lib/seo/construction-copy"
 
 import { buildPageMetadata } from "@/lib/seo/metadata"
 
@@ -30,7 +32,8 @@ export async function generateMetadata({
   searchParams?: Promise<Record<string, SearchParamValue>>
 }): Promise<Metadata> {
   const resolvedParams = await params
-  const locale = resolvedParams?.locale
+  const locale = normalizeLocale(resolvedParams?.locale)
+  const copy = constructionCopy[locale]
 
   const resolvedSearchParams = (await searchParams) ?? {}
   const shouldNoIndex = Object.entries(resolvedSearchParams).some(([key, value]) =>
@@ -40,15 +43,9 @@ export async function generateMetadata({
   return buildPageMetadata({
     locale,
     path: "/shop",
-    title: locale === "ar" ? "المنتجات" : "Produits",
-    description:
-      locale === "ar"
-        ? "تصفح كتالوج Boukir Diamond للدروجري ومواد التنظيف: فلترة حسب الفئة والعلامة التجارية والسعر. توصيل داخل المغرب ودفع آمن."
-        : "Parcourez le catalogue Boukir Diamond (droguerie, entretien, hygiène) : filtres par catégorie, marque et prix. Livraison au Maroc et paiement sécurisé.",
-    keywords:
-      locale === "ar"
-        ? ["دروجري", "مواد التنظيف", "منتجات منزلية", "منظفات", "المغرب", "Boukir Diamond"]
-        : ["droguerie", "produits d'entretien", "hygiène", "nettoyage", "Maroc", "Boukir Diamond"],
+    title: copy.shopTitle,
+    description: copy.description,
+    keywords: copy.keywords,
     indexable: !shouldNoIndex,
   })
 }

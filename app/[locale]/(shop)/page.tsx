@@ -6,6 +6,7 @@ import { HomeProductSections } from '@/components/home/home-product-sections'
 import { normalizeLocale } from '@/i18n/locale'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
+import { constructionCopy } from '@/lib/seo/construction-copy'
 
 export async function generateMetadata({
   params,
@@ -15,33 +16,14 @@ export async function generateMetadata({
   const { locale: rawLocale } = await params
   const locale = normalizeLocale(rawLocale)
 
-  const titleByLocale: Record<string, string> = {
-    fr: 'Accueil',
-    ar: 'الرئيسية',
-    en: 'Home',
-    zh: '首页',
-  }
-
-  const descriptionByLocale: Record<string, string> = {
-    fr: 'Boukir Diamond — droguerie & produits d’entretien au Maroc. Découvrez nos nouveautés et promotions avec livraison partout au Maroc.',
-    ar: 'بوكِير دايموند — دروجري ومواد تنظيف بالمغرب. اكتشف العروض والجديد مع توصيل إلى جميع مدن المغرب.',
-    en: 'Boukir Diamond — hardware & home care products in Morocco. Discover new arrivals and deals with fast delivery across Morocco.',
-    zh: 'Boukir Diamond——摩洛哥五金与家居清洁用品商城。发现新品与优惠，摩洛哥全境快速配送。',
-  }
-
-  const keywordsByLocale: Record<string, string[]> = {
-    fr: ['droguerie', "produits d'entretien", 'produits ménagers', 'Maroc', 'livraison Maroc', 'Boukir Diamond'],
-    ar: ['دروجري', 'مواد التنظيف', 'منتجات منزلية', 'المغرب', 'توصيل بالمغرب', 'Boukir Diamond'],
-    en: ['hardware', 'home care', 'cleaning products', 'Morocco', 'delivery Morocco', 'Boukir Diamond'],
-    zh: ['五金', '清洁用品', '家居用品', '摩洛哥', '配送', 'Boukir Diamond'],
-  }
+  const copy = constructionCopy[locale]
 
   return buildPageMetadata({
     locale,
     path: '/',
-    title: titleByLocale[locale] ?? titleByLocale.fr,
-    description: descriptionByLocale[locale] ?? descriptionByLocale.fr,
-    keywords: keywordsByLocale[locale] ?? keywordsByLocale.fr,
+    title: copy.homeTitle,
+    description: copy.description,
+    keywords: copy.keywords,
     indexable: true,
   })
 }
