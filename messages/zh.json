@@ -1351,6 +1351,7 @@
     "emailLabel": "邮箱",
     "addressLabel": "地址",
     "hoursLabel": "营业时间",
+    "mapTitle": "门店位置",
     "mapDesc": "交互式地图，帮助你找到门店。"
   },
   "header": {
