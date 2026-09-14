@@ -4,9 +4,23 @@ import { productIdFromSegment } from './product-url'
 import { API_CONFIG } from "@/lib/api-config"
 import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
 import type { ProductDetail } from "@/types/api/products"
+import { publicProductDetail } from '@/lib/catalog/public-products'
+import { isOutOfStockLike } from '@/lib/stock'
 
 function isNumericId(value: string | undefined | null): value is string {
   return typeof value === "string" && /^\d+$/.test(value)
+}
+
+export type ProductLookup =
+  | { status: 'invalid'; product: null }
+  | { status: 'missing'; product: null }
+  | { status: 'found'; product: ProductDetail }
+
+export class ProductBackendUnavailableError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options)
+    this.name = 'ProductBackendUnavailableError'
+  }
 }
 
 function stripHtmlToText(input: string): string {
@@ -24,9 +38,9 @@ function clampDescription(input: string, maxLen = 160): string {
   return (lastSpace > 80 ? clipped.slice(0, lastSpace) : clipped.slice(0, maxLen)).trim()
 }
 
-export const getProductForSeo = cache(async (id: string | undefined | null): Promise<ProductDetail | null> => {
-  id = productIdFromSegment(id)
-  if (!isNumericId(id)) return null
+export const getPublicProduct = cache(async (segment: string | undefined | null): Promise<ProductLookup> => {
+  const id = productIdFromSegment(segment)
+  if (!isNumericId(id)) return { status: 'invalid', product: null }
 
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS}/${id}`
 
@@ -40,18 +54,26 @@ export const getProductForSeo = cache(async (id: string | undefined | null): Pro
       },
     })
 
-    if (res.status === 404) return null
-    if (!res.ok) throw new Error(`Product API HTTP ${res.status}`)
+    if (res.status === 404) return { status: 'missing', product: null }
+    if (!res.ok) throw new ProductBackendUnavailableError(`Product API HTTP ${res.status}`)
 
     const data = (await res.json()) as ProductDetail
-    if (!data || typeof (data as any).id !== "number") throw new Error('Invalid product API response')
+    if (!data || typeof (data as any).id !== "number" || data.id !== Number(id)) {
+      throw new ProductBackendUnavailableError('Invalid product API response')
+    }
 
-    return data
+    return { status: 'found', product: publicProductDetail(data) }
   } catch (error) {
     // A temporary API outage must not turn an existing indexed product into a 404.
-    throw error
+    if (error instanceof ProductBackendUnavailableError) throw error
+    throw new ProductBackendUnavailableError('Product API is temporarily unavailable', { cause: error })
   }
 })
+
+export async function getProductForSeo(id: string | undefined | null): Promise<ProductDetail | null> {
+  const result = await getPublicProduct(id)
+  return result.product
+}
 
 export function getLocalizedProductDescription(product: ProductDetail, locale: string): string {
   const raw =
@@ -112,7 +134,7 @@ export function buildProductSeoText(input: {
         ? Number(product.prix_vente)
         : null
 
-  const inStock = true
+  const inStock = !isOutOfStockLike(product)
 
   const metaKeywords = [
     productName,
@@ -134,7 +156,7 @@ export function buildProductSeoText(input: {
     metaDescription,
     metaKeywords,
     imageUrl,
-    price: Number.isFinite(price as any) ? (price as number) : null,
+    price: Number.isFinite(price as any) && (price as number) >= 0 ? (price as number) : null,
     currency: "MAD",
     inStock,
   }

@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Package, Tag, Store } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
+import Link from 'next/link'
 import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
 
 interface ProductsListProps {
@@ -28,6 +29,7 @@ interface ProductsListProps {
     to: number
   }
   onPageChange: (page: number) => void
+  pageHref: (page: number) => string
   onAddToCart: (productId: number, variantId?: number) => void
   onToggleWishlist: (productId: number) => void
   onQuickView: (productId: number) => void
@@ -45,6 +47,7 @@ export function ProductsList({
   selectedBrandLabels,
   pagination,
   onPageChange,
+  pageHref,
   onAddToCart,
   onToggleWishlist,
   onQuickView,
@@ -266,16 +269,15 @@ export function ProductsList({
       {pagination && pagination.total_pages > 1 && !isLoading && (
         <div className="mt-6 flex justify-center">
           <div className="inline-flex items-center gap-2 border border-border/40 rounded-lg p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={pagination.current_page === 1 || isFetching}
-              onClick={() => onPageChange(pagination.current_page - 1)}
-              className="h-9 px-3"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              {t('previous')}
-            </Button>
+            {pagination.current_page > 1 ? (
+              <Button asChild variant="ghost" size="sm" className="h-9 px-3">
+                <Link href={pageHref(pagination.current_page - 1)} onClick={() => onPageChange(pagination.current_page - 1)}>
+                  <ChevronLeft className="w-4 h-4 mr-1" />{t('previous')}
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" disabled className="h-9 px-3"><ChevronLeft className="w-4 h-4 mr-1" />{t('previous')}</Button>
+            )}
 
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
@@ -291,30 +293,27 @@ export function ProductsList({
                 }
 
                 return (
-                  <Button
+                  <Button asChild
                     key={pageNum}
                     variant={pagination.current_page === pageNum ? 'default' : 'ghost'}
                     size="sm"
-                    disabled={isFetching}
-                    onClick={() => onPageChange(pageNum)}
                     className="h-9 w-9"
                   >
-                    {pageNum}
+                    <Link href={pageHref(pageNum)} aria-current={pagination.current_page === pageNum ? 'page' : undefined} onClick={() => onPageChange(pageNum)}>{pageNum}</Link>
                   </Button>
                 );
               })}
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={pagination.current_page === pagination.total_pages || isFetching}
-              onClick={() => onPageChange(pagination.current_page + 1)}
-              className="h-9 px-3"
-            >
-              {t('next')}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+            {pagination.current_page < pagination.total_pages ? (
+              <Button asChild variant="ghost" size="sm" className="h-9 px-3">
+                <Link href={pageHref(pagination.current_page + 1)} onClick={() => onPageChange(pagination.current_page + 1)}>
+                  {t('next')}<ChevronRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" disabled className="h-9 px-3">{t('next')}<ChevronRight className="w-4 h-4 ml-1" /></Button>
+            )}
           </div>
         </div>
       )}

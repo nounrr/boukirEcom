@@ -64,6 +64,7 @@ test('real server route emits product links and localized metadata before hydrat
     fs.writeFileSync(path.join(root, '../docs/seo-2026-09-08', `correction-04-ssr-${locale}.html`), '<!doctype html><meta charset="utf-8">' + html);
   }
   await assert.rejects(catalogRoute('categories', props('fr', '75-unknown')), e => e.digest?.includes('404'));
+  await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { page: '1' })), e => e.digest?.includes('308') && e.digest.includes('/fr/categories/75-etancheite-bitume'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { page: '2' })), e => e.digest?.includes('404'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { brand_id: '37' })), e => e.digest?.includes('/fr/shop?brand_id=37&category_id=75'));
   total = 49;

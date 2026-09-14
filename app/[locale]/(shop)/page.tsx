@@ -7,6 +7,7 @@ import { normalizeLocale } from '@/i18n/locale'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
 import { constructionCopy } from '@/lib/seo/construction-copy'
+import { loadHomeProducts } from '@/lib/home/products'
 
 export async function generateMetadata({
   params,
@@ -35,8 +36,11 @@ export default async function HomePage({
 }) {
   const { locale: rawLocale } = await params
   const locale = normalizeLocale(rawLocale)
-  const tCommon = await getTranslations({ locale, namespace: 'common' })
-  const tShop = await getTranslations({ locale, namespace: 'shop' })
+  const [tCommon, tShop, homeProducts] = await Promise.all([
+    getTranslations({ locale, namespace: 'common' }),
+    getTranslations({ locale, namespace: 'shop' }),
+    loadHomeProducts(),
+  ])
 
   return (
     <div className="min-h-screen">
@@ -63,6 +67,8 @@ export default async function HomePage({
 
       {/* Product sections */}
       <HomeProductSections
+        initialNewArrivals={homeProducts.newArrivals}
+        initialFeatured={homeProducts.featured}
         locale={locale}
         featuredTitle={tShop('featuredTitle')}
         featuredDesc={tShop('featuredDesc')}

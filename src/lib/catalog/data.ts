@@ -2,6 +2,7 @@ import { cache } from 'react'
 import { API_CONFIG } from '@/lib/api-config'
 import { catalogPage, type CatalogKind } from './registry'
 import type { ProductsListResponse } from '@/types/api/products'
+import { publicProductsResponse } from './public-products'
 
 export const loadCatalogPage = cache(async (kind: CatalogKind, slug: string, pageNumber: number) => {
   const page = catalogPage(kind, slug)
@@ -18,7 +19,7 @@ export const loadCatalogPage = cache(async (kind: CatalogKind, slug: string, pag
   if (!response.ok) throw new Error('Produits indisponibles')
   const data = await response.json() as ProductsListResponse
   if (!Array.isArray(data.products) || !data.pagination || !Number.isFinite(data.pagination.total_items)) throw new Error('Liste produits invalide')
-  return { page, data }
+  return { page, data: publicProductsResponse(data) }
 })
 
 export function catalogPageNumber(value: string | string[] | undefined) {

@@ -11,8 +11,20 @@ export function productSlug(product: ProductUrlData, locale: string): string {
   const name = translated?.trim() || product.designation?.trim() || product.name?.trim() || 'produit'
   return name.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').slice(0, 100).replace(/-$/g, '') || 'produit'
 }
+export function decodedProductSegment(product: ProductUrlData, locale: string) {
+  return `${product.id}-${productSlug(product, locale)}`
+}
+export function isCanonicalProductSegment(segment: string, product: ProductUrlData, locale: string) {
+  try {
+    return decodeURIComponent(segment) === decodedProductSegment(product, locale)
+  } catch {
+    return false
+  }
+}
 export function productPath(product: ProductUrlData, locale: string) {
-  return `/product/${product.id}-${productSlug(product, locale)}`
+  // Redirect responses are HTTP headers and therefore require an ASCII-safe value.
+  // Keep the readable Unicode slug while percent-encoding it on the wire.
+  return `/product/${encodeURIComponent(decodedProductSegment(product, locale))}`
 }
 export function productHref(product: ProductUrlData, locale: string) {
   return `/${locale}${productPath(product, locale)}`

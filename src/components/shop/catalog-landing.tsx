@@ -6,6 +6,7 @@ import type { ProductsListResponse } from '@/types/api/products'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import { catalogText, catalogCopy } from '@/lib/catalog/i18n'
 import { getLocalizedProductName } from '@/lib/localized-fields'
+import { isOutOfStockLike } from '@/lib/stock'
 
 export function CatalogLanding({ kind, page, data, locale, pageNumber }: { kind: CatalogKind; page: CatalogPage; data: ProductsListResponse; locale: string; pageNumber: number }) {
   const ar = locale === 'ar'
@@ -26,6 +27,8 @@ export function CatalogLanding({ kind, page, data, locale, pageNumber }: { kind:
           <h2>{getLocalizedProductName(product, locale)}</h2>
         </Link>
         <p className="mt-3">{Number(product.prix_promo || product.prix_vente) > 0 ? `${Number(product.prix_promo || product.prix_vente).toFixed(2)} ${t.currency}` : t.price}</p>
+        {product.base_unit && <p className="text-sm text-muted-foreground">{t.unit}: {product.base_unit}</p>}
+        <p className={`text-sm ${isOutOfStockLike(product) ? 'text-red-700' : 'text-emerald-700'}`}>{isOutOfStockLike(product) ? t.outOfStock : t.inStock}</p>
         {product.brand && <Link className="text-sm underline" href={catalogHref(locale, 'marques', product.brand.id)}>{product.brand.nom}</Link>}
       </li>)}</ul>}
     <nav aria-label={t.pagination} className="flex gap-8 my-8">

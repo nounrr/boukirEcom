@@ -118,6 +118,7 @@ export interface ProductListItem {
   image_url: string;
   gallery: ProductGalleryImage[];
   quantite_disponible: number;
+  in_stock?: boolean;
   purchase_limit?: number;
   has_variants: boolean;
   is_obligatoire_variant?: boolean;

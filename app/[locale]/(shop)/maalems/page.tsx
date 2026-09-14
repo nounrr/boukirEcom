@@ -93,7 +93,7 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
       ) : data.maalems.length === 0 ? (
         <section className="mt-10 rounded-lg border border-dashed border-border bg-card p-8 text-center sm:p-10"><p className="font-semibold">{t('empty')}</p>{hasFilters && <Button asChild variant="outline" className="mt-5 min-h-11 rounded-[6px]"><Link href={`/${locale}/maalems`}>{t('reset')}</Link></Button>}</section>
       ) : (
-        <section className="mt-8"><p className="mb-5 text-sm leading-6 text-muted-foreground">{t('declared')}</p><div className="grid gap-5 lg:grid-cols-2">{data.maalems.map((maalem) => <MaalemDirectoryCard key={maalem.id} maalem={maalem} locale={locale} stats={maalem.statistics} labels={labels} />)}</div></section>
+        <section className="mt-8"><p className="mb-5 text-sm leading-6 text-muted-foreground">{t('declared')}</p><div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{data.maalems.map((maalem) => <MaalemDirectoryCard key={maalem.id} maalem={maalem} locale={locale} stats={maalem.statistics} labels={labels} />)}</div></section>
       )}
 
       {data && <aside className="mt-12 flex flex-col gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 className="text-xl font-semibold">{t('quick')}</h2><p className="mt-2 text-sm text-white/75">{t('quickDescription')}</p></div><Button asChild className="min-h-11 rounded-md bg-amber-400 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"><Link href={quickServiceRequestHref(locale)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></aside>}

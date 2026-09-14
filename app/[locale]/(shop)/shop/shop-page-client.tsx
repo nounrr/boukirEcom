@@ -4,7 +4,8 @@ import { ProductFilters } from "@/components/shop/product-filters"
 import { ProductsList } from "@/components/shop/products-list"
 import { Button } from "@/components/ui/button"
 import { useGetProductsQuery } from "@/state/api/products-api-slice"
-import { filterStateToApiRequest, type FilterState } from "@/types/api/products"
+import { filterStateToApiRequest, type FilterState, type ProductsListResponse } from "@/types/api/products"
+import { sameFilterState, shopPageHref } from '@/lib/seo/shop-url'
 import type { ProductBrand, ProductCategory } from "@/types/api/products"
 import { Grid3x3, LayoutGrid, Package, SlidersHorizontal } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
@@ -31,7 +32,7 @@ function flattenCategories(categories: ProductCategory[]): ProductCategory[] {
   return out
 }
 
-export default function ShopPageClient() {
+export default function ShopPageClient({ initialData, initialFilters, heading, description }: { initialData: ProductsListResponse; initialFilters: FilterState; heading: string; description: string }) {
   const t = useTranslations("shop")
   const locale = useLocale()
 
@@ -183,7 +184,10 @@ export default function ShopPageClient() {
   const apiFilters = useMemo(() => filterStateToApiRequest(filterState), [filterState])
 
   // Fetch products with filters (capture refetch for manual refresh)
-  const { data, isLoading, isFetching, error, refetch } = useGetProductsQuery(apiFilters)
+  const { data: queryData, isLoading: queryLoading, isFetching, error, refetch } = useGetProductsQuery(apiFilters)
+  const canUseInitialData = !queryData && sameFilterState(filterState, initialFilters)
+  const data = queryData ?? (canUseInitialData ? initialData : undefined)
+  const isLoading = queryLoading && !canUseInitialData
 
   // Extract metadata from API response
   const categories = data?.filters?.categories || []
@@ -284,6 +288,10 @@ export default function ShopPageClient() {
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
+        <header className="mb-6 max-w-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{heading}</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
+        </header>
         {/* Toolbar: filter toggle, results, view toggle */}
         <div className="mb-5 rounded-2xl border border-border/40 bg-card/60 px-5 py-3 shadow-sm backdrop-blur-sm">
           <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -375,6 +383,7 @@ export default function ShopPageClient() {
             selectedCategoryLabels={selectedCategoryLabels}
             selectedBrandLabels={selectedBrandLabels}
             pagination={pagination}
+            pageHref={(page) => shopPageHref(pathname, searchParams, page)}
             onPageChange={handlePageChange}
             onAddToCart={handleAddToCart}
             onToggleWishlist={handleToggleWishlist}

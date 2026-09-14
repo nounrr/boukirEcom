@@ -6,7 +6,7 @@ import { catalogHref } from '@/lib/catalog/registry'
 
 import { normalizeLocale } from "@/i18n/locale"
 import { buildPageMetadata, localizedUrl, seoImageUrl } from "@/lib/seo/metadata"
-import { getProductForSeo, buildProductSeoText } from "@/lib/seo/product"
+import { getPublicProduct, buildProductSeoText } from "@/lib/seo/product"
 
 export async function generateMetadata({
   params,
@@ -17,31 +17,25 @@ export async function generateMetadata({
   const locale = normalizeLocale(resolvedParams?.locale)
   const id = resolvedParams?.id
 
-  const product = await getProductForSeo(id)
+  const result = await getPublicProduct(id)
 
-  if (!product) {
-    return buildPageMetadata({
-      locale,
-      path: `/product/${id ?? ""}`,
-      title:
-        locale === "ar"
-          ? "المنتج غير موجود"
-          : locale === "en"
-            ? "Product not found"
-            : locale === "zh"
-              ? "未找到商品"
-              : "Produit introuvable",
-      description:
-        locale === "ar"
-          ? "تعذر العثور على هذا المنتج."
-          : locale === "en"
-            ? "We couldn't find this product."
-            : locale === "zh"
-              ? "无法找到该商品。"
-              : "Nous n'avons pas trouvé ce produit.",
-      indexable: false,
-    })
+  if (result.status !== 'found') {
+    const text = {
+      fr: { title: 'Produit introuvable | Boukir Diamond', description: "Nous n'avons pas trouvé ce produit." },
+      ar: { title: 'المنتج غير موجود | بوكِير دايموند', description: 'تعذر العثور على هذا المنتج.' },
+      en: { title: 'Product not found | Boukir Diamond', description: "We couldn't find this product." },
+      zh: { title: '未找到商品 | Boukir Diamond', description: '无法找到该商品。' },
+    }[locale]
+    return {
+      title: text.title,
+      description: text.description,
+      robots: { index: false, follow: true },
+      // Replace inherited home alternates: an error URL is not canonical content.
+      alternates: {},
+    }
   }
+
+  const product = result.product
 
   const seo = buildProductSeoText({ product, locale })
 
@@ -73,8 +67,9 @@ export default async function ProductDetailsRouteLayout({
   const locale = normalizeLocale(resolvedParams?.locale)
   const id = resolvedParams?.id
 
-  const product = await getProductForSeo(id)
-  if (!product) return children
+  const result = await getPublicProduct(id)
+  if (result.status !== 'found') return children
+  const product = result.product
 
   const seo = buildProductSeoText({ product, locale })
   const productUrl = localizedUrl(locale, productPath(product, locale))
@@ -96,7 +91,7 @@ export default async function ProductDetailsRouteLayout({
           url: productUrl,
           priceCurrency: seo.currency,
           price: seo.price,
-          availability: "https://schema.org/InStock",
+          availability: seo.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
           itemCondition: "https://schema.org/NewCondition",
         }
         : undefined,

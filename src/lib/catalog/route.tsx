@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { CatalogLanding } from '@/components/shop/catalog-landing'
 import { buildPageMetadata, localizedUrl } from '@/lib/seo/metadata'
@@ -13,6 +13,11 @@ async function resolve(kind: CatalogKind, props: CatalogProps) {
   if (!known) notFound()
   if (!isCatalogLocale(locale)) notFound()
   const query = await props.searchParams
+  if (query.page === '1') {
+    const normalized = new URLSearchParams()
+    for (const [key, value] of Object.entries(query)) if (key !== 'page' && value !== undefined) normalized.set(key, Array.isArray(value) ? value.join(',') : value)
+    permanentRedirect(`/${locale}/${kind}/${slug}${normalized.size ? `?${normalized}` : ''}`)
+  }
   const filterKeys = Object.keys(query).filter(key => key !== 'page' && !key.startsWith('utm_') && !['gclid', 'fbclid', 'msclkid'].includes(key))
   if (filterKeys.length) {
     const filter = new URLSearchParams()

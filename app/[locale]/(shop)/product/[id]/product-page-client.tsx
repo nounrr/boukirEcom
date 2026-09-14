@@ -21,13 +21,29 @@ import {
   useRemoveFromWishlistByProductMutation
 } from "@/state/api/wishlist-api-slice"
 import { useAppSelector } from "@/state/hooks"
-import { Heart, Minus, Package, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
+import { Heart, Minus, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { notFound, useParams, useSearchParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import DOMPurify from "dompurify"
+import type { ProductDetail } from '@/types/api/products'
+import { isOutOfStockLike } from '@/lib/stock'
 
-export default function ProductPage() {
+function galleryFromProduct(product: ProductDetail) {
+  const source = product.gallery?.length
+    ? product.gallery
+    : product.image_url
+      ? [{ id: 1, image_url: product.image_url }]
+      : []
+  return source.map(({ id, image_url }) => ({ id, image_url })).filter(image => Boolean(image.image_url))
+}
+
+function defaultUnitId(product: ProductDetail) {
+  const units = product.units ?? []
+  return (units.find(unit => unit.is_default) ?? units[0])?.id ?? null
+}
+
+export default function ProductPage({ initialProduct }: { initialProduct: ProductDetail }) {
   const params = useParams()
   const searchParams = useSearchParams()
   const requestedVariant = productIdFromSegment(searchParams.get('variant'))
@@ -83,25 +99,17 @@ export default function ProductPage() {
 
   const [quantity, setQuantity] = useState(1)
   const [selectedImage, setSelectedImage] = useState(0)
-  const [displayImages, setDisplayImages] = useState<{ id: number; image_url: string }[]>([])
+  const [displayImages, setDisplayImages] = useState<{ id: number; image_url: string }[]>(() => galleryFromProduct(initialProduct))
   const goPrevImage = () => setSelectedImage((i) => (i - 1 + (displayImages?.length || 1)) % (displayImages?.length || 1))
   const goNextImage = () => setSelectedImage((i) => (i + 1) % (displayImages?.length || 1))
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
-  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
+  const [selectedUnitId, setSelectedUnitId] = useState<number | null>(() => defaultUnitId(initialProduct))
 
-  // If user enters an obviously invalid id, render 404 immediately.
-  // (Prevents showing a generic error UI for routes like /product/ss)
-  useEffect(() => {
-    const rawId = (params as any)?.id
-    const id = Array.isArray(rawId) ? rawId?.[0] : rawId
-    if (!productIdFromSegment(id)) {
-      notFound()
-    }
-  }, [params])
-
-  // Fetch product from API
-  const { data: product, isLoading, isError, error, refetch } = useGetProductQuery(productIdFromSegment(params.id) || '', { skip: !productIdFromSegment(params.id) })
+  // The server has already validated the route and supplied public data. This
+  // browser request only refreshes current catalogue/session information.
+  const { data: queriedProduct, refetch } = useGetProductQuery(productIdFromSegment(params.id) || '', { skip: !productIdFromSegment(params.id) })
+  const product = queriedProduct ?? initialProduct
   // Initialize default unit selection (must be before conditional returns)
   useEffect(() => {
     const units = (product as any)?.units as Array<{ id: number; is_default: boolean }> | undefined
@@ -120,11 +128,7 @@ export default function ProductPage() {
       setSelectedImage(0)
       return
     }
-    const baseGallery = (Array.isArray(product.gallery) && product.gallery.length > 0)
-      ? product.gallery
-      : [{ id: 1, image_url: product.image_url, position: 0 }]
-    const defaultImages = baseGallery.map(({ id, image_url }: any) => ({ id, image_url }))
-    setDisplayImages(defaultImages)
+    setDisplayImages(galleryFromProduct(product))
     setSelectedImage(0)
   }, [product?.id])
 
@@ -310,43 +314,6 @@ export default function ProductPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="aspect-square bg-muted rounded-xl" />
-            <div className="space-y-4">
-              <div className="h-8 bg-muted rounded w-3/4" />
-              <div className="h-4 bg-muted rounded w-1/2" />
-              <div className="h-12 bg-muted rounded w-1/4" />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    const status = (error as any)?.status
-    if (status === 404 || status === 400) {
-      notFound()
-    }
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center space-y-4">
-          <Package className="w-16 h-16 mx-auto text-muted-foreground" />
-          <h1 className="text-2xl font-bold">{t("loadErrorTitle")}</h1>
-          <p className="text-muted-foreground">{t("loadErrorDesc")}</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!product) {
-    notFound()
-  }
-
   const images = product.gallery?.length > 0 ? product.gallery : [{ id: 1, image_url: product.image_url, position: 0 }]
   const hasDiscount = product.has_promo && product.prix_promo
   const similarProducts = (product as any).suggestions || product.similar_products || []
@@ -427,6 +394,7 @@ export default function ProductPage() {
 
   const baseDesignation = getLocalizedDesignation(product)
   const categoryLabel = getLocalizedCategoryName((product as any)?.categorie, locale)
+  const isOutOfStock = isOutOfStockLike(product)
   const titleVariantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
   const titleUnitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
   const titleSuffixParts = [titleVariantLabel, titleUnitLabel].filter(Boolean)
@@ -497,8 +465,8 @@ export default function ProductPage() {
 
             {/* Stock Status */}
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="border-green-500/50 text-green-600 text-xs px-2 py-0.5">
-                {t("inStock")}
+              <Badge variant="outline" className={cn("text-xs px-2 py-0.5", isOutOfStock ? "border-red-500/50 text-red-600" : "border-green-500/50 text-green-600")}>
+                {t(isOutOfStock ? "outOfStock" : "inStock")}
               </Badge>
             </div>
             <Separator />

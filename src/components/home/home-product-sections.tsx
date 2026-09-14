@@ -277,6 +277,8 @@ function ProductRail({
 }
 
 export function HomeProductSections({
+  initialNewArrivals,
+  initialFeatured,
   locale,
   featuredTitle,
   featuredDesc,
@@ -285,6 +287,8 @@ export function HomeProductSections({
   viewAllLabel,
   emptyLabel,
 }: {
+  initialNewArrivals?: ProductListItem[]
+  initialFeatured?: ProductListItem[]
   locale?: string
   featuredTitle: string
   featuredDesc?: string
@@ -297,20 +301,24 @@ export function HomeProductSections({
   const activeLocale = normalizeLocale(locale ?? detectedLocale)
 
   const {
-    data: featured,
+    data: featuredQuery,
     isLoading: isFeaturedLoading,
     isError: isFeaturedError,
   } = useGetFeaturedPromoQuery(12)
-  const { data: newArrivals, isLoading: isNewLoading } = useGetNewArrivalsQuery(8)
+  const { data: newArrivalsQuery, isLoading: isNewLoadingQuery } = useGetNewArrivalsQuery(8)
+  const featured = featuredQuery ?? initialFeatured ?? []
+  const newArrivals = newArrivalsQuery ?? initialNewArrivals ?? []
+  const isNewLoading = isNewLoadingQuery && initialNewArrivals === undefined
+  const isFeaturedLoadingWithFallback = isFeaturedLoading && initialFeatured === undefined
   const showFeatured =
-    !isFeaturedLoading && !isFeaturedError && (featured?.length ?? 0) > 0
+    !isFeaturedLoadingWithFallback && (!isFeaturedError || initialFeatured !== undefined) && featured.length > 0
 
   return (
     <>
       <ProductGrid
         title={newArrivalsTitle}
         description={newArrivalsDesc}
-        products={newArrivals ?? []}
+        products={newArrivals}
         isLoading={isNewLoading}
         locale={activeLocale}
         viewAllLabel={viewAllLabel}
@@ -322,7 +330,7 @@ export function HomeProductSections({
           title={featuredTitle}
           description={featuredDesc}
           href={`/${activeLocale}/shop?sort=promo`}
-          products={featured ?? []}
+          products={featured}
           locale={activeLocale}
           viewAllLabel={viewAllLabel}
         />
