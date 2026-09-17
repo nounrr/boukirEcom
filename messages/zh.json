@@ -980,6 +980,7 @@
   },
   "productPage": {
     "inStock": "有货",
+    "outOfStock": "缺货",
     "colorLabel": "颜色",
     "sizeLabel": "尺寸",
     "optionsLabel": "选项",
@@ -1804,6 +1805,33 @@
         "supportDesc": "专属协助"
       }
     }
+  },
+  "subscription": {
+    "title": "会员积分计划",
+    "points": "积分",
+    "tier": "等级",
+    "bronze": "青铜",
+    "silver": "白银",
+    "gold": "黄金",
+    "myPoints": "我的积分",
+    "earnPoints": "赚取积分",
+    "redeemPoints": "兑换积分",
+    "benefits": "会员权益",
+    "history": "积分记录",
+    "pointsPerPurchase": "1 MAD = 1 积分"
+  },
+  "account": {
+    "myAccount": "我的账户",
+    "profile": "个人资料",
+    "orders": "订单",
+    "addresses": "地址",
+    "subscription": "订阅",
+    "settings": "设置",
+    "orderHistory": "订单记录",
+    "orderNumber": "订单号",
+    "orderDate": "日期",
+    "orderStatus": "状态",
+    "orderTotal": "合计"
   },
   "toast": {
     "auth": {

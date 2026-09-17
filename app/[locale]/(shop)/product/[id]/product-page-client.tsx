@@ -28,6 +28,9 @@ import { useEffect, useMemo, useState } from "react"
 import DOMPurify from "dompurify"
 import type { ProductDetail } from '@/types/api/products'
 import { isOutOfStockLike } from '@/lib/stock'
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
+import { resolveProductOfferPrice } from '@/lib/product-price'
+import { mergeProductSessionState } from '@/lib/product-client-snapshot'
 
 function galleryFromProduct(product: ProductDetail) {
   const source = product.gallery?.length
@@ -109,7 +112,12 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   // The server has already validated the route and supplied public data. This
   // browser request only refreshes current catalogue/session information.
   const { data: queriedProduct, refetch } = useGetProductQuery(productIdFromSegment(params.id) || '', { skip: !productIdFromSegment(params.id) })
-  const product = queriedProduct ?? initialProduct
+  // Price, variants and units must remain the exact snapshot used by the
+  // initial HTML and JSON-LD. The browser refresh contributes session state only.
+  const product = useMemo(
+    () => mergeProductSessionState(initialProduct, queriedProduct),
+    [initialProduct, queriedProduct],
+  )
   // Initialize default unit selection (must be before conditional returns)
   useEffect(() => {
     const units = (product as any)?.units as Array<{ id: number; is_default: boolean }> | undefined
@@ -315,7 +323,6 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   }
 
   const images = product.gallery?.length > 0 ? product.gallery : [{ id: 1, image_url: product.image_url, position: 0 }]
-  const hasDiscount = product.has_promo && product.prix_promo
   const similarProducts = (product as any).suggestions || product.similar_products || []
 
   // Get available colors and sizes from variants (robust detection)
@@ -383,12 +390,10 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   // Resolve active unit and variant-aware price
   const activeUnit = (product as any)?.units?.find((u: any) => u.id === selectedUnitId) || null
   const selectedVariantObj = (selectedVariant ? (product.variants || []).find((v: any) => v.id === selectedVariant) : null) || null
-  const variantPrice: number | null = selectedVariantObj ? (selectedVariantObj.prix_vente ?? (selectedVariantObj as any).price ?? null) : null
-  const baseUnitPrice: number = (activeUnit?.prix_vente ?? product.prix_vente) as number
-  const computedPriceBeforeDiscount: number = (variantPrice ?? baseUnitPrice) as number
-  const currentPrice: number = (hasDiscount && computedPriceBeforeDiscount)
-    ? Number((computedPriceBeforeDiscount * (1 - (product.pourcentage_promo || 0) / 100)).toFixed(2))
-    : Number((product.prix_promo ?? computedPriceBeforeDiscount).toFixed(2))
+  const offerPrice = resolveProductOfferPrice(product, { variant: selectedVariantObj, unit: activeUnit })
+  const computedPriceBeforeDiscount = offerPrice.listPrice ?? 0
+  const currentPrice = offerPrice.price ?? 0
+  const hasDiscount = offerPrice.onPromotion
 
 
 
@@ -397,7 +402,9 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   const isOutOfStock = isOutOfStockLike(product)
   const titleVariantLabel = (selectedVariantObj as any)?.variant_name || (selectedVariantObj as any)?.name
   const titleUnitLabel = (activeUnit as any)?.unit_name || (activeUnit as any)?.name || product.base_unit
-  const titleSuffixParts = [titleVariantLabel, titleUnitLabel].filter(Boolean)
+  const displayUnit = formatCommercialUnit(titleUnitLabel, locale as any)
+  const unitRate = formatUnitRate(currency, titleUnitLabel, locale as any)
+  const titleSuffixParts = [titleVariantLabel, displayUnit].filter(Boolean)
   const titleDisplayName = titleSuffixParts.length > 0
     ? `${baseDesignation} • ${titleSuffixParts.join(' · ')}`
     : baseDesignation
@@ -448,7 +455,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
-                  {currentPrice.toFixed(2)} {currency}
+                  {currentPrice.toFixed(2)} {unitRate}
                 </span>
                 {hasDiscount && product.pourcentage_promo && (
                   <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-0.5 h-6 font-bold">
@@ -458,7 +465,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
               </div>
               {hasDiscount && (
                 <span className="text-base text-muted-foreground line-through">
-                  {Number(baseUnitPrice).toFixed(2)} {currency}
+                  {computedPriceBeforeDiscount.toFixed(2)} {unitRate}
                 </span>
               )}
             </div>
@@ -511,11 +518,11 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                           ? "bg-primary text-primary-foreground border-primary"
                           : "border-border hover:border-primary/50 hover:bg-muted/50"
                       )}
-                      title={u.unit_name || u.name}
+                      title={formatCommercialUnit(u.unit_name || u.name, locale as any)}
                     >
-                      <span className="mr-2 rtl:mr-0 rtl:ml-2">{u.unit_name || u.name}</span>
+                      <span className="mr-2 rtl:mr-0 rtl:ml-2">{formatCommercialUnit(u.unit_name || u.name, locale as any)}</span>
                       {typeof u.prix_vente === 'number' && (
-                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} {currency}</span>
+                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} {formatUnitRate(currency, u.unit_name || u.name, locale as any)}</span>
                       )}
                     </button>
                   ))}
@@ -558,6 +565,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                 </div>
                 <span className="text-sm text-muted-foreground">
                   {t("totalLabel")}: <span className="font-semibold text-emerald-700 dark:text-emerald-400">{(currentPrice * quantity).toFixed(2)} {currency}</span>
+                  <span className="ml-2 rtl:ml-0 rtl:mr-2 text-xs text-muted-foreground">({quantity} × {displayUnit})</span>
                 </span>
               </div>
             </div>

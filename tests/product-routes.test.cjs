@@ -38,6 +38,22 @@ test('Arabic and mixed-language slugs are encoded once and accepted as canonical
  assert.equal(unicodeRoute.props.initialProduct.id,5151);
  global.fetch=async url=>{assert.ok(String(url).endsWith('/6696'));return Response.json(product,{status});};
 });
+test('untranslated product locales stay accessible but noindex and outside hreflang', async()=>{
+ const partial={...product,id:7700,designation:'Ciment CPJ 35',designation_ar:'إسمنت CPJ 35',designation_en:null,designation_zh:null,variants:[]};
+ global.fetch=async url=>{assert.ok(String(url).endsWith('/7700'));return Response.json(partial);};
+ for(const locale of ['fr','ar']) {
+  const metadata=await generateMetadata(props(locale,'7700'));
+  assert.equal(metadata.robots.index,true);
+  assert.deepEqual(Object.keys(metadata.alternates.languages),['fr','ar']);
+ }
+ for(const locale of ['en','zh']) {
+  const metadata=await generateMetadata(props(locale,'7700'));
+  assert.equal(metadata.robots.index,false);
+  assert.equal(metadata.alternates.canonical,new URL(productHref(partial,locale),'https://boukirdiamond.com').href);
+  assert.equal(metadata.alternates.languages,undefined);
+ }
+ global.fetch=async url=>{assert.ok(String(url).endsWith('/6696'));return Response.json(product,{status});};
+});
 test('unknown products are 404 while an API outage remains a server error',async()=>{
  let calls=0;
  global.fetch=async url=>{calls++;assert.ok(String(url).endsWith('/6696'));return Response.json(product,{status});};
@@ -75,7 +91,17 @@ test('initial HTML describes named variants and their selectable URLs',async()=>
  assert.equal(data['@type'],'ProductGroup');
  assert.equal(data.hasVariant[0].name,'Membrane bitume — Vert 4 mm');
  assert.equal(data.hasVariant[0].offers.price,90);
- assert.ok(data.hasVariant[0].url.endsWith('?variant=12-vert-4-mm'));
+  assert.ok(data.hasVariant[0].url.endsWith('?variant=12-vert-4-mm'));
+});
+
+test('variant structured data applies the same promotion as the interface', async()=>{
+ const promoted={...product,prix_vente:100,prix_promo:90,pourcentage_promo:10,has_promo:true,
+  variants:[{...product.variants[0],prix_vente:120}]};
+ global.fetch=async()=>Response.json(promoted);
+ const html=renderToStaticMarkup(await Layout({...props('fr','6696'),children:null}));
+ const data=JSON.parse(html.match(/<script[^>]*>(.*?)<\/script>/s)[1]);
+ assert.equal(data.hasVariant[0].offers.price,108);
+ global.fetch=async url=>{assert.ok(String(url).endsWith('/6696'));return Response.json(product,{status});};
 });
 
 test('stock and invalid prices stay accurate in structured product data',async()=>{
@@ -83,7 +109,11 @@ test('stock and invalid prices stay accurate in structured product data',async()
  global.fetch=async()=>Response.json(unavailable);
  const html=renderToStaticMarkup(await Layout({...props('fr','6696'),children:null}));
  const data=JSON.parse(html.match(/<script[^>]*>(.*?)<\/script>/s)[1]);
- assert.equal(data.offers,undefined);
+  assert.equal(data.offers,undefined);
+ global.fetch=async()=>Response.json({...unavailable,prix_vente:0});
+ const zeroHtml=renderToStaticMarkup(await Layout({...props('fr','6696'),children:null}));
+ const zeroData=JSON.parse(zeroHtml.match(/<script[^>]*>(.*?)<\/script>/s)[1]);
+ assert.equal(zeroData.offers,undefined);
  global.fetch=async()=>Response.json({...unavailable,prix_vente:80});
  const availablePriceHtml=renderToStaticMarkup(await Layout({...props('fr','6696'),children:null}));
  const availablePriceData=JSON.parse(availablePriceHtml.match(/<script[^>]*>(.*?)<\/script>/s)[1]);

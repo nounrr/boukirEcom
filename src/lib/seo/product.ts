@@ -6,6 +6,13 @@ import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localiz
 import type { ProductDetail } from "@/types/api/products"
 import { publicProductDetail } from '@/lib/catalog/public-products'
 import { isOutOfStockLike } from '@/lib/stock'
+import { resolveProductOfferPrice } from '@/lib/product-price'
+
+export const PRODUCT_CACHE_SECONDS = 300
+
+export function productCacheTag(id: string | number): string {
+  return `product:${id}`
+}
 
 function isNumericId(value: string | undefined | null): value is string {
   return typeof value === "string" && /^\d+$/.test(value)
@@ -47,7 +54,7 @@ export const getPublicProduct = cache(async (segment: string | undefined | null)
   try {
     const res = await fetch(url, {
       // Product pages should be crawlable; keep metadata relatively fresh without hammering the API.
-      next: { revalidate: 300 },
+      next: { revalidate: PRODUCT_CACHE_SECONDS, tags: [productCacheTag(id)] },
       headers: {
         "Content-Type": "application/json",
         Platform: "web",
@@ -127,12 +134,7 @@ export function buildProductSeoText(input: {
 
   const imageUrl = product.image_url ? product.image_url.toString() : null
 
-  const price =
-    product.has_promo && product.prix_promo != null
-      ? Number(product.prix_promo)
-      : product.prix_vente != null
-        ? Number(product.prix_vente)
-        : null
+  const price = resolveProductOfferPrice(product).price
 
   const inStock = !isOutOfStockLike(product)
 
@@ -156,7 +158,8 @@ export function buildProductSeoText(input: {
     metaDescription,
     metaKeywords,
     imageUrl,
-    price: Number.isFinite(price as any) && (price as number) >= 0 ? (price as number) : null,
+    // A missing/zero database price is not a valid purchasable Offer.
+    price,
     currency: "MAD",
     inStock,
   }

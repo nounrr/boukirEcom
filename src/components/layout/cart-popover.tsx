@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { cartStorage, getCartItemKey, formatCartItemName } from "@/lib/cart-storage"
 import { getLocalizedCartItemBaseName } from "@/lib/localized-fields"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 import { forwardRef, useCallback, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -399,11 +400,11 @@ export const CartPopover = forwardRef<
                         <p className="text-[11px] text-muted-foreground mb-1">
                           {item.variantName ? `${t('variantLabel')}: ${item.variantName}` : null}
                           {item.variantName && item.unitName ? ' · ' : null}
-                          {item.unitName ? `${t('unitLabel')}: ${item.unitName}` : null}
+                          {item.unitName ? `${t('unitLabel')}: ${formatCommercialUnit(item.unitName, locale as any)}` : null}
                         </p>
                       )}
                       <p className="text-xs font-semibold text-primary mb-2">
-                        {item.price.toFixed(2)} {tCommon('currency')}
+                        {item.price.toFixed(2)} {formatUnitRate(tCommon('currency'), item.unitName, locale as any)}
                       </p>
 
                       {/* Quantity Controls */}

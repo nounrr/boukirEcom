@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -397,6 +398,9 @@ export function ProductCard({
     return product.originalPrice
   }, [selectedVariant, product.variants, product.originalPrice])
 
+  const displayUnit = formatCommercialUnit(product.unit, locale as any)
+  const unitRate = formatUnitRate(tCommon('currency'), product.unit, locale as any)
+
   if (layout === 'row') {
     return (
       <div className={cn(
@@ -508,7 +512,7 @@ export function ProductCard({
                   <span className="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-400">
                     {currentPrice.toFixed(2)}
                   </span>
-                  <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{tCommon('currency')}</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{unitRate}</span>
                 </div>
                 {discountPercentage > 0 && (
                   <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">
@@ -518,7 +522,7 @@ export function ProductCard({
               </div>
               {currentOriginalPrice && currentOriginalPrice > currentPrice && (
                 <span className="block text-[10px] sm:text-xs text-muted-foreground line-through">
-                  {currentOriginalPrice.toFixed(2)} {tCommon('currency')}
+                  {currentOriginalPrice.toFixed(2)} {unitRate}
                 </span>
               )}
             </div>
@@ -670,7 +674,7 @@ export function ProductCard({
             {product.unit && (
               <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0 h-4.5 sm:h-5 gap-1 border-border/50">
                 <Box className="w-2.5 h-2.5" />
-                <span>{product.unit}</span>
+                <span>{displayUnit}</span>
               </Badge>
             )}
           </div>
@@ -687,7 +691,7 @@ export function ProductCard({
               <span className="text-lg sm:text-xl font-bold text-emerald-700 dark:text-emerald-400">
                 {currentPrice.toFixed(2)}
               </span>
-              <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{tCommon('currency')}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">{unitRate}</span>
             </div>
             {discountPercentage > 0 && (
               <Badge className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-5 sm:h-6 font-bold">
@@ -697,7 +701,7 @@ export function ProductCard({
           </div>
           {currentOriginalPrice && currentOriginalPrice > currentPrice && (
             <span className="text-[10px] sm:text-xs text-muted-foreground line-through">
-              {currentOriginalPrice.toFixed(2)} {tCommon('currency')}
+              {currentOriginalPrice.toFixed(2)} {unitRate}
             </span>
           )}
         </div>

@@ -13,17 +13,18 @@ const fetcher = (overrides = {}) => async url => {
   if (overrides[key] instanceof Error) throw overrides[key];
   return new Response(JSON.stringify(overrides[key] ?? { [key]: data[key], ...(key === 'products' ? { total_items: data.products.length } : {}) }));
 };
-test('exports every eligible product in all four locales, stable real dates and unique URLs', async () => {
+test('exports only real product translations, with stable dates and unique URLs', async () => {
   const loaded = await loadSitemapData('https://api.example', fetcher());
   const entries = buildSitemap(loaded, site);
-  assert.equal(entries.filter(x => x.url.includes('/product/')).length, 3737 * 4);
-  assert.equal(entries.length, 3737 * 4 + 28);
+  assert.equal(entries.filter(x => x.url.includes('/product/')).length, 3737);
+  assert.equal(entries.length, 3737 + 28);
   assert.equal(new Set(entries.map(x => x.url)).size, entries.length);
   for (const entry of entries) {
     assert.equal(new URL(entry.url).origin, site.origin);
     assert.match(new URL(entry.url).pathname, /^\/(fr|ar|en|zh)(\/|$)/);
     assert.equal(new URL(entry.url).search, '');
-    assert.equal(Object.keys(entry.alternates.languages).length, 4);
+    const count = entry.url.includes('/product/') ? 1 : 4;
+    assert.equal(Object.keys(entry.alternates.languages).length, count);
   }
   assert.equal(entries[0].lastModified, undefined);
   assert.equal(entries.find(x => x.url.endsWith('/services/1')).lastModified, undefined);
@@ -33,6 +34,26 @@ test('exports every eligible product in all four locales, stable real dates and 
   assert.equal((xml.match(/<loc>/g) || []).length, entries.length);
   assert.ok(Buffer.byteLength(xml) < 50 * 1024 * 1024);
   assert.ok(!xml.includes('localhost'));
+});
+test('product hreflang clusters are reciprocal and limited to translated locales', () => {
+  const products = [
+    { id: 1, designation: 'Ciment', designation_ar: 'إسمنت', updated_at: null },
+    { id: 2, designation: 'Bitume', designation_ar: 'زفت', designation_en: 'Bitumen', designation_zh: '沥青', updated_at: null },
+    { id: 3, designation: '1m سرجوان حديد', updated_at: null },
+  ];
+  const entries = buildSitemap({ products, services: [], maalems: [] }, site).filter(x => x.url.includes('/product/'));
+  assert.equal(entries.length, 2 + 4 + 2);
+  for (const entry of entries) {
+    const languages = entry.alternates.languages;
+    assert.equal(languages[new URL(entry.url).pathname.split('/')[1]], entry.url);
+    for (const href of Object.values(languages)) {
+      const peer = entries.find(candidate => candidate.url === href);
+      assert.ok(peer);
+      assert.deepEqual(peer.alternates.languages, languages);
+    }
+  }
+  assert.equal(entries.some(x => x.url.includes('/en/product/1-')), false);
+  assert.equal(entries.some(x => x.url.includes('/zh/product/1-')), false);
 });
 test('fail closed on unavailable API, missing lists, truncation, duplicates and empty product catalog', async () => {
   for (const overrides of [

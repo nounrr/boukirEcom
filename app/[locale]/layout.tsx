@@ -1,5 +1,7 @@
 import { routing } from "@/i18n/routing"
 import { buildPageMetadata } from "@/lib/seo/metadata"
+import { constructionCopy } from '@/lib/seo/construction-copy'
+import { normalizeLocale } from '@/i18n/locale'
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
@@ -9,11 +11,12 @@ export async function generateMetadata({
   params: Promise<{ locale?: string }>
 }): Promise<Metadata> {
   const resolvedParams = await params
-  const locale = resolvedParams?.locale || routing.defaultLocale
+  const locale = normalizeLocale(resolvedParams?.locale)
 
   return buildPageMetadata({
     locale,
     path: "/",
+    title: constructionCopy[locale].homeTitle,
   })
 }
 

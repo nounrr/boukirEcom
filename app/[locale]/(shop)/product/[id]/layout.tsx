@@ -7,6 +7,8 @@ import { catalogHref } from '@/lib/catalog/registry'
 import { normalizeLocale } from "@/i18n/locale"
 import { buildPageMetadata, localizedUrl, seoImageUrl } from "@/lib/seo/metadata"
 import { getPublicProduct, buildProductSeoText } from "@/lib/seo/product"
+import { hasLocalizedProductContent, productTranslationLocales } from '@/lib/seo/product-languages'
+import { resolveProductOfferPrice } from '@/lib/product-price'
 
 export async function generateMetadata({
   params,
@@ -38,6 +40,8 @@ export async function generateMetadata({
   const product = result.product
 
   const seo = buildProductSeoText({ product, locale })
+  const translatedLocales = productTranslationLocales(product)
+  const hasTranslation = hasLocalizedProductContent(product, locale)
 
   const metadata = buildPageMetadata({
     locale,
@@ -47,11 +51,15 @@ export async function generateMetadata({
     keywords: seo.metaKeywords,
     imageUrl: seo.imageUrl,
     openGraphType: "product",
-    indexable: true,
+    indexable: hasTranslation,
   })
   metadata.alternates = {
     canonical: localizedUrl(locale, productPath(product, locale)),
-    languages: Object.fromEntries((['fr', 'ar', 'en', 'zh'] as const).map(l => [l, localizedUrl(l, productPath(product, l))])),
+    // A fallback page keeps its self-canonical URL but does not join a
+    // hreflang cluster, so every advertised equivalent remains reciprocal.
+    ...(hasTranslation ? {
+      languages: Object.fromEntries(translatedLocales.map(l => [l, localizedUrl(l, productPath(product, l))])),
+    } : {}),
   }
   return metadata
 }
@@ -106,12 +114,12 @@ export default async function ProductDetailsRouteLayout({
     hasVariant: variants.map(variant => {
       const label = variant.variant_name || String(variant.id)
       const url = `${productUrl}?variant=${encodeURIComponent(`${variant.id}-${productSlug({ id: variant.id, name: label }, locale)}`)}`
-      const price = Number(variant.prix_vente)
+      const price = resolveProductOfferPrice(product, { variant }).price
       const image = seoImageUrl(variant.image_url) || imageUrl
       return { '@type': 'Product', name: `${seo.productName} — ${label}`,
         sku: `${product.id}-${variant.id}`, inProductGroupWithID: String(product.id), url,
         image: image ? [image] : undefined, color: variant.color_name || undefined,
-        offers: variant.prix_vente != null && Number.isFinite(price) && price >= 0 ? {
+        offers: price != null ? {
           '@type': 'Offer', url, price, priceCurrency: 'MAD',
           availability: variant.available === false ? 'https://schema.org/OutOfStock' : variant.available === true ? 'https://schema.org/InStock' : undefined,
         } : undefined,

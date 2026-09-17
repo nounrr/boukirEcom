@@ -47,8 +47,8 @@ test('partitions preserve every URL and escape alternates; oversized parts and d
 test('product URLs use localized names, stable IDs and reject ambiguous segments', () => {
   const p = {id:6696,designation:'DANOSA 4 mm Vert / Bitume',designation_ar:'بيتومين أخضر',designation_zh:'绿色沥青'};
   assert.equal(productHref(p,'fr'),'/fr/product/6696-danosa-4-mm-vert-bitume');
-  assert.equal(productHref(p,'ar'),'/ar/product/6696-بيتومين-اخضر');
-  assert.equal(productHref(p,'zh'),'/zh/product/6696-绿色沥青');
+  assert.equal(productHref(p,'ar'),'/ar/product/6696-'+encodeURIComponent('بيتومين-اخضر'));
+  assert.equal(productHref(p,'zh'),'/zh/product/6696-'+encodeURIComponent('绿色沥青'));
   for (const value of ['6696','6696-old-name','6696-بيتومين']) assert.equal(productIdFromSegment(value),'6696');
   for (const value of ['0','abc','1/other','1-','1?x','9007199254740992-name']) assert.equal(productIdFromSegment(value),null);
 });

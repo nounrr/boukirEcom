@@ -980,6 +980,7 @@
   },
   "productPage": {
     "inStock": "In stock",
+    "outOfStock": "Out of stock",
     "colorLabel": "Color",
     "sizeLabel": "Size",
     "optionsLabel": "Options",
@@ -1804,6 +1805,33 @@
         "supportDesc": "Dedicated assistance"
       }
     }
+  },
+  "subscription": {
+    "title": "Loyalty program",
+    "points": "Points",
+    "tier": "Tier",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "myPoints": "My points",
+    "earnPoints": "Earn points",
+    "redeemPoints": "Redeem points",
+    "benefits": "Benefits",
+    "history": "Points history",
+    "pointsPerPurchase": "1 MAD = 1 point"
+  },
+  "account": {
+    "myAccount": "My account",
+    "profile": "Profile",
+    "orders": "Orders",
+    "addresses": "Addresses",
+    "subscription": "Subscription",
+    "settings": "Settings",
+    "orderHistory": "Order history",
+    "orderNumber": "Order number",
+    "orderDate": "Date",
+    "orderStatus": "Status",
+    "orderTotal": "Total"
   },
   "toast": {
     "auth": {

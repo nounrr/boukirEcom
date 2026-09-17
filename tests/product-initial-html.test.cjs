@@ -72,10 +72,11 @@ const product = {
 
 test('product commercial content is in initial HTML in all four locales before the browser query resolves', () => {
   const names = { fr: product.designation, ar: product.designation_ar, en: product.designation_en, zh: product.designation_zh }
+  const units = { fr: 'm²', ar: 'م²', en: 'm²', zh: '平方米' }
   for (locale of ['fr', 'ar', 'en', 'zh']) {
     const html = renderToStaticMarkup(React.createElement(ProductPageClient, { initialProduct: product }))
-    assert.match(html, new RegExp(`<h1[^>]*>${names[locale]} • m2</h1>`))
-    assert.match(html, /375\.00 MAD/)
+    assert.match(html, new RegExp(`<h1[^>]*>${names[locale]} • ${units[locale]}</h1>`))
+    assert.match(html, new RegExp(`375\\.00 MAD/${units[locale]}`))
     assert.match(html, new RegExp(`<img[^>]+alt="${names[locale]}"`))
     assert.doesNotMatch(html, /animate-pulse/)
   }

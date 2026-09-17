@@ -2,7 +2,6 @@
 
 import { useEffect } from "react"
 import { useLocale } from "next-intl"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 const STORAGE_KEY = "boukir_locale"
 
@@ -13,44 +12,18 @@ function isSupportedLocale(value: unknown): value is SupportedLocale {
   return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value)
 }
 
-function stripLocalePrefix(pathname: string): string {
-  const parts = pathname.split("/").filter(Boolean)
-  if (parts.length > 0 && isSupportedLocale(parts[0])) {
-    parts.shift()
-  }
-  return `/${parts.join("/")}`.replace(/\/$/, "") || "/"
-}
-
-function buildLocalizedHref(nextLocale: SupportedLocale, basePath: string, queryString: string) {
-  const prefix = `/${nextLocale}`
-  const path = basePath === "/" ? prefix : `${prefix}${basePath}`
-  return queryString ? `${path}?${queryString}` : path
-}
-
 export function LocalePreferenceInitializer() {
   const locale = useLocale()
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    // Avoid errors in environments where localStorage is not available
+    // An explicit /fr, /ar, /en or /zh URL is authoritative. Remember it for
+    // the language selector, but never rewrite it from an older preference.
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY)
-      if (!isSupportedLocale(raw)) return
-      if (raw === locale) return
-
-      const basePath = stripLocalePrefix(pathname)
-      const queryString = searchParams?.toString?.() ?? ""
-      const href = buildLocalizedHref(raw, basePath, queryString)
-
-      router.replace(href)
-      router.refresh()
+      if (isSupportedLocale(locale)) window.localStorage.setItem(STORAGE_KEY, locale)
     } catch {
       // ignore
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [locale])
 
   return null
 }

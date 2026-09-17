@@ -372,6 +372,8 @@
     "search": "البحث عن منتجات...",
     "login": "تسجيل الدخول",
     "register": "التسجيل",
+    "services": "الخدمات",
+    "maalems": "المعلمين",
     "logout": "تسجيل الخروج",
     "account": "حسابي",
     "orders": "طلباتي",
@@ -978,6 +980,7 @@
   },
   "productPage": {
     "inStock": "متوفر",
+    "outOfStock": "غير متوفر",
     "colorLabel": "اللون",
     "sizeLabel": "المقاس",
     "optionsLabel": "خيارات",

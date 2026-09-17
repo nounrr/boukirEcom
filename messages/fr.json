@@ -372,6 +372,8 @@
     "search": "Rechercher des produits...",
     "login": "Connexion",
     "register": "S'inscrire",
+    "services": "Services",
+    "maalems": "Artisans",
     "logout": "Déconnexion",
     "account": "Mon compte",
     "orders": "Mes commandes",
@@ -851,6 +853,7 @@
   },
   "productPage": {
     "inStock": "En stock",
+    "outOfStock": "Rupture de stock",
     "colorLabel": "Couleur",
     "sizeLabel": "Taille",
     "optionsLabel": "Options",

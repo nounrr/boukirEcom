@@ -1,9 +1,10 @@
 import type { MetadataRoute } from 'next'
 import { productPath, type ProductUrlData } from './product-url'
+import { productTranslationLocales, SEO_LOCALES } from './product-languages'
 
 export type SitemapRecord = ProductUrlData & { id: number; updated_at: string | null }
 export type SitemapData = { products: SitemapRecord[]; services: SitemapRecord[]; maalems: SitemapRecord[] }
-const LOCALES = ['fr', 'ar', 'en', 'zh'] as const
+const LOCALES = SEO_LOCALES
 const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact']
 
 function records(value: unknown, name: string): SitemapRecord[] {
@@ -57,8 +58,17 @@ export function buildSitemap(data: SitemapData, site: URL): MetadataRoute.Sitema
   }
   // No fabricated lastmod without a reliable content timestamp.
   for (const path of STATIC_PATHS) add(path)
-  for (const [key, segment] of [['products', 'product'], ['services', 'services'], ['maalems', 'maalems']] as const) {
-    for (const row of records(data[key], key)) add(key === 'products' ? locale => productPath(row, locale) : `/${segment}/${row.id}`, row.updated_at)
+  for (const row of records(data.products, 'products')) {
+    const locales = productTranslationLocales(row)
+    const languages = Object.fromEntries(locales.map(locale => [locale, new URL(`/${locale}${productPath(row, locale)}`, site).toString()]))
+    for (const locale of locales) entries.push({
+      url: languages[locale],
+      ...(row.updated_at ? { lastModified: new Date(row.updated_at).toISOString() } : {}),
+      alternates: { languages },
+    })
+  }
+  for (const [key, segment] of [['services', 'services'], ['maalems', 'maalems']] as const) {
+    for (const row of records(data[key], key)) add(`/${segment}/${row.id}`, row.updated_at)
   }
   // Publication partitions entries and checks each serialized XML file.
   return entries

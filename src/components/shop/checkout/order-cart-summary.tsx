@@ -8,6 +8,7 @@ import { Package, Lock, ShieldCheck } from "lucide-react"
 import { PromoCodeInput } from "./promo-code-input"
 import type { CartItem } from "@/state/api/cart-api-slice"
 import { getLocalizedCartItemBaseName, getLocalizedCartItemCategory } from "@/lib/localized-fields"
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 
 interface OrderCartSummaryProps {
   items: CartItem[]
@@ -88,6 +89,9 @@ export function OrderCartSummary({
                   {(item.price * item.quantity).toFixed(2)} {currency}
                 </p>
               </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {item.price.toFixed(2)} {formatUnitRate(currency, item.unitName, locale as any)} · {item.quantity} × {formatCommercialUnit(item.unitName, locale as any)}
+              </p>
             </div>
           </div>
         ))}

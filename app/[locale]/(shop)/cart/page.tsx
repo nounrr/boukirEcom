@@ -15,6 +15,7 @@ import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { useState, useEffect } from "react"
 import { formatCartItemName, getCartItemKey } from "@/lib/cart-storage"
 import { getLocalizedCartItemBaseName, getLocalizedCartItemCategory } from "@/lib/localized-fields"
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 
 // Keep this key in sync with CART_STORAGE_KEY used in cart-popover
 const CART_STORAGE_KEY = 'boukir_guest_cart'
@@ -276,7 +277,7 @@ export default function CartPage() {
                             variantName
                               ? t("labels.variant", { value: variantName })
                               : null,
-                            unitName ? t("labels.unit", { value: unitName }) : null,
+                            unitName ? t("labels.unit", { value: formatCommercialUnit(unitName, locale as any) }) : null,
                           ]
                             .filter(Boolean)
                             .join(t("labels.separator"))}
@@ -328,7 +329,7 @@ export default function CartPage() {
                           {t("price", { price: (item.price * item.quantity).toFixed(2), currency })}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {t("pricePerUnit", { price: item.price.toFixed(2), currency })}
+                          {item.price.toFixed(2)} {formatUnitRate(currency, (item as LocalCartItem).unitName, locale as any)}
                         </div>
                       </div>
                     </div>

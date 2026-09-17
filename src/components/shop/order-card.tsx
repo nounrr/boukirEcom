@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useMemo, useState } from "react"
 import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useTranslations } from "next-intl"
+import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 
 interface OrderCardProps {
   order: Order
@@ -408,7 +409,8 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                   )}
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                    <span>{t("item.qty", { quantity: item.quantity })}</span>
+                    <span>{t("item.qty", { quantity: item.quantity })} × {formatCommercialUnit(item.unitName, locale as any)}</span>
+                    <span>{item.unitPrice.toFixed(2)} {formatUnitRate(currency, item.unitName, locale as any)}</span>
                     <span className="text-foreground font-semibold">{item.subtotal.toFixed(2)} {currency}</span>
                   </div>
 

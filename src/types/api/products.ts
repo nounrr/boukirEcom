@@ -73,8 +73,8 @@ export interface ProductVariants {
 
 export interface ProductUnit {
   id: number;
-  unit_name: string; // API field
-  name?: string; // optional alias for legacy
+  unit_name?: string; // detail endpoint
+  name?: string; // catalogue endpoint
   conversion_factor: number;
   prix_vente: number | null;
   is_default: boolean;
