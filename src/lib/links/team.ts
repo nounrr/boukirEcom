@@ -1,8 +1,7 @@
 /**
  * Données de la page "Links" (linktree) Boukir Diamond Construction Store.
  *
- * ⚠️ Données fictives pour le moment : à remplacer par les vraies personnes,
- * numéros et URLs avant mise en production.
+ * Chaque membre a un lien court : /fr/p1, /fr/p2, /fr/p3.
  */
 
 export type LinkKind = "maps" | "website" | "facebook" | "instagram"
@@ -49,8 +48,8 @@ export const COMPANY_LINKS: SocialLink[] = [
   {
     kind: "maps",
     label: "Google Maps",
-    hint: "Itinéraire vers la droguerie · Tanger",
-    href: "https://www.google.com/maps/search/?api=1&query=Boukir+Diamond+Construction+Store+Tanger",
+    hint: "Laissez-nous un avis · Tanger",
+    href: "https://g.page/r/CSduE66uwI36EAI/review",
   },
   {
     kind: "website",
@@ -61,61 +60,50 @@ export const COMPANY_LINKS: SocialLink[] = [
   {
     kind: "facebook",
     label: "Facebook",
-    hint: "@boukirdiamond · actualités & promos",
-    href: "https://www.facebook.com/boukirdiamond",
+    hint: "Taoufik Boukir · actualités & promos",
+    href: "https://www.facebook.com/taoufik.mpc/",
   },
   {
     kind: "instagram",
     label: "Instagram",
-    hint: "@boukirdiamond · chantiers & nouveautés",
-    href: "https://www.instagram.com/boukirdiamond",
+    hint: "@boukirste · chantiers & nouveautés",
+    href: "https://www.instagram.com/boukirste/",
   },
 ]
 
 export const TEAM: TeamMember[] = [
   {
-    slug: "youssef-boukir",
-    firstName: "Youssef",
+    slug: "p1",
+    firstName: "Taoufik",
     lastName: "Boukir",
-    role: "Directeur Général",
-    roleAr: "المدير العام",
-    phone: "+212 6 61 00 00 01",
-    whatsapp: "212661000001",
-    email: "y.boukir@boukirdiamond.com",
-    initials: "YB",
+    role: "Directeur",
+    roleAr: "المدير",
+    phone: "+212 650-812894",
+    whatsapp: "212650812894",
+    email: "",
+    initials: "TB",
   },
   {
-    slug: "salma-el-amrani",
-    firstName: "Salma",
-    lastName: "El Amrani",
-    role: "Responsable Commerciale",
-    roleAr: "مسؤولة تجارية",
-    phone: "+212 6 61 00 00 02",
-    whatsapp: "212661000002",
-    email: "s.elamrani@boukirdiamond.com",
-    initials: "SE",
+    slug: "p2",
+    firstName: "Anas",
+    lastName: "Boukir",
+    role: "Gérant",
+    roleAr: "المسير",
+    phone: "+212 616-042023",
+    whatsapp: "212616042023",
+    email: "",
+    initials: "AB",
   },
   {
-    slug: "mehdi-tazi",
-    firstName: "Mehdi",
-    lastName: "Tazi",
-    role: "Chef de Dépôt & Logistique",
-    roleAr: "رئيس المستودع واللوجستيك",
-    phone: "+212 6 61 00 00 03",
-    whatsapp: "212661000003",
-    email: "m.tazi@boukirdiamond.com",
-    initials: "MT",
-  },
-  {
-    slug: "imane-bennani",
-    firstName: "Imane",
-    lastName: "Bennani",
-    role: "Conseillère Technique Matériaux",
-    roleAr: "مستشارة تقنية للمواد",
-    phone: "+212 6 61 00 00 04",
-    whatsapp: "212661000004",
-    email: "i.bennani@boukirdiamond.com",
-    initials: "IB",
+    slug: "p3",
+    firstName: "Oussama",
+    lastName: "Boukir",
+    role: "Conseiller commercial",
+    roleAr: "مستشار تجاري",
+    phone: "+212 666-216657",
+    whatsapp: "212666216657",
+    email: "",
+    initials: "OB",
   },
 ]
 
