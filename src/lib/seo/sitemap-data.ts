@@ -5,7 +5,7 @@ import { productTranslationLocales, SEO_LOCALES } from './product-languages'
 export type SitemapRecord = ProductUrlData & { id: number; updated_at: string | null }
 export type SitemapData = { products: SitemapRecord[]; services: SitemapRecord[]; maalems: SitemapRecord[] }
 const LOCALES = SEO_LOCALES
-const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact']
+const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact', '/cgv']
 
 function records(value: unknown, name: string): SitemapRecord[] {
   if (!Array.isArray(value)) throw new Error(`Sitemap: missing ${name} array`)

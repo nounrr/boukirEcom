@@ -249,14 +249,14 @@ export function Footer({
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
+                <Link href={`/${locale}/cgv#cgv-clause-12`} className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
                   {t('returnsRefunds')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
+                <Link href={`/${locale}/cgv`} className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">
                   {t('termsAndConditions')}
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200">

@@ -193,8 +193,8 @@ function GoldDust({ disabled }: { disabled: boolean }) {
       canvas.width = w * dpr
       canvas.height = h * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      const count = Math.round((w * h) / 14000)
-      particles = Array.from({ length: Math.min(Math.max(count, 40), 140) }, () => ({
+      const count = Math.round((w * h) / 22000)
+      particles = Array.from({ length: Math.min(Math.max(count, 30), 80) }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
         r: Math.random() * 1.6 + 0.4,
@@ -205,7 +205,29 @@ function GoldDust({ disabled }: { disabled: boolean }) {
       }))
     }
 
-    const tick = () => {
+    // Sprite pré-rendu (halo doux) : évite shadowBlur par particule, très
+    // coûteux en CPU/GPU à chaque frame.
+    const sprite = document.createElement("canvas")
+    sprite.width = 16
+    sprite.height = 16
+    const sctx = sprite.getContext("2d")
+    if (sctx) {
+      const g = sctx.createRadialGradient(8, 8, 0, 8, 8, 8)
+      g.addColorStop(0, "rgba(246, 217, 138, 1)")
+      g.addColorStop(0.35, "rgba(246, 217, 138, 0.8)")
+      g.addColorStop(1, "rgba(246, 217, 138, 0)")
+      sctx.fillStyle = g
+      sctx.fillRect(0, 0, 16, 16)
+    }
+
+    let running = true
+    let last = 0
+    const tick = (now: number) => {
+      if (!running) return
+      raf = requestAnimationFrame(tick)
+      // ~30 fps suffisent pour une dérive lente de poussière.
+      if (now - last < 33) return
+      last = now
       ctx.clearRect(0, 0, w, h)
       for (const p of particles) {
         p.y += p.vy
@@ -215,23 +237,33 @@ function GoldDust({ disabled }: { disabled: boolean }) {
         if (p.x < -10) p.x = w + 10
         if (p.x > w + 10) p.x = -10
         const twinkle = (Math.sin(p.a * 3) + 1) / 2
-        const alpha = p.t * (0.35 + twinkle * 0.65)
-        ctx.beginPath()
-        ctx.fillStyle = `rgba(246, 217, 138, ${alpha})`
-        ctx.shadowColor = "rgba(246, 217, 138, 0.9)"
-        ctx.shadowBlur = 6
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fill()
+        ctx.globalAlpha = p.t * (0.35 + twinkle * 0.65)
+        const size = p.r * 5
+        ctx.drawImage(sprite, p.x - size / 2, p.y - size / 2, size, size)
       }
-      raf = requestAnimationFrame(tick)
+      ctx.globalAlpha = 1
+    }
+
+    // Pause complète quand l'onglet est masqué.
+    const onVisibility = () => {
+      if (document.hidden) {
+        running = false
+        cancelAnimationFrame(raf)
+      } else if (!running) {
+        running = true
+        raf = requestAnimationFrame(tick)
+      }
     }
 
     resize()
-    tick()
+    raf = requestAnimationFrame(tick)
     window.addEventListener("resize", resize)
+    document.addEventListener("visibilitychange", onVisibility)
     return () => {
+      running = false
       cancelAnimationFrame(raf)
       window.removeEventListener("resize", resize)
+      document.removeEventListener("visibilitychange", onVisibility)
     }
   }, [disabled])
 

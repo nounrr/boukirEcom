@@ -194,7 +194,7 @@ export function OrderCartSummary({
           <div className="bg-muted/30 border border-border/30 rounded-lg p-3 mt-3">
             <p className="text-xs text-muted-foreground leading-relaxed text-center">
               {t("cartSummary.termsPrefix")}{" "}
-              <a href="#" className="text-primary hover:underline font-medium">
+              <a href={`/${locale}/cgv`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
                 {t("cartSummary.termsLink")}
               </a>
             </p>

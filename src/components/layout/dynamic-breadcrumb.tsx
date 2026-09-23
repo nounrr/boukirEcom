@@ -13,6 +13,13 @@ import { getSupportedLocales } from '@/components/i18n/locale-preference-initial
 import { catalogPage } from '@/lib/catalog/registry'
 import { catalogText } from '@/lib/catalog/i18n'
 
+const cgvBreadcrumbLabels: Record<string, string> = {
+  fr: 'Conditions générales de vente',
+  ar: 'الشروط العامة للبيع',
+  en: 'Terms of sale',
+  zh: '销售条款',
+}
+
 import { 
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -173,6 +180,7 @@ export function DynamicBreadcrumb() {
         'register': t('register'),
         'services': t('services'),
         'maalems': t('maalems'),
+        'cgv': cgvBreadcrumbLabels[locale] || cgvBreadcrumbLabels.fr,
       }
 
       return {
