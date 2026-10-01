@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { productHref } from '@/lib/seo/product-url'
 import { Heart, ShoppingCart, Eye, Package, Check, Ruler, Box } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
+import { getImageEdgeColor } from '@/lib/image-edge-color'
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
 import Image from 'next/image'
@@ -115,14 +116,13 @@ export function ProductCard({
       value: v.value ?? v.variant_name ?? v.name,
       colorName: v.color_name?.trim() || undefined,
       type: v.variant_type ?? v.type,
-      available: true,
+      available: v.available === undefined ? true : Boolean(v.available),
       image: v.image ?? v.image_url,
     }))
   }, [product.variants])
 
   const [selectedVariant, setSelectedVariant] = useState<number | null>(() => {
-    const firstAvailable = normalizedVariants[0]
-    return firstAvailable?.id ?? normalizedVariants[0]?.id ?? null
+    return product.isVariantRequired ? normalizedVariants[0]?.id ?? null : null
   })
 
   // Keep selection in sync when product or variants change
@@ -132,17 +132,31 @@ export function ProductCard({
       return
     }
 
+    if (!product.isVariantRequired && selectedVariant === null) return
+
     const stillExists = selectedVariant != null && normalizedVariants.some((v) => v.id === selectedVariant)
     if (stillExists) return
 
     const firstAvailable = normalizedVariants[0]
     setSelectedVariant(firstAvailable?.id ?? normalizedVariants[0].id)
-  }, [normalizedVariants, selectedVariant])
+  }, [normalizedVariants, product.isVariantRequired, selectedVariant])
 
   const normalizedBaseImage = useMemo(() => toAbsoluteImageUrl(product.image) ?? '', [product.image])
   const normalizedFallbackImage = useMemo(() => toAbsoluteImageUrl(product.fallbackImage) ?? '', [product.fallbackImage])
-  const [currentImage, setCurrentImage] = useState(normalizedBaseImage)
+  const [currentImage, setCurrentImage] = useState(() => {
+    const firstImage = product.isVariantRequired ? product.variants?.[0]?.image ?? product.variants?.[0]?.image_url : null
+    return toAbsoluteImageUrl(firstImage) ?? normalizedBaseImage
+  })
   const [imageError, setImageError] = useState(false)
+  const [imageBackgrounds, setImageBackgrounds] = useState<Record<string, string>>({})
+  const analyzedImages = useRef(new Set<string>())
+  const imageBackground = imageBackgrounds[currentImage] || '#ffffff'
+  const detectImageBackground = useCallback((source: string, image: HTMLImageElement) => {
+    if (analyzedImages.current.has(source)) return
+    analyzedImages.current.add(source)
+    const color = getImageEdgeColor(image) || '#ffffff'
+    setImageBackgrounds(previous => ({ ...previous, [source]: color }))
+  }, [])
   const [isAddedToCart, setIsAddedToCart] = useState(false)
   const locale = useLocale()
 
@@ -238,7 +252,7 @@ export function ProductCard({
       const variant = product.variants?.find(v => v.id === selectedVariant)
       const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
       if (variantPrice != null) {
-        itemPrice = Number(variantPrice)
+        itemPrice = Number(variantPrice) * (1 - (product.sale?.discount ?? 0) / 100)
       }
     }
 
@@ -298,7 +312,7 @@ export function ProductCard({
         }
       }
     }
-  }, [cartRef, localizedCategoryName, localizedProductName, product.id, product.isVariantRequired, product.price, product.stock, product.variants, selectedVariant, currentImage, onAddToCart, t, toast])
+  }, [cartRef, localizedCategoryName, localizedProductName, product.id, product.isVariantRequired, product.price, product.sale?.discount, product.stock, product.variants, selectedVariant, currentImage, onAddToCart, t, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -321,16 +335,17 @@ export function ProductCard({
   useEffect(() => {
     if (!selectedVariant) return
     const variant = product.variants?.find((v) => v.id === selectedVariant)
-    if (variant?.image) {
-      setCurrentImage(toAbsoluteImageUrl(variant.image) ?? '')
+    if (variant?.image || variant?.image_url) {
+      setCurrentImage(toAbsoluteImageUrl(variant.image ?? variant.image_url) ?? '')
       setImageError(false)
     }
   }, [selectedVariant, product.variants])
 
   useEffect(() => {
-    setCurrentImage(normalizedBaseImage)
+    const firstImage = product.isVariantRequired ? product.variants?.[0]?.image ?? product.variants?.[0]?.image_url : null
+    setCurrentImage(toAbsoluteImageUrl(firstImage) ?? normalizedBaseImage)
     setImageError(false)
-  }, [normalizedBaseImage, product.id])
+  }, [normalizedBaseImage, product.id, product.isVariantRequired, product.variants])
 
   const getVariantLabel = useCallback((variant: ProductVariant) => {
     const raw = variant.value || variant.name
@@ -380,23 +395,25 @@ export function ProductCard({
       // Check if variant has a specific price (prix_vente or price field)
       const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
       if (variantPrice != null) {
-        return Number(variantPrice)
+        const discount = product.sale?.discount ?? 0
+        return Number(variantPrice) * (1 - discount / 100)
       }
     }
     return product.price
-  }, [selectedVariant, product.variants, product.price])
+  }, [selectedVariant, product.variants, product.price, product.sale?.discount])
 
   // Calculate current original price for discount display
   const currentOriginalPrice = useMemo(() => {
-    if (selectedVariant && product.originalPrice) {
+    if (selectedVariant) {
       const variant = product.variants?.find(v => v.id === selectedVariant)
-      const variantOriginal = (variant as any)?.prix_original ?? (variant as any)?.originalPrice
+      const variantOriginal = (variant as any)?.prix_original ?? (variant as any)?.originalPrice ??
+        (product.sale?.discount ? (variant as any)?.prix_vente : null)
       if (variantOriginal != null) {
         return Number(variantOriginal)
       }
     }
     return product.originalPrice
-  }, [selectedVariant, product.variants, product.originalPrice])
+  }, [selectedVariant, product.variants, product.originalPrice, product.sale?.discount])
 
   const displayUnit = formatCommercialUnit(product.unit, locale as any)
   const unitRate = formatUnitRate(tCommon('currency'), product.unit, locale as any)
@@ -410,20 +427,19 @@ export function ProductCard({
         <Link href={productHref(product, locale)} className="flex gap-3 p-2.5 sm:p-3">
           {/* Image */}
           <div className="relative h-24 w-24 sm:h-28 sm:w-28 shrink-0">
-            <ProductImageMask className="h-full w-full bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
-              <div
-                className="absolute inset-0 pointer-events-none opacity-40"
-                style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }}
-              />
-
+            <ProductImageMask className="h-full w-full rounded-xl bg-white shadow-sm ring-1 ring-border/10">
+              <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: imageBackground }} />
               {currentImage && !imageError ? (
-                <Image
-                  src={currentImage}
-                  alt={localizedProductName}
-                  fill
-                  className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
-                  onError={handleImageError}
-                />
+                <div className="absolute inset-[10px]">
+                  <Image
+                    src={currentImage}
+                    alt={localizedProductName}
+                    fill
+                    className="object-contain"
+                    onLoad={(event) => detectImageBackground(currentImage, event.currentTarget)}
+                    onError={handleImageError}
+                  />
+                </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Package className="w-12 h-12 text-muted-foreground/30" />
@@ -562,30 +578,31 @@ export function ProductCard({
       {/* Auth dialog is globally provided by AuthDialogProvider */}
       {/* Image Section with Mask */}
       <Link href={productHref(product, locale)} className="block">
-        <ProductImageMask className="aspect-square bg-linear-to-br from-muted/60 via-muted/80 to-muted shadow-sm ring-1 ring-border/10">
-        {/* Subtle backdrop pattern for better visibility */}
-        <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)' }} />
+        <ProductImageMask className="aspect-square rounded-none bg-white shadow-sm ring-1 ring-border/10">
+          <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: imageBackground }} />
 
-        {/* Product Image */}
-        {currentImage && !imageError ? (
-          <Image
-            src={currentImage}
-              alt={localizedProductName}
-            fill
-              className="object-cover transition-all duration-500 ease-out group-hover:scale-110"
-            onError={handleImageError}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Package className="w-20 h-20 text-muted-foreground/30" />
-          </div>
-        )}
-
-          {/* Stock Status Overlay */}
+          {/* Keep the full product inside the photo while its edge color fills the margin. */}
+          {currentImage && !imageError ? (
+            <div className="absolute inset-[10px]">
+              <Image
+                src={currentImage}
+                alt={localizedProductName}
+                fill
+                className="object-contain"
+                onLoad={(event) => detectImageBackground(currentImage, event.currentTarget)}
+                onError={handleImageError}
+              />
+            </div>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Package className="w-20 h-20 text-muted-foreground/30" />
+            </div>
+          )}
+        </ProductImageMask>
 
         {/* Quick Action Dock - Always visible and docked shape */}
           <div
-            className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 opacity-100 transition-opacity duration-300"
+            className="relative z-20 flex justify-center py-2 opacity-100 transition-opacity duration-300"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -638,7 +655,6 @@ export function ProductCard({
             </Button>
           </div>
         </div>
-        </ProductImageMask>
       </Link>
 
       {/* Content Section - Compact */}

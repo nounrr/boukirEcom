@@ -107,7 +107,8 @@ function getSuggestionCategoryLabel(category: SearchSuggestionCategory, locale: 
 }
 
 function getSuggestionProductLabel(product: SearchSuggestionProduct, locale: string) {
-  return getLocalizedProductName(product, locale)
+  const name = getLocalizedProductName(product, locale)
+  return product.first_variant_name ? `${name} • ${product.first_variant_name}` : name
 }
 
 function pruneRecents(entries: RecentSearchEntry[]) {

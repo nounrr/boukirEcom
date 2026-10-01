@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
 import { ServiceCard } from '@/components/services/service-card'
+import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
 import { Button } from '@/components/ui/button'
 import { normalizeLocale } from '@/i18n/locale'
 import { catalogueHref, localizedCategoryName, quickServiceRequestHref } from '@/lib/service-catalog'
@@ -49,8 +50,9 @@ export async function generateMetadata({
   })
 }
 
-function GuidanceCard({ locale, title, description, action }: {
+function GuidanceCard({ locale, returnTo, title, description, action }: {
   locale: string
+  returnTo: string
   title: string
   description: string
   action: string
@@ -62,7 +64,7 @@ function GuidanceCard({ locale, title, description, action }: {
         <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{description}</p>
       </div>
       <Button asChild className="min-h-11 rounded-md bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300">
-        <Link href={quickServiceRequestHref(locale)}>
+        <Link href={quickServiceRequestHref(locale, returnTo)}>
           {action}
           <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
         </Link>
@@ -96,6 +98,7 @@ export default async function ServicesPage({
   const pagination = catalogue?.pagination
   const categories = catalogue?.filters.categories || []
   const hasFilters = Boolean(q || categoryId)
+  const returnTo = catalogueHref(locale, { q, category_id: categoryId, page })
 
   return (
     <div className="min-h-[70vh] bg-[#fbf8ef] dark:bg-background py-9 sm:py-14 lg:py-16">
@@ -107,6 +110,7 @@ export default async function ServicesPage({
             </p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">{t('title')}</h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p>
+            <div className="mt-5"><QuickRequestLink locale={locale} returnTo={returnTo} /></div>
           </div>
           {pagination && (
             <p className="w-fit rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300" aria-live="polite">
@@ -153,7 +157,7 @@ export default async function ServicesPage({
           <section className="mt-8 rounded-lg border border-border bg-card p-5  sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>
             <div className="mt-4 min-w-0 flex-1 sm:mt-0"><h2 className="text-lg font-semibold text-foreground">{t('error.title')}</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p></div>
-            <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={catalogueHref(locale, { q, category_id: categoryId, page })}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
+            <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={returnTo}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
           </section>
         ) : services.length === 0 ? (
           <section className="mt-10 border-y border-border bg-muted/20 p-8 text-center sm:p-12">
@@ -178,13 +182,13 @@ export default async function ServicesPage({
                 />
               ))}
             </div>
-            <div className="mt-8"><GuidanceCard locale={locale} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} /></div>
+            <div className="mt-8"><GuidanceCard locale={locale} returnTo={returnTo} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} /></div>
           </section>
         )}
 
         {catalogue && services.length === 0 && (
           <div className="mt-8">
-            <GuidanceCard locale={locale} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} />
+            <GuidanceCard locale={locale} returnTo={returnTo} title={t('guidance.title')} description={t('guidance.description')} action={t('guidance.action')} />
           </div>
         )}
 

@@ -65,6 +65,7 @@ function toProductCardModel(product: ProductListItem, locale: string) {
         color_name: v.color_name,
         value: v.name,
         available: v.available,
+        prix_vente: v.prix_vente,
         image: v.image_url ?? undefined,
       })) || [],
     isVariantRequired:

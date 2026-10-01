@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 
 import { ServiceCover } from '@/components/services/service-cover'
 import { CompatibleMaalemCard } from '@/components/services/compatible-maalem-card'
+import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
 import { Button } from '@/components/ui/button'
 import { normalizeLocale } from '@/i18n/locale'
 import { catalogueHref, localizedCategoryName, localizedServiceText, quickServiceRequestHref, serviceRequestHref } from '@/lib/service-catalog'
@@ -56,6 +57,7 @@ export default async function ServiceDetailPage({ params, searchParams }: Props)
   if (!id) notFound()
   const pageValue = Array.isArray(query.page) ? query.page[0] : query.page
   const page = positive(pageValue) || 1
+  const returnTo = `/${locale}/services/${id}${page > 1 ? `?page=${page}` : ''}`
   let service
   try { service = await getActiveService(id) } catch { notFound() }
   const t = await getTranslations({ locale, namespace: 'serviceDetailPage' })
@@ -126,9 +128,7 @@ export default async function ServiceDetailPage({ params, searchParams }: Props)
             <Button asChild size="lg" className="h-12 rounded-full bg-emerald-900 px-7 text-base font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-600">
               <Link href={serviceRequestHref(locale, id)}>{t('requestService')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-black/10 bg-white px-7 text-base font-medium text-foreground hover:bg-neutral-50 dark:border-white/15 dark:bg-transparent dark:hover:bg-white/10">
-              <Link href={quickServiceRequestHref(locale)}>{t('quickRequest')}</Link>
-            </Button>
+            <QuickRequestLink locale={locale} returnTo={returnTo} className="sm:self-center" />
           </div>
         </div>
       </header>
@@ -204,7 +204,7 @@ export default async function ServiceDetailPage({ params, searchParams }: Props)
                 <Link href={serviceRequestHref(locale, id)}>{t('requestService')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="mt-3 h-auto min-h-12 w-full whitespace-normal rounded-full border-black/10 bg-white text-foreground hover:bg-neutral-50 dark:border-white/15 dark:bg-transparent dark:hover:bg-white/10">
-                <Link href={quickServiceRequestHref(locale)}>{t('quickRequest')}</Link>
+                <Link href={quickServiceRequestHref(locale, returnTo)}>{t('quickRequest')}</Link>
               </Button>
               <p className="mt-5 flex items-start gap-2 border-t border-black/[0.06] pt-4 text-xs leading-5 text-muted-foreground dark:border-white/10">
                 <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />{t('assuranceTitle')}
@@ -216,7 +216,7 @@ export default async function ServiceDetailPage({ params, searchParams }: Props)
             <h2 className="text-sm font-semibold text-foreground">{t('quickRequest')}</h2>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">{t('emptyText')}</p>
             <Button asChild variant="outline" className="mt-4 h-11 w-full rounded-full border-black/10 dark:border-white/15">
-              <Link href={quickServiceRequestHref(locale)}>{t('quickRequest')}</Link>
+              <Link href={quickServiceRequestHref(locale, returnTo)}>{t('quickRequest')}</Link>
             </Button>
           </div>
         </aside>

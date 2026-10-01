@@ -1,4 +1,7 @@
 {
+  "quickRequestNavigation": {
+    "label": "不确定选择哪项服务？描述我的问题"
+  },
   "maalemsPage": {
     "metadataTitle": "认证 Maalem",
     "metadataDescription": "浏览 Boukir Diamond 已发布的 Maalem。",

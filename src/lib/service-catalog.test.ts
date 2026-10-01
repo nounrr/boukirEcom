@@ -6,6 +6,7 @@ import {
   localizedCategoryName,
   localizedServiceText,
   quickServiceRequestHref,
+  quickServiceRequestReturnHref,
   serviceDetailHref,
   serviceRequestHref,
   serviceMaalemRequestHref,
@@ -37,4 +38,16 @@ test('la pagination conserve la recherche et la catégorie', () => {
     catalogueHref('fr', { q: ' fuite ', category_id: 3, page: 2 }),
     '/fr/services?q=fuite&category_id=3&page=2',
   )
+})
+
+test('la demande rapide revient au parcours public sans préselectionner de service ou Maalem', () => {
+  const origin = 'https://example.test'
+  assert.equal(
+    quickServiceRequestHref('fr', '/fr/maalems/8?reviews_page=2'),
+    '/fr/services/request/quick?returnTo=%2Ffr%2Fmaalems%2F8%3Freviews_page%3D2',
+  )
+  assert.equal(quickServiceRequestReturnHref('fr', '/fr/services?q=fuite', origin), '/fr/services?q=fuite')
+  assert.equal(quickServiceRequestReturnHref('fr', '/fr/maalems/8', origin), '/fr/maalems/8')
+  assert.equal(quickServiceRequestReturnHref('fr', '//evil.test', origin), '/fr/services')
+  assert.equal(quickServiceRequestReturnHref('fr', '/fr/services/8/request', origin), '/fr/services')
 })

@@ -112,7 +112,9 @@ export function buildProductSeoText(input: {
 } {
   const { product, locale } = input
 
-  const productName = getLocalizedProductName(product, locale).trim() || product.designation
+  const baseName = getLocalizedProductName(product, locale).trim() || product.designation
+  const firstVariantName = product.is_obligatoire_variant ? product.variants?.[0]?.variant_name : null
+  const productName = firstVariantName ? `${baseName} • ${firstVariantName}` : baseName
   const categoryName = getLocalizedCategoryName(product.categorie, locale).trim()
   const brandName = (product.brand?.nom ?? "").toString().trim()
 

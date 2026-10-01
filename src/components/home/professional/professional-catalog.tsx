@@ -89,6 +89,7 @@ function productModel(product: ProductListItem, locale: string) {
       color_name: variant.color_name,
       value: variant.name,
       available: variant.available,
+      prix_vente: variant.prix_vente,
       image: variant.image_url ?? undefined,
     })) ?? [],
     isVariantRequired: product.is_obligatoire_variant === true || product.isObligatoireVariant === true,

@@ -24,7 +24,8 @@ export function CatalogLanding({ kind, page, data, locale, pageNumber }: { kind:
       <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">{data.products.map(product => <li key={product.id} className="rounded-xl border p-4 bg-card">
         <Link href={productHref(product, locale)} className="block font-semibold">
           {toAbsoluteImageUrl(product.image_url) && <img src={toAbsoluteImageUrl(product.image_url)!} alt="" loading="lazy" width={280} height={280} className="mb-4 w-full aspect-square object-contain" />}
-          <h2>{getLocalizedProductName(product, locale)}</h2>
+          <h2>{getLocalizedProductName(product, locale)}{product.is_obligatoire_variant && product.variants?.all?.[0]?.variant_name
+            ? ` • ${product.variants.all[0].variant_name}` : ''}</h2>
         </Link>
         <p className="mt-3">{Number(product.prix_promo || product.prix_vente) > 0 ? `${Number(product.prix_promo || product.prix_vente).toFixed(2)} ${t.currency}` : t.price}</p>
         {product.base_unit && <p className="text-sm text-muted-foreground">{t.unit}: {product.base_unit}</p>}

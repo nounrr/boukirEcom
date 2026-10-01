@@ -25,8 +25,23 @@ export function serviceRequestHref(locale: string, serviceId: number) {
   return `/${locale}/services/${serviceId}/request`
 }
 
-export function quickServiceRequestHref(locale: string) {
-  return `/${locale}/services/request/quick`
+export function quickServiceRequestHref(locale: string, returnTo?: string) {
+  const path = `/${locale}/services/request/quick`
+  return returnTo ? `${path}?returnTo=${encodeURIComponent(returnTo)}` : path
+}
+
+export function quickServiceRequestReturnHref(locale: string, returnTo: string | null, origin: string) {
+  const fallback = `/${locale}/services`
+  if (!returnTo || !returnTo.startsWith('/') || returnTo.startsWith('//')) return fallback
+  try {
+    const target = new URL(returnTo, origin)
+    const allowed = new RegExp(`^/${locale}/(?:services|maalems)(?:/\\d+)?$`)
+    return target.origin === origin && allowed.test(target.pathname)
+      ? `${target.pathname}${target.search}`
+      : fallback
+  } catch {
+    return fallback
+  }
 }
 
 export function serviceMaalemRequestHref(locale: string, maalemId: number, serviceId: number) {

@@ -125,6 +125,7 @@ export function ProductsList({
           color_name: v.color_name,
           value: v.name,
           available: v.available,
+          prix_vente: v.prix_vente,
           image: v.image_url ?? undefined
         })) || [],
         isVariantRequired:

@@ -9,6 +9,7 @@ import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
 import { ServiceCard } from '@/components/services/service-card'
+import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
 import { PublicRating } from '@/components/maalems/public-rating'
 import { getMaalemInitials } from '@/components/service-requests/maalem-public-summary'
 import { Button } from '@/components/ui/button'
@@ -67,6 +68,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
   if (!id) notFound()
   const rawReviewsPage = Array.isArray(query.reviews_page) ? query.reviews_page[0] : query.reviews_page
   const reviewsPage = rawReviewsPage ? positiveId(rawReviewsPage) || 1 : 1
+  const returnTo = `/${locale}/maalems/${id}${reviewsPage > 1 ? `?reviews_page=${reviewsPage}` : ''}`
   const [maalem, reviewsData, t] = await Promise.all([
     getPublicMaalem(id), getPublicMaalemReviews(id, reviewsPage, REVIEWS_PER_PAGE),
     getTranslations({ locale, namespace: 'maalemDetailPage' }),
@@ -199,9 +201,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
             <Button asChild size="lg" className="h-12 rounded-full bg-emerald-900 px-7 text-base font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-600">
               <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-black/10 bg-white px-7 text-base font-medium text-foreground hover:bg-neutral-50 dark:border-white/15 dark:bg-transparent dark:hover:bg-white/10">
-              <Link href={quickServiceRequestHref(locale)}>{t('quick')}</Link>
-            </Button>
+            <QuickRequestLink locale={locale} returnTo={returnTo} className="sm:self-center" />
           </div>
         </div>
       </header>
@@ -384,7 +384,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
                 <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="mt-3 h-auto min-h-12 w-full whitespace-normal rounded-full border-black/10 bg-white text-foreground hover:bg-neutral-50 dark:border-white/15 dark:bg-transparent dark:hover:bg-white/10">
-                <Link href={quickServiceRequestHref(locale)}>{t('quick')}</Link>
+                <Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}</Link>
               </Button>
               <p className="mt-5 flex items-start gap-2 border-t border-black/[0.06] pt-4 text-xs leading-5 text-muted-foreground dark:border-white/10">
                 <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />{t('privacy')}

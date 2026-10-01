@@ -367,7 +367,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
             availableUtilityTypes={availableUtilityTypes}
             minPrice={minPrice}
             maxPrice={maxPrice}
-            isLoading={isLoading || isFetching}
+            isLoading={isLoading}
             isCollapsed={isFiltersCollapsed}
             onCollapsedChange={setIsFiltersCollapsed}
             mobileActionSlot={viewToggle}

@@ -497,7 +497,8 @@ export function ProductFilters({
     })
   }, [autoExpanded])
 
-  const FiltersContent = () => (
+  // Render as a function so React keeps the same input node across filter updates.
+  const renderFiltersContent = () => (
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-border/40">
@@ -557,7 +558,6 @@ export function ProductFilters({
             placeholder={t('searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            disabled={isLoading}
             className="h-9 text-sm"
           />
         </div>
@@ -828,7 +828,7 @@ export function ProductFilters({
             <SheetHeader className="p-0">
               <SheetTitle className="sr-only">{t('title')}</SheetTitle>
             </SheetHeader>
-            <FiltersContent />
+            {renderFiltersContent()}
           </SheetContent>
         </Sheet>
 
@@ -848,7 +848,7 @@ export function ProductFilters({
           {/* Content with smooth opacity transition */}
           {!isCollapsed && (
             <div className="transition-opacity duration-300 h-full">
-              <FiltersContent />
+              {renderFiltersContent()}
             </div>
           )}
         </div>

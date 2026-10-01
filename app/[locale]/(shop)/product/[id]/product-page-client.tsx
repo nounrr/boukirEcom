@@ -33,6 +33,12 @@ import { resolveProductOfferPrice } from '@/lib/product-price'
 import { mergeProductSessionState } from '@/lib/product-client-snapshot'
 
 function galleryFromProduct(product: ProductDetail) {
+  const firstVariant = product.is_obligatoire_variant ? product.variants?.[0] : null
+  if (firstVariant) {
+    const images = [firstVariant.image_url, ...(firstVariant.gallery || []).map(image => image.image_url)]
+      .filter((url): url is string => Boolean(url))
+    if (images.length) return [...new Set(images)].map((image_url, index) => ({ id: index, image_url }))
+  }
   const source = product.gallery?.length
     ? product.gallery
     : product.image_url
@@ -105,7 +111,10 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   const [displayImages, setDisplayImages] = useState<{ id: number; image_url: string }[]>(() => galleryFromProduct(initialProduct))
   const goPrevImage = () => setSelectedImage((i) => (i - 1 + (displayImages?.length || 1)) % (displayImages?.length || 1))
   const goNextImage = () => setSelectedImage((i) => (i + 1) % (displayImages?.length || 1))
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(null)
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(() => {
+    const requested = initialProduct.variants?.find(v => String(v.id) === requestedVariant)
+    return requested?.id ?? (initialProduct.is_obligatoire_variant ? initialProduct.variants?.[0]?.id ?? null : null)
+  })
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(() => defaultUnitId(initialProduct))
 
@@ -144,7 +153,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
   useEffect(() => {
     if (!product) return
     const variant = (product.variants || []).find(v => String(v.id) === requestedVariant)
-    setSelectedVariant(variant?.id ?? null)
+    setSelectedVariant(variant?.id ?? (product.is_obligatoire_variant ? product.variants?.[0]?.id ?? null : null))
   }, [product, requestedVariant])
 
   // Auto-select first variant when variants are required

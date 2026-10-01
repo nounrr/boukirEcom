@@ -35,6 +35,7 @@ export interface SearchSuggestionProduct {
   designation_ar?: string | null
   designation_en?: string | null
   designation_zh?: string | null
+  first_variant_name?: string | null
   prix_vente: number
   prix_promo: number | null
   pourcentage_promo: number

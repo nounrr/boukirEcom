@@ -142,7 +142,9 @@ export function DynamicBreadcrumb() {
 
       // Handle product ID (skip it as a segment since it's part of product route)
       if (filteredParts[index - 1] === 'product' && productIdFromSegment(part)) {
-        const productName = (productData && getLocalizedProductName(productData, locale)) || searchParams.get('name') || t('productNumber', { id: productIdFromSegment(part) ?? part })
+        const baseName = (productData && getLocalizedProductName(productData, locale)) || searchParams.get('name') || t('productNumber', { id: productIdFromSegment(part) ?? part })
+        const firstVariantName = productData?.is_obligatoire_variant ? productData.variants?.[0]?.variant_name : null
+        const productName = firstVariantName ? `${baseName} • ${firstVariantName}` : baseName
         const partIndex = parts.indexOf(part)
         return {
           title: productName,

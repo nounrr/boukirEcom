@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
 import { MaalemDirectoryCard } from '@/components/maalems/maalem-directory-card'
+import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
 import { Button } from '@/components/ui/button'
 import { normalizeLocale } from '@/i18n/locale'
 import { localizedCategoryName, quickServiceRequestHref } from '@/lib/service-catalog'
@@ -45,12 +46,13 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
   try { data = await getPublicMaalems(filters) } catch { /* Render a useful retry state. */ }
   const hasFilters = Boolean(filters.q || filters.category_id || filters.service_id || filters.city || filters.zone || filters.min_experience || filters.min_interventions || filters.min_rating || filters.sort !== 'recommended')
   const hasAdvancedFilters = Boolean(filters.city || filters.zone || filters.min_experience || filters.min_interventions || filters.min_rating || filters.sort !== 'recommended')
+  const returnTo = href(locale, filters)
   const labels = { verified: t('verified'), city: t('city'), areas: t('areas'), experience: t('experienceLabel', { years: '{years}' }), noPhoto: t('noPhoto'), interventions: t('interventionsLabel', { count: '{count}' }), declared: t('declared'), profile: t('profile'), request: t('request'), ratingLabel: t('ratingLabel', { rating: '{rating}', count: '{count}' }), verifiedReviews: t('verifiedReviews'), noReviews: t('noReviews') }
 
   return <main className="min-h-[70vh] bg-[#fbf8ef] dark:bg-background py-10 dark:bg-background sm:py-14">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <header className="grid gap-6 pb-9 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div className="max-w-3xl"><p className="flex items-center gap-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300"><span className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"><ShieldCheck className="size-5" aria-hidden="true" /></span>{t('eyebrow')}</p><h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">{t('title')}</h1><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p></div>
+        <div className="max-w-3xl"><p className="flex items-center gap-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300"><span className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"><ShieldCheck className="size-5" aria-hidden="true" /></span>{t('eyebrow')}</p><h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">{t('title')}</h1><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p><div className="mt-5"><QuickRequestLink locale={locale} returnTo={returnTo} /></div></div>
         {data && <p className="w-fit rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300" aria-live="polite">{t('count', { count: data.pagination.total_items })}</p>}
       </header>
 
@@ -87,7 +89,7 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
           <div className="mt-4 min-w-0 flex-1 sm:mt-0"><p className="font-semibold">{t('error')}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{t('quickDescription')}</p></div>
           <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0">
             <Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={href(locale, filters)}>{t('submit')}</Link></Button>
-            <Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button>
+            <Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button>
           </div>
         </section>
       ) : data.maalems.length === 0 ? (
@@ -96,7 +98,7 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
         <section className="mt-8"><p className="mb-5 text-sm leading-6 text-muted-foreground">{t('declared')}</p><div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{data.maalems.map((maalem) => <MaalemDirectoryCard key={maalem.id} maalem={maalem} locale={locale} stats={maalem.statistics} labels={labels} />)}</div></section>
       )}
 
-      {data && <aside className="mt-12 flex flex-col gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 className="text-xl font-semibold">{t('quick')}</h2><p className="mt-2 text-sm text-white/75">{t('quickDescription')}</p></div><Button asChild className="min-h-11 rounded-md bg-amber-400 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"><Link href={quickServiceRequestHref(locale)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></aside>}
+      {data && <aside className="mt-12 flex flex-col gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 className="text-xl font-semibold">{t('quick')}</h2><p className="mt-2 text-sm text-white/75">{t('quickDescription')}</p></div><Button asChild className="min-h-11 rounded-md bg-amber-400 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></aside>}
 
       {data && data.pagination.total_pages > 1 && <nav className="mt-9 flex flex-wrap items-center justify-center gap-3" aria-label={t('pagination')}><Button asChild variant="outline" className={!data.pagination.has_previous ? 'pointer-events-none opacity-50' : ''}><Link href={href(locale, { ...filters, page: Math.max(1, data.pagination.current_page - 1), per_page: undefined })}><ArrowLeft className="size-4 rtl:rotate-180" />{t('previous')}</Link></Button><span className="text-sm font-semibold">{t('page', { page: data.pagination.current_page })} / {data.pagination.total_pages}</span><Button asChild variant="outline" className={!data.pagination.has_next ? 'pointer-events-none opacity-50' : ''}><Link href={href(locale, { ...filters, page: data.pagination.current_page + 1, per_page: undefined })}>{t('next')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></nav>}
     </div>

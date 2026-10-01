@@ -27,6 +27,8 @@ interface ProductSuggestion {
   quantite_disponible: number
   purchase_limit?: number
   has_variants: boolean
+  is_obligatoire_variant?: boolean
+  variants?: { all: Array<{ id: number; name: string; variant_name: string; type: string; prix_vente: number; available: boolean; image_url: string | null }> }
   in_stock?: boolean
   inStock?: boolean
   categorie: {
@@ -86,6 +88,16 @@ export function ProductSuggestions({
               in_stock: (product as any).in_stock ?? (product as any).inStock,
               inStock: (product as any).inStock ?? (product as any).in_stock,
               is_wishlisted: product.is_wishlisted,
+              isVariantRequired: product.is_obligatoire_variant === true,
+              variants: product.variants?.all?.map(variant => ({
+                id: variant.id,
+                name: variant.type,
+                value: variant.variant_name,
+                variant_name: variant.variant_name,
+                prix_vente: variant.prix_vente,
+                available: variant.available,
+                image: variant.image_url ?? undefined,
+              })) ?? [],
               sale: product.pourcentage_promo ? {
                 discount: product.pourcentage_promo,
               } : undefined,

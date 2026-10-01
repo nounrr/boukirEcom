@@ -1,4 +1,7 @@
 {
+  "quickRequestNavigation": {
+    "label": "Not sure which service to choose? Describe my problem"
+  },
   "maalemsPage": {
     "metadataTitle": "Verified Maalems",
     "metadataDescription": "Discover Maalems published by Boukir Diamond.",
