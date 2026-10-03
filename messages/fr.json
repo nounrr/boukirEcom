@@ -889,6 +889,7 @@
     "units": "Unités de mesure",
     "inStockOnly": "En stock uniquement",
     "sort": {
+      "category": "Catégorie",
       "newest": "Plus récents",
       "priceAsc": "Prix croissant",
       "priceDesc": "Prix décroissant",

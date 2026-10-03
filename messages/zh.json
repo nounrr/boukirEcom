@@ -1016,6 +1016,7 @@
     "units": "单位",
     "inStockOnly": "仅显示有货",
     "sort": {
+      "category": "类别",
       "newest": "最新",
       "priceAsc": "价格从低到高",
       "priceDesc": "价格从高到低",

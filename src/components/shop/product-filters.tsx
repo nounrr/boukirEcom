@@ -86,7 +86,7 @@ export function ProductFilters({
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
     inStock: false,
-    sort: initialFilters?.sort ?? 'newest',
+    sort: initialFilters?.sort ?? 'category',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
   }))
@@ -106,7 +106,7 @@ export function ProductFilters({
 
   // Sort options with labels
   const sortOptions: Array<{ value: SortOption; label: string }> = [
-    { value: 'newest', label: t('sort.newest') },
+    { value: 'category', label: t('sort.category') },
     { value: 'price_asc', label: t('sort.priceAsc') },
     { value: 'price_desc', label: t('sort.priceDesc') },
     { value: 'promo', label: t('sort.bestPromos') },
@@ -143,7 +143,7 @@ export function ProductFilters({
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
     inStock: false,
-    sort: (initialFilters?.sort as SortOption | undefined) ?? 'newest',
+    sort: (initialFilters?.sort as SortOption | undefined) ?? 'category',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
   }), [initialFilters])
@@ -364,7 +364,7 @@ export function ProductFilters({
       utilityTypes: [],
       search: '',
       inStock: false,
-      sort: 'newest',
+      sort: 'category',
       page: 1,
       per_page: 20
     }

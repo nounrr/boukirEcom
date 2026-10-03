@@ -68,7 +68,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
 
     const sortRaw = searchParams.get("sort")
     const allowedSort: Array<FilterState["sort"]> = [
-      "newest",
+      "category",
       "price_asc",
       "price_desc",
       "promo",
@@ -76,7 +76,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     ]
     const sort = (allowedSort as readonly string[]).includes(sortRaw ?? "")
       ? (sortRaw as FilterState["sort"])
-      : "newest"
+      : "category"
 
     const inStock = false
 
@@ -148,7 +148,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
       if (filterState.brands.length > 0) next.set("brand_id", filterState.brands.join(","))
       if (filterState.search) next.set("search", filterState.search)
 
-      if (filterState.sort && filterState.sort !== "newest") next.set("sort", filterState.sort)
+      if (filterState.sort && filterState.sort !== "category") next.set("sort", filterState.sort)
       if (filterState.page && filterState.page !== 1) next.set("page", String(filterState.page))
       if (filterState.per_page && filterState.per_page !== 20) {
         next.set("per_page", String(filterState.per_page))

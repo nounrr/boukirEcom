@@ -6,7 +6,7 @@ const { root } = require('../scripts/register-project.cjs')
 process.env.NEXT_PUBLIC_SITE_URL = 'https://boukirdiamond.com'
 process.env.NEXT_PUBLIC_API_URL = 'https://api.example'
 
-const { normalizeShopParams, shopPageHref } = require('../src/lib/seo/shop-url.ts')
+const { normalizeShopParams, shopPageHref, shopApiRequest, shopFilterState } = require('../src/lib/seo/shop-url.ts')
 for (const name of ['product-card-row.tsx', 'product-card-tile.tsx']) {
   const modulePath = require.resolve(`../src/components/shop/${name}`)
   const exportName = name.includes('row') ? 'ProductCardRow' : 'ProductCardTile'
@@ -20,6 +20,23 @@ require.cache[clientPath] = { id: clientPath, filename: clientPath, loaded: true
 const { default: ShopPage, generateMetadata } = require('../app/[locale]/(shop)/shop/page.tsx')
 
 function props(query = {}, locale = 'fr') { return { params: Promise.resolve({ locale }), searchParams: Promise.resolve(query) } }
+test('shop defaults to categories across API, filters and pagination, retaining explicit sorts', () => {
+  const defaults = normalizeShopParams({ page: '2' })
+  assert.equal(shopApiRequest(defaults).sort, 'category')
+  assert.equal(shopFilterState(defaults).sort, 'category')
+  assert.equal(defaults.canonical.toString(), 'page=2')
+  assert.equal(normalizeShopParams({ sort: 'category' }).canonical.toString(), '')
+  const legacy = normalizeShopParams({ sort: 'newest' })
+  assert.equal(legacy.changed, true)
+  assert.equal(legacy.canonical.toString(), '')
+  assert.equal(shopApiRequest(legacy).sort, 'category')
+  for (const sort of ['price_asc', 'price_desc', 'promo', 'popular']) {
+    const selected = normalizeShopParams({ sort, page: '3' })
+    assert.equal(shopApiRequest(selected).sort, sort)
+    assert.equal(shopFilterState(selected).sort, sort)
+    assert.equal(selected.canonical.get('sort'), sort)
+  }
+})
 function response(page = 1, totalPages = 184) {
   return { products: [{ id: page, designation: `Produit page ${page}` }], pagination: { current_page: page, per_page: 20, total_items: 3676, total_pages: totalPages, has_previous: page > 1, has_next: page < totalPages, from: (page - 1) * 20 + 1, to: page * 20 }, filters: { categories: [], brands: [], colors: [], units: [], utility_types: [], price_range: { min: 0, max: 10000 } } }
 }

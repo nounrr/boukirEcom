@@ -42,7 +42,17 @@ export const ecommercePublicApiSlice = createApi({
         const mapped = Array.isArray(locations) 
           ? locations.map(mapPickupLocationFromApi).filter(Boolean) as PickupLocation[]
           : [];
-        console.log('[PickupLocations] Fetched:', mapped);
+        // The shop has one pickup store. Keep its real ID for order submission.
+        if (mapped.length === 1) {
+          const store = mapped[0];
+          const legacyAddress = /^Boukir (Boutique|Diamond)(?: Casablanca)?$/i.test(store.address.trim());
+          mapped[0] = {
+            ...store,
+            name: 'Boukir Diamond Tanger',
+            city: 'Tanger',
+            address: legacyAddress ? 'Boukir Diamond Tanger' : store.address,
+          };
+        }
         return mapped;
       },
     }),

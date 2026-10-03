@@ -9,6 +9,7 @@ import { PromoCodeInput } from "./promo-code-input"
 import type { CartItem } from "@/state/api/cart-api-slice"
 import { getLocalizedCartItemBaseName, getLocalizedCartItemCategory } from "@/lib/localized-fields"
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
+import { toAbsoluteImageUrl } from '@/lib/image-url'
 
 interface OrderCartSummaryProps {
   items: CartItem[]
@@ -63,8 +64,8 @@ export function OrderCartSummary({
         {items.map((item) => (
           <div key={`${item.productId}-${item.variantId || ""}`} className="flex gap-3">
             <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0 border border-border/30">
-              {item.image ? (
-                <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
+              {toAbsoluteImageUrl(item.image) ? (
+                <Image src={toAbsoluteImageUrl(item.image)!} alt={item.name} fill sizes="64px" className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <Package className="w-6 h-6 text-muted-foreground/30" />

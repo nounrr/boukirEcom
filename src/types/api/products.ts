@@ -7,7 +7,7 @@
 // Request Types
 // ============================================================================
 
-export type SortOption = 'newest' | 'price_asc' | 'price_desc' | 'promo' | 'popular';
+export type SortOption = 'category' | 'newest' | 'price_asc' | 'price_desc' | 'promo' | 'popular';
 
 export interface ProductFiltersRequest {
   // Pagination

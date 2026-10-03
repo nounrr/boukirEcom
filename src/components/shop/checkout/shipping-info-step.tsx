@@ -10,6 +10,7 @@ import { Building2, Globe, Mail, MapPin, Phone, Store, Truck, User } from "lucid
 import { useGetPickupLocationsQuery } from "@/state/api/ecommerce-public-api-slice"
 import { useTranslations } from "next-intl"
 import dynamic from "next/dynamic"
+import Image from "next/image"
 
 const LocationPicker = dynamic(() => import("./location-picker"), {
   ssr: false,
@@ -264,7 +265,7 @@ export function ShippingInfoStep({ register, errors, watch, setValue }: Shipping
 
                 {selectedPickupLocation && (
                   <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 mt-0.5" />
+                    <Image src="/logo.png" alt="Boukir Diamond Tanger" width={56} height={56} className="h-14 w-14 rounded-lg border bg-white object-contain p-1" />
                     <div className="flex-1">
                       <p className="text-foreground/90">{selectedPickupLocation.name}</p>
                       <p>{selectedPickupLocation.address}, {selectedPickupLocation.city}</p>

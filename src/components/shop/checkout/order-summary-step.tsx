@@ -152,7 +152,7 @@ export function OrderSummaryStep({ formValues }: OrderSummaryStepProps) {
                 "bg-violet-50/50 dark:bg-violet-950/20 border-violet-200/60 dark:border-violet-800/40"
               )}>
                 <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0">
-                  <Store className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                  <Image src="/logo.png" alt="Boukir Diamond Tanger" width={40} height={40} className="h-10 w-10 rounded-lg bg-white object-contain p-1" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-foreground">{selectedPickupLocation.name}</p>

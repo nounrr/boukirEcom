@@ -1016,6 +1016,7 @@
     "units": "Units",
     "inStockOnly": "In stock only",
     "sort": {
+      "category": "Category",
       "newest": "Newest",
       "priceAsc": "Price: low to high",
       "priceDesc": "Price: high to low",
