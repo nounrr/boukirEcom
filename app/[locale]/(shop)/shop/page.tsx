@@ -4,6 +4,8 @@ import { notFound, permanentRedirect } from 'next/navigation'
 import { normalizeLocale } from '@/i18n/locale'
 import { API_CONFIG } from '@/lib/api-config'
 import { catalogHref } from '@/lib/catalog/registry'
+import { shopBrandPage } from '@/lib/catalog/shop-brand'
+import { catalogCopy, catalogText } from '@/lib/catalog/i18n'
 import { constructionCopy } from '@/lib/seo/construction-copy'
 import { buildPageMetadata, localizedUrl } from '@/lib/seo/metadata'
 import { normalizeShopParams, shopApiRequest, shopFilterState, type ShopSearchParams } from '@/lib/seo/shop-url'
@@ -21,7 +23,6 @@ function editorialTarget(locale: string, normalized: ReturnType<typeof normalize
   const active = Object.entries(normalized.normalized).filter(([, value]) => Boolean(value)).map(([key]) => key)
   let path: string | null = null
   if (active.length === 1 && active[0] === 'category_id' && normalized.categoryIds.length === 1) path = catalogHref(locale, 'categories', normalized.categoryIds[0])
-  if (active.length === 1 && active[0] === 'brand_id' && normalized.brandIds.length === 1) path = catalogHref(locale, 'marques', normalized.brandIds[0])
   if (!path || path.includes('/shop?')) return null
   const query = new URLSearchParams()
   if (normalized.page > 1) query.set('page', String(normalized.page))
@@ -50,10 +51,12 @@ const resolveShop = cache(async (props: Props) => {
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { locale, normalized, data } = await resolveShop(props)
   const copy = constructionCopy[locale]
+  const brand = shopBrandPage(normalized)
+  const brandText = brand ? catalogText(brand, locale) : undefined
   const path = withQuery('/shop', normalized.canonical)
   const pageWord = { fr: 'page', ar: 'صفحة', en: 'page', zh: '第' }[locale]
   const pageSuffix = normalized.page > 1 ? ` — ${pageWord} ${normalized.page}` : ''
-  const metadata = buildPageMetadata({ locale, path, title: `${copy.shopTitle}${pageSuffix}`, description: copy.description, keywords: copy.keywords, indexable: !normalized.hasFilters && data.pagination.total_items > 0 })
+  const metadata = buildPageMetadata({ locale, path, title: `${brandText ? `${brandText.name} ${catalogCopy(locale).location}` : copy.shopTitle}${pageSuffix}`, description: brandText?.advice.slice(0, 160) || copy.description, keywords: brandText ? [brandText.name, 'Tanger', 'Tangier', 'طنجة', '丹吉尔'] : copy.keywords, indexable: (!normalized.hasFilters || Boolean(brand)) && data.pagination.total_items > 0 })
   const equivalentAcrossLanguages = !normalized.normalized.search && !normalized.normalized.colors && !normalized.normalized.units && !normalized.normalized.utility_type
   metadata.alternates = { canonical: localizedUrl(locale, path), ...(equivalentAcrossLanguages ? { languages: Object.fromEntries((['fr', 'ar', 'en', 'zh'] as const).map(language => [language, localizedUrl(language, path)])) } : {}) }
   return metadata
@@ -61,5 +64,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function ShopPage(props: Props) {
   const { locale, normalized, data } = await resolveShop(props)
   const copy = constructionCopy[locale]
-  return <ShopPageClient initialData={data} initialFilters={shopFilterState(normalized)} heading={copy.shopTitle} description={copy.description} />
+  const brand = shopBrandPage(normalized)
+  const text = brand ? catalogText(brand, locale) : undefined
+  return <ShopPageClient initialData={data} initialFilters={shopFilterState(normalized)} heading={text ? `${text.name} ${catalogCopy(locale).location}` : copy.shopTitle} description={text?.advice || copy.description} />
 }

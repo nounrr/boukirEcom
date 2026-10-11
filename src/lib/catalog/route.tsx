@@ -5,6 +5,7 @@ import { buildPageMetadata, localizedUrl } from '@/lib/seo/metadata'
 import { loadCatalogPage, catalogPageNumber } from './data'
 import { catalogPage, type CatalogKind } from './registry'
 import { CATALOG_LOCALES, isCatalogLocale, catalogText, catalogCopy } from './i18n'
+import { legacyBrandShopHref } from './shop-brand'
 
 export type CatalogProps = { params: Promise<{ locale: string; slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }
 async function resolve(kind: CatalogKind, props: CatalogProps) {
@@ -13,6 +14,7 @@ async function resolve(kind: CatalogKind, props: CatalogProps) {
   if (!known) notFound()
   if (!isCatalogLocale(locale)) notFound()
   const query = await props.searchParams
+  if (kind === 'marques') permanentRedirect(legacyBrandShopHref(locale, known.id, query))
   if (query.page === '1') {
     const normalized = new URLSearchParams()
     for (const [key, value] of Object.entries(query)) if (key !== 'page' && value !== undefined) normalized.set(key, Array.isArray(value) ? value.join(',') : value)

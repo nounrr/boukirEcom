@@ -2,6 +2,7 @@ import path from 'node:path'
 import type { MetadataRoute } from 'next'
 import { API_CONFIG } from '@/lib/api-config'
 import { catalogSitemap } from '@/lib/catalog/sitemap'
+import { isBrandShopUrl } from '@/lib/catalog/shop-brand'
 import { getSiteUrl } from './urls'
 import { buildSitemap, loadSitemapData } from './sitemap-data'
 import { createSnapshotStore } from './sitemap-snapshot'
@@ -12,7 +13,7 @@ export function serializeSitemap(entries: MetadataRoute.Sitemap, origin: string)
   const seen = new Set<string>()
   const rows = entries.map(entry => {
     const url = new URL(entry.url)
-    if (url.origin !== origin || url.search || seen.has(entry.url)) throw new Error('Invalid or duplicate sitemap URL')
+    if (url.origin !== origin || (url.search && !isBrandShopUrl(url)) || seen.has(entry.url)) throw new Error('Invalid or duplicate sitemap URL')
     seen.add(entry.url)
     const lastmod = entry.lastModified ? new Date(entry.lastModified).toISOString() : null
     const alternates = Object.entries(entry.alternates?.languages || {}).map(([locale, href]) => {
@@ -33,7 +34,7 @@ export function partitionSitemap(entries: MetadataRoute.Sitemap, origin: string)
     seen.add(entry.url)
     const [, locale, kind] = new URL(entry.url).pathname.split('/')
     if (!['fr', 'ar', 'en', 'zh'].includes(locale)) throw new Error('Invalid sitemap language')
-    const group = kind === 'product' ? `products-${locale}` : kind === 'categories' ? 'categories' : kind === 'marques' ? 'brands' : 'pages'
+    const group = kind === 'product' ? `products-${locale}` : kind === 'categories' ? 'categories' : kind === 'marques' || isBrandShopUrl(new URL(entry.url)) ? 'brands' : 'pages'
     ;(groups[group] ||= []).push(entry)
   }
   const files: Record<string, string> = {}

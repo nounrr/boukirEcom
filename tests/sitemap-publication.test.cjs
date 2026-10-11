@@ -42,6 +42,9 @@ test('partitions preserve every URL and escape alternates; oversized parts and d
   assert.throws(() => partitionSitemap([entries[0],entries[0]],origin), /Duplicate/);
   assert.throws(() => serializeSitemap([{url:'https://other.example/fr'}],origin), /Invalid/);
   assert.throws(() => serializeSitemap([{url:origin+'/fr/shop?search=ciment'}],origin), /Invalid/);
+  const brandFiles = partitionSitemap([{ url: origin + '/fr/shop?brand_id=37' }], origin);
+  assert.ok(brandFiles['brands.xml'].includes('/fr/shop?brand_id=37'));
+  assert.throws(() => serializeSitemap([{url:origin+'/fr/shop?brand_id=37&search=ciment'}],origin), /Invalid/);
 });
 
 test('product URLs use localized names, stable IDs and reject ambiguous segments', () => {

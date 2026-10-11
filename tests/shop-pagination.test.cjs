@@ -61,6 +61,22 @@ test('simple pagination is indexable, self-canonical and keeps the page in all a
   }
 })
 
+test('single-brand filters stay in shop with the normal cards and brand SEO in every language', async () => {
+  for (const locale of ['fr', 'ar', 'en', 'zh']) {
+    const input = props({ brand_id: '37', page: '2' }, locale)
+    const element = await ShopPage(input)
+    assert.deepEqual(element.props.initialFilters.brands, [37])
+    assert.match(element.props.heading, /DANOSA/i)
+    const metadata = await generateMetadata(input)
+    assert.equal(metadata.robots.index, true)
+    assert.equal(metadata.alternates.canonical, `https://boukirdiamond.com/${locale}/shop?brand_id=37&page=2`)
+    assert.match(metadata.title, /DANOSA/i)
+    assert.equal(metadata.alternates.languages.fr, 'https://boukirdiamond.com/fr/shop?brand_id=37&page=2')
+  }
+  assert.equal((await generateMetadata(props({ brand_id: '99999' }))).robots.index, false)
+  assert.equal((await generateMetadata(props({ brand_id: '37,38' }))).robots.index, false)
+})
+
 test('search, sort and filter combinations are noindex and canonicalize their real selection', async () => {
   for (const query of [{ search: 'ciment', page: '2' }, { sort: 'price_asc' }, { brand_id: '37', colors: 'rouge', page: '3' }]) {
     const normalized = normalizeShopParams(query).canonical.toString()

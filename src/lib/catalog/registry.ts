@@ -39,7 +39,8 @@ export function catalogPage(kind: CatalogKind, slug: string): CatalogPage | unde
 }
 
 export function catalogHref(locale: string, kind: CatalogKind, id: number | string) {
-  const page = kind === 'categories' ? categories.find(c => c.id === Number(id) && !c.search) : brands.find(b => b.id === Number(id))
-  return page && isCatalogLocale(locale) ? `/${locale}/${kind}/${page.slug}` : `/${locale}/shop?${kind === 'categories' ? 'category_id' : 'brand_id'}=${encodeURIComponent(String(id))}`
+  if (kind === 'marques') return `/${locale}/shop?brand_id=${encodeURIComponent(String(id))}`
+  const page = categories.find(c => c.id === Number(id) && !c.search)
+  return page && isCatalogLocale(locale) ? `/${locale}/categories/${page.slug}` : `/${locale}/shop?category_id=${encodeURIComponent(String(id))}`
 }
 export { brands }

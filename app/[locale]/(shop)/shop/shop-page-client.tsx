@@ -10,7 +10,7 @@ import type { ProductBrand, ProductCategory } from "@/types/api/products"
 import { Grid3x3, LayoutGrid, Package, SlidersHorizontal } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 function getCategoryLabel(category: ProductCategory | undefined, locale: string) {
   if (!category) return ""
@@ -139,7 +139,6 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   }, [urlFilters])
 
   // Debounced URL sync for shareable/filterable URLs without thrashing
-  const lastUrlRef = useRef<string>("")
   useEffect(() => {
     const id = window.setTimeout(() => {
       const next = new URLSearchParams()
@@ -171,8 +170,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
       const nextQuery = next.toString()
       const currentQuery = searchParams.toString()
 
-      if (nextQuery !== currentQuery && nextQuery !== lastUrlRef.current) {
-        lastUrlRef.current = nextQuery
+      if (nextQuery !== currentQuery) {
         router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
       }
     }, 200)

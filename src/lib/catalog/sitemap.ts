@@ -29,6 +29,6 @@ export async function catalogSitemap(): Promise<MetadataRoute.Sitemap> {
     }
     add(`/categories/${category.slug}`)
   }
-  for (const brand of brands) if (counts.brands.some((b: { id: number; total: number }) => b.id === brand.id && b.total > 0)) add(`/marques/${brand.slug}`)
+  for (const brand of brands) if (counts.brands.some((b: { id: number; total: number }) => b.id === brand.id && b.total > 0)) add(`/shop?brand_id=${brand.id}`)
   return entries
 }

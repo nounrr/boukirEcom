@@ -118,21 +118,23 @@ export function buildProductSeoText(input: {
   const categoryName = getLocalizedCategoryName(product.categorie, locale).trim()
   const brandName = (product.brand?.nom ?? "").toString().trim()
 
-  const baseTitle = categoryName ? `${productName} — ${categoryName}` : productName
+  const location = locale === 'ar' ? 'طنجة' : locale === 'zh' ? '丹吉尔' : locale === 'en' ? 'Tangier' : 'Tanger'
+  const brandSuffix = brandName && !productName.toLocaleLowerCase().includes(brandName.toLocaleLowerCase()) ? ` ${brandName}` : ''
+  const baseTitle = `${productName}${brandSuffix} — ${location}`
 
   const rawDescription = getLocalizedProductDescription(product, locale)
   const cleanDescription = stripHtmlToText(rawDescription)
 
   const fallbackDescription =
     locale === "ar"
-      ? `اشترِ ${productName}${categoryName ? ` من قسم ${categoryName}` : ""} مع توصيل داخل المغرب.`
+      ? `اشترِ ${productName}${brandSuffix} في طنجة${categoryName ? ` من قسم ${categoryName}` : ""} مع توصيل داخل المغرب.`
       : locale === "en"
-        ? `Buy ${productName}${categoryName ? ` in ${categoryName}` : ""} with delivery in Morocco.`
+        ? `Buy ${productName}${brandSuffix} in Tangier${categoryName ? `, ${categoryName}` : ""}, with delivery in Morocco.`
         : locale === "zh"
-          ? `购买${productName}${categoryName ? `（${categoryName}）` : ""}，支持摩洛哥配送。`
-          : `Achetez ${productName}${categoryName ? ` dans ${categoryName}` : ""} avec livraison au Maroc.`
+          ? `在丹吉尔购买${productName}${brandSuffix}${categoryName ? `（${categoryName}）` : ""}，支持摩洛哥配送。`
+          : `Achetez ${productName}${brandSuffix} à Tanger${categoryName ? `, ${categoryName}` : ""}, avec livraison au Maroc.`
 
-  const metaDescription = clampDescription(cleanDescription || fallbackDescription, 160)
+  const metaDescription = clampDescription(cleanDescription.length >= 60 ? cleanDescription : `${fallbackDescription}${cleanDescription ? ` ${cleanDescription}` : ''}`, 160)
 
   const imageUrl = product.image_url ? product.image_url.toString() : null
 

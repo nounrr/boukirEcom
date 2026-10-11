@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ revalidated: false }, { status: 401 })
   }
 
-  let body: { productId?: unknown }
+  let body: { productId?: unknown; categoryId?: unknown }
   try {
     body = await request.json()
   } catch {
@@ -34,7 +34,11 @@ export async function POST(request: Request) {
   // serving stale-while-revalidate data. Other product cache entries survive.
   revalidateTag(productCacheTag(productId), { expire: 0 })
   revalidatePath('/[locale]/product/[id]', 'page')
+  if (Number.isSafeInteger(Number(body.categoryId)) && Number(body.categoryId) > 0) {
+    revalidatePath('/[locale]/(shop)/shop', 'page')
+    revalidatePath('/[locale]/(shop)/categories/[slug]', 'page')
+    revalidatePath('/[locale]/(shop)/marques/[slug]', 'page')
+  }
 
   return NextResponse.json({ revalidated: true, productId })
 }
-
