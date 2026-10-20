@@ -1411,7 +1411,8 @@
     "maalems": "Maalems",
     "showMore": "Show more",
     "productNumber": "Product #{id}",
-    "orderNumber": "Order #{id}"
+    "orderNumber": "Order #{id}",
+    "paymentResult": "Payment result"
   },
   "auth": {
     "login": "Login",
@@ -1679,7 +1680,9 @@
       "confirmCta": "Confirm • {total} {currency} (incl. VAT)",
       "secureTransaction": "100% secure transaction",
       "termsPrefix": "By confirming, you accept our",
-      "termsLink": "Terms & Conditions"
+      "termsLink": "Terms & Conditions",
+      "termsAccept": "I have read and accept the",
+      "termsRequired": "Please accept the terms of sale to confirm the order."
     },
     "payment": {
       "recommended": "Recommended",
@@ -1697,7 +1700,7 @@
         },
         "card": {
           "label": "Credit card",
-          "description": "Visa, Mastercard, American Express"
+          "description": "Visa, Mastercard, CMI — secure Chaabi Payment"
         },
         "solde": {
           "label": "Deferred payment (Solde)",
@@ -1753,6 +1756,11 @@
         "subtitle": "Additional information for delivery",
         "label": "Special instructions",
         "placeholder": "e.g. Call me 30 minutes before, 3rd floor, code: 1234..."
+      },
+      "cmi": {
+        "title": "Secure payment with Chaabi Payment",
+        "subtitle": "Centre Monétique Interbancaire (CMI) platform",
+        "description": "After confirming your order, you will be redirected to the CMI secure payment page to enter your card details. No card data is entered or stored on our site."
       }
     },
     "card": {
@@ -1808,6 +1816,52 @@
         "supportTitle": "24/7 support",
         "supportDesc": "Dedicated assistance"
       }
+    },
+    "cmiRedirect": {
+      "title": "Redirecting to the secure payment page…",
+      "description": "Your order is saved. You are being redirected to Chaabi Payment (CMI) to pay by card."
+    },
+    "paymentResult": {
+      "success": {
+        "title": "Payment accepted",
+        "description": "Thank you! Your card payment was accepted and your order is confirmed. The CMI sends you a confirmation email."
+      },
+      "pending": {
+        "title": "Payment being verified",
+        "description": "Your payment was submitted. Confirmation may take a moment; this page updates automatically."
+      },
+      "failed": {
+        "title": "Payment failed",
+        "description": "Your order payment did not go through and your card was not charged. You can try again or contact your bank."
+      },
+      "cancel": {
+        "title": "Payment cancelled",
+        "description": "You left the payment page. Your order is saved but not paid yet."
+      },
+      "error": {
+        "title": "Payment not confirmed",
+        "description": "We could not confirm your payment. Check your order status or contact us before paying again."
+      },
+      "details": {
+        "orderNumber": "Order number",
+        "amount": "Amount",
+        "status": "Payment status",
+        "transactionId": "Transaction ID",
+        "authCode": "Authorization code",
+        "card": "Card",
+        "date": "Date"
+      },
+      "paymentStatus": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      },
+      "retry": "Retry payment",
+      "payNow": "Pay by card",
+      "retryFailed": "Could not restart the payment. Please try again later.",
+      "viewOrders": "View my orders",
+      "continueShopping": "Continue shopping"
     }
   },
   "subscription": {

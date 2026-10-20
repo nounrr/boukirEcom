@@ -1411,7 +1411,8 @@
     "maalems": "Maalem",
     "showMore": "显示更多",
     "productNumber": "商品 #{id}",
-    "orderNumber": "订单 #{id}"
+    "orderNumber": "订单 #{id}",
+    "paymentResult": "支付结果"
   },
   "auth": {
     "login": "登录",
@@ -1679,7 +1680,9 @@
       "confirmCta": "确认 • {total} {currency}（含税）",
       "secureTransaction": "100% 安全交易",
       "termsPrefix": "确认即表示你同意我们的",
-      "termsLink": "服务条款"
+      "termsLink": "服务条款",
+      "termsAccept": "我已阅读并接受",
+      "termsRequired": "请接受销售条款以确认订单。"
     },
     "payment": {
       "recommended": "推荐",
@@ -1697,7 +1700,7 @@
         },
         "card": {
           "label": "银行卡",
-          "description": "Visa, Mastercard, American Express"
+          "description": "Visa、Mastercard、CMI — Chaabi Payment 安全支付"
         },
         "solde": {
           "label": "延期支付（Solde）",
@@ -1753,6 +1756,11 @@
         "subtitle": "用于配送的补充信息",
         "label": "特别说明",
         "placeholder": "例如：提前 30 分钟联系我，3 楼，门禁码：1234..."
+      },
+      "cmi": {
+        "title": "Chaabi Payment 安全支付",
+        "subtitle": "摩洛哥银行间货币中心（CMI）平台",
+        "description": "确认订单后，您将被转至 CMI 安全支付页面输入银行卡信息。我们的网站不会输入或保存任何银行卡数据。"
       }
     },
     "card": {
@@ -1808,6 +1816,52 @@
         "supportTitle": "24/7 客服",
         "supportDesc": "专属协助"
       }
+    },
+    "cmiRedirect": {
+      "title": "正在跳转到安全支付页面…",
+      "description": "您的订单已保存，正在跳转到 Chaabi Payment（CMI）进行银行卡支付。"
+    },
+    "paymentResult": {
+      "success": {
+        "title": "支付成功",
+        "description": "谢谢！您的银行卡支付已被接受，订单已确认。CMI 将向您发送确认邮件。"
+      },
+      "pending": {
+        "title": "支付验证中",
+        "description": "您的支付已提交，确认可能需要片刻，本页面会自动更新。"
+      },
+      "failed": {
+        "title": "支付失败",
+        "description": "您的订单支付未成功，银行卡未被扣款。您可以重试或联系您的银行。"
+      },
+      "cancel": {
+        "title": "支付已取消",
+        "description": "您已离开支付页面。订单已保存，但尚未支付。"
+      },
+      "error": {
+        "title": "支付未确认",
+        "description": "我们无法确认您的支付。请在再次支付前查看订单状态或联系我们。"
+      },
+      "details": {
+        "orderNumber": "订单号",
+        "amount": "金额",
+        "status": "支付状态",
+        "transactionId": "交易号",
+        "authCode": "授权码",
+        "card": "银行卡",
+        "date": "日期"
+      },
+      "paymentStatus": {
+        "pending": "待支付",
+        "paid": "已支付",
+        "failed": "失败",
+        "refunded": "已退款"
+      },
+      "retry": "重新支付",
+      "payNow": "银行卡支付",
+      "retryFailed": "无法重新发起支付，请稍后再试。",
+      "viewOrders": "查看我的订单",
+      "continueShopping": "继续购物"
     }
   },
   "subscription": {

@@ -186,6 +186,41 @@ export interface Order {
   cancelledAt?: string | null
   items?: OrderItem[]
   statusHistory?: OrderStatusHistoryEntry[]
+  // Card orders only: signed form to POST to the Chaabi Payment (CMI) page
+  cmiPayment?: CmiPaymentForm | null
+}
+
+// Signed form returned by the backend; the browser POSTs `fields` to `url` (CMI payment page).
+// `url`/`fields` are null when the payment could not be prepared (the customer can retry with `token`).
+export interface CmiPaymentForm {
+  url: string | null
+  fields: Record<string, string> | null
+  token?: string
+}
+
+// GET /api/ecommerce/payments/cmi/orders/:orderNumber
+export interface CmiPaymentStatus {
+  order: {
+    orderNumber: string
+    status: OrderStatus
+    paymentStatus: PaymentStatus
+    paymentMethod: PaymentMethod
+    amountToPay: number
+    totalAmount: number
+    createdAt: string
+    canRetry: boolean
+  }
+  transaction: {
+    oid: string
+    amount: number
+    status: 'initiated' | 'approved' | 'declined' | 'error'
+    errorMessage: string | null
+    transId: string | null
+    authCode: string | null
+    cardBrand: string | null
+    maskedPan: string | null
+    trxDate: string | null
+  } | null
 }
 
 // List orders response from GET /api/ecommerce/orders
@@ -257,6 +292,8 @@ export interface CreateOrderData {
   shippingLatitude?: number
   shippingLongitude?: number
   paymentMethod?: PaymentMethod
+  // Language of the CMI payment page (fr | ar | en)
+  paymentLocale?: string
   customerNotes?: string
   promoCode?: string
   useRemiseBalance?: boolean

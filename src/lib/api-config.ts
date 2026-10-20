@@ -24,6 +24,7 @@ export const API_CONFIG = {
     CART: '/api/ecommerce/cart',
     ORDERS: '/api/ecommerce/orders',
     ORDERS_QUOTE: '/api/ecommerce/orders/quote',
+    CMI_PAYMENTS: '/api/ecommerce/payments/cmi',
     PICKUP_LOCATIONS: '/api/ecommerce/pickup-locations',
     WISHLIST: '/api/ecommerce/wishlist',
     PROMO_VALIDATE: '/api/ecommerce/promo/validate',

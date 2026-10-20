@@ -6,7 +6,7 @@ import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from
 import { Label } from "@/components/ui/label"
 import { CreditCard, Wallet, Check, AlertCircle, Coins, Sparkles, Clock, ShieldCheck, Store } from "lucide-react"
 import { cn } from "@/lib/utils"
-import CardPaymentForm from "./card-payment-form"
+import CmiRedirectNotice from "./cmi-redirect-notice"
 
 interface PaymentStepProps {
   register: UseFormRegister<any>
@@ -579,16 +579,7 @@ export function PaymentStep({
         )}
       </div>
 
-      {showCardForm && (
-        <CardPaymentForm
-          register={register}
-          errors={errors}
-          watch={watch}
-          setValue={setValue}
-          onSubmit={onSubmitPayment}
-          isPending={isPending}
-        />
-      )}
+      {showCardForm && <CmiRedirectNotice />}
 
       <div className="flex flex-col gap-3 bg-background border border-border/50 rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-2 pb-3 border-b border-border/50">

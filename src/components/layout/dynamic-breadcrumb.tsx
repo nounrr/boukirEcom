@@ -174,6 +174,7 @@ export function DynamicBreadcrumb() {
         'cart': t('cart'),
         'wishlist': t('wishlist'),
         'checkout': t('checkout'),
+        'payment-result': t('paymentResult'),
         'profile': t('profile'),
         'orders': t('orders'),
         'settings': t('settings'),

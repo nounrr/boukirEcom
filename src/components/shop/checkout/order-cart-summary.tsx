@@ -1,11 +1,12 @@
 "use client"
 
-import { memo } from "react"
+import { memo, useId, useState } from "react"
 import Image from "next/image"
 import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Package, Lock, ShieldCheck } from "lucide-react"
 import { PromoCodeInput } from "./promo-code-input"
+import CmiSecurityLogos from "./cmi-security-logos"
 import type { CartItem } from "@/state/api/cart-api-slice"
 import { getLocalizedCartItemBaseName, getLocalizedCartItemCategory } from "@/lib/localized-fields"
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
@@ -42,6 +43,9 @@ export function OrderCartSummary({
   const tCommon = useTranslations("common")
   const locale = useLocale()
   const currency = tCommon("currency")
+  // Le client doit lire et accepter les CGV avant d'être redirigé vers le paiement (exigence CMI).
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const termsId = useId()
 
   return (
     <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm lg:sticky lg:top-24">
@@ -141,10 +145,28 @@ export function OrderCartSummary({
       {/* Confirmation Button */}
       {showConfirmButton && onConfirmOrder && (
         <div className="mt-6 pt-4 border-t border-border/50">
+          <div className="bg-muted/30 border border-border/30 rounded-lg p-3 mb-3">
+            <label htmlFor={termsId} className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                id={termsId}
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(event) => setAcceptedTerms(event.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary cursor-pointer"
+              />
+              <span className="text-xs text-muted-foreground leading-relaxed">
+                {t("cartSummary.termsAccept")}{" "}
+                <a href={`/${locale}/cgv`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+                  {t("cartSummary.termsLink")}
+                </a>
+              </span>
+            </label>
+          </div>
+
           <Button
             type="button"
             onClick={onConfirmOrder}
-            disabled={isPending}
+            disabled={isPending || !acceptedTerms}
             className="w-full h-11 bg-linear-to-r from-primary via-primary to-primary/90 hover:from-primary/90 hover:via-primary hover:to-primary text-white shadow-lg shadow-primary/25 font-semibold"
           >
             {isPending ? (
@@ -160,45 +182,25 @@ export function OrderCartSummary({
             )}
           </Button>
 
+          {!acceptedTerms && !isPending && (
+            <p className="text-[11px] text-muted-foreground text-center mt-2">{t("cartSummary.termsRequired")}</p>
+          )}
+
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-3">
             <ShieldCheck className="w-4 h-4" />
             <span>{t("cartSummary.secureTransaction")}</span>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-3">
-            <Image
-              src="/payments/visa.svg"
-              alt="Visa"
-              width={52}
-              height={32}
-              sizes="52px"
-              className="h-7 w-auto opacity-95"
-            />
-            <Image
-              src="/payments/master-card.svg"
-              alt="Mastercard"
-              width={52}
-              height={32}
-              sizes="52px"
-              className="h-7 w-auto opacity-95"
-            />
+          <CmiSecurityLogos className="mt-3" />
+          <div className="mt-2 flex justify-center">
             <Image
               src="/payments/naps.png"
               alt="NAPS"
               width={52}
               height={32}
               sizes="52px"
-              className="h-7 w-auto opacity-95"
+              className="h-6 w-auto opacity-90"
             />
-          </div>
-
-          <div className="bg-muted/30 border border-border/30 rounded-lg p-3 mt-3">
-            <p className="text-xs text-muted-foreground leading-relaxed text-center">
-              {t("cartSummary.termsPrefix")}{" "}
-              <a href={`/${locale}/cgv`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
-                {t("cartSummary.termsLink")}
-              </a>
-            </p>
           </div>
         </div>
       )}

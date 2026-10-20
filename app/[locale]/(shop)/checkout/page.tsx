@@ -14,6 +14,7 @@ import PaymentStep from "@/components/shop/checkout/payment-step"
 import ShippingInfoStep from "@/components/shop/checkout/shipping-info-step"
 import { Button } from "@/components/ui/button"
 import { cartStorage } from "@/lib/cart-storage"
+import { cmiPaymentResultPath, redirectToCmiPayment } from "@/lib/cmi-payment"
 import type { CartItem as APICartItem } from "@/state/api/cart-api-slice"
 import { useClearCartMutation, useGetCartQuery } from "@/state/api/cart-api-slice"
 import { useCreateOrderMutation, useQuoteOrderMutation } from "@/state/api/orders-api-slice"
@@ -237,6 +238,7 @@ export default function CheckoutPage() {
 
   const [guestOrderCreated, setGuestOrderCreated] = useState(false)
   const [guestOrderNumber, setGuestOrderNumber] = useState<string | null>(null)
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false)
 
   const isBlockingUi = isProcessing || isQuoting
   const isCartEmpty = !items.length
@@ -510,6 +512,7 @@ export default function CheckoutPage() {
           deliveryMethod: values.deliveryMethod,
           ...(isPickup && values.pickupLocationId ? { pickupLocationId: values.pickupLocationId } : {}),
           paymentMethod: values.paymentMethod,
+          paymentLocale: locale,
           customerNotes: values.notes || undefined,
           promoCode: promoCodeValue || undefined,
           // For authenticated users: use cart from backend
@@ -566,6 +569,19 @@ export default function CheckoutPage() {
         console.log("🧹 Clearing local cart state")
         dispatch(clearCart())
         cartStorage.clearCart()
+
+        // Card payment: the order is created (pending payment), send the customer to the
+        // Chaabi Payment (CMI) secure page. The result comes back on /checkout/payment-result.
+        if (order.cmiPayment) {
+          setIsRedirectingToPayment(true)
+          if (redirectToCmiPayment(order.cmiPayment)) return
+          router.push(cmiPaymentResultPath(locale, {
+            status: "error",
+            order: order.orderNumber,
+            token: order.cmiPayment.token,
+          }))
+          return
+        }
 
         if (isAuthenticated) {
           router.push(`/${locale}/orders`)
@@ -683,13 +699,9 @@ export default function CheckoutPage() {
         }
       }
     } else if (currentStep === 2) {
-      // Check if card payment is selected and validate card fields
+      // Card details are entered on the CMI secure page, not on our site
       const paymentMethod = watch("paymentMethod")
-      if (paymentMethod === "card") {
-        isValid = await trigger(["paymentMethod", "cardholderName", "cardNumber", "cardExpiry", "cardCVV"])
-      } else {
-        isValid = await trigger("paymentMethod")
-      }
+      isValid = await trigger("paymentMethod")
 
       // Early Solde plafond check
       if (isValid && paymentMethod === "solde" && isAuthenticated) {
@@ -753,7 +765,15 @@ export default function CheckoutPage() {
       )}
 
       {/* Empty Cart */}
-      {!isCartLoading && isCartEmpty && !guestOrderCreated && (
+      {isRedirectingToPayment && (
+        <div className="flex flex-col items-center justify-center gap-4 py-24 text-center" role="status" aria-live="polite">
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-base font-semibold text-foreground">{t("cmiRedirect.title")}</p>
+          <p className="max-w-md text-sm text-muted-foreground">{t("cmiRedirect.description")}</p>
+        </div>
+      )}
+
+      {!isRedirectingToPayment && !isCartLoading && isCartEmpty && !guestOrderCreated && (
         <div className="max-w-md mx-auto text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
             <ShoppingCart className="w-8 h-8 text-muted-foreground" />
@@ -765,7 +785,7 @@ export default function CheckoutPage() {
       )}
 
       {/* Cart Loaded */}
-      {!isCartLoading && (!isCartEmpty || guestOrderCreated) && (
+      {!isRedirectingToPayment && !isCartLoading && (!isCartEmpty || guestOrderCreated) && (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title - Compact */}
           <div className="text-center mb-5">

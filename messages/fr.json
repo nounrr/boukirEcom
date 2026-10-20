@@ -1284,7 +1284,8 @@
     "maalems": "Maalems",
     "showMore": "Afficher plus",
     "productNumber": "Produit #{id}",
-    "orderNumber": "Commande #{id}"
+    "orderNumber": "Commande #{id}",
+    "paymentResult": "Résultat du paiement"
   },
   "auth": {
     "login": "Connexion",
@@ -1552,7 +1553,9 @@
       "confirmCta": "Confirmer • {total} {currency} TTC",
       "secureTransaction": "Transaction 100% sécurisée",
       "termsPrefix": "En confirmant, vous acceptez nos",
-      "termsLink": "CGV"
+      "termsLink": "CGV",
+      "termsAccept": "J'ai lu et j'accepte les",
+      "termsRequired": "Veuillez accepter les CGV pour confirmer la commande."
     },
     "payment": {
       "recommended": "Recommandé",
@@ -1570,7 +1573,7 @@
         },
         "card": {
           "label": "Carte bancaire",
-          "description": "Visa, Mastercard, American Express"
+          "description": "Visa, Mastercard, CMI — paiement sécurisé Chaabi Payment"
         },
         "solde": {
           "label": "Paiement différé (Solde)",
@@ -1626,6 +1629,11 @@
         "subtitle": "Informations complémentaires pour la livraison",
         "label": "Messages spéciaux",
         "placeholder": "Ex: Appelez-moi 30 min avant, 3ème étage, code: 1234..."
+      },
+      "cmi": {
+        "title": "Paiement sécurisé Chaabi Payment",
+        "subtitle": "Plateforme du Centre Monétique Interbancaire (CMI)",
+        "description": "Après la confirmation de votre commande, vous serez redirigé vers la page de paiement sécurisée du CMI pour saisir les informations de votre carte. Aucune donnée bancaire n’est saisie ni conservée sur notre site."
       }
     },
     "card": {
@@ -1681,6 +1689,52 @@
         "supportTitle": "Support 24/7",
         "supportDesc": "Assistance dédiée"
       }
+    },
+    "cmiRedirect": {
+      "title": "Redirection vers la page de paiement sécurisée…",
+      "description": "Votre commande est enregistrée. Vous allez être redirigé vers Chaabi Payment (CMI) pour payer par carte."
+    },
+    "paymentResult": {
+      "success": {
+        "title": "Paiement accepté",
+        "description": "Merci ! Votre paiement par carte a été accepté et votre commande est confirmée. Un e-mail de confirmation vous est envoyé par le CMI."
+      },
+      "pending": {
+        "title": "Paiement en cours de vérification",
+        "description": "Votre paiement a été transmis. La confirmation peut prendre quelques instants ; cette page se met à jour automatiquement."
+      },
+      "failed": {
+        "title": "Paiement échoué",
+        "description": "Le paiement de votre commande n’a pas abouti et votre carte n’a pas été débitée. Vous pouvez réessayer ou contacter votre banque."
+      },
+      "cancel": {
+        "title": "Paiement annulé",
+        "description": "Vous avez quitté la page de paiement. Votre commande est enregistrée mais n’est pas encore payée."
+      },
+      "error": {
+        "title": "Paiement non confirmé",
+        "description": "Nous n’avons pas pu confirmer votre paiement. Vérifiez l’état de votre commande ou contactez-nous avant de payer à nouveau."
+      },
+      "details": {
+        "orderNumber": "N° de commande",
+        "amount": "Montant",
+        "status": "État du paiement",
+        "transactionId": "N° de transaction",
+        "authCode": "Code d'autorisation",
+        "card": "Carte",
+        "date": "Date"
+      },
+      "paymentStatus": {
+        "pending": "En attente",
+        "paid": "Payée",
+        "failed": "Échoué",
+        "refunded": "Remboursée"
+      },
+      "retry": "Réessayer le paiement",
+      "payNow": "Payer par carte",
+      "retryFailed": "Impossible de relancer le paiement. Veuillez réessayer plus tard.",
+      "viewOrders": "Voir mes commandes",
+      "continueShopping": "Continuer mes achats"
     }
   },
   "subscription": {

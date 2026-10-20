@@ -19,6 +19,8 @@ import type {
   SoldeOrdersStatementResponse,
   SoldeOrdersLegacyResponse,
   SoldeStatementTimelineRow,
+  CmiPaymentForm,
+  CmiPaymentStatus,
 } from '@/types/order';
 
 // Helpers to map backend snake_case structures to our frontend camelCase types
@@ -296,6 +298,7 @@ export const ordersApi = createApi({
           shipping_latitude: data.shippingLatitude,
           shipping_longitude: data.shippingLongitude,
           payment_method: data.paymentMethod ?? 'cash_on_delivery',
+          payment_locale: data.paymentLocale,
           customer_notes: data.customerNotes,
           promo_code: data.promoCode,
           use_remise_balance: data.useRemiseBalance,
@@ -311,9 +314,55 @@ export const ordersApi = createApi({
       }),
       invalidatesTags: ['Orders'],
       transformResponse: (response: any): Order => {
-        // Backend returns { message, order }
-        return mapOrderFromApi(response.order || response);
+        // Backend returns { message, order, cmi_payment }
+        return {
+          ...mapOrderFromApi(response.order || response),
+          cmiPayment: response.cmi_payment ?? null,
+        };
       },
+    }),
+
+    // Card payment (Chaabi Payment / CMI): status of an order's payment (result page)
+    getCmiPaymentStatus: builder.query<CmiPaymentStatus, { orderNumber: string; token?: string | null }>({
+      query: ({ orderNumber, token }) => ({
+        url: `${API_CONFIG.ENDPOINTS.CMI_PAYMENTS}/orders/${encodeURIComponent(orderNumber)}`,
+        params: token ? { token } : undefined,
+      }),
+      transformResponse: (response: any): CmiPaymentStatus => ({
+        order: {
+          orderNumber: response.order.order_number,
+          status: response.order.status,
+          paymentStatus: response.order.payment_status,
+          paymentMethod: response.order.payment_method,
+          amountToPay: Number(response.order.amount_to_pay ?? 0),
+          totalAmount: Number(response.order.total_amount ?? 0),
+          createdAt: response.order.created_at,
+          canRetry: Boolean(response.order.can_retry),
+        },
+        transaction: response.transaction
+          ? {
+              oid: response.transaction.oid,
+              amount: Number(response.transaction.amount ?? 0),
+              status: response.transaction.status,
+              errorMessage: response.transaction.error_message ?? null,
+              transId: response.transaction.trans_id ?? null,
+              authCode: response.transaction.auth_code ?? null,
+              cardBrand: response.transaction.card_brand ?? null,
+              maskedPan: response.transaction.masked_pan ?? null,
+              trxDate: response.transaction.trx_date ?? null,
+            }
+          : null,
+      }),
+    }),
+
+    // Card payment: new signed form to retry the payment of an unpaid card order
+    retryCmiPayment: builder.mutation<CmiPaymentForm, { orderNumber: string; token?: string | null; locale?: string }>({
+      query: ({ orderNumber, token, locale }) => ({
+        url: `${API_CONFIG.ENDPOINTS.CMI_PAYMENTS}/orders/${encodeURIComponent(orderNumber)}/pay`,
+        method: 'POST',
+        body: { token: token || undefined, locale },
+      }),
+      transformResponse: (response: any): CmiPaymentForm => response.cmi_payment,
     }),
 
     // Cancel an order (customer)
@@ -550,6 +599,8 @@ export const {
   useGetOrderQuery,
   useCreateOrderMutation,
   useCancelOrderMutation,
+  useGetCmiPaymentStatusQuery,
+  useRetryCmiPaymentMutation,
   useGetSoldeOrdersTimelineQuery,
   useGetSoldeOrdersHistoryQuery,
 } = ordersApi;
