@@ -1,17 +1,12 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
-import {
-  ArrowLeft, ArrowRight, Award, BadgeCheck, BriefcaseBusiness, CheckCircle2, Hammer,
-  Layers, Lock, MapPin, ShieldCheck, Sparkles, Star,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, Award, BadgeCheck, BriefcaseBusiness, CheckCircle2, Hammer, Layers, Lock, MapPin, ShieldCheck, Star } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
 import { ServiceCard } from '@/components/services/service-card'
-import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
+import { PublicMaalemPortrait } from '@/components/services/public-maalem-portrait'
 import { PublicRating } from '@/components/maalems/public-rating'
-import { getMaalemInitials } from '@/components/service-requests/maalem-public-summary'
 import { Button } from '@/components/ui/button'
 import { normalizeLocale } from '@/i18n/locale'
 import { quickServiceRequestHref } from '@/lib/service-catalog'
@@ -37,29 +32,8 @@ export async function generateMetadata({ params }: Pick<Props, 'params'>): Promi
   return buildPageMetadata({ locale, title: `${maalem.public_name} — ${category || t('verified')}`, description, path: `/maalems/${id}`, imageUrl: resolvePublicMaalemPhoto(maalem.photo_url), openGraphType: 'profile' })
 }
 
-/** Surface blanche arrondie : la brique qui structure toute la page. */
-const CARD = 'rounded-3xl border border-black/[0.06] bg-white shadow-[0_2px_14px_-10px_rgba(16,24,40,.25)] dark:border-white/10 dark:bg-card'
-
 /** Largeur : pleine sur portable et laptop, 90 % sur tres grand ecran. */
-const SHELL = 'mx-auto w-full px-4 sm:px-6 lg:px-8 2xl:w-[90%]'
-
-const TONES = {
-  emerald: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
-  amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300',
-  violet: 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300',
-  sky: 'bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300',
-  rose: 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300',
-} as const
-type Tone = keyof typeof TONES
-
-/** Pastille d'icone coloree, reprise des maquettes. */
-function SectionIcon({ icon: Icon, tone }: { icon: typeof Award; tone: Tone }) {
-  return (
-    <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl ${TONES[tone]}`} aria-hidden="true">
-      <Icon className="size-5" />
-    </span>
-  )
-}
+const SHELL = 'mx-auto w-full max-w-[88rem] px-4 sm:px-6 lg:px-10'
 
 export default async function PublicMaalemPage({ params, searchParams }: Props) {
   const [{ locale: rawLocale, id: rawId }, query] = await Promise.all([params, searchParams])
@@ -100,14 +74,14 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
   })
 
   const quickStats = [
-    { icon: CheckCircle2, tone: 'emerald' as Tone, value: closed, label: t('statInterventions') },
-    maalem.experience_years != null ? { icon: Award, tone: 'amber' as Tone, value: maalem.experience_years, label: t('statExperience') } : null,
+    { icon: CheckCircle2, value: closed, label: t('statInterventions'), surface: 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/50', iconTone: 'text-emerald-700 dark:text-emerald-300' },
+    maalem.experience_years != null ? { icon: Award, value: maalem.experience_years, label: t('statExperience'), surface: 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40', iconTone: 'text-amber-700 dark:text-amber-300' } : null,
     maalem.statistics.review_count > 0 && maalem.statistics.average_rating != null
-      ? { icon: Star, tone: 'amber' as Tone, value: maalem.statistics.average_rating, label: t('statRating') }
+      ? { icon: Star, value: maalem.statistics.average_rating, label: t('statRating'), surface: 'border-amber-200 bg-[#fff9e8] dark:border-amber-800 dark:bg-amber-950/40', iconTone: 'text-amber-700 dark:text-amber-300' }
       : null,
-    maalem.intervention_areas.length ? { icon: MapPin, tone: 'sky' as Tone, value: maalem.intervention_areas.length, label: t('statAreas') } : null,
-    maalem.skills.length ? { icon: Layers, tone: 'violet' as Tone, value: maalem.skills.length, label: t('statSkills') } : null,
-  ].filter(Boolean) as Array<{ icon: typeof Award; tone: Tone; value: number; label: string }>
+    maalem.intervention_areas.length ? { icon: MapPin, value: maalem.intervention_areas.length, label: t('statAreas'), surface: 'border-sky-200 bg-sky-50 dark:border-sky-800 dark:bg-sky-950/40', iconTone: 'text-sky-700 dark:text-sky-300' } : null,
+    maalem.skills.length ? { icon: Layers, value: maalem.skills.length, label: t('statSkills'), surface: 'border-emerald-200 bg-[#eff9f3] dark:border-emerald-800 dark:bg-emerald-950/50', iconTone: 'text-emerald-700 dark:text-emerald-300' } : null,
+  ].filter(Boolean) as Array<{ icon: typeof CheckCircle2; value: number; label: string; surface: string; iconTone: string }>
 
   const trustPoints = [
     { icon: ShieldCheck, text: t('trustVerified') },
@@ -118,128 +92,93 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
   // Ancres de la barre de navigation : la page reste rendue cote serveur,
   // donc des liens de saut plutot que des onglets pilotes en JavaScript.
   const sectionLinks = [
-    { href: '#about', label: t('about') },
-    { href: '#coverage', label: t('areas') },
+    ...(maalem.professional_summary || maalem.skills.length ? [{ href: '#about', label: t('about') }] : []),
+    ...(maalem.intervention_areas.length ? [{ href: '#coverage', label: t('areas') }] : []),
     { href: '#reviews', label: t('reviews') },
-    { href: '#services', label: t('services') },
+    ...(maalem.compatible_services.length ? [{ href: '#services', label: t('services') }] : []),
   ]
 
-  return <main className="bg-white dark:bg-background">
+  return <main className="bg-[#fcfdfa] dark:bg-background">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
-    <div className={`${SHELL} pb-16 pt-5 sm:pt-7`}>
+    <div className={`${SHELL} pb-28 pt-5 sm:pt-7 lg:pb-16`}>
       <Link href={`/${locale}/maalems`} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700/30">
         <ArrowLeft className="size-4 rtl:rotate-180" />{t('back')}
       </Link>
 
-      {/* ── Hero profil : banniere degradee + portrait en debord ── */}
-      <header className="mt-3">
-        <div
-          className="h-32 w-full rounded-3xl bg-gradient-to-r from-emerald-200 via-emerald-100 to-amber-200 sm:h-44 dark:from-emerald-900/50 dark:via-emerald-950/60 dark:to-amber-900/40"
-          aria-hidden="true"
-        />
-
-        <div className="-mt-14 px-2 sm:-mt-20 sm:px-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:gap-10">
-            <div className="relative size-28 shrink-0 overflow-hidden rounded-[28px] border-4 border-white bg-neutral-100 shadow-[0_10px_30px_-16px_rgba(16,24,40,.5)] sm:size-40 dark:border-card dark:bg-neutral-800">
-              {photo ? (
-                <Image src={photo} alt={maalem.public_name} fill sizes="(min-width: 640px) 160px, 112px" className="object-cover object-top" priority />
-              ) : (
-                <div className="flex size-full items-center justify-center text-4xl font-semibold text-neutral-400" role="img" aria-label={t('noPhoto')}>
-                  {getMaalemInitials(maalem.public_name)}
-                </div>
-              )}
-            </div>
-
-            <div className="min-w-0 flex-1 lg:pb-1">
-              <h1 className="flex flex-wrap items-center gap-x-3 gap-y-2 text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl">
-                {maalem.public_name}
-                <BadgeCheck className="size-7 shrink-0 fill-emerald-600 text-white dark:fill-emerald-500 dark:text-card" role="img" aria-label={t('verified')} />
-              </h1>
-
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                {category && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
-                    <BriefcaseBusiness className="size-3.5" aria-hidden="true" />{category}
-                  </span>
-                )}
-                {maalem.city && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin className="size-4 text-sky-600 dark:text-sky-400" aria-hidden="true" />{maalem.city}
-                  </span>
-                )}
-                <PublicRating
-                  rating={maalem.statistics.average_rating}
-                  count={maalem.statistics.review_count}
-                  locale={locale}
-                  compact
-                  labels={{ rating: t('ratingLabel', { rating: '{rating}', count: '{count}' }), verified: t('verifiedReviews'), empty: t('reviewsEmpty') }}
-                />
+      <div className="mt-8 grid items-start gap-9 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-12">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <div className="rounded-[1.5rem] border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-card">
+            <div className="flex min-w-0 items-start gap-4 lg:flex-col">
+              <div className="order-1 min-w-0 flex-1 lg:order-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">{category || t('verified')}</p>
+                <h1 className="mt-2 break-words text-[clamp(1.7rem,4vw,2.4rem)] font-semibold leading-[1.12] tracking-[-0.035em] text-stone-950 dark:text-white">{maalem.public_name}</h1>
+                <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 dark:text-emerald-300"><BadgeCheck className="size-4 fill-emerald-700 text-white dark:fill-emerald-500 dark:text-card" aria-hidden="true" />{t('verified')}</p>
+              </div>
+              <div className="relative order-2 size-24 shrink-0 overflow-hidden rounded-xl bg-emerald-950 lg:order-1 lg:size-40">
+                <PublicMaalemPortrait src={photo} name={maalem.public_name} sizes="(min-width: 1024px) 160px, 96px" priority fallbackLabel={t('noPhoto')} />
               </div>
             </div>
-
-            {/* Chiffres cles alignes a droite, comme la maquette portfolio. */}
-            {quickStats.length > 0 && (
-              <dl className="flex flex-wrap gap-x-8 gap-y-4 lg:justify-end lg:pb-1" aria-label={t('quickStats')}>
-                {quickStats.map((stat) => (
-                  <div key={stat.label} className="min-w-20">
-                    <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                      <stat.icon className={`size-3.5 ${TONES[stat.tone].split(' ')[1]}`} aria-hidden="true" />{stat.label}
-                    </dt>
-                    <dd className="mt-1 text-2xl font-semibold tabular-nums text-foreground sm:text-3xl">{stat.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
+            <div className="mt-5 space-y-3 border-t border-stone-200 pt-5 text-sm dark:border-white/10">
+              {maalem.city && <p className="flex items-center gap-2 text-stone-700 dark:text-stone-300"><MapPin className="size-4 shrink-0 text-emerald-800 dark:text-emerald-300" aria-hidden="true" />{maalem.city}</p>}
+              <PublicRating rating={maalem.statistics.average_rating} count={maalem.statistics.review_count} locale={locale} compact labels={{ rating: t('ratingLabel', { rating: '{rating}', count: '{count}' }), verified: t('verifiedReviews'), empty: t('reviewsEmpty') }} />
+            </div>
           </div>
-
-          <p className="mt-6 max-w-3xl whitespace-pre-wrap text-[15px] leading-7 text-muted-foreground">
-            {maalem.professional_summary || t('aboutFallback')}
-          </p>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-12 rounded-full bg-emerald-900 px-7 text-base font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-600">
-              <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
+          <div className="mt-3 rounded-[1.5rem] bg-emerald-950 p-5 text-white dark:bg-emerald-900">
+            <h2 className="text-base font-semibold text-white">{t('ctaTitle')}</h2>
+            <p className="mt-2 text-sm leading-6 text-emerald-100">{t('ctaText')}</p>
+            <Button asChild size="lg" className="mt-5 hidden h-auto min-h-12 w-full whitespace-normal rounded-xl bg-white px-4 py-3 text-center font-semibold text-emerald-950 hover:bg-stone-100 lg:inline-flex">
+              <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link>
             </Button>
-            <QuickRequestLink locale={locale} returnTo={returnTo} className="sm:self-center" />
+            <Link href={quickServiceRequestHref(locale, returnTo)} className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-white/30 px-4 py-2 text-center text-sm font-medium text-white transition-colors duration-150 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 motion-reduce:transition-none">{t('quick')}</Link>
+            <p className="mt-4 flex items-start gap-2 border-t border-white/20 pt-4 text-xs leading-5 text-emerald-100"><Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />{t('privacy')}</p>
           </div>
-        </div>
-      </header>
+        </aside>
 
-      {/* ── Navigation de sections ── */}
-      <nav className="mt-10 border-b border-black/[0.08] dark:border-white/10" aria-label={t('quickStats')}>
-        <ul className="-mb-px flex flex-wrap gap-x-8">
-          {sectionLinks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className="inline-flex min-h-11 items-center border-b-2 border-transparent text-sm font-medium text-muted-foreground transition hover:border-emerald-700 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700/30 dark:hover:border-emerald-400"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+        <div className="min-w-0 space-y-10">
+          {(maalem.professional_summary || maalem.skills.length > 0) && (
+            <section id="about" className="scroll-mt-24 grid gap-8 border-b border-stone-200 pb-8 md:grid-cols-2 dark:border-white/10" aria-label={t('about')}>
+              {maalem.professional_summary && <article>
+                <h2 className="text-2xl font-semibold tracking-tight">{t('about')}</h2>
+                <p className="mt-4 whitespace-pre-wrap text-[15px] leading-7 text-muted-foreground">{maalem.professional_summary}</p>
+              </article>}
+              {maalem.skills.length > 0 && <article className="rounded-[1.5rem] border border-amber-200 bg-amber-50/70 p-5 dark:border-amber-800 dark:bg-amber-950/30">
+                <h2 className="flex items-center gap-2 text-2xl font-semibold tracking-tight"><BriefcaseBusiness className="size-5 text-amber-700 dark:text-amber-300" aria-hidden="true" />{t('expertise')}</h2>
+                <p className="mt-4 text-sm leading-6 text-muted-foreground">{t('expertiseText')}</p>
+                <ul className="mt-5 flex flex-wrap gap-2">
+                  {maalem.skills.map((skill) => (
+                    <li key={skill} className="rounded-full border border-amber-200 bg-white px-3 py-1.5 text-sm font-medium text-amber-950 dark:border-amber-700 dark:bg-amber-950/60 dark:text-amber-100">{skill}</li>
+                  ))}
+                </ul>
+              </article>}
+            </section>
+          )}
 
-      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-10">
-        <div className="min-w-0 space-y-8">
+          <nav className="border-b border-stone-200 dark:border-white/10" aria-label={t('about')}>
+            <ul className="flex flex-wrap gap-x-6">
+              {sectionLinks.map((link) => <li key={link.href}><a href={link.href} className="inline-flex min-h-11 items-center border-b-2 border-transparent text-sm font-medium text-stone-600 transition-colors duration-150 hover:border-emerald-800 hover:text-emerald-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 motion-reduce:transition-none dark:text-stone-300 dark:hover:text-white">{link.label}</a></li>)}
+            </ul>
+          </nav>
+          <dl className="grid grid-cols-2 gap-x-5 gap-y-5 border-y border-stone-300 py-6 sm:grid-cols-3 xl:grid-cols-5 dark:border-white/15" aria-label={t('quickStats')}>
+            {quickStats.map((stat) => <div key={stat.label} className="min-w-0"><dt className="text-xs leading-5 text-stone-600 dark:text-stone-300">{stat.label}</dt><dd className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-emerald-950 dark:text-white">{stat.value}</dd></div>)}
+          </dl>
 
           {/* ── Proof of work ── */}
-          <section className={`${CARD} p-6 sm:p-8`} aria-labelledby="proof-heading">
+          <section className="rounded-[1.75rem] border border-emerald-200 bg-emerald-50/70 p-6 shadow-[0_18px_40px_-36px_rgba(4,90,64,.7)] sm:p-8 dark:border-emerald-800 dark:bg-emerald-950/40" aria-labelledby="proof-heading">
             <div className="flex items-start gap-4">
-              <SectionIcon icon={ShieldCheck} tone="emerald" />
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white dark:bg-emerald-600" aria-hidden="true"><ShieldCheck className="size-6" /></span>
               <div className="min-w-0">
-                <p className="text-xs font-medium text-muted-foreground">{t('proof')}</p>
-                <h2 id="proof-heading" className="mt-1 text-2xl font-semibold tracking-tight">{t('closed', { count: closed })}</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('proofText')}</p>
-                {hasLastClosed && <p className="mt-3 text-xs text-muted-foreground">{t('lastClosed', { date: t('monthYear', { date: lastClosed! }) })}</p>}
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">{t('proof')}</p>
+                <h2 id="proof-heading" className="mt-1 text-2xl font-semibold tracking-tight text-emerald-950 dark:text-white">{t('closed', { count: closed })}</h2>
+                <p className="mt-2 text-sm leading-6 text-stone-700 dark:text-stone-200">{t('proofText')}</p>
+                {hasLastClosed && <p className="mt-3 text-xs text-emerald-900 dark:text-emerald-200">{t('lastClosed', { date: t('monthYear', { date: lastClosed! }) })}</p>}
               </div>
             </div>
+            <Link href={quickServiceRequestHref(locale, returnTo)} className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-emerald-900 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 lg:hidden dark:text-emerald-300">{t('quick')}</Link>
 
             {/* Breakdown as proportional bars: shows where the experience actually is. */}
             {maalem.statistics.by_service.length > 0 && (
-              <div className="mt-7 border-t border-black/[0.06] pt-6 dark:border-white/10">
+              <div className="mt-7 border-t border-emerald-200 pt-6 dark:border-emerald-800">
                 <h3 className="text-xs font-semibold text-muted-foreground">{t('byService')}</h3>
                 <ul className="mt-4 space-y-3.5">
                   {maalem.statistics.by_service.map((item) => {
@@ -251,8 +190,8 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
                           <span className="truncate text-sm font-medium">{item.name}</span>
                           <span className="shrink-0 text-sm font-semibold tabular-nums text-foreground">{item.closed_interventions}</span>
                         </div>
-                        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-                          <div className="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" style={{ width: `${width}%` }} />
+                        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-emerald-100 dark:bg-emerald-900">
+                          <div className="h-full rounded-full bg-emerald-600 dark:bg-emerald-400" style={{ width: `${width}%` }} />
                         </div>
                         <p className="mt-1 text-[11px] text-muted-foreground">{t('statShare', { percent: share })}</p>
                       </li>
@@ -263,67 +202,26 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
             )}
           </section>
 
-          {/* ── About + expertise ── */}
-          <section id="about" className="scroll-mt-24 grid gap-6 md:grid-cols-2" aria-label={t('about')}>
-            <article className={`${CARD} p-6 sm:p-8`}>
-              <div className="flex items-center gap-3">
-                <SectionIcon icon={Sparkles} tone="violet" />
-                <h2 className="text-xl font-semibold tracking-tight">{t('about')}</h2>
-              </div>
-              <p className="mt-4 whitespace-pre-wrap text-[15px] leading-7 text-muted-foreground">
-                {maalem.professional_summary || t('aboutFallback')}
-              </p>
-            </article>
-            <article className={`${CARD} p-6 sm:p-8`}>
-              <div className="flex items-center gap-3">
-                <SectionIcon icon={BriefcaseBusiness} tone="amber" />
-                <h2 className="text-xl font-semibold tracking-tight">{t('expertise')}</h2>
-              </div>
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">{t('expertiseText')}</p>
-              {maalem.skills.length ? (
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {maalem.skills.map((skill) => (
-                    <li key={skill} className="rounded-full bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              ) : <p className="mt-4 text-sm text-muted-foreground">{t('skillsFallback')}</p>}
-            </article>
-          </section>
-
-          {/* ── Coverage: declared areas ── */}
-          <section id="coverage" className={`${CARD} scroll-mt-24 p-6 sm:p-8`} aria-labelledby="coverage-heading">
-            <div className="flex items-center gap-3">
-              <SectionIcon icon={MapPin} tone="sky" />
-              <h2 id="coverage-heading" className="text-xl font-semibold tracking-tight">{t('areas')}</h2>
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">{t('coverageText')}</p>
-            {maalem.intervention_areas.length ? (
+          {maalem.intervention_areas.length > 0 && (
+            <section id="coverage" className="scroll-mt-24 rounded-[1.5rem] border border-sky-200 bg-sky-50/70 p-6 dark:border-sky-800 dark:bg-sky-950/30" aria-labelledby="coverage-heading">
+              <h2 id="coverage-heading" className="flex items-center gap-2 text-2xl font-semibold tracking-tight"><MapPin className="size-5 shrink-0 text-sky-700 dark:text-sky-300" aria-hidden="true" />{t('areas')}</h2>
+              <p className="mt-3 text-sm text-muted-foreground">{t('coverageText')}</p>
               <ul className="mt-5 flex flex-wrap gap-2">
                 {maalem.intervention_areas.map((area) => (
-                  <li key={area} className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-900 dark:bg-sky-950/40 dark:text-sky-200">
-                    <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-                    <span className="truncate">{area}</span>
+                  <li key={area} className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-3 py-1.5 text-sm font-medium text-sky-950 dark:border-sky-700 dark:bg-sky-950/60 dark:text-sky-100">
+                    <MapPin className="size-3.5 shrink-0 text-sky-700 dark:text-sky-300" aria-hidden="true" />
+                    <span>{area}</span>
                   </li>
                 ))}
               </ul>
-            ) : <p className="mt-5 rounded-2xl border border-dashed border-black/10 p-6 text-center text-sm text-muted-foreground dark:border-white/15">{t('coverageEmpty')}</p>}
-          </section>
-
-          <section className={`${CARD} p-6 sm:p-8`}>
-            <div className="flex items-center gap-3">
-              <SectionIcon icon={Hammer} tone="rose" />
-              <h2 className="text-lg font-semibold">{t('realizations')}</h2>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">{t('realizationsEmpty')}</p>
-          </section>
+            </section>
+          )}
 
           {/* ── Avis : 5 par page, puis bouton "suivants" ── */}
-          <section id="reviews" className={`${CARD} scroll-mt-24 p-6 sm:p-8`} aria-labelledby="reviews-heading">
+          <section id="reviews" className="scroll-mt-24 rounded-[1.75rem] border border-amber-200 bg-amber-50/30 p-6 sm:p-8 dark:border-amber-900 dark:bg-amber-950/20" aria-labelledby="reviews-heading">
             <div className="flex flex-col gap-5 border-b border-black/[0.06] pb-6 sm:flex-row sm:items-start sm:justify-between dark:border-white/10">
               <div className="flex items-start gap-3">
-                <SectionIcon icon={Star} tone="amber" />
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200" aria-hidden="true"><Star className="size-5" /></span>
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground">{t('verifiedReviews')}</p>
                   <h2 id="reviews-heading" className="mt-1 text-2xl font-semibold">{t('reviews')}</h2>
@@ -357,60 +255,25 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
           </section>
 
           {/* ── Services proposes : derniere section ── */}
-          <section id="services" className="scroll-mt-24" aria-labelledby="services-heading">
+          {maalem.compatible_services.length > 0 && <section id="services" className="scroll-mt-24" aria-labelledby="services-heading">
             <div className="flex items-center gap-3">
-              <SectionIcon icon={Layers} tone="emerald" />
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200" aria-hidden="true"><Layers className="size-5" /></span>
               <h2 id="services-heading" className="text-xl font-semibold tracking-tight">{t('services')}</h2>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{t('servicesText')}</p>
-            {maalem.compatible_services.length ? (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
                 {maalem.compatible_services.map((service) => (
                   <ServiceCard key={service.id} service={service} locale={locale} viewLabel={t('serviceView')} requestLabel={t('serviceRequest')} moreCategoriesLabel={t('moreCategories')} />
                 ))}
               </div>
-            ) : <p className="mt-6 rounded-2xl border border-dashed border-black/10 p-8 text-center text-sm text-muted-foreground dark:border-white/15">{t('servicesEmpty')}</p>}
-          </section>
+          </section>}
         </div>
-
-        {/* ── Sticky conversion rail ── */}
-        <aside className="lg:sticky lg:top-24">
-          <div className={`${CARD} overflow-hidden`}>
-            <div className="h-2 w-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300" aria-hidden="true" />
-            <div className="p-6">
-              <h2 className="text-lg font-semibold leading-snug">{t('ctaTitle')}</h2>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{t('ctaText')}</p>
-              <Button asChild size="lg" className="mt-6 h-auto min-h-12 w-full whitespace-normal rounded-full bg-emerald-900 px-4 py-3 font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-600">
-                <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="mt-3 h-auto min-h-12 w-full whitespace-normal rounded-full border-black/10 bg-white text-foreground hover:bg-neutral-50 dark:border-white/15 dark:bg-transparent dark:hover:bg-white/10">
-                <Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}</Link>
-              </Button>
-              <p className="mt-5 flex items-start gap-2 border-t border-black/[0.06] pt-4 text-xs leading-5 text-muted-foreground dark:border-white/10">
-                <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />{t('privacy')}
-              </p>
-            </div>
-          </div>
-
-          {/* Trust panel: makes the platform's guarantees explicit next to the CTA. */}
-          <div className={`${CARD} mt-6 p-6`}>
-            <h2 className="text-sm font-semibold text-foreground">{t('trustTitle')}</h2>
-            <ul className="mt-4 space-y-3.5">
-              {trustPoints.map((point) => (
-                <li key={point.text} className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
-                  <point.icon className="mt-0.5 size-4 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
-                  {point.text}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </aside>
       </div>
     </div>
 
     {/* Mobile conversion bar */}
-    <div className="sticky bottom-0 z-30 border-t border-black/[0.08] bg-white p-3 lg:hidden dark:border-white/10 dark:bg-background/95">
-      <Button asChild className="min-h-12 w-full rounded-full bg-emerald-900 font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-black/[0.08] bg-white p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden dark:border-white/10 dark:bg-background">
+      <Button asChild className="h-auto min-h-12 w-full whitespace-normal rounded-full bg-emerald-900 px-4 py-3 text-center font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700">
         <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" /></Link>
       </Button>
     </div>

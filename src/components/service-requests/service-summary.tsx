@@ -16,21 +16,21 @@ export function ServiceSummary({ service, locale }: Props) {
   const imageUrl = toAbsoluteImageUrl(service.image_url)
 
   return (
-    <section className="overflow-hidden rounded-md bg-muted/25">
-      <div className="flex flex-col">
-        <div className="flex aspect-[16/10] items-center justify-center overflow-hidden bg-muted">
+    <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+      <div className="flex items-center gap-4 p-4 lg:block lg:p-0">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted lg:aspect-[16/10] lg:h-auto lg:w-full lg:rounded-none">
           {imageUrl ? (
             <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
           ) : (
             <ImageIcon className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
           )}
         </div>
-        <div className="p-5" dir={isArabic ? 'rtl' : undefined}>
+        <div className="min-w-0 flex-1 lg:p-5" dir={isArabic ? 'rtl' : undefined}>
           <p className="text-xs font-medium text-muted-foreground">{t('serviceEyebrow')}</p>
           <h2 className="mt-2 text-xl font-medium leading-snug">{name}</h2>
-          {description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{description}</p>}
+          {description && <p className="mt-3 hidden text-sm leading-6 text-muted-foreground lg:line-clamp-3">{description}</p>}
           {service.categories.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 hidden flex-wrap gap-2 lg:flex">
               {service.categories.map((category) => (
                 <span key={category.id} className="border-s border-border ps-2 text-xs leading-5 text-muted-foreground">
                   {(isArabic ? category.nom_ar : category.nom) || category.nom}

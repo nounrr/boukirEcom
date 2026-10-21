@@ -39,9 +39,9 @@ export function ServiceCard({
     // La carte entiere est cliquable via le lien etire du titre (after:inset-0).
     // Le bouton de demande repasse au-dessus avec `relative z-10`.
     <article
-      className="group relative flex min-h-full flex-col rounded-[26px] border border-black/[0.06] bg-card p-3
+      className="group relative flex min-h-full min-w-0 flex-col rounded-[26px] border border-black/[0.06] bg-card p-3
         shadow-[0_6px_20px_-14px_rgba(16,24,40,.28)]
-        transition-[transform,box-shadow,border-color] duration-300 ease-out
+        transition-[transform,box-shadow,border-color] duration-150 ease-out
         hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_28px_52px_-24px_rgba(16,24,40,.45)]
         focus-within:-translate-y-1 focus-within:border-black/10 focus-within:shadow-[0_28px_52px_-24px_rgba(16,24,40,.45)]
         motion-reduce:transform-none motion-reduce:transition-none
@@ -55,7 +55,7 @@ export function ServiceCard({
             alt={name}
             fill
             sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
+            className="object-cover transition-transform duration-180 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
             onError={() => setImageFailed(true)}
           />
         ) : (
@@ -89,12 +89,12 @@ export function ServiceCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col px-2 pb-1 pt-4 sm:px-3">
-        <h2 className="flex items-start gap-1.5 text-[17px] font-semibold leading-snug text-foreground transition-colors duration-300 group-hover:text-emerald-900 dark:group-hover:text-emerald-300 sm:text-lg">
+      <div className="flex min-w-0 flex-1 flex-col px-2 pb-1 pt-4 sm:px-3">
+        <h2 className="flex min-w-0 items-start gap-1.5 break-words text-[17px] font-semibold leading-snug text-foreground transition-colors duration-150 group-hover:text-emerald-900 dark:group-hover:text-emerald-300 sm:text-lg">
           <Link
             href={serviceDetailHref(locale, service.id)}
             aria-label={`${name} — ${viewLabel}`}
-            className="rounded-sm outline-none after:absolute after:inset-0 after:content-[''] focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2"
+            className="min-w-0 break-words rounded-sm outline-none after:absolute after:inset-0 after:content-[''] focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2"
           >
             {name}
           </Link>
@@ -105,23 +105,23 @@ export function ServiceCard({
           />
         </h2>
 
-        <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground transition-colors duration-300 group-hover:text-foreground/70">
+        <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground transition-colors duration-150 group-hover:text-foreground/70">
           {description}
         </p>
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+        <div className="mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3 pt-5">
           {/* Repris du lien etire du titre : decoratif, deja annonce par aria-label. */}
           <span
-            className="inline-flex min-w-0 items-center gap-1.5 truncate text-xs font-medium text-muted-foreground transition-colors duration-300 group-hover:text-emerald-900 dark:group-hover:text-emerald-300"
+            className="inline-flex min-w-0 items-center gap-1.5 truncate text-xs font-medium text-muted-foreground transition-colors duration-150 group-hover:text-emerald-900 dark:group-hover:text-emerald-300"
             aria-hidden="true"
           >
             {viewLabel}
-            <ArrowRight className="size-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transform-none rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+            <ArrowRight className="size-3.5 shrink-0 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transform-none rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
           </span>
 
           <Button
             asChild
-            className="relative z-10 h-9 shrink-0 rounded-full bg-amber-400 px-4 text-emerald-950 shadow-none transition-all duration-300
+            className="relative z-10 h-auto min-h-9 max-w-full min-w-0 whitespace-normal rounded-full bg-amber-400 px-4 py-2 text-center text-emerald-950 shadow-none transition-all duration-150
               hover:bg-amber-300 hover:shadow-[0_10px_20px_-10px_rgba(180,120,10,.7)]
               group-hover:bg-amber-300
               dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"

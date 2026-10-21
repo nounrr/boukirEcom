@@ -6,6 +6,8 @@ import {
   AlertCircle,
   ArrowLeft,
   CalendarDays,
+  Check,
+  ChevronDown,
   ClipboardList,
   Paperclip,
   Send,
@@ -66,10 +68,10 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? <p id={id} className="text-sm text-destructive">{message}</p> : null
 }
 
-function RequestRelay() {
+function RequestRelay({ mode }: { mode: ServiceRequestMode }) {
   const t = useTranslations('serviceRequests.relay')
   const steps = [
-    { title: t('requestTitle'), text: t('requestText') },
+    { title: t('requestTitle'), text: mode === 'selected_maalem' ? t('requestText') : t('requestTextGeneral') },
     { title: t('reviewTitle'), text: t('reviewText') },
     { title: t('assignmentTitle'), text: t('assignmentText') },
   ]
@@ -77,7 +79,7 @@ function RequestRelay() {
     <section aria-labelledby="service-request-relay" className="rounded-2xl border border-amber-200/70 bg-amber-50/70 p-5 dark:border-amber-900/50 dark:bg-amber-950/20">
       <div>
         <h2 id="service-request-relay" className="text-sm font-semibold">{t('eyebrow')}</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{t('intro')}</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{mode === 'selected_maalem' ? t('intro') : t('introGeneral')}</p>
       </div>
       <ol className="mt-5 space-y-5">
         {steps.map((step, index) => (
@@ -131,6 +133,7 @@ export function ServiceRequestForm({
   const [desiredDate, setDesiredDate] = useState('')
   const [desiredTimeSlot, setDesiredTimeSlot] = useState('')
   const [sharedNote, setSharedNote] = useState('')
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [errors, setErrors] = useState<ServiceRequestValidationErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [createdRequest, setCreatedRequest] = useState<ServiceRequest | null>(null)
@@ -161,6 +164,7 @@ export function ServiceRequestForm({
       maalem={context.maalem}
       locale={locale}
       compact
+      className="rounded-2xl border border-border/70 px-5 shadow-sm"
       labels={{
         verified: t('summary.verified'),
         location: t('summary.location'),
@@ -170,6 +174,20 @@ export function ServiceRequestForm({
       }}
     />
   ) : null)
+  const timingFields = (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-date`}>{selectedService ? t('fields.dateRequired') : t('fields.date')}</Label>
+        <Input id={`${idPrefix}-date`} type="date" min={getTodayForDateInput()} value={desiredDate} onChange={(event) => setDesiredDate(event.target.value)} aria-invalid={Boolean(errors.desiredDate)} aria-describedby={errors.desiredDate ? `${idPrefix}-date-error` : undefined} required={selectedService} />
+        <FieldError id={`${idPrefix}-date-error`} message={errors.desiredDate} />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-slot`}>{selectedService ? t('fields.slotRequired') : t('fields.slot')}</Label>
+        <Input id={`${idPrefix}-slot`} value={desiredTimeSlot} onChange={(event) => setDesiredTimeSlot(event.target.value)} placeholder={t('fields.slotPlaceholder')} maxLength={SERVICE_REQUEST_LIMITS.desiredTimeSlot} aria-invalid={Boolean(errors.desiredTimeSlot)} aria-describedby={errors.desiredTimeSlot ? `${idPrefix}-slot-error` : undefined} required={selectedService} />
+        <FieldError id={`${idPrefix}-slot-error`} message={errors.desiredTimeSlot} />
+      </div>
+    </div>
+  )
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -206,6 +224,7 @@ export function ServiceRequestForm({
     })
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors)
+      if (nextErrors.sharedNote || nextErrors.photos || (!selectedService && (nextErrors.desiredDate || nextErrors.desiredTimeSlot))) setDetailsOpen(true)
       const fieldIds: Partial<Record<keyof ServiceRequestValidationErrors, string>> = {
         problemDescription: `${idPrefix}-description`,
         contactPhone: `${idPrefix}-contact-phone`,
@@ -217,7 +236,7 @@ export function ServiceRequestForm({
         photos: `${idPrefix}-photos`,
       }
       const firstError = Object.keys(nextErrors)[0] as keyof ServiceRequestValidationErrors
-      document.getElementById(fieldIds[firstError] || '')?.focus()
+      window.requestAnimationFrame(() => document.getElementById(fieldIds[firstError] || '')?.focus())
       return
     }
 
@@ -263,6 +282,7 @@ export function ServiceRequestForm({
       if (error instanceof ServiceRequestApiError) {
         if (error.status === 401) dispatch(clearAuth())
         if (error.errorType?.startsWith('SERVICE_')) setServiceUnavailable(true)
+        if (error.fields.shared_note || error.fields.attachments || (!selectedService && (error.fields.desired_date || error.fields.desired_time_slot))) setDetailsOpen(true)
         setErrors({
           form: error.message,
           problemDescription: error.fields.problem_description,
@@ -298,69 +318,67 @@ export function ServiceRequestForm({
   if (createdRequest) return <RequestConfirmation request={createdRequest} locale={locale} subjectName={context.mode === 'selected_service' ? context.serviceName : undefined} />
 
   return (
-    <div className="mx-auto max-w-6xl rounded-3xl bg-[#fbf8f0] px-5 py-8 sm:px-8 sm:py-12 lg:py-14 dark:bg-background">
+    <div className="mx-auto max-w-6xl rounded-3xl bg-[#f7f8f5] px-4 py-6 sm:px-8 sm:py-10 lg:py-12 dark:bg-background">
       {backHref && (
         <Link href={backHref} className="mb-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4">
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> {context.mode === 'selected_maalem' ? t('form.backToProfile') : t('form.back')}
         </Link>
       )}
 
-      <header className="mb-10 max-w-3xl sm:mb-12">
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{eyebrow || modeCopy.eyebrow}</p>
-        <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">{title || modeCopy.title}</h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{description || modeCopy.description}</p>
+      <header className="mb-7 max-w-3xl sm:mb-9">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-400">{eyebrow || modeCopy.eyebrow}</p>
+        <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title || modeCopy.title}</h1>
+        <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{description || modeCopy.description}</p>
+        <p className="mt-4 flex items-center gap-2 text-sm font-medium text-emerald-800 dark:text-emerald-300"><Check className="h-4 w-4" aria-hidden="true" />{t('form.requiredHint')}</p>
       </header>
+      {resolvedSummary && <div className="mb-6 lg:hidden">{resolvedSummary}</div>}
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
         <form onSubmit={submit} noValidate className="min-w-0 [&_input]:min-h-11 [&_input]:bg-background [&_input]:rounded-xl [&_textarea]:rounded-xl [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:leading-6">
-
-
           <div className="space-y-5">
             <div aria-live="assertive">{errors.form && <div role="alert" className="flex gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"><AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" /> {errors.form}</div>}</div>
 
-            <fieldset className="space-y-4 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
-              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"><ClipboardList className="h-5 w-5" aria-hidden="true" /></span>{t('form.needSection')}</legend>
+            <section aria-labelledby={`${idPrefix}-need-heading`} className="space-y-4 rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
+              <h2 id={`${idPrefix}-need-heading`} className="mb-5 flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"><ClipboardList className="h-5 w-5" aria-hidden="true" /></span>{t('form.needSection')}</h2>
               <div className="space-y-2">
                 <Label htmlFor={`${idPrefix}-description`}>{t('fields.description')} <span className="text-destructive">*</span></Label>
                 <Textarea id={`${idPrefix}-description`} value={problemDescription} onChange={(event) => setProblemDescription(event.target.value)} placeholder={t('fields.descriptionPlaceholder')} rows={5} maxLength={SERVICE_REQUEST_LIMITS.description} aria-invalid={Boolean(errors.problemDescription)} aria-describedby={`${idPrefix}-description-hint${errors.problemDescription ? ` ${idPrefix}-description-error` : ''}`} required />
                 <p id={`${idPrefix}-description-hint`} className="text-xs text-muted-foreground">{t('fields.descriptionHint')}</p>
                 <FieldError id={`${idPrefix}-description-error`} message={errors.problemDescription} />
               </div>
-            </fieldset>
+            </section>
 
-            <div className="rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
+            <div className="rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
               <RequestContactLocationFields value={contact} onChange={setContact} addressRequired={addressRequired} idPrefix={idPrefix} errors={{ contactPhone: errors.contactPhone, city: errors.city, address: errors.address }} />
             </div>
 
-            <fieldset className="space-y-4 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
-              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span>{t('form.timingSection')}</legend>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}-date`}>{selectedService ? t('fields.dateRequired') : t('fields.date')}</Label>
-                  <Input id={`${idPrefix}-date`} type="date" min={getTodayForDateInput()} value={desiredDate} onChange={(event) => setDesiredDate(event.target.value)} aria-invalid={Boolean(errors.desiredDate)} aria-describedby={errors.desiredDate ? `${idPrefix}-date-error` : undefined} required={selectedService} />
-                  <FieldError id={`${idPrefix}-date-error`} message={errors.desiredDate} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}-slot`}>{selectedService ? t('fields.slotRequired') : t('fields.slot')}</Label>
-                  <Input id={`${idPrefix}-slot`} value={desiredTimeSlot} onChange={(event) => setDesiredTimeSlot(event.target.value)} placeholder={t('fields.slotPlaceholder')} maxLength={SERVICE_REQUEST_LIMITS.desiredTimeSlot} aria-invalid={Boolean(errors.desiredTimeSlot)} aria-describedby={errors.desiredTimeSlot ? `${idPrefix}-slot-error` : undefined} required={selectedService} />
-                  <FieldError id={`${idPrefix}-slot-error`} message={errors.desiredTimeSlot} />
+            {selectedService && <section aria-labelledby={`${idPrefix}-timing-heading`} className="space-y-4 rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
+              <h2 id={`${idPrefix}-timing-heading`} className="mb-5 flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"><CalendarDays className="h-5 w-5" aria-hidden="true" /></span>{t('form.timingSection')}</h2>
+              {timingFields}
+            </section>}
+
+            <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" aria-labelledby={`${idPrefix}-details-heading`}>
+              <button type="button" aria-expanded={detailsOpen} aria-controls={`${idPrefix}-details-content`} onClick={() => setDetailsOpen((open) => !open)} className="flex min-h-20 w-full items-center gap-3 px-5 py-4 text-start transition-colors hover:bg-muted/40 active:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:px-7">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground"><Paperclip className="h-5 w-5" aria-hidden="true" /></span>
+                <span className="min-w-0 flex-1"><span id={`${idPrefix}-details-heading`} className="block text-base font-semibold">{t('form.optionalSection')}</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">{selectedService ? t('form.optionalHintService') : t('form.optionalHint')}</span></span>
+                <ChevronDown className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none ${detailsOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              </button>
+              <div id={`${idPrefix}-details-content`} hidden={!detailsOpen} className="space-y-6 border-t border-border/70 px-5 py-6 sm:px-7">
+                {!selectedService && <fieldset className="space-y-4"><legend className="mb-4 flex items-center gap-2 text-sm font-semibold"><CalendarDays className="h-4 w-4 text-emerald-700" aria-hidden="true" />{t('form.timingSection')}</legend>{timingFields}</fieldset>}
+                <div className="space-y-5">
+                  <RequestPhotoField id={`${idPrefix}-photos`} photos={photos} onChange={setPhotos} onError={(message) => setErrors((current) => ({ ...current, photos: message || undefined }))} />
+                  <FieldError id={`${idPrefix}-photos-error`} message={errors.photos} />
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}-note`}>{t('fields.sharedNote')}</Label>
+                    <Textarea id={`${idPrefix}-note`} value={sharedNote} onChange={(event) => setSharedNote(event.target.value)} rows={3} maxLength={SERVICE_REQUEST_LIMITS.sharedNote} placeholder={t('fields.sharedNotePlaceholder')} aria-invalid={Boolean(errors.sharedNote)} aria-describedby={`${idPrefix}-note-hint${errors.sharedNote ? ` ${idPrefix}-note-error` : ''}`} />
+                    <p id={`${idPrefix}-note-hint`} className="text-xs text-muted-foreground">{t('fields.sharedNoteHint')}</p>
+                    <FieldError id={`${idPrefix}-note-error`} message={errors.sharedNote} />
+                  </div>
                 </div>
               </div>
-            </fieldset>
+            </section>
 
-            <fieldset className="space-y-5 rounded-2xl border border-amber-200/70 bg-card p-5 shadow-[0_12px_30px_-24px_rgba(94,70,20,0.35)] sm:p-7 dark:border-amber-900/40">
-              <legend className="float-start mb-5 flex w-full items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"><Paperclip className="h-5 w-5" aria-hidden="true" /></span>{t('form.detailsSection')}</legend>
-              <RequestPhotoField id={`${idPrefix}-photos`} photos={photos} onChange={setPhotos} onError={(message) => setErrors((current) => ({ ...current, photos: message || undefined }))} />
-              <FieldError id={`${idPrefix}-photos-error`} message={errors.photos} />
-              <div className="space-y-2">
-                <Label htmlFor={`${idPrefix}-note`}>{t('fields.sharedNote')}</Label>
-                <Textarea id={`${idPrefix}-note`} value={sharedNote} onChange={(event) => setSharedNote(event.target.value)} rows={3} maxLength={SERVICE_REQUEST_LIMITS.sharedNote} placeholder={t('fields.sharedNotePlaceholder')} aria-invalid={Boolean(errors.sharedNote)} aria-describedby={`${idPrefix}-note-hint${errors.sharedNote ? ` ${idPrefix}-note-error` : ''}`} />
-                <p id={`${idPrefix}-note-hint`} className="text-xs text-muted-foreground">{t('fields.sharedNoteHint')}</p>
-                <FieldError id={`${idPrefix}-note-error`} message={errors.sharedNote} />
-              </div>
-            </fieldset>
-
-            <div className="rounded-2xl border border-amber-200/70 bg-amber-50/70 p-5 dark:border-amber-900/40 dark:bg-amber-950/20">
-              <Button type="submit" size="lg" className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90" disabled={submitting || serviceUnavailable} aria-describedby={`${idPrefix}-submit-hint`}>
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+              <Button type="submit" size="lg" className="h-auto min-h-12 w-full whitespace-normal rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-transform active:scale-[0.99] hover:bg-primary/90 motion-reduce:transition-none" disabled={submitting || serviceUnavailable} aria-describedby={`${idPrefix}-submit-hint`}>
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Send className="h-4 w-4" aria-hidden="true" />}
                 {serviceUnavailable ? t('form.serviceUnavailable') : submitting ? t('form.submitting') : t('form.submit')}
               </Button>
@@ -371,12 +389,12 @@ export function ServiceRequestForm({
         </form>
 
         <aside className="min-w-0 space-y-5 lg:sticky lg:top-24">
-          {resolvedSummary}
+          {resolvedSummary && <div className="hidden lg:block">{resolvedSummary}</div>}
           <section className="rounded-2xl border border-emerald-800 bg-emerald-900 p-6 text-white shadow-sm dark:border-emerald-700">
             <h2 className="flex items-center gap-2 text-sm font-semibold"><ShieldCheck className="h-5 w-5 text-amber-300" aria-hidden="true" />{t('trust.title')}</h2>
             <p className="mt-3 text-sm leading-6 text-emerald-50/85">{t('trust.description')}</p>
           </section>
-          <RequestRelay />
+          <RequestRelay mode={context.mode} />
         </aside>
       </div>
     </div>

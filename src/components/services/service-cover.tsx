@@ -19,8 +19,9 @@ export function ServiceCover({ src, name, variant = 'cover' }: {
 
   if (!src || failed) {
     return isThumb ? (
-      <div className="flex size-full items-center justify-center bg-muted/60" role="img" aria-label={name}>
-        <Wrench className="size-8 text-muted-foreground" aria-hidden="true" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-emerald-950 p-8 text-center text-emerald-100" role="img" aria-label={name}>
+        <Wrench className="size-8 text-emerald-200 lg:size-12" aria-hidden="true" />
+        <span className="hidden max-w-sm text-xl font-medium leading-snug lg:block">{name}</span>
       </div>
     ) : (
       <div className="flex h-40 items-center gap-4 rounded-md bg-muted/60 px-6 sm:h-48" role="img" aria-label={name}>
@@ -31,7 +32,7 @@ export function ServiceCover({ src, name, variant = 'cover' }: {
   }
 
   if (isThumb) {
-    return <Image src={src} alt={name} fill priority sizes="(min-width: 640px) 160px, 112px" className="object-cover" onError={() => setFailed(true)} />
+    return <Image src={src} alt={name} fill priority sizes="(min-width: 1024px) 256px, (min-width: 640px) 176px, 96px" className="object-cover" onError={() => setFailed(true)} />
   }
 
   return <div className="relative aspect-[16/9] overflow-hidden rounded-md bg-muted">
