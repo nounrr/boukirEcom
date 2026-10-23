@@ -69,7 +69,7 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
     console.log('[REGISTER] Role:', role)
     
     // Map frontend role to backend type_compte
-    const typeCompte = role === "artisan-promoter" ? "Artisan/Promoteur" : "Client"
+    const typeCompte = role === "artisan-promoter" ? "Artisan" : role === "promoter" ? "Promoteur" : "Client"
 
     const payload: Record<string, any> = {
       prenom: firstName.trim(),
@@ -81,7 +81,7 @@ export async function register(formData: FormData): Promise<RegisterResponse> {
       confirm_password: confirmPassword,
     }
 
-    if (typeCompte === 'Artisan/Promoteur') {
+    if (typeCompte === 'Artisan' || typeCompte === 'Promoteur') {
       payload.artisan_path = artisanPath
       if (artisanPath === 'maalem' && Number.isInteger(maalemCategoryId) && maalemCategoryId! > 0) {
         payload.maalem_category_id = maalemCategoryId

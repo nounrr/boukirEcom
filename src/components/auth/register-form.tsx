@@ -55,7 +55,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
     resolver: zodResolver(createRegisterSchema(tv)),
     mode: "all",
     defaultValues: {
-      role: "client" as "client" | "artisan-promoter",
+      role: "client" as "client" | "artisan-promoter" | "promoter",
       isCompany: false,
       companyName: "",
       ice: "",
@@ -68,7 +68,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
   const isCompany = watch('isCompany')
   const artisanPath = watch('artisanPath')
   const maalemCategoryId = watch('maalemCategoryId')
-  const isMaalemPath = role === 'artisan-promoter' && artisanPath === 'maalem'
+  const isMaalemPath = (role === 'artisan-promoter' || role === 'promoter') && artisanPath === 'maalem'
   const {
     data: maalemCategories = [],
     isLoading: isCategoriesLoading,
@@ -272,7 +272,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
           <Label className={isArabic ? 'font-arabic' : ''}>
             {t('role')} <span className="text-destructive">{t('required')}</span>
           </Label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <Toggle
               disabled={isPending}
               pressed={role === 'client'}
@@ -310,13 +310,23 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               <span className={`text-sm font-medium ${isArabic ? 'font-arabic' : ''}`}>
-                {t('artisanPromoter')}
+                {t('artisan')}
               </span>
               {role === 'artisan-promoter' && (
                 <svg className="w-4 h-4 ltr:ml-auto rtl:mr-auto" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}
+            </Toggle>
+            <Toggle
+              disabled={isPending}
+              pressed={role === 'promoter'}
+              onPressedChange={() => setValue('role', 'promoter')}
+              variant="outline"
+              className={`flex items-center justify-start gap-2 px-3 py-2.5 h-auto ${role === 'promoter' ? 'border-primary bg-primary/5 data-[state=on]:bg-primary/5 data-[state=on]:text-primary' : ''}`}
+            >
+              <User className="w-5 h-5" />
+              <span className={`text-sm font-medium ${isArabic ? 'font-arabic' : ''}`}>{t('promoter')}</span>
             </Toggle>
           </div>
           {errors.role && (
@@ -325,7 +335,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
         </div>
 
         {/* Artisan path: preserve the existing ecommerce request or add a Maalem draft. */}
-        {role === 'artisan-promoter' && (
+        {(role === 'artisan-promoter' || role === 'promoter') && (
           <fieldset
             className="animate-in fade-in slide-in-from-top-2 space-y-3 rounded-xl border border-border bg-muted/20 p-3 duration-200 sm:p-4"
             disabled={isPending}

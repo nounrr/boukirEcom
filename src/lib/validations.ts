@@ -69,7 +69,7 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
     .string({ message: t('confirmPasswordRequired') })
     .min(1, { message: t('confirmPasswordRequired') }),
   role: z
-    .enum(['client', 'artisan-promoter'], {
+    .enum(['client', 'artisan-promoter', 'promoter'], {
       message: t('roleRequired')
     }),
   artisanPath: z
@@ -104,7 +104,7 @@ export const createRegisterSchema = (t: TranslateFn) => z.object({
   message: t('iceFormat'),
   path: ['ice'],
 }).refine((data) => {
-  return data.role === 'artisan-promoter' || data.artisanPath === 'ecommerce';
+  return data.role === 'artisan-promoter' || data.role === 'promoter' || data.artisanPath === 'ecommerce';
 }, {
   message: t('artisanPathInvalid'),
   path: ['artisanPath'],

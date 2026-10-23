@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
-import { ArrowLeft, ArrowRight, Search, ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown, Search, ShieldCheck, SlidersHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
 import { MaalemDirectoryCard } from '@/components/maalems/maalem-directory-card'
-import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
-import { Button } from '@/components/ui/button'
+import Image from 'next/image'
+import styles from '@/components/maalems/directory.module.css'
+
 import { normalizeLocale } from '@/i18n/locale'
 import { localizedCategoryName, quickServiceRequestHref } from '@/lib/service-catalog'
 import { getPublicMaalems } from '@/lib/service-requests'
@@ -49,58 +50,70 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
   const returnTo = href(locale, filters)
   const labels = { verified: t('verified'), city: t('city'), areas: t('areas'), experience: t('experienceLabel', { years: '{years}' }), noPhoto: t('noPhoto'), interventions: t('interventionsLabel', { count: '{count}' }), declared: t('declared'), profile: t('profile'), request: t('request'), ratingLabel: t('ratingLabel', { rating: '{rating}', count: '{count}' }), verifiedReviews: t('verifiedReviews'), noReviews: t('noReviews') }
 
-  return <main className="min-h-[70vh] bg-[#fbf8ef] dark:bg-background py-10 dark:bg-background sm:py-14">
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <header className="grid gap-6 pb-9 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div className="max-w-3xl"><p className="flex items-center gap-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300"><span className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"><ShieldCheck className="size-5" aria-hidden="true" /></span>{t('eyebrow')}</p><h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">{t('title')}</h1><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p><div className="mt-5"><QuickRequestLink locale={locale} returnTo={returnTo} /></div></div>
-        {data && <p className="w-fit rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300" aria-live="polite">{t('count', { count: data.pagination.total_items })}</p>}
+  const searchHref = `/${locale}/maalems`
+  const quickHref = quickServiceRequestHref(locale, returnTo)
+  return <div className={styles.page} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <div className={styles.container}>
+      <header className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>{t('eyebrow')}</p>
+          <h1 className={styles.title}>{t('title')} <em>{t('titleAccent')}</em></h1>
+          <p className={styles.description}>{t('description')}</p>
+          <div className={styles.heroActions}>
+            <a href="#find-maalem" className={styles.primary}>{t('explore')}<ArrowRight className={styles.arrow} aria-hidden="true" /></a>
+            <Link href={quickHref} className={styles.textLink}>{t('quick')}<ArrowUpRight className={styles.arrow} aria-hidden="true" /></Link>
+          </div>
+        </div>
+        <figure className={styles.heroFigure}>
+          <Image src="/utility-types/professionnel-atelier-editorial-2026.webp" alt={t('heroAlt')} fill priority sizes="(max-width: 800px) 100vw, 50vw" className={styles.heroImage} />
+          <figcaption className={styles.heroCaption}><div><strong>{t('heroCaption')}</strong><span>{t('heroCaptionDetail')}</span></div><ArrowUpRight aria-hidden="true" /></figcaption>
+        </figure>
       </header>
 
-      <section className="rounded-2xl border border-amber-900/10 bg-card p-5 shadow-[0_12px_30px_-22px_rgba(83,60,19,.3)] sm:p-6 dark:border-border" aria-label={t('search')}>
-        <form action={`/${locale}/maalems`}>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1.25fr)_minmax(180px,.75fr)_minmax(180px,.75fr)_auto] lg:items-end">
-            <label className="grid min-w-0 gap-2 text-xs font-medium">{t('search')}<span className="relative"><Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-amber-700" aria-hidden="true" /><input suppressHydrationWarning name="q" defaultValue={filters.q} className="h-11 w-full rounded-[6px] border border-input bg-background px-9 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15" /></span></label>
-            <label className="grid min-w-0 gap-2 text-xs font-medium">{t('category')}<select name="category_id" defaultValue={filters.category_id || ''} className="h-11 rounded-[6px] border border-input bg-background px-3 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15"><option value="">{t('allCategories')}</option>{data?.filters.categories.map((item) => <option key={item.id} value={item.id}>{localizedCategoryName(item, locale)}</option>)}</select></label>
-            <label className="grid min-w-0 gap-2 text-xs font-medium">{t('service')}<select name="service_id" defaultValue={filters.service_id || ''} className="h-11 rounded-[6px] border border-input bg-background px-3 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15"><option value="">{t('allServices')}</option>{data?.filters.services.map((item) => <option key={item.id} value={item.id}>{localizedCategoryName(item, locale)}</option>)}</select></label>
-            <div className="flex gap-2"><Button type="submit" className="min-h-11 rounded-md bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"><Search className="size-4" />{t('submit')}</Button>{hasFilters && <Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={`/${locale}/maalems`}>{t('reset')}</Link></Button>}</div>
+      <section id="find-maalem" className={styles.searchPanel} aria-labelledby="search-heading">
+        <div className={styles.searchIntro}><h2 id="search-heading">{t('searchTitle')}</h2><span>{t('searchHint')}</span></div>
+        <form action={searchHref} method="get">
+          <div className={styles.searchGrid}>
+            <label className={styles.field}>{t('search')}<span className={styles.inputIcon}><Search aria-hidden="true" /><input name="q" defaultValue={filters.q} placeholder={t('searchPlaceholder')} /></span></label>
+            <label className={styles.field}>{t('category')}<select name="category_id" defaultValue={filters.category_id || ''}><option value="">{t('allCategories')}</option>{data?.filters.categories.map(item => <option key={item.id} value={item.id}>{localizedCategoryName(item, locale)}</option>)}</select></label>
+            <label className={styles.field}>{t('service')}<select name="service_id" defaultValue={filters.service_id || ''}><option value="">{t('allServices')}</option>{data?.filters.services.map(item => <option key={item.id} value={item.id}>{localizedCategoryName(item, locale)}</option>)}</select></label>
+            <button type="submit" className={styles.primary}><Search className={styles.arrow} aria-hidden="true" />{t('submit')}</button>
           </div>
-
-          <details className="group mt-4 border-t border-border pt-4 dark:border-border" open={hasAdvancedFilters}>
-            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-emerald-700/30 [&::-webkit-details-marker]:hidden">
-              <SlidersHorizontal className="size-4 text-muted-foreground" aria-hidden="true" />{t('advancedFilters')}
-              <span className="ms-auto text-xs font-normal text-muted-foreground">{hasAdvancedFilters ? t('activeAdvancedFilters') : t('optionalFilters')}</span>
-            </summary>
-            <div className="grid gap-3 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('city')}<input suppressHydrationWarning name="city" defaultValue={filters.city} className="h-11 rounded-[6px] border border-input bg-background px-3" /></label>
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('zone')}<input suppressHydrationWarning name="zone" defaultValue={filters.zone} className="h-11 rounded-[6px] border border-input bg-background px-3" /></label>
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('experience')}<input suppressHydrationWarning type="number" min="0" max="70" name="min_experience" defaultValue={filters.min_experience} className="h-11 rounded-[6px] border border-input bg-background px-3" /></label>
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('interventions')}<input suppressHydrationWarning type="number" min="0" name="min_interventions" defaultValue={filters.min_interventions} className="h-11 rounded-[6px] border border-input bg-background px-3" /></label>
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('minimumRating')}<select name="min_rating" defaultValue={filters.min_rating || ''} className="h-11 rounded-[6px] border border-input bg-background px-3"><option value="">{t('allRatings')}</option>{[5,4,3,2,1].map((rating) => <option key={rating} value={rating}>{t('minimumRatingOption', { rating })}</option>)}</select></label>
-              <label className="grid min-w-0 gap-2 text-xs font-medium">{t('sort')}<select name="sort" defaultValue={filters.sort} className="h-11 rounded-[6px] border border-input bg-background px-3"><option value="recommended">{t('recommended')}</option><option value="rating_desc">{t('ratingSort')}</option><option value="interventions_desc">{t('interventionsSort')}</option><option value="experience_desc">{t('experienceSort')}</option><option value="name_asc">{t('nameSort')}</option></select></label>
+          <details className={styles.advanced} open={hasAdvancedFilters}>
+            <summary><SlidersHorizontal className={styles.arrow} aria-hidden="true" />{t('advancedFilters')}<span>{hasAdvancedFilters ? t('activeAdvancedFilters') : t('optionalFilters')}</span><ChevronDown className={styles.arrow} aria-hidden="true" /></summary>
+            <div className={styles.advancedGrid}>
+              <label className={styles.field}>{t('city')}<input name="city" defaultValue={filters.city} /></label>
+              <label className={styles.field}>{t('zone')}<input name="zone" defaultValue={filters.zone} /></label>
+              <label className={styles.field}>{t('experience')}<input type="number" min="0" max="70" name="min_experience" defaultValue={filters.min_experience} /></label>
+              <label className={styles.field}>{t('interventions')}<input type="number" min="0" name="min_interventions" defaultValue={filters.min_interventions} /></label>
+              <label className={styles.field}>{t('minimumRating')}<select name="min_rating" defaultValue={filters.min_rating || ''}><option value="">{t('allRatings')}</option>{[5,4,3,2,1].map(rating => <option key={rating} value={rating}>{t('minimumRatingOption', { rating })}</option>)}</select></label>
+              <label className={styles.field}>{t('sort')}<select name="sort" defaultValue={filters.sort}><option value="recommended">{t('recommended')}</option><option value="rating_desc">{t('ratingSort')}</option><option value="interventions_desc">{t('interventionsSort')}</option><option value="experience_desc">{t('experienceSort')}</option><option value="name_asc">{t('nameSort')}</option></select></label>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3"><Button type="submit" variant="outline" className="min-h-11 rounded-[6px]">{t('applyAdvancedFilters')}</Button><p className="text-xs leading-5 text-muted-foreground">{filters.sort === 'rating_desc' ? t('ratingSortNotice', { count: data?.filters.rating_sort_min_reviews || 3 }) : t('sortNotice', { sort: t(filters.sort === 'recommended' ? 'recommended' : filters.sort === 'interventions_desc' ? 'interventionsSort' : filters.sort === 'experience_desc' ? 'experienceSort' : 'nameSort') })}</p></div>
+            <div className={styles.advancedActions}><button type="submit" className={styles.secondary}>{t('applyAdvancedFilters')}</button><p>{filters.sort === 'rating_desc' ? t('ratingSortNotice', { count: data?.filters.rating_sort_min_reviews || 3 }) : t('sortNotice', { sort: t(filters.sort === 'recommended' ? 'recommended' : filters.sort === 'interventions_desc' ? 'interventionsSort' : filters.sort === 'experience_desc' ? 'experienceSort' : 'nameSort') })}</p></div>
           </details>
+          {hasFilters && <Link href={searchHref} className={styles.textLink}>{t('reset')}</Link>}
         </form>
       </section>
+      {Boolean(data?.filters.categories.length) && <nav className={styles.categoryLinks} aria-label={t('browseCategories')}><span>{t('browseCategories')}</span>{data?.filters.categories.slice(0,5).map(category => <Link key={category.id} className={styles.categoryLink} aria-current={filters.category_id === category.id ? 'true' : undefined} href={`${href(locale, { ...filters, category_id: category.id, service_id: undefined, page: undefined, per_page: undefined })}#directory`}>{localizedCategoryName(category, locale)}<ArrowUpRight className={styles.arrow} aria-hidden="true" /></Link>)}</nav>}
 
-      {!data ? (
-        <section className="mt-8 rounded-lg border border-border bg-card p-5  sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"><ShieldCheck className="size-5" aria-hidden="true" /></span>
-          <div className="mt-4 min-w-0 flex-1 sm:mt-0"><p className="font-semibold">{t('error')}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{t('quickDescription')}</p></div>
-          <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0">
-            <Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={href(locale, filters)}>{t('submit')}</Link></Button>
-            <Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button>
-          </div>
-        </section>
-      ) : data.maalems.length === 0 ? (
-        <section className="mt-10 rounded-lg border border-dashed border-border bg-card p-8 text-center sm:p-10"><p className="font-semibold">{t('empty')}</p>{hasFilters && <Button asChild variant="outline" className="mt-5 min-h-11 rounded-[6px]"><Link href={`/${locale}/maalems`}>{t('reset')}</Link></Button>}</section>
-      ) : (
-        <section className="mt-8"><p className="mb-5 text-sm leading-6 text-muted-foreground">{t('declared')}</p><div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{data.maalems.map((maalem) => <MaalemDirectoryCard key={maalem.id} maalem={maalem} locale={locale} stats={maalem.statistics} labels={labels} />)}</div></section>
-      )}
+      <section id="directory" className={styles.results} aria-labelledby="directory-heading">
+        <div className={styles.resultsHeading}><div><p className={styles.eyebrow}>{t('directoryEyebrow')}</p><h2 id="directory-heading" className={styles.sectionTitle}>{t('directoryTitle')}</h2></div>{data && <p className={styles.resultCount} aria-live="polite">{t('count', { count: data.pagination.total_items })}</p>}</div>
+        <p className={styles.resultsNotice}>{t('declared')}</p>
+        {!data ? <div className={styles.state} role="alert"><ShieldCheck className={styles.stateIcon} aria-hidden="true" /><h3>{t('error')}</h3><p>{t('quickDescription')}</p><div className={styles.stateActions}><Link href={href(locale, filters)} className={styles.secondary}>{t('retry')}</Link><Link href={quickHref} className={styles.primary}>{t('quick')}<ArrowRight className={styles.arrow} aria-hidden="true" /></Link></div></div>
+          : data.maalems.length === 0 ? <div className={styles.state}><Search className={styles.stateIcon} aria-hidden="true" /><h3>{t('empty')}</h3><p>{t('emptyHint')}</p><div className={styles.stateActions}>{hasFilters && <Link href={searchHref} className={styles.secondary}>{t('reset')}</Link>}<Link href={quickHref} className={styles.primary}>{t('quick')}<ArrowRight className={styles.arrow} aria-hidden="true" /></Link></div></div>
+          : <div className={styles.directoryGrid}>{data.maalems.map(maalem => <MaalemDirectoryCard key={maalem.id} maalem={maalem} locale={locale} stats={maalem.statistics} labels={labels} />)}</div>}
+        {data && data.pagination.total_pages > 1 && <nav className={styles.pagination} aria-label={t('pagination')}>
+          {data.pagination.has_previous ? <Link className={styles.secondary} href={href(locale, { ...filters, page: data.pagination.current_page - 1, per_page: undefined })}><ArrowLeft className={styles.arrow} aria-hidden="true" />{t('previous')}</Link> : <span className={`${styles.secondary} ${styles.disabled}`} aria-disabled="true"><ArrowLeft className={styles.arrow} aria-hidden="true" />{t('previous')}</span>}
+          <span>{t('page', { page: data.pagination.current_page })} / {data.pagination.total_pages}</span>
+          {data.pagination.has_next ? <Link className={styles.secondary} href={href(locale, { ...filters, page: data.pagination.current_page + 1, per_page: undefined })}>{t('next')}<ArrowRight className={styles.arrow} aria-hidden="true" /></Link> : <span className={`${styles.secondary} ${styles.disabled}`} aria-disabled="true">{t('next')}<ArrowRight className={styles.arrow} aria-hidden="true" /></span>}
+        </nav>}
+      </section>
 
-      {data && <aside className="mt-12 flex flex-col gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 className="text-xl font-semibold">{t('quick')}</h2><p className="mt-2 text-sm text-white/75">{t('quickDescription')}</p></div><Button asChild className="min-h-11 rounded-md bg-amber-400 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('quick')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></aside>}
-
-      {data && data.pagination.total_pages > 1 && <nav className="mt-9 flex flex-wrap items-center justify-center gap-3" aria-label={t('pagination')}><Button asChild variant="outline" className={!data.pagination.has_previous ? 'pointer-events-none opacity-50' : ''}><Link href={href(locale, { ...filters, page: Math.max(1, data.pagination.current_page - 1), per_page: undefined })}><ArrowLeft className="size-4 rtl:rotate-180" />{t('previous')}</Link></Button><span className="text-sm font-semibold">{t('page', { page: data.pagination.current_page })} / {data.pagination.total_pages}</span><Button asChild variant="outline" className={!data.pagination.has_next ? 'pointer-events-none opacity-50' : ''}><Link href={href(locale, { ...filters, page: data.pagination.current_page + 1, per_page: undefined })}>{t('next')}<ArrowRight className="size-4 rtl:rotate-180" /></Link></Button></nav>}
+      <section className={styles.howItWorks} aria-labelledby="how-heading">
+        <div><p className={styles.eyebrow}>{t('howEyebrow')}</p><h2 id="how-heading" className={styles.sectionTitle}>{t('howTitle')}</h2></div>
+        <ol className={styles.steps}>{(['01','02','03'] as const).map((number, index) => <li key={number}><span className={styles.stepNumber} aria-hidden="true">{number}</span><h3>{t(`step${index + 1}Title`)}</h3><p>{t(`step${index + 1}Description`)}</p></li>)}</ol>
+        <div className={styles.quickCta}><p>{t('quickDescription')}</p><Link href={quickHref} className={styles.primary}>{t('quick')}<ArrowRight className={styles.arrow} aria-hidden="true" /></Link></div>
+      </section>
     </div>
-  </main>
+  </div>
 }

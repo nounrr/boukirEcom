@@ -69,7 +69,7 @@ interface PromptNotification {
 interface UseGoogleAuthOptions {
   onSuccess?: (user: any) => void
   onError?: (error: string, field?: string) => void
-  role?: "client" | "artisan-promoter"
+  role?: "client" | "artisan-promoter" | "promoter"
   artisanPath?: 'ecommerce' | 'maalem'
   maalemCategoryId?: number | null
   maalemRedirectTo?: string

@@ -48,6 +48,7 @@ export interface ProductVariant {
   prix_vente: number;
   remise_client: number;
   remise_artisan: number;
+  remise_promoteur: number;
   stock_quantity: number;
   available: boolean;
   image_url: string | null;
@@ -114,6 +115,7 @@ export interface ProductListItem {
   pourcentage_promo: number;
   remise_client: number;
   remise_artisan: number;
+  remise_promoteur: number;
   has_promo: boolean;
   image_url: string;
   gallery: ProductGalleryImage[];
@@ -160,6 +162,7 @@ export interface ProductDetail extends Omit<ProductListItem, 'variants'> {
     prix_vente: number;
     remise_client: number;
     remise_artisan: number;
+    remise_promoteur: number;
     stock_quantity: number;
     available: boolean;
     image_url: string | null;

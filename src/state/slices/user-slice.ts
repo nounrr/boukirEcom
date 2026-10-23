@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { MaalemProfile } from '@/types/maalem-profile';
 
-export type EcommerceAccountType = 'Client' | 'Artisan/Promoteur';
+export type EcommerceAccountType = 'Client' | 'Artisan' | 'Promoteur' | 'Artisan/Promoteur';
 
 // Match backend user structure
 export interface User {
