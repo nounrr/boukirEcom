@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 
+import { isRequiredVariant } from "@/lib/product-card-price"
 import { productModel } from "@/components/home/professional/professional-catalog"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
@@ -42,8 +43,10 @@ function detailToModel(p: Record<string, any>, fallbackImage?: string | null): C
     inStock: p.in_stock,
     rating: 0,
     reviews: 0,
-    variants: [],
-    isVariantRequired: false,
+    variants: (Array.isArray(p.variants) ? p.variants : p.variants?.all ?? []).map((v: Record<string, any>) => ({
+      ...v, value: v.variant_name ?? v.name, image: v.image_url,
+    })),
+    isVariantRequired: isRequiredVariant(p.is_obligatoire_variant, p.isObligatoireVariant),
     is_wishlisted: Boolean(p.is_wishlisted),
     sale: p.pourcentage_promo > 0 ? { discount: p.pourcentage_promo } : undefined,
     badges: p.has_promo ? [{ text: "PROMO", variant: "promo" as const }] : [],

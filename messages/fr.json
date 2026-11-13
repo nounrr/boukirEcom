@@ -864,6 +864,7 @@
     }
   },
   "productCard": {
+    "priceUnavailable": "Prix indisponible",
     "inStock": "En stock",
     "quickView": "Aperçu rapide",
     "addToCart": "Ajouter au panier",

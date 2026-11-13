@@ -1,5 +1,6 @@
 'use client'
 
+import { isRequiredVariant } from '@/lib/product-card-price'
 import { Sparkles } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { ProductCardTile } from '@/components/shop/product-card-tile'
@@ -88,7 +89,7 @@ export function ProductSuggestions({
               in_stock: (product as any).in_stock ?? (product as any).inStock,
               inStock: (product as any).inStock ?? (product as any).in_stock,
               is_wishlisted: product.is_wishlisted,
-              isVariantRequired: product.is_obligatoire_variant === true,
+              isVariantRequired: isRequiredVariant(product.is_obligatoire_variant),
               variants: product.variants?.all?.map(variant => ({
                 id: variant.id,
                 name: variant.type,

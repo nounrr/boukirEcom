@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { productHref } from '@/lib/seo/product-url'
+import { resolveCardPrice, resolveCardVariant } from '@/lib/product-card-price'
 import { Heart, Eye, Package, Check, Ruler, Box, Plus, Share2, Flame, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -123,25 +124,10 @@ export function ProductCard({
     }))
   }, [product.variants])
 
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(() => {
-    return product.isVariantRequired ? normalizedVariants[0]?.id ?? null : null
-  })
-
-  // Keep selection in sync when product or variants change
-  useEffect(() => {
-    if (normalizedVariants.length === 0) {
-      if (selectedVariant !== null) setSelectedVariant(null)
-      return
-    }
-
-    if (!product.isVariantRequired && selectedVariant === null) return
-
-    const stillExists = selectedVariant != null && normalizedVariants.some((v) => v.id === selectedVariant)
-    if (stillExists) return
-
-    const firstAvailable = normalizedVariants[0]
-    setSelectedVariant(firstAvailable?.id ?? normalizedVariants[0].id)
-  }, [normalizedVariants, product.isVariantRequired, selectedVariant])
+  const [selectedVariantId, setSelectedVariant] = useState<number | null>(null)
+  // Resolve the required default during render, including when variants arrive later.
+  const selectedVariant = resolveCardVariant(product, selectedVariantId)?.id ?? null
+  const offer = resolveCardPrice(product, selectedVariant)
 
   const normalizedBaseImage = useMemo(() => toAbsoluteImageUrl(product.image) ?? '', [product.image])
   const normalizedFallbackImage = useMemo(() => toAbsoluteImageUrl(product.fallbackImage) ?? '', [product.fallbackImage])
@@ -248,14 +234,10 @@ export function ProductCard({
       return
     }
 
-    // Get current price based on selected variant
-    let itemPrice = product.price
-    if (selectedVariant) {
-      const variant = product.variants?.find(v => v.id === selectedVariant)
-      const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
-      if (variantPrice != null) {
-        itemPrice = Number(variantPrice) * (1 - (product.sale?.discount ?? 0) / 100)
-      }
+    const itemPrice = resolveCardPrice(product, selectedVariant).price
+    if (itemPrice == null) {
+      toast.error(t('priceUnavailable'))
+      return
     }
 
     // Guest users can add to cart via localStorage, which syncs on auth
@@ -315,7 +297,7 @@ export function ProductCard({
         }
       }
     }
-  }, [cartRef, localizedCategoryName, localizedProductName, product.id, product.isVariantRequired, product.price, product.sale?.discount, product.stock, product.variants, selectedVariant, currentImage, imageError, onAddToCart, t, toast])
+  }, [cartRef, localizedCategoryName, localizedProductName, product.id, product.isVariantRequired, product.price, product.originalPrice, product.sale?.discount, product.stock, product.variants, selectedVariant, currentImage, imageError, onAddToCart, t, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -404,46 +386,19 @@ export function ProductCard({
     return suffixParts.length > 0 ? `${localizedProductName} • ${suffixParts.join(' · ')}` : localizedProductName
   }, [localizedProductName, product.unit, product.variants, selectedVariant])
 
-  // Memoize computed values
-  const discountPercentage = useMemo(() =>
-    product.sale?.discount ||
-    (product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0),
-    [product.sale?.discount, product.originalPrice, product.price]
-  )
+  const discountPercentage = offer.price != null && offer.originalPrice && offer.originalPrice > offer.price
+    ? Math.round(((offer.originalPrice - offer.price) / offer.originalPrice) * 100)
+    : 0
 
-  // Calculate current price based on selected variant
-  const currentPrice = useMemo(() => {
-    if (selectedVariant) {
-      const variant = product.variants?.find(v => v.id === selectedVariant)
-      // Check if variant has a specific price (prix_vente or price field)
-      const variantPrice = (variant as any)?.prix_vente ?? (variant as any)?.price
-      if (variantPrice != null) {
-        const discount = product.sale?.discount ?? 0
-        return Number(variantPrice) * (1 - discount / 100)
-      }
-    }
-    return product.price
-  }, [selectedVariant, product.variants, product.price, product.sale?.discount])
-
-  // Calculate current original price for discount display
-  const currentOriginalPrice = useMemo(() => {
-    if (selectedVariant) {
-      const variant = product.variants?.find(v => v.id === selectedVariant)
-      const variantOriginal = (variant as any)?.prix_original ?? (variant as any)?.originalPrice ??
-        (product.sale?.discount ? (variant as any)?.prix_vente : null)
-      if (variantOriginal != null) {
-        return Number(variantOriginal)
-      }
-    }
-    return product.originalPrice
-  }, [selectedVariant, product.variants, product.originalPrice, product.sale?.discount])
+  const currentPrice = offer.price
+  const currentOriginalPrice = offer.originalPrice
 
   const displayUnit = formatCommercialUnit(product.unit, locale as any)
   const unitRate = formatUnitRate(tCommon('currency'), product.unit, locale as any)
 
-  const price = splitPrice(currentPrice, locale)
-  const hasDiscount = Boolean(currentOriginalPrice && currentOriginalPrice > currentPrice)
-  const savings = hasDiscount ? (currentOriginalPrice as number) - currentPrice : 0
+  const price = splitPrice(currentPrice ?? 0, locale)
+  const hasDiscount = Boolean(currentPrice != null && currentOriginalPrice && currentOriginalPrice > currentPrice)
+  const savings = hasDiscount ? (currentOriginalPrice as number) - (currentPrice as number) : 0
   const isNew = product.badges?.some((b) => b.variant === 'new') ?? false
   const href = productHref(product, locale)
   const stop = (e: React.MouseEvent) => {
@@ -451,7 +406,9 @@ export function ProductCard({
     e.stopPropagation()
   }
 
-  const priceBlock = (size: 'lg' | 'md') => (
+  const priceBlock = (size: 'lg' | 'md') => currentPrice == null ? (
+    <p className="text-sm font-semibold text-muted-foreground">{t('priceUnavailable')}</p>
+  ) : (
     <div className="min-w-0">
       <div className="flex items-baseline gap-1 tabular">
         <span className={cn('font-extrabold tracking-tight text-foreground', size === 'lg' ? 'text-[1.6rem] leading-none' : 'text-xl leading-none')}>{price.int}</span>

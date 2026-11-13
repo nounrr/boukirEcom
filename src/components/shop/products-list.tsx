@@ -1,5 +1,6 @@
 "use client"
 
+import { isRequiredVariant } from '@/lib/product-card-price'
 import { ProductCardRow } from "@/components/shop/product-card-row"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { Button } from "@/components/ui/button"
@@ -129,7 +130,7 @@ export function ProductsList({
           image: v.image_url ?? undefined
         })) || [],
         isVariantRequired:
-          product.is_obligatoire_variant === true || product.isObligatoireVariant === true,
+          isRequiredVariant(product.is_obligatoire_variant, product.isObligatoireVariant),
         is_wishlisted: product.is_wishlisted || false,
         sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
         badges: [

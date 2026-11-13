@@ -1,5 +1,6 @@
 'use client'
 
+import { isRequiredVariant } from '@/lib/product-card-price'
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Package } from 'lucide-react'
@@ -69,7 +70,7 @@ function toProductCardModel(product: ProductListItem, locale: string) {
         image: v.image_url ?? undefined,
       })) || [],
     isVariantRequired:
-      product.is_obligatoire_variant === true || product.isObligatoireVariant === true,
+      isRequiredVariant(product.is_obligatoire_variant, product.isObligatoireVariant),
     is_wishlisted: product.is_wishlisted || false,
     sale:
       product.pourcentage_promo > 0

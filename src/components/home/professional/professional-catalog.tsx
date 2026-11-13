@@ -1,4 +1,5 @@
 'use client'
+import { isRequiredVariant } from '@/lib/product-card-price'
 import { catalogHref } from '@/lib/catalog/registry'
 
 import Image from 'next/image'
@@ -92,7 +93,7 @@ export function productModel(product: ProductListItem, locale: string) {
       prix_vente: variant.prix_vente,
       image: variant.image_url ?? undefined,
     })) ?? [],
-    isVariantRequired: product.is_obligatoire_variant === true || product.isObligatoireVariant === true,
+    isVariantRequired: isRequiredVariant(product.is_obligatoire_variant, product.isObligatoireVariant),
     is_wishlisted: product.is_wishlisted || false,
     sale: product.pourcentage_promo > 0 ? { discount: product.pourcentage_promo } : undefined,
     badges: product.has_promo ? [{ text: 'PROMO', variant: 'promo' as const }] : [],
