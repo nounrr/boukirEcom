@@ -15,6 +15,21 @@ import { API_CONFIG } from '@/lib/api-config'
 import { catalogHref, categories as catalogCategories } from '@/lib/catalog/registry'
 import { getActiveServices } from '@/lib/service-requests'
 import type { PublicService } from '@/types/service-request'
+import type { Metadata } from 'next'
+import { buildPageMetadata } from '@/lib/seo/metadata'
+import { constructionCopy } from '@/lib/seo/construction-copy'
+
+export async function generateMetadata({ params }: {
+  params: Promise<{ locale?: string }>
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params
+  const locale = normalizeLocale(rawLocale)
+  const copy = constructionCopy[locale]
+  return buildPageMetadata({
+    locale, path: '/', title: copy.homeTitle,
+    description: copy.description, keywords: copy.keywords, indexable: true,
+  })
+}
 
 /** Editorial order of the product universes (verified registry slugs). */
 const UNIVERSES: { slug: string; fallback: string | null }[] = [
