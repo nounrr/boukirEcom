@@ -9,6 +9,7 @@ import { ProductGallery } from "@/components/shop/product-gallery"
 import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { VariantSelector } from "@/components/shop/variant-selector"
 import { TechnicalSheet } from "@/components/shop/technical-sheet"
+import { ProductCalculatorLink } from "@/components/shop/product-calculator-link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -614,6 +615,13 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                 <Share2 className="w-4 h-4" />
               </Button>
             </div>
+
+            <ProductCalculatorLink
+              productId={product.id}
+              designation={product.designation}
+              categoryId={(product as any)?.categorie?.id ?? null}
+              parentCategoryId={(product as any)?.categorie?.parent_id ?? null}
+            />
 
             <Separator />
 

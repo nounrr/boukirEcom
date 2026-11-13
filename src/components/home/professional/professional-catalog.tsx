@@ -51,7 +51,7 @@ function absoluteImageUrl(src?: string | null) {
   return base ? `${base}${path}` : path
 }
 
-function productModel(product: ProductListItem, locale: string) {
+export function productModel(product: ProductListItem, locale: string) {
   const price = product.prix_promo || product.prix_vente
   const discounted = Boolean(product.prix_promo && product.prix_promo < product.prix_vente)
   const stockFlag = (product as ProductListItem & { in_stock?: boolean; inStock?: boolean }).in_stock ??

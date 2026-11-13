@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +8,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { clearAuth } from "@/state/slices/user-slice"
-import { AnimatePresence, motion } from "framer-motion"
-import { BriefcaseBusiness, ChevronDown, HardHat, Home, LogOut, Menu, Package, Store, UserCircle2, Wrench } from "lucide-react"
+import {
+  Calculator,
+  ChevronDown,
+  HardHat,
+  Heart,
+  LayoutGrid,
+  LogOut,
+  Mail,
+  Menu,
+  Package,
+  Percent,
+  Ruler,
+  Store,
+  UserCircle2,
+  Wrench,
+  X,
+} from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
@@ -22,9 +37,11 @@ import { useCart } from "./cart-context-provider"
 import { CartPopover } from "./cart-popover"
 import { HeaderSearch } from "./header-search"
 import { WishlistIcon } from "./wishlist-icon"
-
 import { CategoriesMegaMenu } from "./categories-mega-menu"
 import { CategoriesMobileMenu } from "./categories-mobile-menu"
+import { ThemeToggle } from "@/components/theme/theme-toggle"
+import { BrandLockup } from "@/components/brand/brand-lockup"
+import { cn } from "@/lib/utils"
 
 import {
   getSupportedLocales,
@@ -33,21 +50,35 @@ import {
 } from "@/components/i18n/locale-preference-initializer"
 import { API_CONFIG } from "@/lib/api-config"
 
+const languageMeta: Record<SupportedLocale, { label: string; short: string }> = {
+  fr: { label: "Français", short: "FR" },
+  ar: { label: "العربية", short: "AR" },
+  en: { label: "English", short: "EN" },
+  zh: { label: "中文", short: "ZH" },
+}
+
+function avatarSrc(url?: string | null) {
+  if (!url) return null
+  return url.startsWith("http") ? url : `${API_CONFIG.BASE_URL}${url}`
+}
+
 export function Header() {
-  const t = useTranslations('header')
-  const tCommon = useTranslations('common')
-  const tFilters = useTranslations('productFilters')
+  const t = useTranslations("header")
+  const tCommon = useTranslations("common")
+  const tx = useTranslations("xp.nav")
   const locale = useLocale()
-  const isArabic = locale === 'ar'
+  const isArabic = locale === "ar"
   const router = useRouter()
   const pathname = usePathname()
-  const isServiceJourney = /\/(services|maalems|service-requests)(\/|$)/.test(pathname)
   const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
+  const [isScrolled, setIsScrolled] = useState(false)
   const isAuthLoading = !!accessToken && !user
+  const isHome = pathname === `/${locale}` || pathname === `/${locale}/`
+  const overlay = isHome && !isScrolled
 
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
@@ -57,69 +88,41 @@ export function Header() {
     headerVisibleRef.current = isHeaderVisible
   }, [isHeaderVisible])
 
+  // Hide on scroll down, reveal on scroll up; frosted once the page moves.
   useEffect(() => {
-    if (typeof window === "undefined") return
-
     lastScrollYRef.current = window.scrollY
-
+    setIsScrolled(window.scrollY > 24)
     const handleScroll = () => {
       if (tickingRef.current) return
       tickingRef.current = true
-
       window.requestAnimationFrame(() => {
         const currentY = window.scrollY
-        const lastY = lastScrollYRef.current
-        const delta = currentY - lastY
-
-        // Near the top, always show the header.
-        if (currentY < 24) {
+        const delta = currentY - lastScrollYRef.current
+        setIsScrolled(currentY > 24)
+        if (currentY < 120 || isMobileMenuOpen) {
           if (!headerVisibleRef.current) setIsHeaderVisible(true)
-          lastScrollYRef.current = currentY
-          tickingRef.current = false
-          return
-        }
-
-        // While mobile menu is open, keep the header visible.
-        if (isMobileMenuOpen) {
-          if (!headerVisibleRef.current) setIsHeaderVisible(true)
-          lastScrollYRef.current = currentY
-          tickingRef.current = false
-          return
-        }
-
-        // Add a small dead-zone to avoid flicker.
-        const HIDE_THRESHOLD = 10
-        const SHOW_THRESHOLD = 8
-
-        if (delta > HIDE_THRESHOLD && headerVisibleRef.current) {
+        } else if (delta > 10 && headerVisibleRef.current) {
           setIsHeaderVisible(false)
-        } else if (delta < -SHOW_THRESHOLD && !headerVisibleRef.current) {
+        } else if (delta < -8 && !headerVisibleRef.current) {
           setIsHeaderVisible(true)
         }
-
         lastScrollYRef.current = currentY
         tickingRef.current = false
       })
     }
-
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [isMobileMenuOpen])
 
-  const supportedLocales = getSupportedLocales()
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
 
-  const languageMeta: Record<SupportedLocale, { label: string; flagCode: string; short: string }> = {
-    fr: { label: "Français", flagCode: "fr", short: "FR" },
-    ar: { label: "العربية", flagCode: "ma", short: "AR" },
-    en: { label: "English", flagCode: "gb", short: "EN" },
-    zh: { label: "中文", flagCode: "cn", short: "ZH" },
-  }
+  const supportedLocales = getSupportedLocales()
 
   const stripLocalePrefix = (value: string): string => {
     const parts = value.split("/").filter(Boolean)
-    if (parts.length > 0 && (supportedLocales as readonly string[]).includes(parts[0])) {
-      parts.shift()
-    }
+    if (parts.length > 0 && (supportedLocales as readonly string[]).includes(parts[0])) parts.shift()
     return `/${parts.join("/")}`.replace(/\/$/, "") || "/"
   }
 
@@ -132,15 +135,13 @@ export function Header() {
   }
 
   const handleLocaleChange = (nextLocale: SupportedLocale) => {
-    if (nextLocale === (locale as any)) return
+    if (nextLocale === (locale as SupportedLocale)) return
     setPreferredLocale(nextLocale)
     setIsMobileMenuOpen(false)
-    const href = buildLocalizedHref(nextLocale)
-    router.push(href)
+    router.push(buildLocalizedHref(nextLocale))
     router.refresh()
   }
 
-  // Get cartRef from context
   const { cartRef } = useCart()
 
   const handleLogout = async () => {
@@ -156,465 +157,352 @@ export function Header() {
     }
   }
 
-  const navLinks = [
-    { href: `/${locale}`, label: t('home'), icon: Home },
-    { href: `/${locale}/services`, label: t('services'), icon: Wrench },
-    { href: `/${locale}/maalems`, label: t('maalems'), icon: HardHat },
-    {
-      href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
-      label: t('maalem'),
-      icon: BriefcaseBusiness,
-    },
+  const maalemHref = isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`
+
+  const primaryLinks = [
+    { href: `/${locale}/shop`, label: t("shop"), icon: Store },
+    { href: `/${locale}/shop?sort=promo`, label: tx("promotions"), icon: Percent },
+    { href: `/${locale}/services`, label: t("services"), icon: Wrench },
+    { href: `/${locale}/maalems`, label: t("maalems"), icon: HardHat },
   ]
 
-  const secondaryLinks = [
-    { href: `/${locale}/shop`, label: t('shop') },
-    { href: `/${locale}/shop?sort=promo`, label: tFilters('sort.bestPromos') },
-    { href: `/${locale}/shop?sort=popular`, label: tFilters('sort.popular') },
-    { href: `/${locale}/services`, label: t('services') },
-    { href: `/${locale}/maalems`, label: t('maalems') },
-    {
-      href: isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`,
-      label: t('maalem'),
-    },
-    ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t('orders') }] : []),
-  ]
+  const isActive = (href: string) => {
+    const [path] = href.split("?")
+    return pathname === path || (path !== `/${locale}` && pathname.startsWith(`${path}/`))
+  }
+
+  const user1 = user
+  const initials = user1 ? (user1.prenom?.[0] || user1.nom?.[0] || user1.email?.[0] || "?").toUpperCase() : ""
 
   return (
-    <>
-      <motion.div
-        className="sticky top-0 z-50 w-full"
-        initial={false}
-        animate={{ y: isHeaderVisible ? 0 : "-100%" }}
-        transition={{ type: "spring", stiffness: 520, damping: 46, mass: 0.9 }}
-        style={{ willChange: "transform" }}
+    <div
+      data-site-header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-transform duration-500 ease-[var(--ease-premium)] will-change-transform",
+        isHome && "-mb-[64px] lg:-mb-[120px]",
+        !isHeaderVisible && "-translate-y-full"
+      )}
+    >
+      <header
+        className={cn(
+          "relative w-full text-white transition-[background-color,border-color,backdrop-filter] duration-500",
+          overlay
+            ? "border-b border-white/10 bg-gradient-to-b from-black/70 via-black/30 to-transparent"
+            : "border-b border-white/[0.07] bg-ink/90 backdrop-blur-xl backdrop-saturate-150"
+        )}
       >
-        <header className="w-full shadow-xs shadow-black/10 overflow-x-clip">
-          {/* Primary Bar */}
-          <div className={`${isServiceJourney ? 'bg-[#2d2a24]' : 'bg-primary'} border-b border-white/15 text-white`}>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-16">
-              <div className="flex h-[75px] items-center justify-between gap-2 sm:gap-3">
-                {/* Logo */}
-                <Link href={`/${locale}`} className="flex items-center gap-2.5 shrink-0 group">
-                  <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center shadow-md shadow-black/15 group-hover:shadow-lg group-hover:shadow-black/20 transition-all duration-300 ring-1 ring-black/10 group-hover:ring-black/15">
-                    <Image src="/logo.png" alt="Logo" width={32} height={32} priority className="size-8 object-contain" />
-                  </div>
-                  <span className="font-bold text-lg hidden sm:block text-white tracking-tight">
-                    Boukir
-                  </span>
-                </Link>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-3 focus:z-[70] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink"
+        >
+          {tx("skipToContent")}
+        </a>
 
-                {/* Desktop Search */}
-                <div className="hidden md:flex flex-1 justify-center px-3 lg:px-6">
-                  <HeaderSearch
-                    placeholder={t('searchPlaceholder')}
-                    className="w-full"
-                    maxWidthClassName="max-w-[720px]"
-                    onSearchDone={() => setIsMobileMenuOpen(false)}
-                  />
-                </div>
+        {/* Row 1 — brand, search, actions */}
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
+          <div className="flex h-16 items-center gap-3 lg:h-[72px] lg:gap-6">
+            <Link href={`/${locale}`} className="shrink-0 rounded-md outline-offset-4" aria-label="Boukir Construction">
+              <BrandLockup />
+            </Link>
 
-                {/* Actions */}
-                <div className="flex items-center gap-0.5 sm:gap-1.5">
-                  {/* Mobile Search */}
-                  <div className="md:hidden">
-                    <HeaderSearch
-                      variant="icon"
-                      placeholder={t('searchPlaceholder')}
-                      onSearchDone={() => setIsMobileMenuOpen(false)}
-                    />
-                  </div>
-
-                  {/* Mobile Shop */}
-                  <Link
-                    href={`/${locale}/shop`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="lg:hidden"
-                    aria-label={t('shop')}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-white/10 transition-all duration-200 h-10 w-10"
-                    >
-                      <Store className="w-5 h-5 text-white/85" aria-hidden="true" />
-                    </Button>
-                  </Link>
-
-                  {/* Wishlist */}
-                  <WishlistIcon tone="onPrimary" size="sm" />
-
-                  {/* Cart */}
-                  <CartPopover ref={cartRef} tone="onPrimary" size="sm" />
-
-                  {/* Separator after wishlist/cart */}
-                  <div className="hidden lg:block h-6 w-px bg-linear-to-b from-transparent via-border/60 to-transparent mx-1.5" />
-
-                  {/* Language */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="hidden lg:flex items-center gap-2 h-9 px-3 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 text-white"
-                        aria-label={tCommon('language')}
-                      >
-                        <img
-                          src={`https://flagcdn.com/w20/${languageMeta[(locale as SupportedLocale) || "fr"]?.flagCode ?? "un"}.png`}
-                          srcSet={`https://flagcdn.com/w40/${languageMeta[(locale as SupportedLocale) || "fr"]?.flagCode ?? "un"}.png 2x`}
-                          alt={languageMeta[(locale as SupportedLocale) || "fr"]?.label ?? "Language"}
-                          className="w-5 h-auto shrink-0"
-                        />
-                        <span className="text-xs font-semibold text-white/90">
-                          {languageMeta[(locale as SupportedLocale) || "fr"]?.short ?? String(locale).toUpperCase()}
-                        </span>
-                        <ChevronDown className="w-3 h-3 text-white/70" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align={isArabic ? "start" : "end"}
-                      className="w-56 p-1 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10"
-                    >
-                      <DropdownMenuLabel className="text-xs text-muted-foreground">{tCommon('language')}</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {supportedLocales.map((l) => (
-                        <DropdownMenuItem
-                          key={l}
-                          onSelect={(e) => {
-                            e.preventDefault()
-                            handleLocaleChange(l)
-                          }}
-                          className="cursor-pointer flex items-center gap-2"
-                        >
-                          <img
-                            src={`https://flagcdn.com/w20/${languageMeta[l].flagCode}.png`}
-                            srcSet={`https://flagcdn.com/w40/${languageMeta[l].flagCode}.png 2x`}
-                            alt={languageMeta[l].label}
-                            className="w-5 h-auto shrink-0"
-                          />
-                          <span className="text-sm font-medium">{languageMeta[l].label}</span>
-                          {l === (locale as any) ? <span className="ml-auto text-xs text-primary">✓</span> : null}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Separator before user menu */}
-                  {isAuthenticated && user && (
-                    <div className="hidden lg:block h-6 w-px bg-linear-to-b from-transparent via-border/60 to-transparent mx-1.5" />
-                  )}
-
-                  {/* Mobile Menu Toggle */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="lg:hidden hover:bg-white/10 transition-all duration-200 h-10 w-10"
-                    onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                  >
-                    <Menu className="w-5 h-5 text-white/85" />
-                  </Button>
-
-                  {/* Mobile Profile Avatar */}
-                  {isAuthenticated && user ? (
-                    <Link
-                      href={`/${locale}/profile`}
-                      className="lg:hidden inline-flex items-center justify-center h-8 w-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 hover:border-white/30 transition-colors overflow-hidden"
-                      aria-label={t('profile')}
-                    >
-                      {user.avatar_url ? (
-                        <img
-                          src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
-                          alt={user.prenom || user.email}
-                          className="object-cover w-full h-full"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span className="text-[10px] font-bold text-white">
-                          {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                        </span>
-                      )}
-                    </Link>
-                  ) : null}
-
-                  {/* User Menu */}
-                  {isAuthLoading ? (
-                    <div className="hidden sm:flex items-center gap-2 pl-3 ml-2 border-l border-white/15">
-                      <div className="h-9 w-20 rounded-full bg-white/15 animate-pulse" />
-                      <div className="h-9 w-24 rounded-full bg-white/25 animate-pulse" />
-                    </div>
-                  ) : isAuthenticated && user ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="hidden lg:flex items-center gap-1.5 h-9 px-2 hover:bg-white/10 border border-transparent hover:border-white/20 rounded-full transition-all duration-200 group text-white">
-                          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20 group-hover:border-white/30 transition-all duration-200 shadow-sm overflow-hidden">
-                            {user.avatar_url ? (
-                              <img
-                                src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
-                                alt={user.prenom || user.email}
-                                className="object-cover w-full h-full"
-                                referrerPolicy="no-referrer"
-                              />
-                            ) : (
-                              <span className="text-[11px] font-bold text-white">
-                                {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                              </span>
-                            )}
-                          </div>
-                          <ChevronDown className="w-3 h-3 text-white/70 group-hover:text-white transition-colors duration-200" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align={isArabic ? "start" : "end"} className="w-64 p-0 bg-background/98 backdrop-blur-2xl border-border/40 shadow-xl shadow-black/10">
-                        <DropdownMenuLabel className="p-0 mb-1">
-                          <div className="relative overflow-hidden rounded-t-lg bg-linear-to-br from-muted/50 via-muted/30 to-transparent p-3.5 border-b border-border/40">
-                            <div className="flex items-center gap-2.5">
-                              <div className="relative">
-                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary via-primary/90 to-primary/80 flex items-center justify-center shrink-0 shadow-md shadow-primary/15 ring-1 ring-primary/20 overflow-hidden">
-                                  {user.avatar_url ? (
-                                    <img
-                                      src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_CONFIG.BASE_URL}${user.avatar_url}`}
-                                      alt={user.prenom || user.email}
-                                      className="object-cover w-full h-full"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                  ) : (
-                                    <span className="text-sm font-bold text-primary-foreground">
-                                      {user.prenom?.[0]?.toUpperCase() || user.nom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-[1.5px] border-background shadow-sm" />
-                              </div>
-                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                                <p className="text-sm font-semibold truncate text-foreground">{user.prenom} {user.nom}</p>
-                                <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
-                                <span className="inline-flex items-center gap-1 text-[10px] text-primary font-medium mt-0.5">
-                                  <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
-                                  Active
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </DropdownMenuLabel>
-                        <div className="px-1.5 pb-1.5">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/${locale}/profile`} className="cursor-pointer flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-muted/50 transition-all duration-200 group">
-                              <div className="w-7 h-7 rounded-md bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors duration-200">
-                                <UserCircle2 className="w-3.5 h-3.5 text-foreground/70" />
-                              </div>
-                              <span className="text-sm font-medium text-foreground/90">{t('profile')}</span>
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/${locale}/orders`} className="cursor-pointer flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-muted/50 transition-all duration-200 group">
-                              <div className="w-7 h-7 rounded-md bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors duration-200">
-                                <Package className="w-3.5 h-3.5 text-foreground/70" />
-                              </div>
-                              <span className="text-sm font-medium text-foreground/90">{t('orders')}</span>
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="my-1" />
-                          <DropdownMenuItem asChild>
-                            <button
-                              type="button"
-                              onClick={handleLogout}
-                              className="cursor-pointer flex items-center gap-2.5 px-2.5 py-2 rounded-md hover:bg-destructive/10 transition-all duration-200 group w-full"
-                            >
-                              <div className="w-7 h-7 rounded-md bg-destructive/10 flex items-center justify-center group-hover:bg-destructive/15 transition-colors duration-200">
-                                <LogOut className="w-3.5 h-3.5 text-destructive" />
-                              </div>
-                              <span className="text-sm font-medium text-destructive">{t('logout')}</span>
-                            </button>
-                          </DropdownMenuItem>
-                        </div>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <div className="hidden sm:flex items-center gap-2 pl-3 ml-2 border-l border-white/15">
-                      <Link href={`/${locale}/login`}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="bg-white/10 text-white hover:bg-white/15 hover:ring-1 hover:ring-white/20 transition-all duration-200 font-medium h-9 px-4"
-                        >
-                          {t('login')}
-                        </Button>
-                      </Link>
-                      <Link href={`/${locale}/register`}>
-                        <Button
-                          size="sm"
-                          className="bg-white text-primary hover:bg-white/90 hover:shadow-lg hover:shadow-black/15 shadow-md shadow-black/10 transition-all duration-200 font-semibold h-9 px-4"
-                        >
-                          {t('register')}
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-          </div>
+            <div className="hidden flex-1 justify-center md:flex">
+              <HeaderSearch
+                placeholder={t("searchPlaceholder")}
+                className="w-full"
+                maxWidthClassName="max-w-[620px]"
+                onSearchDone={() => setIsMobileMenuOpen(false)}
+              />
             </div>
-          </div>
 
-          {/* Secondary Nav Bar (Desktop) */}
-          <div className="hidden lg:block bg-background text-foreground border-b border-border/40">
-            <div className="container mx-auto px-6 sm:px-8 lg:px-16">
-              <div className="flex h-14 items-center gap-3">
-                <CategoriesMegaMenu tone="onSurface" />
-                <nav className="flex items-center gap-1.5 min-w-0">
-                  {secondaryLinks.map((link) => (
-                    <Link
-                      key={link.href + link.label}
-                      href={link.href}
-                      className={
-                        'px-3 py-2 rounded-full text-sm font-semibold text-foreground/85 hover:text-foreground hover:bg-muted/60 transition-colors'
-                      }
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
-
-                <Link
-                  href={`/${locale}/contact`}
-                  className="ml-auto inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/15 hover:border-primary/30 transition-colors"
-                >
-                  {t('contactUs')}
-                </Link>
+            <div className="ms-auto flex items-center gap-0.5 sm:gap-1 md:ms-0">
+              <div className="md:hidden">
+                <HeaderSearch variant="icon" placeholder={t("searchPlaceholder")} onSearchDone={() => setIsMobileMenuOpen(false)} />
               </div>
-            </div>
-          </div>
 
-          {/* Mobile Menu (within primary background) */}
-          <div className={`${isServiceJourney ? 'bg-[#2d2a24]' : 'bg-primary'} text-white lg:hidden`}>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-16">
-              <AnimatePresence>
-                {isMobileMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="border-t border-white/15 overflow-hidden"
+              <div className="hidden sm:block">
+                <WishlistIcon tone="onPrimary" size="sm" />
+              </div>
+              <CartPopover ref={cartRef} tone="onPrimary" size="sm" />
+
+              <span className="mx-1.5 hidden h-6 w-px bg-white/15 lg:block" aria-hidden="true" />
+
+              <ThemeToggle tone="onDark" className="hidden size-9 lg:inline-flex" />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="hidden h-9 items-center gap-1.5 rounded-full border border-white/15 px-3 text-xs font-semibold tracking-wide text-white/85 transition-colors hover:border-white/30 hover:text-white lg:inline-flex"
+                    aria-label={tCommon("language")}
                   >
-                    <div className="py-4">
-                      <nav className="flex flex-col gap-2">
-                        {navLinks.map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-2 px-2.5 py-2.5 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-colors capitalize"
-                        >
-                          <link.icon className="w-4 h-4" />
-                          {link.label}
-                        </Link>
-                      ))}
+                    {languageMeta[(locale as SupportedLocale) || "fr"]?.short ?? String(locale).toUpperCase()}
+                    <ChevronDown className="size-3 opacity-70" aria-hidden="true" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isArabic ? "start" : "end"} className="w-52 p-1">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">{tCommon("language")}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {supportedLocales.map((l) => (
+                    <DropdownMenuItem
+                      key={l}
+                      onSelect={(e) => {
+                        e.preventDefault()
+                        handleLocaleChange(l)
+                      }}
+                      className="flex cursor-pointer items-center gap-2"
+                    >
+                      <span className="w-7 text-[11px] font-bold tracking-wider text-muted-foreground">{languageMeta[l].short}</span>
+                      <span className="text-sm font-medium">{languageMeta[l].label}</span>
+                      {l === locale ? <span className="ms-auto size-1.5 rounded-full bg-primary" aria-hidden="true" /> : null}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-                        {isAuthenticated ? (
-                          <Link
-                            href={`/${locale}/orders`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-2 px-2.5 py-2.5 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                          >
-                            <Package className="w-4 h-4" aria-hidden="true" />
-                            {t('orders')}
-                          </Link>
-                        ) : null}
+              {isAuthLoading ? (
+                <div className="ms-2 hidden h-9 w-28 animate-pulse rounded-full bg-white/10 lg:block" />
+              ) : isAuthenticated && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="ms-1 hidden h-9 items-center gap-1.5 rounded-full border border-white/15 ps-1 pe-2.5 transition-colors hover:border-white/30 lg:inline-flex"
+                      aria-label={t("profile")}
+                    >
+                      <span className="grid size-7 place-items-center overflow-hidden rounded-full bg-gold text-[11px] font-bold text-ink">
+                        {avatarSrc(user.avatar_url) ? (
+                          <img src={avatarSrc(user.avatar_url)!} alt="" className="size-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          initials
+                        )}
+                      </span>
+                      <ChevronDown className="size-3 text-white/70" aria-hidden="true" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={isArabic ? "start" : "end"} className="w-64 p-1.5">
+                    <DropdownMenuLabel className="px-2.5 py-2">
+                      <p className="truncate text-sm font-semibold">{user.prenom} {user.nom}</p>
+                      <p className="truncate text-xs font-normal text-muted-foreground">{user.email}</p>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={`/${locale}/profile`} className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2">
+                        <UserCircle2 className="size-4 text-muted-foreground" /> {t("profile")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/${locale}/orders`} className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2">
+                        <Package className="size-4 text-muted-foreground" /> {t("orders")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/${locale}/wishlist`} className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2">
+                        <Heart className="size-4 text-muted-foreground" /> {tx("favorites")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={maalemHref} className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2">
+                        <HardHat className="size-4 text-muted-foreground" /> {t("maalem")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <button type="button" onClick={handleLogout} className="flex w-full cursor-pointer items-center gap-2.5 px-2.5 py-2 text-destructive">
+                        <LogOut className="size-4" /> {t("logout")}
+                      </button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="ms-2 hidden items-center gap-1.5 lg:flex">
+                  <Link href={`/${locale}/login`} className="inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium text-white/85 transition-colors hover:text-white">
+                    {t("login")}
+                  </Link>
+                  <Link
+                    href={`/${locale}/register`}
+                    className="inline-flex h-9 items-center rounded-full bg-white px-4 text-sm font-semibold text-ink transition-colors hover:bg-brand-yellow"
+                  >
+                    {t("register")}
+                  </Link>
+                </div>
+              )}
 
-                        <Link
-                          href={`/${locale}/contact`}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center justify-between gap-2 px-2.5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 rounded-lg transition-colors"
-                        >
-                          <span>{t('contactUs')}</span>
-                          <span className="text-xs text-white/70">→</span>
-                        </Link>
-                      </nav>
-
-                      {/* Mobile Language */}
-                      <div className="mt-4 px-3">
-                        <p className="text-[11px] font-semibold text-white/70 mb-2">
-                          {tCommon('language')}
-                        </p>
-                        <div
-                          className={
-                            "flex flex-wrap gap-2 " + (isArabic ? "justify-end" : "justify-start")
-                          }
-                        >
-                          {supportedLocales.map((l) => {
-                            const isActive = l === (locale as any)
-                            return (
-                              <button
-                                key={l}
-                                type="button"
-                                onClick={() => handleLocaleChange(l)}
-                                className={
-                                  "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors " +
-                                  (isActive
-                                    ? "border-white/30 bg-white/15 text-white"
-                                    : "border-white/15 bg-white/5 text-white/85 hover:bg-white/10 hover:text-white")
-                                }
-                                aria-current={isActive ? "true" : undefined}
-                              >
-                                <img
-                                  src={`https://flagcdn.com/w20/${languageMeta[l].flagCode}.png`}
-                                  srcSet={`https://flagcdn.com/w40/${languageMeta[l].flagCode}.png 2x`}
-                                  alt={languageMeta[l].label}
-                                  className="w-4 h-auto shrink-0"
-                                />
-                                <span>{languageMeta[l].short}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Mobile Auth Buttons */}
-                      {isAuthLoading ? (
-                        <div className="flex gap-3 mt-4 px-3">
-                          <div className="flex-1 h-10 rounded-md bg-white/15 animate-pulse" />
-                          <div className="flex-1 h-10 rounded-md bg-white/25 animate-pulse" />
-                        </div>
-                      ) : !isAuthenticated ? (
-                        <div className="flex gap-3 mt-4 px-3">
-                          <Link href={`/${locale}/login`} className="flex-1">
-                            <Button variant="ghost" className="w-full bg-white/10 text-white hover:bg-white/15">
-                              {t('login')}
-                            </Button>
-                          </Link>
-                          <Link href={`/${locale}/register`} className="flex-1">
-                            <Button className="w-full bg-white text-primary hover:bg-white/90">
-                              {t('register')}
-                            </Button>
-                          </Link>
-                        </div>
-                      ) : (
-                        <div className="mt-4 px-3">
-                          <button
-                            type="button"
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-2 px-2.5 py-2.5 text-sm font-semibold rounded-lg transition-colors border border-destructive/25 bg-destructive/10 text-destructive hover:bg-destructive/15"
-                          >
-                            <LogOut className="w-4 h-4" aria-hidden="true" />
-                            {t('logout')}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </header>
-
-        {/* Categories Dropdown (Mobile) */}
-        <div className="lg:hidden bg-background text-foreground border-b border-border/40">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="py-2">
-              <CategoriesMobileMenu tone="onSurface" />
+              <button
+                type="button"
+                className="ms-0.5 grid size-10 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/10 lg:hidden"
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label={tx("openMenu")}
+                aria-expanded={isMobileMenuOpen}
+              >
+                <Menu className="size-5" />
+              </button>
             </div>
           </div>
         </div>
-      </motion.div>
-    </>
+
+        {/* Row 2 — catalogue navigation (desktop) */}
+        <div className={cn("hidden border-t lg:block", overlay ? "border-white/10" : "border-white/[0.06]")}>
+          <div className="mx-auto flex h-12 max-w-[1440px] items-center gap-2 px-10">
+            <CategoriesMegaMenu tone="onPrimary" />
+            <span className="mx-2 h-5 w-px bg-white/15" aria-hidden="true" />
+            <nav aria-label={tx("mainNavigation")} className="flex min-w-0 items-center gap-0.5">
+              {primaryLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={cn(
+                    "relative whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5",
+                    "after:absolute after:inset-x-3.5 after:-bottom-[9px] after:h-px after:origin-center after:scale-x-0 after:bg-brand-orange after:transition-transform after:duration-300 hover:after:scale-x-100",
+                    isActive(link.href) && "text-white after:scale-x-100"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                href={`/${locale}/calculateurs`}
+                aria-current={pathname.startsWith(`/${locale}/calculateurs`) ? "page" : undefined}
+                className="group ms-2 inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-brand-orange/40 bg-brand-orange/10 px-3.5 py-1.5 text-[13px] font-semibold text-brand-yellow transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-ink"
+              >
+                <Calculator className="size-3.5" aria-hidden="true" />
+                {tx("calculators")}
+              </Link>
+              <Link
+                href={`/${locale}/studio`}
+                className="whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5"
+              >
+                {tx("studio")}
+              </Link>
+            </nav>
+            <Link
+              href={`/${locale}/contact`}
+              className="ms-auto inline-flex shrink-0 items-center gap-2 whitespace-nowrap text-[13px] font-medium text-white/75 transition-colors hover:text-white"
+            >
+              <Mail className="size-3.5" aria-hidden="true" />
+              {t("contactUs")}
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile off-canvas navigation */}
+      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <SheetContent
+          side={isArabic ? "left" : "right"}
+          className="w-[min(88vw,380px)] gap-0 border-white/10 bg-ink p-0 text-white [&>button:last-child]:hidden"
+        >
+          <SheetTitle className="sr-only">{tx("menu")}</SheetTitle>
+          <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+            <BrandLockup compact />
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="grid size-10 place-items-center rounded-full text-white/80 hover:bg-white/10 hover:text-white"
+              aria-label={tx("closeMenu")}
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 pb-8 pt-4">
+            <Link
+              href={`/${locale}/calculateurs`}
+              className="mb-4 flex items-center gap-3 rounded-2xl border border-brand-orange/30 bg-brand-orange/10 p-4"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-gold text-ink">
+                <Ruler className="size-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-white">{tx("calculators")}</span>
+                <span className="block text-xs text-white/60">{tx("calculatorsHint")}</span>
+              </span>
+            </Link>
+
+            <nav aria-label={tx("mainNavigation")} className="flex flex-col">
+              {[
+                { href: `/${locale}`, label: t("home"), icon: LayoutGrid },
+                ...primaryLinks,
+                { href: `/${locale}/studio`, label: tx("studio"), icon: Ruler },
+                { href: `/${locale}/projet`, label: tx("planner"), icon: Calculator },
+                { href: maalemHref, label: t("maalem"), icon: HardHat },
+                ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t("orders"), icon: Package }] : []),
+                { href: `/${locale}/wishlist`, label: tx("favorites"), icon: Heart },
+                { href: `/${locale}/contact`, label: t("contactUs"), icon: Mail },
+              ].map((link) => (
+                <Link
+                  key={link.href + link.label}
+                  href={link.href}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className="flex items-center gap-3 border-b border-white/[0.06] py-3.5 text-[15px] font-medium text-white/85 transition-colors hover:text-white aria-[current=page]:text-brand-yellow"
+                >
+                  <link.icon className="size-4 text-white/45" aria-hidden="true" />
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="mt-5">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">{tx("categories")}</p>
+              <CategoriesMobileMenu tone="onPrimary" />
+            </div>
+
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-1.5">
+                {supportedLocales.map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => handleLocaleChange(l)}
+                    aria-current={l === locale ? "true" : undefined}
+                    className={cn(
+                      "h-9 rounded-full border px-3 text-xs font-semibold tracking-wide transition-colors",
+                      l === locale ? "border-brand-orange bg-brand-orange text-ink" : "border-white/15 text-white/75 hover:text-white"
+                    )}
+                  >
+                    {languageMeta[l].short}
+                  </button>
+                ))}
+              </div>
+              <ThemeToggle tone="onDark" />
+            </div>
+
+            <div className="mt-6">
+              {isAuthLoading ? (
+                <div className="h-11 animate-pulse rounded-full bg-white/10" />
+              ) : !isAuthenticated ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href={`/${locale}/login`} className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 text-sm font-medium">
+                    {t("login")}
+                  </Link>
+                  <Link href={`/${locale}/register`} className="inline-flex h-11 items-center justify-center rounded-full bg-white text-sm font-semibold text-ink">
+                    {t("register")}
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Link href={`/${locale}/profile`} className="flex items-center gap-3 rounded-2xl bg-white/[0.04] p-3">
+                    <span className="grid size-9 place-items-center overflow-hidden rounded-full bg-gold text-xs font-bold text-ink">
+                      {avatarSrc(user?.avatar_url) ? <img src={avatarSrc(user?.avatar_url)!} alt="" className="size-full object-cover" referrerPolicy="no-referrer" /> : initials}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">{user?.prenom} {user?.nom}</span>
+                      <span className="block truncate text-xs text-white/55">{t("profile")}</span>
+                    </span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-destructive/40 text-sm font-semibold text-[#f2695a]"
+                  >
+                    <LogOut className="size-4" /> {t("logout")}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   )
 }
