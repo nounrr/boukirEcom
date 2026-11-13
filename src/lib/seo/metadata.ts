@@ -83,6 +83,7 @@ export function buildPageMetadata(input: {
         ar: localizedUrl("ar", input.path),
         en: localizedUrl("en", input.path),
         zh: localizedUrl("zh", input.path),
+        "x-default": localizedUrl("fr", input.path),
       },
     },
     openGraph: {

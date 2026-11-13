@@ -18,6 +18,7 @@ import { RevealObserver } from "@/components/motion/reveal-observer"
 import { revealInitScript, themeInitScript } from "@/lib/init-scripts"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
 import { LocalePreferenceInitializer } from "@/components/i18n/locale-preference-initializer"
+import { AnalyticsTags } from "@/components/analytics/analytics-tags"
 
 import "./arabic-fonts.css"
 import "./globals.css"
@@ -45,11 +46,13 @@ const tajawal = Tajawal({
   variable: "--font-tajawal",
   display: "swap",
   fallback: ["Tahoma", "Arial", "sans-serif"],
-  preload: true,
+  // Only Arabic pages use it: do not preload 7 Arabic font files on every page.
+  preload: false,
   adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
+  authors: [{ name: "2M Crafters" }],
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
@@ -110,6 +113,7 @@ export default async function RootLayout({
           gap={12}
           visibleToasts={5}
         />
+        <AnalyticsTags />
       </body>
     </html>
   )

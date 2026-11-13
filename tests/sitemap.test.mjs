@@ -17,7 +17,8 @@ test('exports only real product translations, with stable dates and unique URLs'
   const loaded = await loadSitemapData('https://api.example', fetcher());
   const entries = buildSitemap(loaded, site);
   assert.equal(entries.filter(x => x.url.includes('/product/')).length, 3737);
-  assert.equal(entries.length, 3737 + 28);
+  // 22 static paths (6 pages + calculator hub + 13 tools + projet + studio) and 1 service + 1 maalem, x4 locales.
+  assert.equal(entries.length, 3737 + (22 + 1 + 1) * 4);
   assert.equal(new Set(entries.map(x => x.url)).size, entries.length);
   for (const entry of entries) {
     assert.equal(new URL(entry.url).origin, site.origin);

@@ -342,7 +342,13 @@ export function Footer({
         {/* Bottom line */}
         <div className="relative border-t border-white/[0.08]">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-4 px-5 py-6 text-xs text-white/50 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">
-            <p>© {year} {CONTACT.legalName}. {t('rights')}</p>
+            <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-5">
+              <p>© {year} {CONTACT.legalName}. {t('rights')}</p>
+              <p className="text-white/35" dir="ltr">
+                Designed &amp; Developed by{" "}
+                <a href="https://2mcrafters.com/" target="_blank" rel="noopener" className="font-medium text-white/55 underline-offset-4 transition-colors hover:text-brand-yellow hover:underline">2M Crafters</a>
+              </p>
+            </div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
               <Link href={`/${locale}/cgv`} className="link-underline hover:text-white">{t('legal')}</Link>
               <ThemeToggle tone="onDark" className="size-9" />

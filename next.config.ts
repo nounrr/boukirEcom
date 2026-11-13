@@ -7,7 +7,31 @@ const siteUrl = getSiteUrl();
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
+const SECURITY_HEADERS = [
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  // Camera/microphone are never used; geolocation stays allowed (checkout location picker).
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), browsing-topics=()' },
+  ...(process.env.NODE_ENV === 'production' && siteUrl.protocol === 'https:'
+    ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000' }]
+    : []),
+];
+
+// Un-hashed files in /public: one week of browser cache, refreshed in the background.
+const STATIC_MEDIA = ['/videos/:path*', '/brands/:path*', '/product-fallbacks/:path*', '/utility-types/:path*', '/payments/:path*', '/hero/:path*'];
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [
+      { source: '/:path*', headers: SECURITY_HEADERS },
+      ...STATIC_MEDIA.map((source) => ({
+        source,
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
+      })),
+    ];
+  },
   async rewrites() {
     return [{ source: '/sitemap-:file.xml', destination: '/sitemaps/:file.xml' }];
   },

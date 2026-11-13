@@ -1,11 +1,12 @@
 import type { MetadataRoute } from 'next'
 import { productPath, type ProductUrlData } from './product-url'
 import { productTranslationLocales, SEO_LOCALES } from './product-languages'
+import { ALL_TOOL_SLUGS } from '../calculators/registry'
 
 export type SitemapRecord = ProductUrlData & { id: number; updated_at: string | null }
 export type SitemapData = { products: SitemapRecord[]; services: SitemapRecord[]; maalems: SitemapRecord[] }
 const LOCALES = SEO_LOCALES
-const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact', '/cgv']
+const STATIC_PATHS = ['/', '/shop', '/services', '/maalems', '/contact', '/cgv', '/calculateurs', ...ALL_TOOL_SLUGS.map(slug => `/calculateurs/${slug}`), '/projet', '/studio']
 
 function records(value: unknown, name: string): SitemapRecord[] {
   if (!Array.isArray(value)) throw new Error(`Sitemap: missing ${name} array`)

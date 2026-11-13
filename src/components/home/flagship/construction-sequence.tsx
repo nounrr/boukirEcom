@@ -80,18 +80,27 @@ export function ConstructionSequence({ locale }: { locale: string }) {
     setMode(coarse || window.innerWidth < 768 ? "frames" : "video")
   }, [])
 
-  // Start loading when the section is within ~2 viewports.
+  // Start loading once the page has fully loaded (never competes with the
+  // first render) and the section is within ~1 viewport.
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setNear(true)
-        io.disconnect()
-      }
-    }, { rootMargin: "200% 0px 200% 0px" })
-    io.observe(el)
-    return () => io.disconnect()
+    let io: IntersectionObserver | null = null
+    const arm = () => {
+      io = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true)
+          io?.disconnect()
+        }
+      }, { rootMargin: "120% 0px 120% 0px" })
+      io.observe(el)
+    }
+    if (document.readyState === "complete") arm()
+    else window.addEventListener("load", arm, { once: true })
+    return () => {
+      window.removeEventListener("load", arm)
+      io?.disconnect()
+    }
   }, [])
 
   // ── Video: fetch once as a Blob for instant local seeking ─────────────

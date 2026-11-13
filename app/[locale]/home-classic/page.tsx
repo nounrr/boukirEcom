@@ -10,6 +10,13 @@ import { HomeUtilityTypeSelector } from '@/components/home/home-utility-type-sel
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { normalizeLocale } from '@/i18n/locale'
+import { buildPageMetadata } from '@/lib/seo/metadata'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale?: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return buildPageMetadata({ locale: normalizeLocale(locale), path: '/home-classic', indexable: false })
+}
 
 /**
  * Snapshot navigable de la page d'accueil avant sa refonte UI/UX.

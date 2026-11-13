@@ -18,6 +18,7 @@ import type { PublicService } from '@/types/service-request'
 import type { Metadata } from 'next'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import { constructionCopy } from '@/lib/seo/construction-copy'
+import { jsonLdScript, siteJsonLd } from '@/lib/seo/site-json-ld'
 
 export async function generateMetadata({ params }: {
   params: Promise<{ locale?: string }>
@@ -106,14 +107,15 @@ export default async function HomePage({
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(siteJsonLd(locale)) }} />
       <Header />
       <main id="main-content" className="overflow-x-clip">
         {/* 1 */}<FlagshipHero locale={locale} />
+        <FlagshipPromotions locale={locale} />
         {/* 2 */}<FlagshipUniverses locale={locale} universes={universes} />
         {/* 3 */}<ConstructionSequence locale={locale} />
         {/* 4 */}<FlagshipShowcase locale={locale} />
         {/* 5 */}<FlagshipNewArrivals locale={locale} />
-        <FlagshipPromotions locale={locale} />
         <FlagshipJourneys locale={locale} />
         {/* 6 */}<FlagshipBrands locale={locale} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
