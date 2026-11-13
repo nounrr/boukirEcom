@@ -87,7 +87,7 @@ const Input = React.memo(
             />
             {
               shortcut && (
-                <span className="select-none bg-[#fafafa] border border-accent-gray/50 rounded-[5px] py-0.5 px-1 absolute text-accent-gray/50 opacity-70 font-medium ltr:right-3 rtl:left-3 text-[12px]">
+                <span className="select-none bg-muted border border-accent-gray/50 rounded-[5px] py-0.5 px-1 absolute text-accent-gray/50 opacity-70 font-medium ltr:right-3 rtl:left-3 text-[12px]">
                   {shortcut}
                 </span>
               )

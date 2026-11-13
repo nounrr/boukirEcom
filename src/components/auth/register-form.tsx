@@ -570,7 +570,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
                       placeholder={tp('companyName')}
                       Icon={Building2}
                       className={cn(
-                        "[&>div>input]:bg-white",
+                        "[&>div>input]:bg-background",
                         errors.companyName ? "[&>div>input]:border-destructive!" : ""
                       )}
                       sm={true}
@@ -595,7 +595,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
                       placeholder={tp('ice')}
                       Icon={Hash}
                       className={cn(
-                        "[&>div>input]:bg-white",
+                        "[&>div>input]:bg-background",
                         errors.ice ? "[&>div>input]:border-destructive!" : ""
                       )}
                       sm={true}

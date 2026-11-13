@@ -421,13 +421,13 @@ export function ProductCard({
   if (layout === 'row') {
     return (
       <div className={cn(
-        "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full",
+        "group relative bg-card text-card-foreground rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full",
         isWide ? "max-w-none" : "max-w-none"
       )}>
         <Link href={productHref(product, locale)} className="flex gap-3 p-2.5 sm:p-3">
           {/* Image */}
           <div className="relative h-24 w-24 sm:h-28 sm:w-28 shrink-0">
-            <ProductImageMask className="h-full w-full rounded-xl bg-white shadow-sm ring-1 ring-border/10">
+            <ProductImageMask className="h-full w-full rounded-xl bg-white shadow-sm dark:bg-white ring-1 ring-border/10">
               <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: imageBackground }} />
               {currentImage && !imageError ? (
                 <div className="absolute inset-[10px]">
@@ -572,7 +572,7 @@ export function ProductCard({
 
   return (
     <div className={cn(
-      "group relative bg-white rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full mx-auto",
+      "group relative bg-card text-card-foreground rounded-2xl overflow-hidden border border-border/20 shadow-md hover:shadow-2xl transition-all duration-300 w-full mx-auto",
       isWide ? "max-w-none" : "max-w-none sm:max-w-[280px]"
     )}>
       {/* Auth dialog is globally provided by AuthDialogProvider */}
@@ -608,7 +608,7 @@ export function ProductCard({
               e.stopPropagation()
             }}
           >
-            <div className="flex items-center gap-1 bg-white rounded-[18px] px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-md border border-border/20">
+            <div className="flex items-center gap-1 bg-card rounded-[18px] px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-md border border-border/20">
             <Button
               size="icon"
               variant="ghost"

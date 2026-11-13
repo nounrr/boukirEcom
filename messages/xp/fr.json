@@ -1,0 +1,990 @@
+{
+  "theme": {
+    "toDark": "Activer le mode sombre",
+    "toLight": "Activer le mode clair"
+  },
+  "nav": {
+    "skipToContent": "Aller au contenu",
+    "mainNavigation": "Navigation principale",
+    "menu": "Menu",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "promotions": "Promotions",
+    "calculators": "Calculateurs",
+    "calculatorsHint": "Estimez vos quantités en quelques secondes",
+    "studio": "Visual Studio",
+    "planner": "Mon projet",
+    "favorites": "Favoris",
+    "categories": "Catégories"
+  },
+  "fab": {
+    "open": "Ouvrir le menu d'assistance",
+    "close": "Fermer le menu d'assistance",
+    "title": "Comment pouvons-nous aider ?",
+    "panelLabel": "Actions rapides",
+    "whatsappGeneric": "Bonjour Boukir Diamond, j'aimerais un renseignement.",
+    "whatsappProduct": "Bonjour Boukir Diamond, je suis intéressé(e) par ce produit : {url}",
+    "whatsapp": {
+      "label": "WhatsApp",
+      "hint": "Écrivez directement à un conseiller"
+    },
+    "calculator": {
+      "label": "Calculateur",
+      "hint": "Estimez carrelage, peinture, béton…"
+    },
+    "project": {
+      "label": "Mon projet",
+      "hint": "Préparez votre projet pas à pas"
+    },
+    "maalem": {
+      "label": "Besoin d'un Maalem ?",
+      "hint": "Trouvez le bon artisan"
+    },
+    "contact": {
+      "label": "Contact",
+      "hint": "Adresse, téléphone, formulaire"
+    },
+    "top": {
+      "label": "Retour en haut"
+    }
+  },
+  "footer": {
+    "kicker": "Boukir Diamond · Tanger",
+    "headline": "Construisons la *suite,* ensemble.",
+    "homeHeadline": "Votre prochain projet *commence* ici.",
+    "subtitle": "Matériaux, expertise, calculs de quantités et conseil : tout ce qu'il faut pour avancer sereinement, réuni au même endroit.",
+    "ctaShop": "Explorer la boutique",
+    "ctaCalc": "Calculer mes matériaux",
+    "ctaAdvisor": "Parler à un conseiller",
+    "homeCtaShop": "Découvrir la boutique",
+    "homeCtaEstimate": "Estimer mes besoins",
+    "homeCtaContact": "Contacter Boukir Diamond",
+    "whatsappMessage": "Bonjour Boukir Diamond, j'aimerais parler à un conseiller.",
+    "statement": "Matériaux de construction, outillage et solutions techniques pour les particuliers et les professionnels, avec le conseil d'une équipe qui connaît le chantier.",
+    "whatsappCta": "Discuter avec un conseiller",
+    "colProducts": "Produits",
+    "colServices": "Services",
+    "colTools": "Outils & simulateurs",
+    "colHelp": "Aide & compte",
+    "colCompany": "Entreprise",
+    "allProducts": "Toute la boutique",
+    "services": "Nos services",
+    "maalems": "Annuaire des Maalems",
+    "quickRequest": "Demande rapide",
+    "becomeMaalem": "Devenir Maalem",
+    "planner": "Planificateur de projet",
+    "studio": "Visual Studio",
+    "allTools": "Tous les simulateurs",
+    "contact": "Contact",
+    "account": "Mon compte",
+    "orders": "Mes commandes",
+    "favorites": "Mes favoris",
+    "findUs": "Nous trouver",
+    "review": "Laisser un avis Google",
+    "team": "Nos conseillers",
+    "rights": "Tous droits réservés.",
+    "legal": "Conditions générales de vente",
+    "backToTop": "Retour en haut",
+    "estimator": {
+      "kicker": "Estimation express",
+      "title": "Besoin d'une estimation rapide ?",
+      "materialLabel": "Type de matériau",
+      "materials": {
+        "carrelage": "Carrelage",
+        "peinture": "Peinture",
+        "beton": "Dalle béton",
+        "etancheite": "Étanchéité"
+      },
+      "areaLabel": "Surface",
+      "result": "Estimation",
+      "noteTiles": "Carreaux 60×60, 1,44 m²/boîte, 10 % de chute",
+      "notePaint": "Murs, 2 couches, 10 m²/L, 5 % de marge",
+      "noteConcrete": "Dalle 12 cm, 350 kg/m³, sacs de 50 kg, 5 % de marge",
+      "noteWaterproofing": "2 couches × 1,5 kg/m², seaux de 20 kg, 5 % de marge",
+      "invalid": "Saisissez une surface valide",
+      "indicative": "estimation indicative",
+      "openFull": "Ouvrir le calculateur complet"
+    }
+  },
+  "home": {
+    "hero": {
+      "kicker": "Boukir Diamond · Construction Store · Tanger",
+      "title": "La qualité qui donne *forme* à vos *ambitions.*",
+      "lead": "Matériaux, outils et solutions pour construire, rénover et réaliser vos projets avec confiance.",
+      "manifesto": "Nous ne fournissons pas seulement des matériaux. Nous aidons à bâtir ce qui dure.",
+      "ctaShop": "Explorer nos produits",
+      "ctaCalc": "Calculer mes matériaux",
+      "ctaMaalem": "Trouver un Maalem",
+      "scroll": "Défiler",
+      "facts": {
+        "delivery": "Livraison partout au Maroc",
+        "payment": "Paiement sécurisé",
+        "store": "Magasin à Tanger",
+        "tools": "Calculateurs gratuits"
+      }
+    },
+    "campaigns": {
+      "kicker": "01 · À la une",
+      "title": "Les temps forts du moment",
+      "prev": "Précédent",
+      "next": "Suivant"
+    },
+    "universes": {
+      "kicker": "02 · Univers matériaux",
+      "title": "Tout pour *bâtir,* de la fondation à la finition.",
+      "desc": "Parcourez nos grandes familles de produits. Chaque univers mène directement au rayon correspondant de la boutique.",
+      "explore": "Explorer l'univers",
+      "all": "Voir toute la boutique",
+      "items": {
+        "73-matieres-de-construction": "Ciment, sable, gravette et liants pour le gros œuvre.",
+        "75-etancheite-bitume": "Membranes, bitume et produits d'imperméabilisation.",
+        "50-colles-carrelage-marbre": "Colles et mortiers-colles pour carrelage et marbre.",
+        "72-peinture": "Peintures, enduits et préparation des surfaces.",
+        "53-plomberie": "Tubes, raccords et équipements de plomberie.",
+        "48-outillage-carreleur": "Coupe, pose et accessoires du carreleur et du marbrier.",
+        "10-outillage": "Outils et équipements pour le chantier et l'atelier."
+      }
+    },
+    "journeys": {
+      "kicker": "Par usage"
+    },
+    "showcase": {
+      "kicker": "04 · Boukir Smart Calculators",
+      "title": "Imaginez. Mesurez. *Calculez.* Construisez.",
+      "desc": "Dessinez votre pièce, choisissez un matériau : les quantités se calculent en direct, avec des hypothèses claires et modifiables.",
+      "tabs": {
+        "carrelage": "Carrelage",
+        "peinture": "Peinture",
+        "beton": "Béton",
+        "etancheite": "Étanchéité"
+      },
+      "live": "Calcul en direct",
+      "dragHint": "Faites glisser les poignées ou saisissez les cotes",
+      "open": "Ouvrir le simulateur complet",
+      "discover": "Découvrir les matériaux",
+      "length": "Longueur",
+      "width": "Largeur",
+      "height": "Hauteur sous plafond",
+      "thickness": "Épaisseur",
+      "tileFormat": "Format",
+      "area": "Surface",
+      "notes": {
+        "carrelage": "Carreaux {format} cm, 10 % de chute, 1,44 m² par boîte (modifiable dans le simulateur complet).",
+        "peinture": "4 murs, 1 porte + 1 fenêtre déduites, 2 couches à 10 m²/L.",
+        "beton": "Dalle, dosage 350 kg/m³ choisi à titre indicatif, sacs de 50 kg, 5 % de marge.",
+        "etancheite": "Toiture-terrasse avec relevés de 15 cm, 2 couches × 1,5 kg/m² (à vérifier sur la fiche technique)."
+      }
+    },
+    "services": {
+      "kicker": "07 · Services & Maalems",
+      "title": "Des *artisans qualifiés* pour donner vie au projet.",
+      "desc": "Décrivez votre besoin, choisissez un service et envoyez votre demande : notre équipe la qualifie avant de vous orienter.",
+      "steps": {
+        "describe": {
+          "title": "Décrivez votre besoin",
+          "desc": "Quelques mots, une photo si vous le souhaitez."
+        },
+        "choose": {
+          "title": "Choisissez un service",
+          "desc": "Plomberie, électricité, peinture, carrelage…"
+        },
+        "send": {
+          "title": "Envoyez votre demande",
+          "desc": "Nous revenons vers vous pour organiser l'intervention."
+        }
+      },
+      "available": "Services disponibles",
+      "ctaServices": "Voir tous les services",
+      "ctaQuick": "Envoyer une demande rapide",
+      "ctaMaalems": "Parcourir les Maalems"
+    },
+    "brands": {
+      "kicker": "06 · Marques",
+      "title": "Des marques reconnues, en rayon.",
+      "desc": "Une sélection de fabricants dont les références sont disponibles dans notre catalogue.",
+      "viewAll": "Voir la boutique"
+    },
+    "store": {
+      "kicker": "09 · Nous rendre visite"
+    },
+    "arrivals": {
+      "kicker": "Fraîchement arrivés en rayon"
+    },
+    "heroSlides": {
+      "villa": {
+        "kicker": "De l'idée à la réalité",
+        "title": "Construisez votre maison, *étape* *par* *étape.*",
+        "lead": "Suivez la construction d'une villa, de la terre nue à la livraison, et trouvez les matériaux de chaque étape.",
+        "cta": "Voir la construction",
+        "cta2": "Démarrer mon projet"
+      },
+      "tools": {
+        "kicker": "Boukir Smart Calculators",
+        "title": "Calculez *juste.* Construisez mieux.",
+        "lead": "Carrelage, peinture, béton, étanchéité : 13 outils gratuits avec des hypothèses claires.",
+        "cta": "Ouvrir les calculateurs",
+        "cta2": "Visual Studio"
+      },
+      "services": {
+        "kicker": "Services & Maalems",
+        "title": "Des *artisans qualifiés* pour votre chantier.",
+        "lead": "Décrivez votre besoin : notre équipe qualifie la demande et vous oriente vers le bon Maalem.",
+        "cta": "Envoyer une demande",
+        "cta2": "Parcourir les Maalems"
+      }
+    },
+    "sequence": {
+      "kicker": "De l'idée à la réalité",
+      "title": "Construisez votre maison, étape par étape.",
+      "indicator": "Étapes de construction",
+      "scrollHint": "Faites défiler pour construire",
+      "loading": "Chargement",
+      "finalTitle": "Construisez ce qui dure.",
+      "cta": {
+        "plan": "Préparer mon projet",
+        "concrete": "Calculer mon béton",
+        "structure": "Ciment & matériaux",
+        "bricks": "Calculer mes briques",
+        "waterproofing": "Calculer mon étanchéité",
+        "tiles": "Calculer mon carrelage",
+        "paint": "Calculer ma peinture",
+        "start": "Démarrer mon projet",
+        "estimate": "Estimer mon projet"
+      },
+      "chapters": {
+        "terrain": {
+          "title": "Le terrain",
+          "text": "Chaque projet commence par une vision."
+        },
+        "foundations": {
+          "title": "Les fondations",
+          "text": "La solidité commence par les bonnes fondations."
+        },
+        "structure": {
+          "title": "La structure",
+          "text": "Une construction durable repose sur une structure solide."
+        },
+        "masonry": {
+          "title": "La maçonnerie",
+          "text": "Chaque mur donne forme à votre projet."
+        },
+        "waterproofing": {
+          "title": "L'étanchéité",
+          "text": "Protégez votre investissement pour les années à venir."
+        },
+        "coverings": {
+          "title": "Les revêtements",
+          "text": "Chaque détail révèle la qualité."
+        },
+        "finishes": {
+          "title": "Les finitions",
+          "text": "La précision transforme une construction en maison."
+        },
+        "reality": {
+          "title": "La réalisation",
+          "text": "Votre vision devient réalité."
+        }
+      }
+    },
+    "plannerTeaser": {
+      "kicker": "08 · Boukir Project Planner",
+      "title": "Préparez votre projet en *quelques étapes.*",
+      "desc": "Choisissez le type de projet, saisissez vos dimensions et obtenez une liste de matériaux estimée, sans créer de compte.",
+      "cta": "Démarrer mon projet",
+      "cta2": "Ouvrir le Visual Studio"
+    }
+  },
+  "tools": {
+    "hubKicker": "Boukir Smart Calculators",
+    "hubTitle": "Calculez *juste.* Construisez mieux.",
+    "hubLead": "Des outils d'estimation pensés pour le chantier : formules transparentes, hypothèses modifiables, résultats instantanés. Tout est calculé dans votre navigateur.",
+    "hubMetaTitle": "Calculateurs de matériaux de construction",
+    "hubMetaDescription": "Calculez gratuitement vos quantités de carrelage, peinture, béton, étanchéité, colle, blocs, marbre et plus, avec des hypothèses claires.",
+    "stats": {
+      "stat1": {
+        "value": "13",
+        "label": "outils d'estimation"
+      },
+      "stat2": {
+        "value": "100 %",
+        "label": "calculé localement"
+      },
+      "stat3": {
+        "value": "0",
+        "label": "compte requis"
+      },
+      "stat4": {
+        "value": "PDF",
+        "label": "export & partage"
+      }
+    },
+    "featuredLabel": "Expériences interactives",
+    "studioTitle": "Boukir Visual Studio",
+    "studioDesc": "Simulateur de pièce en 2D, visualiseur de matériaux, calepinage et tableau de budget.",
+    "plannerTitle": "Planificateur de projet",
+    "plannerDesc": "Salle de bain, cuisine, sol, peinture… préparez votre projet en six étapes.",
+    "open": "Ouvrir",
+    "families": {
+      "surfaces": {
+        "kicker": "Sols & revêtements",
+        "title": "Surfaces",
+        "desc": "Carrelage, marbre, pavés et étanchéité : surfaces, chutes et conditionnements."
+      },
+      "structure": {
+        "kicker": "Gros œuvre",
+        "title": "Structure",
+        "desc": "Béton, blocs, remblais et toiture : volumes et quantités indicatives."
+      },
+      "finishes": {
+        "kicker": "Second œuvre",
+        "title": "Finitions",
+        "desc": "Peinture, colles, mortiers et plâtres : consommations et sacs."
+      },
+      "planning": {
+        "kicker": "Outils",
+        "title": "Budget & conversions"
+      }
+    },
+    "disclaimerTitle": "Des estimations indicatives, jamais des certifications",
+    "disclaimerLong": "Les résultats sont calculés à partir des dimensions et hypothèses que vous saisissez (chutes, consommations, dosages, densités). Ils ne remplacent ni une étude d'ingénieur, ni un métré professionnel, ni un devis. Vérifiez toujours la fiche technique du fabricant. La livraison, la main-d'œuvre, la pose et les taxes ne sont pas incluses sauf mention contraire. Les montants officiels de commande sont ceux du panier et du paiement.",
+    "backToHub": "Tous les calculateurs",
+    "related": "Calculateurs associés",
+    "optional": "facultatif",
+    "estimate": "Estimation",
+    "diagramLabel": "Plan interactif",
+    "dragHint": "Glissez les poignées · flèches du clavier",
+    "diagramHint": "Le schéma suit vos cotes",
+    "resultsLabel": "Résultats de l'estimation",
+    "fixErrors": "Corrigez les champs signalés pour obtenir une estimation.",
+    "openingsWarning": "Les ouvertures dépassent la surface des murs : vérifiez vos valeurs.",
+    "assumptionsTitle": "Hypothèses & limites",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "disclaimer": "Estimation indicative — hors livraison, main-d'œuvre, pose et taxes. Vérifiez la fiche technique du fabricant.",
+    "catalogTitle": "Matériaux associés",
+    "catalogDesc": "Les quantités ne présument pas d'un produit précis : comparez les références et leurs conditionnements.",
+    "seeDetails": "Détails",
+    "productContext": "Calcul pour « {name} »",
+    "productPrice": "Prix catalogue : {price} MAD",
+    "packCatalog": "conditionnement catalogue : {pack}",
+    "packName": "conditionnement détecté dans le nom du produit : {pack} (à vérifier)",
+    "backToProduct": "Retour au produit",
+    "groups": {
+      "dimensions": "Dimensions",
+      "material": "Matériau",
+      "packaging": "Conditionnement",
+      "assumptions": "Hypothèses",
+      "pricing": "Prix (facultatif)"
+    },
+    "actions": {
+      "reset": "Réinitialiser",
+      "copy": "Copier",
+      "copied": "Résumé copié",
+      "linkCopied": "Lien copié",
+      "print": "Imprimer / PDF",
+      "share": "Partager",
+      "whatsapp": "Envoyer par WhatsApp"
+    },
+    "summary": {
+      "heading": "Estimation Boukir Diamond",
+      "inputs": "Données",
+      "results": "Résultats",
+      "assumptions": "Hypothèses",
+      "disclaimer": "Estimation indicative, hors livraison, main-d'œuvre, pose et taxes. Ne remplace pas une étude technique ni un devis.",
+      "date": "Établie le"
+    },
+    "diagram": {
+      "length": "Longueur",
+      "width": "Largeur",
+      "height": "Hauteur",
+      "depth": "Épaisseur",
+      "area": "Surface",
+      "handle": "Poignée de redimensionnement",
+      "developed": "Développé",
+      "slope": "Rampant",
+      "pitch": "Pente",
+      "eave": "Égout",
+      "planes": "Pans",
+      "bagsCaption": "{count, plural, =0 {Aucun sac} one {# sac nécessaire} other {# sacs nécessaires}}"
+    }
+  },
+  "calc": {
+    "carrelage": {
+      "title": "Carrelage & revêtements",
+      "short": "Surface, chutes, nombre de carreaux et de boîtes.",
+      "desc": "Calculez la surface à couvrir, le nombre de carreaux et de boîtes à acheter selon le format, la pose et le conditionnement.",
+      "metaTitle": "Calculateur de carrelage"
+    },
+    "peinture": {
+      "title": "Peinture",
+      "short": "Surface peinte, litres et pots nécessaires.",
+      "desc": "Estimez la surface à peindre, ouvertures déduites, puis le volume de peinture et le nombre de pots selon le rendement.",
+      "metaTitle": "Calculateur de peinture"
+    },
+    "beton": {
+      "title": "Béton & ciment",
+      "short": "Volume, ciment, sacs, sable et gravier.",
+      "desc": "Volume de béton d'une dalle, semelle, poutre ou poteau, et quantité de ciment selon le dosage que vous choisissez.",
+      "metaTitle": "Calculateur de béton et de ciment"
+    },
+    "etancheite": {
+      "title": "Étanchéité",
+      "short": "Surface, relevés, kilos ou rouleaux.",
+      "desc": "Quantité de produit liquide ou de membrane pour une terrasse, une salle de bain ou une toiture, relevés compris.",
+      "metaTitle": "Calculateur d'étanchéité"
+    },
+    "colle-mortier": {
+      "title": "Colle, mortier & ragréage",
+      "short": "Kilos et sacs selon la consommation.",
+      "desc": "Nombre de sacs de colle carrelage, de mortier ou de ragréage selon la surface, l'épaisseur et la consommation.",
+      "metaTitle": "Calculateur de colle et mortier"
+    },
+    "murs-blocs": {
+      "title": "Murs & blocs",
+      "short": "Agglos ou briques par m² et au total.",
+      "desc": "Nombre d'agglos ou de briques pour un mur, ouvertures déduites, joints compris.",
+      "metaTitle": "Calculateur de blocs et briques"
+    },
+    "marbre-pierre": {
+      "title": "Marbre & pierre naturelle",
+      "short": "Surface, chutes de coupe et dalles.",
+      "desc": "Nombre de dalles de marbre ou de pierre naturelle selon les surfaces et le format, avec une marge de coupe adaptée.",
+      "metaTitle": "Calculateur de marbre"
+    },
+    "sable-gravier": {
+      "title": "Sable, gravier & remblai",
+      "short": "Volume, tonnage (avec densité) et voyages.",
+      "desc": "Volume de sable, gravier ou remblai, foisonnement compris ; tonnage uniquement avec une densité confirmée.",
+      "metaTitle": "Calculateur de sable et gravier"
+    },
+    "platre-enduit": {
+      "title": "Plâtre, enduit & faux-plafond",
+      "short": "Sacs d'enduit ou plaques de plâtre.",
+      "desc": "Quantité d'enduit ou de plâtre selon l'épaisseur, ou nombre de plaques pour un faux-plafond.",
+      "metaTitle": "Calculateur de plâtre et enduit"
+    },
+    "paves-terrasse": {
+      "title": "Pavés, dalles & terrasse",
+      "short": "Pièces et paquets, joints compris.",
+      "desc": "Nombre de pavés ou de dalles pour une terrasse ou une allée selon le format, le joint et la pose.",
+      "metaTitle": "Calculateur de pavés"
+    },
+    "toiture": {
+      "title": "Tuiles & toiture",
+      "short": "Surface de toiture et nombre de tuiles.",
+      "desc": "Surface des pans et nombre approximatif de tuiles selon le pureau du fabricant. Aucune étude de charpente.",
+      "metaTitle": "Calculateur de tuiles"
+    },
+    "budget": {
+      "title": "Budget projet",
+      "short": "Postes, scénarios et imprévus.",
+      "desc": "Assemblez votre budget poste par poste, avec des prix catalogue quand vous choisissez un produit, la main-d'œuvre séparée et une réserve pour imprévus.",
+      "metaTitle": "Estimateur de budget de projet",
+      "short2": ""
+    },
+    "convertisseur": {
+      "title": "Convertisseur d'unités",
+      "short": "mm, m, m², m³, L, kg, t — sans approximation.",
+      "desc": "Convertissez longueurs, surfaces, volumes et masses. Le passage du volume au poids exige une densité explicite.",
+      "metaTitle": "Convertisseur d'unités de construction"
+    }
+  },
+  "fields": {
+    "length": "Longueur",
+    "width": "Largeur",
+    "widthOrHeight": "Largeur ou hauteur",
+    "extraArea": "Surfaces supplémentaires",
+    "tileFormat": "Format des carreaux",
+    "tileLength": "Longueur du carreau",
+    "tileWidth": "Largeur du carreau",
+    "pattern": "Type de pose",
+    "packMode": "Conditionnement",
+    "m2PerBox": "m² par boîte",
+    "tilesPerBox": "Carreaux par boîte",
+    "waste": "Marge de chute",
+    "pricePerBox": "Prix par boîte",
+    "paintMode": "Surface à peindre",
+    "wallHeight": "Hauteur des murs",
+    "includeCeiling": "Inclure le plafond",
+    "doors": "Portes à déduire",
+    "windows": "Fenêtres à déduire",
+    "coats": "Nombre de couches",
+    "coverage": "Rendement",
+    "containerL": "Contenance du pot",
+    "pricePerContainer": "Prix par pot",
+    "element": "Élément",
+    "thickness": "Épaisseur",
+    "diameter": "Diamètre",
+    "count": "Nombre d'éléments",
+    "dosage": "Dosage en ciment",
+    "dosageKg": "Dosage personnalisé",
+    "bagKg": "Poids du sac",
+    "sandRecipe": "Sable par m³",
+    "gravelRecipe": "Gravier par m³",
+    "waterRecipe": "Eau par m³",
+    "pricePerBag": "Prix par sac",
+    "wpMode": "Type d'étanchéité",
+    "upstand": "Hauteur des relevés",
+    "coatsLayers": "Couches / épaisseurs",
+    "consumptionKgM2": "Consommation par couche",
+    "packKg": "Poids du seau",
+    "rollArea": "Surface d'un rouleau",
+    "overlap": "Recouvrement",
+    "pricePerPack": "Prix par unité",
+    "productType": "Produit",
+    "area": "Surface",
+    "consumption": "Consommation",
+    "consumptionPerMm": "Consommation par mm",
+    "layerThickness": "Épaisseur de couche",
+    "wallLength": "Longueur du mur",
+    "openings": "Ouvertures à déduire",
+    "blockType": "Bloc",
+    "blockLength": "Longueur du bloc",
+    "blockHeight": "Hauteur du bloc",
+    "joint": "Épaisseur du joint",
+    "pricePerUnit": "Prix unitaire",
+    "surfaces": "Nombre de surfaces identiques",
+    "slabFormat": "Format des dalles",
+    "slabLength": "Longueur de la dalle",
+    "slabWidth": "Largeur de la dalle",
+    "pricePerM2": "Prix au m²",
+    "fillDepth": "Épaisseur de remblai",
+    "compaction": "Foisonnement / compactage",
+    "fillMaterial": "Matériau",
+    "density": "Densité confirmée",
+    "truckCapacity": "Capacité d'un camion",
+    "pricePerM3": "Prix au m³",
+    "plasterMode": "Ouvrage",
+    "sheetLength": "Longueur de plaque",
+    "sheetWidth": "Largeur de plaque",
+    "pricePerBagOrSheet": "Prix par sac ou plaque",
+    "pieceFormat": "Format",
+    "pieceLength": "Longueur de pièce",
+    "pieceWidth": "Largeur de pièce",
+    "m2PerPack": "m² par paquet",
+    "piecesPerPack": "Pièces par paquet",
+    "eaveLength": "Longueur à l'égout",
+    "slopeMode": "Mesure du rampant",
+    "slopeLength": "Longueur du rampant",
+    "run": "Projection horizontale",
+    "pitch": "Pente",
+    "planes": "Nombre de pans",
+    "tilesPerM2": "Tuiles au m²",
+    "piecesPerPallet": "Tuiles par palette",
+    "pricePerPiece": "Prix par tuile"
+  },
+  "options": {
+    "f30x30": "30 × 30",
+    "f45x45": "45 × 45",
+    "f60x60": "60 × 60",
+    "f60x120": "60 × 120",
+    "f20x120": "20 × 120",
+    "f40x40": "40 × 40",
+    "f280x160": "280 × 160",
+    "p20x10": "20 × 10",
+    "p60x40": "60 × 40",
+    "custom": "Personnalisé",
+    "straight": "Droite",
+    "offset": "Décalée",
+    "diagonal": "Diagonale",
+    "herringbone": "Chevrons",
+    "m2PerBox": "m² / boîte",
+    "tilesPerBox": "Carreaux / boîte",
+    "m2PerPack": "m² / paquet",
+    "piecesPerPack": "Pièces / paquet",
+    "room": "Pièce entière",
+    "singleWall": "Un mur",
+    "slab": "Dalle",
+    "footing": "Semelle",
+    "beam": "Poutre",
+    "column": "Poteau",
+    "roundColumn": "Poteau rond",
+    "d250": "250 kg/m³",
+    "d300": "300 kg/m³",
+    "d350": "350 kg/m³",
+    "liquid": "Produit liquide",
+    "membrane": "Membrane en rouleaux",
+    "tileAdhesive": "Colle carrelage",
+    "leveling": "Ragréage",
+    "mortar": "Mortier / enduit ciment",
+    "agglo40": "Agglo 40 × 20",
+    "agglo50": "Agglo 50 × 20",
+    "brick30": "Brique 30 × 20",
+    "densityUnknown": "Densité inconnue",
+    "drySand": "Sable sec (≈ 1,6)",
+    "gravel": "Gravier (≈ 1,5)",
+    "customDensity": "Autre densité",
+    "plasterCoat": "Enduit / plâtre",
+    "plasterboard": "Plaques de plâtre",
+    "measuredSlope": "Rampant mesuré",
+    "runAndPitch": "Projection + pente"
+  },
+  "help": {
+    "extraArea": "Ajoutez par exemple une niche, un couloir ou une plinthe déjà mesurés en m².",
+    "waste": "Marge pour les coupes, la casse et les ajustements. Valeur courante, à adapter à votre chantier.",
+    "packaging": "Indiqué sur l'emballage ou la fiche du produit.",
+    "price": "Laissez vide si le prix n'est pas connu : le coût sera affiché comme indisponible.",
+    "doors": "Porte standard comptée 0,90 × 2,10 m.",
+    "windows": "Fenêtre standard comptée 1,20 × 1,00 m.",
+    "coverage": "Rendement par couche indiqué par le fabricant (m² par litre).",
+    "dosage": "Dosage à confirmer selon l'usage et les prescriptions de votre chantier.",
+    "recipe": "Recette de référence modifiable ; laissez vide pour ne calculer que le ciment.",
+    "upstand": "Remontées de l'étanchéité sur les murs périphériques.",
+    "consumption": "Valeur à reprendre sur la fiche technique du produit choisi.",
+    "openings": "Surface totale des portes et fenêtres, en m².",
+    "compaction": "Majoration pour le tassement du matériau mis en œuvre.",
+    "density": "Uniquement une valeur confirmée par le fournisseur. Sans densité, aucun tonnage n'est calculé.",
+    "truck": "Volume transporté par voyage, s'il est connu.",
+    "tilesPerM2": "Donnée du fabricant de tuiles (selon le pureau)."
+  },
+  "results": {
+    "netArea": "Surface nette",
+    "areaWithWaste": "Surface avec chutes",
+    "tiles": "Carreaux",
+    "boxes": "Boîtes à acheter",
+    "purchasedArea": "Surface achetée",
+    "surplus": "Reste estimé",
+    "cost": "Coût matériaux estimé",
+    "wallArea": "Surface des murs",
+    "ceilingArea": "Plafond",
+    "openingsArea": "Ouvertures déduites",
+    "paintableArea": "Surface à peindre",
+    "liters": "Peinture nécessaire",
+    "containers": "Pots à acheter",
+    "purchasedLiters": "Volume acheté",
+    "volume": "Volume brut",
+    "adjustedVolume": "Volume avec marge",
+    "cementKg": "Ciment",
+    "cementBags": "Sacs de ciment",
+    "sand": "Sable",
+    "gravel": "Gravier",
+    "water": "Eau",
+    "baseArea": "Surface au sol",
+    "upstandArea": "Relevés",
+    "totalArea": "Surface à traiter",
+    "materialKg": "Produit nécessaire",
+    "packs": "Unités à acheter",
+    "membraneArea": "Membrane nécessaire",
+    "rolls": "Rouleaux",
+    "bags": "Sacs à acheter",
+    "purchasedKg": "Quantité achetée",
+    "grossArea": "Surface brute",
+    "netWallArea": "Surface de mur",
+    "unitsPerM2": "Blocs par m²",
+    "units": "Blocs à prévoir",
+    "slabs": "Dalles à acheter",
+    "tonnes": "Tonnage estimé",
+    "loads": "Voyages",
+    "surface": "Surface traitée",
+    "sheets": "Plaques",
+    "pieces": "Pièces à prévoir",
+    "slopeLength": "Rampant",
+    "roofArea": "Surface de toiture",
+    "roofTiles": "Tuiles",
+    "pallets": "Palettes",
+    "packagingMissing": "Conditionnement non renseigné",
+    "priceUnavailable": "Prix indisponible",
+    "notIncluded": "Non inclus",
+    "noRecipe": "Recette non renseignée",
+    "densityRequired": "Densité requise",
+    "capacityUnknown": "Capacité inconnue"
+  },
+  "units": {
+    "boxes": "boîtes",
+    "tiles": "carreaux",
+    "pots": "pots",
+    "bags": "sacs",
+    "packs": "unités",
+    "rolls": "rouleaux",
+    "units": "blocs",
+    "perM2": "/ m²",
+    "slabs": "dalles",
+    "loads": "voyages",
+    "sheets": "plaques",
+    "pieces": "pièces"
+  },
+  "assumptions": {
+    "indicative": "Estimation indicative : hors livraison, main-d'œuvre, pose et taxes.",
+    "tileWaste": "La marge de chute couvre coupes et casse ; elle augmente avec les poses décalées, diagonales ou à chevrons.",
+    "tilePattern": "Le schéma est un aperçu du calepinage, pas un plan de coupe exécutable.",
+    "packagingCheck": "Le nombre de boîtes est arrondi au supérieur ; vérifiez le conditionnement réel du produit.",
+    "openingsStandard": "Ouvertures déduites sur la base de dimensions standard (porte 0,90 × 2,10 m, fenêtre 1,20 × 1,00 m).",
+    "coverageCheck": "Le rendement dépend du support et du produit : reprenez la valeur de la fiche technique.",
+    "surfacePrep": "Les sous-couches et la préparation du support ne sont pas comptées.",
+    "dosageUser": "Le dosage est celui que vous choisissez ; il doit correspondre à l'usage prévu.",
+    "recipeReference": "La recette sable/gravier/eau est une référence courante modifiable, pas une formulation universelle.",
+    "notStructural": "Ceci n'est pas un calcul de structure : faites valider tout ouvrage porteur par un professionnel qualifié.",
+    "consumptionDatasheet": "La consommation doit provenir de la fiche technique du produit utilisé.",
+    "upstands": "Les relevés sont calculés sur tout le périmètre de la surface.",
+    "supportPrep": "Primaires, bandes de renfort et accessoires ne sont pas inclus.",
+    "notchTrowel": "La consommation de colle varie selon la taille de la spatule crantée et le format des carreaux.",
+    "jointIncluded": "Le nombre de blocs par m² tient compte de l'épaisseur du joint.",
+    "noMortar": "Le mortier de pose et les chaînages ne sont pas comptés.",
+    "stoneWaste": "La pierre naturelle demande souvent une marge plus élevée (veinage, calibrage, coupes).",
+    "stoneVeining": "Pour un calepinage à veines assorties, prévoyez une marge supplémentaire.",
+    "densitySupplier": "Le tonnage n'est calculé qu'avec une densité confirmée par le fournisseur.",
+    "compactionFactor": "Le foisonnement est une majoration estimative ; il varie selon le matériau et le compactage.",
+    "boardVsPlaster": "Les plaques se calculent avec leurs dimensions et une marge de coupe, pas avec une consommation d'enduit.",
+    "paverCuts": "Les poses décalées, en chevrons ou en diagonale génèrent davantage de coupes.",
+    "borders": "Bordures, sable de pose et géotextile ne sont pas inclus.",
+    "tilesPerM2Maker": "Le nombre de tuiles au m² dépend du modèle et du pureau : donnée du fabricant.",
+    "roofNoStructure": "Aucune vérification de charpente, de charge ni d'étanchéité n'est effectuée."
+  },
+  "errors": {
+    "invalid": "Valeur invalide",
+    "negative": "La valeur ne peut pas être négative",
+    "tooLarge": "Valeur trop élevée",
+    "zero": "Doit être supérieur à zéro",
+    "required": "Champ requis"
+  },
+  "budget": {
+    "scenario": "Scénario",
+    "duplicateB": "Comparer avec un scénario B",
+    "searchCatalog": "Ajouter un produit du catalogue…",
+    "addRow": "Ligne libre",
+    "catalogNote": "Un prix catalogue n'est repris que pour le produit que vous choisissez. Les autres lignes restent « prix indisponible » tant que vous ne saisissez pas de prix.",
+    "empty": "Ajoutez un produit du catalogue ou une ligne libre pour commencer.",
+    "label": "Désignation",
+    "labelPlaceholder": "Ex. : pose du carrelage",
+    "group": "Poste",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "unitPrice": "Prix unitaire",
+    "remove": "Supprimer la ligne",
+    "fromCatalog": "Prix issu du catalogue Boukir Diamond",
+    "priceUnavailable": "Prix indisponible",
+    "noResults": "Aucun produit trouvé",
+    "total": "Budget total estimé",
+    "materialSubtotal": "Sous-total matériaux",
+    "otherSubtotal": "Main-d'œuvre & autres coûts",
+    "contingency": "Imprévus",
+    "unpricedNote": "{count, plural, one {# ligne sans prix n'est pas comptée.} other {# lignes sans prix ne sont pas comptées.}}",
+    "comparison": "Comparaison des scénarios",
+    "breakdown": "Répartition par poste",
+    "noPricedRows": "Ajoutez des prix pour voir la répartition.",
+    "separationNote": "La main-d'œuvre, la livraison et la pose restent séparées des matériaux. Les montants de commande officiels sont ceux du panier.",
+    "summaryHeading": "Budget de projet Boukir Diamond",
+    "sample": {
+      "tiles": "Carrelage sol",
+      "labor": "Pose (devis artisan)"
+    },
+    "units": {
+      "box": "boîte",
+      "flat": "forfait"
+    },
+    "groups": {
+      "materials": "Matériaux",
+      "tiles": "Carrelage & pierre",
+      "paint": "Peinture",
+      "waterproofing": "Étanchéité",
+      "cement": "Ciment & mortier",
+      "plumbing": "Plomberie",
+      "electrical": "Électricité",
+      "tools": "Outillage",
+      "labor": "Main-d'œuvre",
+      "delivery": "Livraison",
+      "installation": "Pose / installation",
+      "other": "Autre"
+    }
+  },
+  "converter": {
+    "dimension": "Grandeur",
+    "dimensions": {
+      "length": "Longueur",
+      "area": "Surface",
+      "volume": "Volume",
+      "mass": "Masse",
+      "density": "Volume ↔ poids"
+    },
+    "value": "Valeur",
+    "from": "De",
+    "to": "Vers",
+    "swap": "Inverser",
+    "result": "Résultat",
+    "density": "Densité",
+    "densityHelp": "Obligatoire : valeur confirmée par le fournisseur.",
+    "note": "Seules les conversions dimensionnellement valides sont proposées. Passer d'un volume (m³) à un poids (t) nécessite toujours une densité explicite."
+  },
+  "studio": {
+    "kicker": "Boukir Visual Studio",
+    "title": "Visualisez avant de *construire.*",
+    "lead": "Un atelier interactif pour dimensionner une pièce, essayer des finitions, explorer un calepinage et visualiser votre budget. Les quantités sont toujours calculées à partir de cotes explicites.",
+    "metaTitle": "Visual Studio — simulateur de pièce et de matériaux",
+    "tabs": {
+      "room": "Simulateur de pièce",
+      "materials": "Visualiseur de matériaux",
+      "layout": "Calepinage",
+      "structure": "Dalle & mur",
+      "budget": "Budget"
+    },
+    "room": {
+      "floor": "Vue sol",
+      "walls": "Vue murs",
+      "height": "Hauteur sous plafond",
+      "doors": "Portes",
+      "windows": "Fenêtres",
+      "floorArea": "Surface au sol",
+      "perimeter": "Périmètre",
+      "wallArea": "Surface des murs (ouvertures déduites)",
+      "tileBoxes": "Boîtes de carrelage (60×60, 10 %)",
+      "paintLiters": "Peinture murs (2 couches, 10 m²/L)",
+      "openTile": "Calcul carrelage détaillé",
+      "openPaint": "Calcul peinture détaillé"
+    },
+    "materials": {
+      "intro": "Comparez des finitions sur une pièce type. Les matières photographiques proviennent de nos visuels ; les teintes de peinture sont indicatives.",
+      "floor": "Sol",
+      "wall": "Murs",
+      "before": "Avant",
+      "after": "Après",
+      "compare": "Glissez pour comparer avant / après",
+      "illustrative": "Rendu illustratif — ce n'est pas un rendu photoréaliste ni la sélection d'une référence précise.",
+      "swatches": {
+        "tile": "Carreau terre cuite",
+        "stone": "Minéral / béton",
+        "wood": "Bois clair",
+        "metal": "Métal brossé",
+        "paintSand": "Peinture sable",
+        "paintGraphite": "Peinture graphite",
+        "paintWhite": "Peinture blanc cassé",
+        "paintOchre": "Peinture ocre"
+      },
+      "browse": "Parcourir les rayons correspondants"
+    },
+    "layout": {
+      "intro": "Calepinage basé sur les dimensions réelles des carreaux et de la pièce.",
+      "fullTiles": "Carreaux entiers",
+      "cutTiles": "Carreaux coupés",
+      "totalPositions": "Positions",
+      "preview": "Aperçu : les nombres de carreaux entiers et coupés sont exacts pour une pose droite démarrée dans un angle ; pour les autres poses, ils sont indicatifs. Ce n'est pas un plan de coupe prêt pour chantier.",
+      "startCorner": "Pose démarrée dans un angle, sans joint."
+    },
+    "structure": {
+      "slab": "Dalle béton",
+      "wall": "Mur en blocs",
+      "openConcrete": "Calcul béton détaillé",
+      "openBlocks": "Calcul blocs détaillé"
+    },
+    "budget": {
+      "title": "Tableau de budget",
+      "desc": "Assemblez vos postes, comparez deux scénarios et visualisez la répartition. Les prix ne sont repris du catalogue que pour les produits que vous sélectionnez.",
+      "open": "Ouvrir l'estimateur de budget"
+    }
+  },
+  "planner": {
+    "kicker": "Boukir Project Planner",
+    "title": "Préparez votre projet en *quelques étapes.*",
+    "lead": "Un parcours guidé, sans compte : le brouillon est enregistré uniquement sur cet appareil.",
+    "metaTitle": "Planificateur de projet de construction et rénovation",
+    "draftSaved": "Brouillon enregistré sur cet appareil",
+    "reset": "Nouveau projet",
+    "steps": {
+      "type": "Projet",
+      "dimensions": "Dimensions",
+      "materials": "Matériaux",
+      "calculate": "Calcul",
+      "review": "Récapitulatif",
+      "action": "Passer à l'action"
+    },
+    "stepOf": "Étape {current} sur {total}",
+    "back": "Retour",
+    "next": "Continuer",
+    "types": {
+      "renovation": {
+        "title": "Rénovation",
+        "desc": "Rafraîchir une pièce : sol, murs, finitions."
+      },
+      "bathroom": {
+        "title": "Salle de bain",
+        "desc": "Carrelage, étanchéité sous carrelage, colle."
+      },
+      "kitchen": {
+        "title": "Cuisine",
+        "desc": "Sol, crédence, peinture."
+      },
+      "flooring": {
+        "title": "Revêtement de sol",
+        "desc": "Carrelage ou pierre, colle et chutes."
+      },
+      "painting": {
+        "title": "Peinture",
+        "desc": "Murs et plafond, enduit éventuel."
+      },
+      "waterproofing": {
+        "title": "Étanchéité",
+        "desc": "Terrasse, toiture ou pièce humide."
+      },
+      "construction": {
+        "title": "Gros œuvre",
+        "desc": "Dalle béton et murs en blocs."
+      }
+    },
+    "dims": {
+      "title": "Les dimensions de la pièce ou de la zone",
+      "length": "Longueur",
+      "width": "Largeur",
+      "height": "Hauteur sous plafond",
+      "doors": "Portes",
+      "windows": "Fenêtres",
+      "slabThickness": "Épaisseur de dalle"
+    },
+    "mats": {
+      "title": "Quels postes inclure ?",
+      "desc": "Nous avons présélectionné les postes habituels pour ce type de projet. Ajustez librement.",
+      "floorTiles": "Carrelage au sol",
+      "wallTiles": "Faïence murale (1,20 m de haut)",
+      "adhesive": "Colle carrelage",
+      "paint": "Peinture murs",
+      "ceilingPaint": "Peinture plafond",
+      "plaster": "Enduit de rebouchage",
+      "waterproofing": "Étanchéité",
+      "concrete": "Dalle béton",
+      "blocks": "Murs en blocs"
+    },
+    "calc": {
+      "title": "Quantités estimées",
+      "desc": "Calculées avec les formules des calculateurs Boukir. Hypothèses visibles sous chaque ligne.",
+      "nothing": "Sélectionnez au moins un poste à l'étape précédente.",
+      "detail": "Détail"
+    },
+    "review": {
+      "title": "Votre récapitulatif",
+      "project": "Projet",
+      "dimensions": "Dimensions",
+      "quantities": "Quantités",
+      "costs": "Coûts",
+      "known": "Connus",
+      "unknown": "À chiffrer",
+      "unknownDesc": "Les prix ne sont pas devinés : ajoutez-les dans l'estimateur de budget ou demandez un devis.",
+      "labor": "Main-d'œuvre, livraison et pose ne sont pas inclus.",
+      "assumptions": "Hypothèses importantes",
+      "suggestions": "Rayons à explorer"
+    },
+    "action": {
+      "title": "Et maintenant ?",
+      "shop": "Explorer les produits",
+      "list": "Copier la liste de courses",
+      "listCopied": "Liste copiée",
+      "whatsapp": "Envoyer à un conseiller (WhatsApp)",
+      "print": "Imprimer / PDF",
+      "budget": "Chiffrer dans l'estimateur de budget",
+      "edit": "Modifier le projet",
+      "maalem": "Trouver un artisan",
+      "note": "Rien n'est envoyé automatiquement : WhatsApp s'ouvre avec un message prérempli que vous pouvez relire avant l'envoi."
+    }
+  },
+  "product": {
+    "calculate": "Calculer la quantité nécessaire",
+    "calculateHint": "Estimation selon votre surface, avec le conditionnement de ce produit"
+  },
+  "carousel": {
+    "prev": "Précédent",
+    "next": "Suivant",
+    "play": "Lire le défilement automatique",
+    "pause": "Mettre en pause",
+    "slideOf": "Diapositive {current} sur {total}",
+    "goTo": "Aller à la diapositive {index}",
+    "chooseSlide": "Choisir une diapositive",
+    "dragHint": "Faites glisser pour parcourir · le défilement se met en pause au survol"
+  }
+}

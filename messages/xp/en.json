@@ -1,0 +1,990 @@
+{
+  "theme": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode"
+  },
+  "nav": {
+    "skipToContent": "Skip to content",
+    "mainNavigation": "Main navigation",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "promotions": "Promotions",
+    "calculators": "Calculators",
+    "calculatorsHint": "Estimate your quantities in seconds",
+    "studio": "Visual Studio",
+    "planner": "My project",
+    "favorites": "Favourites",
+    "categories": "Categories"
+  },
+  "fab": {
+    "open": "Open the help menu",
+    "close": "Close the help menu",
+    "title": "How can we help?",
+    "panelLabel": "Quick actions",
+    "whatsappGeneric": "Hello Boukir Diamond, I would like some information.",
+    "whatsappProduct": "Hello Boukir Diamond, I am interested in this product: {url}",
+    "whatsapp": {
+      "label": "WhatsApp",
+      "hint": "Message an advisor directly"
+    },
+    "calculator": {
+      "label": "Calculator",
+      "hint": "Tiles, paint, concrete…"
+    },
+    "project": {
+      "label": "My project",
+      "hint": "Plan your project step by step"
+    },
+    "maalem": {
+      "label": "Need a Maalem?",
+      "hint": "Find the right craftsman"
+    },
+    "contact": {
+      "label": "Contact",
+      "hint": "Address, phone, form"
+    },
+    "top": {
+      "label": "Back to top"
+    }
+  },
+  "footer": {
+    "kicker": "Boukir Diamond · Tangier",
+    "headline": "Let's build *what's next,* together.",
+    "homeHeadline": "Your next project *starts* here.",
+    "subtitle": "Materials, expertise, quantity calculations and advice: everything you need to move forward with confidence, in one place.",
+    "ctaShop": "Explore the shop",
+    "ctaCalc": "Calculate my materials",
+    "ctaAdvisor": "Talk to an advisor",
+    "homeCtaShop": "Discover the shop",
+    "homeCtaEstimate": "Estimate my needs",
+    "homeCtaContact": "Contact Boukir Diamond",
+    "whatsappMessage": "Hello Boukir Diamond, I would like to speak with an advisor.",
+    "statement": "Building materials, tools and technical solutions for homeowners and professionals, with advice from a team that knows the job site.",
+    "whatsappCta": "Chat with an advisor",
+    "colProducts": "Products",
+    "colServices": "Services",
+    "colTools": "Tools & simulators",
+    "colHelp": "Help & account",
+    "colCompany": "Company",
+    "allProducts": "Whole shop",
+    "services": "Our services",
+    "maalems": "Maalem directory",
+    "quickRequest": "Quick request",
+    "becomeMaalem": "Become a Maalem",
+    "planner": "Project planner",
+    "studio": "Visual Studio",
+    "allTools": "All simulators",
+    "contact": "Contact",
+    "account": "My account",
+    "orders": "My orders",
+    "favorites": "My favourites",
+    "findUs": "Find us",
+    "review": "Leave a Google review",
+    "team": "Our advisors",
+    "rights": "All rights reserved.",
+    "legal": "Terms of sale",
+    "backToTop": "Back to top",
+    "estimator": {
+      "kicker": "Express estimate",
+      "title": "Need a quick estimate?",
+      "materialLabel": "Material type",
+      "materials": {
+        "carrelage": "Tiles",
+        "peinture": "Paint",
+        "beton": "Concrete slab",
+        "etancheite": "Waterproofing"
+      },
+      "areaLabel": "Area",
+      "result": "Estimate",
+      "noteTiles": "60×60 tiles, 1.44 m²/box, 10% waste",
+      "notePaint": "Walls, 2 coats, 10 m²/L, 5% margin",
+      "noteConcrete": "12 cm slab, 350 kg/m³, 50 kg bags, 5% margin",
+      "noteWaterproofing": "2 coats × 1.5 kg/m², 20 kg buckets, 5% margin",
+      "invalid": "Enter a valid area",
+      "indicative": "indicative estimate",
+      "openFull": "Open the full calculator"
+    }
+  },
+  "home": {
+    "hero": {
+      "kicker": "Boukir Diamond · Construction Store · Tangier",
+      "title": "Quality that gives *shape* to your *ambitions.*",
+      "lead": "Materials, tools and solutions to build, renovate and complete your projects with confidence.",
+      "manifesto": "We don't just supply materials. We help build what lasts.",
+      "ctaShop": "Explore our products",
+      "ctaCalc": "Calculate my materials",
+      "ctaMaalem": "Find a Maalem",
+      "scroll": "Scroll",
+      "facts": {
+        "delivery": "Delivery across Morocco",
+        "payment": "Secure payment",
+        "store": "Store in Tangier",
+        "tools": "Free calculators"
+      }
+    },
+    "campaigns": {
+      "kicker": "01 · Featured",
+      "title": "This season's highlights",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "universes": {
+      "kicker": "02 · Material universes",
+      "title": "Everything to *build,* from foundation to finish.",
+      "desc": "Browse our main product families. Each universe leads straight to the matching aisle of the shop.",
+      "explore": "Explore the universe",
+      "all": "See the whole shop",
+      "items": {
+        "73-matieres-de-construction": "Cement, sand, gravel and binders for structural work.",
+        "75-etancheite-bitume": "Membranes, bitumen and waterproofing products.",
+        "50-colles-carrelage-marbre": "Adhesives and mortars for tiles and marble.",
+        "72-peinture": "Paints, fillers and surface preparation.",
+        "53-plomberie": "Pipes, fittings and plumbing equipment.",
+        "48-outillage-carreleur": "Cutting, laying and accessories for tilers and marble workers.",
+        "10-outillage": "Tools and equipment for the site and the workshop."
+      }
+    },
+    "journeys": {
+      "kicker": "By use"
+    },
+    "arrivals": {
+      "kicker": "Freshly arrived in store"
+    },
+    "showcase": {
+      "kicker": "04 · Boukir Smart Calculators",
+      "title": "Imagine. Measure. *Calculate.* Build.",
+      "desc": "Draw your room, pick a material: quantities update live, with clear, editable assumptions.",
+      "tabs": {
+        "carrelage": "Tiles",
+        "peinture": "Paint",
+        "beton": "Concrete",
+        "etancheite": "Waterproofing"
+      },
+      "live": "Live calculation",
+      "dragHint": "Drag the handles or type the dimensions",
+      "open": "Open the full simulator",
+      "discover": "Discover the materials",
+      "length": "Length",
+      "width": "Width",
+      "height": "Ceiling height",
+      "thickness": "Thickness",
+      "tileFormat": "Format",
+      "area": "Area",
+      "notes": {
+        "carrelage": "{format} cm tiles, 10% waste, 1.44 m² per box (editable in the full simulator).",
+        "peinture": "4 walls, 1 door + 1 window deducted, 2 coats at 10 m²/L.",
+        "beton": "Slab, 350 kg/m³ dosage chosen as an example, 50 kg bags, 5% margin.",
+        "etancheite": "Roof terrace with 15 cm upstands, 2 coats × 1.5 kg/m² (check the data sheet)."
+      }
+    },
+    "services": {
+      "kicker": "07 · Services & Maalems",
+      "title": "*Qualified craftsmen* to bring the project to life.",
+      "desc": "Describe your need, choose a service and send your request: our team reviews it before directing you.",
+      "steps": {
+        "describe": {
+          "title": "Describe your need",
+          "desc": "A few words, and a photo if you wish."
+        },
+        "choose": {
+          "title": "Choose a service",
+          "desc": "Plumbing, electrical, painting, tiling…"
+        },
+        "send": {
+          "title": "Send your request",
+          "desc": "We get back to you to organise the job."
+        }
+      },
+      "available": "Available services",
+      "ctaServices": "See all services",
+      "ctaQuick": "Send a quick request",
+      "ctaMaalems": "Browse Maalems"
+    },
+    "brands": {
+      "kicker": "06 · Brands",
+      "title": "Trusted brands, in stock.",
+      "desc": "A selection of manufacturers whose products are available in our catalogue.",
+      "viewAll": "See the shop"
+    },
+    "store": {
+      "kicker": "09 · Visit us"
+    },
+    "heroSlides": {
+      "villa": {
+        "kicker": "From idea to reality",
+        "title": "Build your home, *step* *by* *step.*",
+        "lead": "Follow a villa from bare land to handover, and find the materials for every stage.",
+        "cta": "Watch the build",
+        "cta2": "Start my project"
+      },
+      "tools": {
+        "kicker": "Boukir Smart Calculators",
+        "title": "Calculate *right.* Build better.",
+        "lead": "Tiles, paint, concrete, waterproofing: 13 free tools with clear assumptions.",
+        "cta": "Open the calculators",
+        "cta2": "Visual Studio"
+      },
+      "services": {
+        "kicker": "Services & Maalems",
+        "title": "*Qualified craftsmen* for your site.",
+        "lead": "Describe your need: our team reviews the request and directs you to the right Maalem.",
+        "cta": "Send a request",
+        "cta2": "Browse Maalems"
+      }
+    },
+    "sequence": {
+      "kicker": "From idea to reality",
+      "title": "Build your home, step by step.",
+      "indicator": "Construction stages",
+      "scrollHint": "Scroll to build",
+      "loading": "Loading",
+      "finalTitle": "Build what lasts.",
+      "cta": {
+        "plan": "Plan my project",
+        "concrete": "Calculate my concrete",
+        "structure": "Cement & materials",
+        "bricks": "Calculate my bricks",
+        "waterproofing": "Calculate my waterproofing",
+        "tiles": "Calculate my tiles",
+        "paint": "Calculate my paint",
+        "start": "Start my project",
+        "estimate": "Estimate my project"
+      },
+      "chapters": {
+        "terrain": {
+          "title": "The land",
+          "text": "Every project starts with a vision."
+        },
+        "foundations": {
+          "title": "Foundations",
+          "text": "Strength starts with the right foundations."
+        },
+        "structure": {
+          "title": "Structure",
+          "text": "A lasting build rests on a solid structure."
+        },
+        "masonry": {
+          "title": "Masonry",
+          "text": "Every wall gives shape to your project."
+        },
+        "waterproofing": {
+          "title": "Waterproofing",
+          "text": "Protect your investment for years to come."
+        },
+        "coverings": {
+          "title": "Coverings",
+          "text": "Every detail reveals quality."
+        },
+        "finishes": {
+          "title": "Finishes",
+          "text": "Precision turns a building into a home."
+        },
+        "reality": {
+          "title": "Completion",
+          "text": "Your vision becomes reality."
+        }
+      }
+    },
+    "plannerTeaser": {
+      "kicker": "08 · Boukir Project Planner",
+      "title": "Plan your project in *a few steps.*",
+      "desc": "Choose the project type, enter your dimensions and get an estimated materials list, no account needed.",
+      "cta": "Start my project",
+      "cta2": "Open the Visual Studio"
+    }
+  },
+  "tools": {
+    "hubKicker": "Boukir Smart Calculators",
+    "hubTitle": "Calculate *right.* Build better.",
+    "hubLead": "Estimation tools designed for the job site: transparent formulas, editable assumptions, instant results. Everything is calculated in your browser.",
+    "hubMetaTitle": "Building material calculators",
+    "hubMetaDescription": "Calculate tiles, paint, concrete, waterproofing, adhesive, blocks, marble and more for free, with clear assumptions.",
+    "stats": {
+      "stat1": {
+        "value": "13",
+        "label": "estimation tools"
+      },
+      "stat2": {
+        "value": "100%",
+        "label": "calculated locally"
+      },
+      "stat3": {
+        "value": "0",
+        "label": "account required"
+      },
+      "stat4": {
+        "value": "PDF",
+        "label": "export & share"
+      }
+    },
+    "featuredLabel": "Interactive experiences",
+    "studioTitle": "Boukir Visual Studio",
+    "studioDesc": "2D room simulator, material visualiser, tile layout and budget dashboard.",
+    "plannerTitle": "Project planner",
+    "plannerDesc": "Bathroom, kitchen, flooring, painting… plan your project in six steps.",
+    "open": "Open",
+    "families": {
+      "surfaces": {
+        "kicker": "Floors & coverings",
+        "title": "Surfaces",
+        "desc": "Tiles, marble, pavers and waterproofing: areas, waste and packaging."
+      },
+      "structure": {
+        "kicker": "Structural work",
+        "title": "Structure",
+        "desc": "Concrete, blocks, fill and roofing: indicative volumes and quantities."
+      },
+      "finishes": {
+        "kicker": "Finishing work",
+        "title": "Finishes",
+        "desc": "Paint, adhesives, mortars and plasters: consumption and bags."
+      },
+      "planning": {
+        "kicker": "Tools",
+        "title": "Budget & conversions"
+      }
+    },
+    "disclaimerTitle": "Indicative estimates, never certifications",
+    "disclaimerLong": "Results are calculated from the dimensions and assumptions you enter (waste, consumption, dosage, density). They do not replace an engineering study, a professional quantity survey or a quote. Always check the manufacturer's data sheet. Delivery, labour, installation and taxes are not included unless stated. Official order amounts are those of the cart and checkout.",
+    "backToHub": "All calculators",
+    "related": "Related calculators",
+    "optional": "optional",
+    "estimate": "Estimate",
+    "diagramLabel": "Interactive plan",
+    "dragHint": "Drag the handles · keyboard arrows",
+    "diagramHint": "The diagram follows your dimensions",
+    "resultsLabel": "Estimate results",
+    "fixErrors": "Fix the highlighted fields to get an estimate.",
+    "openingsWarning": "Openings exceed the wall area: please check your values.",
+    "assumptionsTitle": "Assumptions & limits",
+    "show": "Show",
+    "hide": "Hide",
+    "disclaimer": "Indicative estimate — excluding delivery, labour, installation and taxes. Check the manufacturer's data sheet.",
+    "catalogTitle": "Related materials",
+    "catalogDesc": "Quantities don't assume a specific product: compare references and their packaging.",
+    "seeDetails": "Details",
+    "productContext": "Calculation for “{name}”",
+    "productPrice": "Catalogue price: {price} MAD",
+    "packCatalog": "catalogue packaging: {pack}",
+    "packName": "packaging detected in the product name: {pack} (please check)",
+    "backToProduct": "Back to product",
+    "groups": {
+      "dimensions": "Dimensions",
+      "material": "Material",
+      "packaging": "Packaging",
+      "assumptions": "Assumptions",
+      "pricing": "Price (optional)"
+    },
+    "actions": {
+      "reset": "Reset",
+      "copy": "Copy",
+      "copied": "Summary copied",
+      "linkCopied": "Link copied",
+      "print": "Print / PDF",
+      "share": "Share",
+      "whatsapp": "Send via WhatsApp"
+    },
+    "summary": {
+      "heading": "Boukir Diamond estimate",
+      "inputs": "Inputs",
+      "results": "Results",
+      "assumptions": "Assumptions",
+      "disclaimer": "Indicative estimate, excluding delivery, labour, installation and taxes. Does not replace a technical study or a quote.",
+      "date": "Prepared on"
+    },
+    "diagram": {
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "depth": "Thickness",
+      "area": "Area",
+      "handle": "Resize handle",
+      "developed": "Unfolded",
+      "slope": "Rafter",
+      "pitch": "Pitch",
+      "eave": "Eave",
+      "planes": "Planes",
+      "bagsCaption": "{count, plural, =0 {No bags} one {# bag needed} other {# bags needed}}"
+    }
+  },
+  "calc": {
+    "carrelage": {
+      "title": "Tiles & coverings",
+      "short": "Area, waste, number of tiles and boxes.",
+      "desc": "Calculate the area to cover and the number of tiles and boxes to buy based on format, layout and packaging.",
+      "metaTitle": "Tile calculator"
+    },
+    "peinture": {
+      "title": "Paint",
+      "short": "Painted area, litres and pots needed.",
+      "desc": "Estimate the area to paint, minus openings, then the paint volume and number of pots based on coverage.",
+      "metaTitle": "Paint calculator"
+    },
+    "beton": {
+      "title": "Concrete & cement",
+      "short": "Volume, cement, bags, sand and gravel.",
+      "desc": "Concrete volume for a slab, footing, beam or column, and the cement quantity for the dosage you choose.",
+      "metaTitle": "Concrete and cement calculator"
+    },
+    "etancheite": {
+      "title": "Waterproofing",
+      "short": "Area, upstands, kilos or rolls.",
+      "desc": "Quantity of liquid product or membrane for a terrace, bathroom or roof, upstands included.",
+      "metaTitle": "Waterproofing calculator"
+    },
+    "colle-mortier": {
+      "title": "Adhesive, mortar & levelling",
+      "short": "Kilos and bags based on consumption.",
+      "desc": "Number of bags of tile adhesive, mortar or levelling compound based on area, thickness and consumption.",
+      "metaTitle": "Adhesive and mortar calculator"
+    },
+    "murs-blocs": {
+      "title": "Walls & blocks",
+      "short": "Blocks or bricks per m² and in total.",
+      "desc": "Number of concrete blocks or bricks for a wall, openings deducted, joints included.",
+      "metaTitle": "Block and brick calculator"
+    },
+    "marbre-pierre": {
+      "title": "Marble & natural stone",
+      "short": "Area, cutting waste and slabs.",
+      "desc": "Number of marble or natural stone slabs based on surfaces and format, with a suitable cutting margin.",
+      "metaTitle": "Marble calculator"
+    },
+    "sable-gravier": {
+      "title": "Sand, gravel & fill",
+      "short": "Volume, tonnage (with density) and loads.",
+      "desc": "Volume of sand, gravel or fill including bulking; tonnage only with a confirmed density.",
+      "metaTitle": "Sand and gravel calculator"
+    },
+    "platre-enduit": {
+      "title": "Plaster, filler & false ceiling",
+      "short": "Bags of filler or plasterboard sheets.",
+      "desc": "Quantity of filler or plaster based on thickness, or number of sheets for a false ceiling.",
+      "metaTitle": "Plaster and filler calculator"
+    },
+    "paves-terrasse": {
+      "title": "Pavers, slabs & terrace",
+      "short": "Pieces and packs, joints included.",
+      "desc": "Number of pavers or slabs for a terrace or path based on format, joint and layout.",
+      "metaTitle": "Paver calculator"
+    },
+    "toiture": {
+      "title": "Roof tiles & roofing",
+      "short": "Roof area and number of tiles.",
+      "desc": "Area of roof planes and approximate number of tiles from the manufacturer's coverage. No structural study.",
+      "metaTitle": "Roof tile calculator"
+    },
+    "budget": {
+      "title": "Project budget",
+      "short": "Line items, scenarios and contingency.",
+      "desc": "Build your budget line by line, with catalogue prices when you pick a product, labour kept separate and a contingency reserve.",
+      "metaTitle": "Project budget estimator",
+      "short2": ""
+    },
+    "convertisseur": {
+      "title": "Unit converter",
+      "short": "mm, m, m², m³, L, kg, t — no approximations.",
+      "desc": "Convert lengths, areas, volumes and masses. Going from volume to weight requires an explicit density.",
+      "metaTitle": "Construction unit converter"
+    }
+  },
+  "fields": {
+    "length": "Length",
+    "width": "Width",
+    "widthOrHeight": "Width or height",
+    "extraArea": "Additional areas",
+    "tileFormat": "Tile format",
+    "tileLength": "Tile length",
+    "tileWidth": "Tile width",
+    "pattern": "Layout",
+    "packMode": "Packaging",
+    "m2PerBox": "m² per box",
+    "tilesPerBox": "Tiles per box",
+    "waste": "Waste margin",
+    "pricePerBox": "Price per box",
+    "paintMode": "Area to paint",
+    "wallHeight": "Wall height",
+    "includeCeiling": "Include the ceiling",
+    "doors": "Doors to deduct",
+    "windows": "Windows to deduct",
+    "coats": "Number of coats",
+    "coverage": "Coverage",
+    "containerL": "Pot size",
+    "pricePerContainer": "Price per pot",
+    "element": "Element",
+    "thickness": "Thickness",
+    "diameter": "Diameter",
+    "count": "Number of elements",
+    "dosage": "Cement dosage",
+    "dosageKg": "Custom dosage",
+    "bagKg": "Bag weight",
+    "sandRecipe": "Sand per m³",
+    "gravelRecipe": "Gravel per m³",
+    "waterRecipe": "Water per m³",
+    "pricePerBag": "Price per bag",
+    "wpMode": "Waterproofing type",
+    "upstand": "Upstand height",
+    "coatsLayers": "Coats / layers",
+    "consumptionKgM2": "Consumption per coat",
+    "packKg": "Bucket weight",
+    "rollArea": "Roll area",
+    "overlap": "Overlap",
+    "pricePerPack": "Price per unit",
+    "productType": "Product",
+    "area": "Area",
+    "consumption": "Consumption",
+    "consumptionPerMm": "Consumption per mm",
+    "layerThickness": "Layer thickness",
+    "wallLength": "Wall length",
+    "openings": "Openings to deduct",
+    "blockType": "Block",
+    "blockLength": "Block length",
+    "blockHeight": "Block height",
+    "joint": "Joint thickness",
+    "pricePerUnit": "Unit price",
+    "surfaces": "Number of identical surfaces",
+    "slabFormat": "Slab format",
+    "slabLength": "Slab length",
+    "slabWidth": "Slab width",
+    "pricePerM2": "Price per m²",
+    "fillDepth": "Fill depth",
+    "compaction": "Bulking / compaction",
+    "fillMaterial": "Material",
+    "density": "Confirmed density",
+    "truckCapacity": "Truck capacity",
+    "pricePerM3": "Price per m³",
+    "plasterMode": "Work type",
+    "sheetLength": "Sheet length",
+    "sheetWidth": "Sheet width",
+    "pricePerBagOrSheet": "Price per bag or sheet",
+    "pieceFormat": "Format",
+    "pieceLength": "Piece length",
+    "pieceWidth": "Piece width",
+    "m2PerPack": "m² per pack",
+    "piecesPerPack": "Pieces per pack",
+    "eaveLength": "Eave length",
+    "slopeMode": "Rafter measurement",
+    "slopeLength": "Rafter length",
+    "run": "Horizontal run",
+    "pitch": "Pitch",
+    "planes": "Number of planes",
+    "tilesPerM2": "Tiles per m²",
+    "piecesPerPallet": "Tiles per pallet",
+    "pricePerPiece": "Price per tile"
+  },
+  "options": {
+    "f30x30": "30 × 30",
+    "f45x45": "45 × 45",
+    "f60x60": "60 × 60",
+    "f60x120": "60 × 120",
+    "f20x120": "20 × 120",
+    "f40x40": "40 × 40",
+    "f280x160": "280 × 160",
+    "p20x10": "20 × 10",
+    "p60x40": "60 × 40",
+    "custom": "Custom",
+    "straight": "Straight",
+    "offset": "Offset",
+    "diagonal": "Diagonal",
+    "herringbone": "Herringbone",
+    "m2PerBox": "m² / box",
+    "tilesPerBox": "Tiles / box",
+    "m2PerPack": "m² / pack",
+    "piecesPerPack": "Pieces / pack",
+    "room": "Whole room",
+    "singleWall": "One wall",
+    "slab": "Slab",
+    "footing": "Footing",
+    "beam": "Beam",
+    "column": "Column",
+    "roundColumn": "Round column",
+    "d250": "250 kg/m³",
+    "d300": "300 kg/m³",
+    "d350": "350 kg/m³",
+    "liquid": "Liquid product",
+    "membrane": "Roll membrane",
+    "tileAdhesive": "Tile adhesive",
+    "leveling": "Levelling compound",
+    "mortar": "Mortar / cement render",
+    "agglo40": "Block 40 × 20",
+    "agglo50": "Block 50 × 20",
+    "brick30": "Brick 30 × 20",
+    "densityUnknown": "Unknown density",
+    "drySand": "Dry sand (≈ 1.6)",
+    "gravel": "Gravel (≈ 1.5)",
+    "customDensity": "Other density",
+    "plasterCoat": "Filler / plaster",
+    "plasterboard": "Plasterboard",
+    "measuredSlope": "Measured rafter",
+    "runAndPitch": "Run + pitch"
+  },
+  "help": {
+    "extraArea": "Add for example an alcove, a hallway or skirting already measured in m².",
+    "waste": "Margin for cuts, breakage and adjustments. Typical value, adapt it to your site.",
+    "packaging": "Shown on the packaging or the product page.",
+    "price": "Leave empty if the price is unknown: the cost will be shown as unavailable.",
+    "doors": "Standard door counted as 0.90 × 2.10 m.",
+    "windows": "Standard window counted as 1.20 × 1.00 m.",
+    "coverage": "Coverage per coat given by the manufacturer (m² per litre).",
+    "dosage": "Dosage to be confirmed for the intended use and your site's specifications.",
+    "recipe": "Editable reference recipe; leave empty to calculate cement only.",
+    "upstand": "Waterproofing turned up onto the surrounding walls.",
+    "consumption": "Take this value from the data sheet of the chosen product.",
+    "openings": "Total area of doors and windows, in m².",
+    "compaction": "Allowance for settlement of the placed material.",
+    "density": "Only a value confirmed by the supplier. Without density, no tonnage is calculated.",
+    "truck": "Volume carried per trip, if known.",
+    "tilesPerM2": "Roof tile manufacturer's data (depends on the gauge)."
+  },
+  "results": {
+    "netArea": "Net area",
+    "areaWithWaste": "Area with waste",
+    "tiles": "Tiles",
+    "boxes": "Boxes to buy",
+    "purchasedArea": "Area purchased",
+    "surplus": "Estimated leftover",
+    "cost": "Estimated material cost",
+    "wallArea": "Wall area",
+    "ceilingArea": "Ceiling",
+    "openingsArea": "Openings deducted",
+    "paintableArea": "Area to paint",
+    "liters": "Paint needed",
+    "containers": "Pots to buy",
+    "purchasedLiters": "Volume purchased",
+    "volume": "Gross volume",
+    "adjustedVolume": "Volume with margin",
+    "cementKg": "Cement",
+    "cementBags": "Cement bags",
+    "sand": "Sand",
+    "gravel": "Gravel",
+    "water": "Water",
+    "baseArea": "Floor area",
+    "upstandArea": "Upstands",
+    "totalArea": "Area to treat",
+    "materialKg": "Product needed",
+    "packs": "Units to buy",
+    "membraneArea": "Membrane needed",
+    "rolls": "Rolls",
+    "bags": "Bags to buy",
+    "purchasedKg": "Quantity purchased",
+    "grossArea": "Gross area",
+    "netWallArea": "Wall area",
+    "unitsPerM2": "Blocks per m²",
+    "units": "Blocks needed",
+    "slabs": "Slabs to buy",
+    "tonnes": "Estimated tonnage",
+    "loads": "Loads",
+    "surface": "Treated area",
+    "sheets": "Sheets",
+    "pieces": "Pieces needed",
+    "slopeLength": "Rafter",
+    "roofArea": "Roof area",
+    "roofTiles": "Roof tiles",
+    "pallets": "Pallets",
+    "packagingMissing": "Packaging not provided",
+    "priceUnavailable": "Price unavailable",
+    "notIncluded": "Not included",
+    "noRecipe": "No recipe provided",
+    "densityRequired": "Density required",
+    "capacityUnknown": "Capacity unknown"
+  },
+  "units": {
+    "boxes": "boxes",
+    "tiles": "tiles",
+    "pots": "pots",
+    "bags": "bags",
+    "packs": "units",
+    "rolls": "rolls",
+    "units": "blocks",
+    "perM2": "/ m²",
+    "slabs": "slabs",
+    "loads": "loads",
+    "sheets": "sheets",
+    "pieces": "pieces"
+  },
+  "assumptions": {
+    "indicative": "Indicative estimate: excluding delivery, labour, installation and taxes.",
+    "tileWaste": "The waste margin covers cuts and breakage; it increases with offset, diagonal or herringbone layouts.",
+    "tilePattern": "The diagram is a layout preview, not an executable cutting plan.",
+    "packagingCheck": "The number of boxes is rounded up; check the product's actual packaging.",
+    "openingsStandard": "Openings deducted using standard sizes (door 0.90 × 2.10 m, window 1.20 × 1.00 m).",
+    "coverageCheck": "Coverage depends on the surface and product: use the value from the data sheet.",
+    "surfacePrep": "Primers and surface preparation are not counted.",
+    "dosageUser": "The dosage is the one you choose; it must match the intended use.",
+    "recipeReference": "The sand/gravel/water recipe is an editable common reference, not a universal mix.",
+    "notStructural": "This is not a structural calculation: have any load-bearing work validated by a qualified professional.",
+    "consumptionDatasheet": "Consumption must come from the data sheet of the product used.",
+    "upstands": "Upstands are calculated along the entire perimeter of the surface.",
+    "supportPrep": "Primers, reinforcing strips and accessories are not included.",
+    "notchTrowel": "Adhesive consumption varies with the notched trowel size and tile format.",
+    "jointIncluded": "The number of blocks per m² accounts for the joint thickness.",
+    "noMortar": "Laying mortar and tie beams are not counted.",
+    "stoneWaste": "Natural stone often needs a higher margin (veining, sizing, cuts).",
+    "stoneVeining": "For matched-vein layouts, allow an extra margin.",
+    "densitySupplier": "Tonnage is only calculated with a density confirmed by the supplier.",
+    "compactionFactor": "Bulking is an estimated allowance; it varies with the material and compaction.",
+    "boardVsPlaster": "Sheets are calculated from their dimensions and a cutting margin, not from filler consumption.",
+    "paverCuts": "Offset, herringbone or diagonal layouts generate more cuts.",
+    "borders": "Edging, bedding sand and geotextile are not included.",
+    "tilesPerM2Maker": "The number of tiles per m² depends on the model and gauge: manufacturer data.",
+    "roofNoStructure": "No check of the roof structure, loads or watertightness is performed."
+  },
+  "errors": {
+    "invalid": "Invalid value",
+    "negative": "The value cannot be negative",
+    "tooLarge": "Value too high",
+    "zero": "Must be greater than zero",
+    "required": "Required field"
+  },
+  "budget": {
+    "scenario": "Scenario",
+    "duplicateB": "Compare with a scenario B",
+    "searchCatalog": "Add a catalogue product…",
+    "addRow": "Free line",
+    "catalogNote": "A catalogue price is only used for the product you choose. Other lines stay “price unavailable” until you enter a price.",
+    "empty": "Add a catalogue product or a free line to start.",
+    "label": "Description",
+    "labelPlaceholder": "e.g. tile laying",
+    "group": "Category",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "unitPrice": "Unit price",
+    "remove": "Remove line",
+    "fromCatalog": "Price from the Boukir Diamond catalogue",
+    "priceUnavailable": "Price unavailable",
+    "noResults": "No product found",
+    "total": "Estimated total budget",
+    "materialSubtotal": "Materials subtotal",
+    "otherSubtotal": "Labour & other costs",
+    "contingency": "Contingency",
+    "unpricedNote": "{count, plural, one {# line without a price is not counted.} other {# lines without a price are not counted.}}",
+    "comparison": "Scenario comparison",
+    "breakdown": "Breakdown by category",
+    "noPricedRows": "Add prices to see the breakdown.",
+    "separationNote": "Labour, delivery and installation stay separate from materials. Official order amounts are those of the cart.",
+    "summaryHeading": "Boukir Diamond project budget",
+    "sample": {
+      "tiles": "Floor tiles",
+      "labor": "Laying (craftsman quote)"
+    },
+    "units": {
+      "box": "box",
+      "flat": "flat rate"
+    },
+    "groups": {
+      "materials": "Materials",
+      "tiles": "Tiles & stone",
+      "paint": "Paint",
+      "waterproofing": "Waterproofing",
+      "cement": "Cement & mortar",
+      "plumbing": "Plumbing",
+      "electrical": "Electrical",
+      "tools": "Tools",
+      "labor": "Labour",
+      "delivery": "Delivery",
+      "installation": "Installation",
+      "other": "Other"
+    }
+  },
+  "converter": {
+    "dimension": "Quantity",
+    "dimensions": {
+      "length": "Length",
+      "area": "Area",
+      "volume": "Volume",
+      "mass": "Mass",
+      "density": "Volume ↔ weight"
+    },
+    "value": "Value",
+    "from": "From",
+    "to": "To",
+    "swap": "Swap",
+    "result": "Result",
+    "density": "Density",
+    "densityHelp": "Required: value confirmed by the supplier.",
+    "note": "Only dimensionally valid conversions are offered. Going from a volume (m³) to a weight (t) always requires an explicit density."
+  },
+  "studio": {
+    "kicker": "Boukir Visual Studio",
+    "title": "Visualise before you *build.*",
+    "lead": "An interactive workshop to size a room, try finishes, explore a tile layout and visualise your budget. Quantities are always calculated from explicit dimensions.",
+    "metaTitle": "Visual Studio — room and material simulator",
+    "tabs": {
+      "room": "Room simulator",
+      "materials": "Material visualiser",
+      "layout": "Tile layout",
+      "structure": "Slab & wall",
+      "budget": "Budget"
+    },
+    "room": {
+      "floor": "Floor view",
+      "walls": "Wall view",
+      "height": "Ceiling height",
+      "doors": "Doors",
+      "windows": "Windows",
+      "floorArea": "Floor area",
+      "perimeter": "Perimeter",
+      "wallArea": "Wall area (openings deducted)",
+      "tileBoxes": "Tile boxes (60×60, 10%)",
+      "paintLiters": "Wall paint (2 coats, 10 m²/L)",
+      "openTile": "Detailed tile calculation",
+      "openPaint": "Detailed paint calculation"
+    },
+    "materials": {
+      "intro": "Compare finishes on a sample room. Photographic materials come from our visuals; paint colours are indicative.",
+      "floor": "Floor",
+      "wall": "Walls",
+      "before": "Before",
+      "after": "After",
+      "compare": "Slide to compare before / after",
+      "illustrative": "Illustrative rendering — not a photorealistic render nor the selection of a specific product.",
+      "swatches": {
+        "tile": "Terracotta tile",
+        "stone": "Mineral / concrete",
+        "wood": "Light wood",
+        "metal": "Brushed metal",
+        "paintSand": "Sand paint",
+        "paintGraphite": "Graphite paint",
+        "paintWhite": "Off-white paint",
+        "paintOchre": "Ochre paint"
+      },
+      "browse": "Browse matching aisles"
+    },
+    "layout": {
+      "intro": "Tile layout based on the real dimensions of the tiles and the room.",
+      "fullTiles": "Full tiles",
+      "cutTiles": "Cut tiles",
+      "totalPositions": "Positions",
+      "preview": "Preview: full and cut tile counts are exact for a straight layout started in a corner; for other layouts they are indicative. This is not a site-ready cutting plan.",
+      "startCorner": "Layout started in a corner, without joints."
+    },
+    "structure": {
+      "slab": "Concrete slab",
+      "wall": "Block wall",
+      "openConcrete": "Detailed concrete calculation",
+      "openBlocks": "Detailed block calculation"
+    },
+    "budget": {
+      "title": "Budget dashboard",
+      "desc": "Assemble your line items, compare two scenarios and visualise the breakdown. Prices are only taken from the catalogue for products you select.",
+      "open": "Open the budget estimator"
+    }
+  },
+  "planner": {
+    "kicker": "Boukir Project Planner",
+    "title": "Plan your project in *a few steps.*",
+    "lead": "A guided journey, no account needed: the draft is saved only on this device.",
+    "metaTitle": "Construction and renovation project planner",
+    "draftSaved": "Draft saved on this device",
+    "reset": "New project",
+    "steps": {
+      "type": "Project",
+      "dimensions": "Dimensions",
+      "materials": "Materials",
+      "calculate": "Calculation",
+      "review": "Summary",
+      "action": "Take action"
+    },
+    "stepOf": "Step {current} of {total}",
+    "back": "Back",
+    "next": "Continue",
+    "types": {
+      "renovation": {
+        "title": "Renovation",
+        "desc": "Refresh a room: floor, walls, finishes."
+      },
+      "bathroom": {
+        "title": "Bathroom",
+        "desc": "Tiles, waterproofing under tiles, adhesive."
+      },
+      "kitchen": {
+        "title": "Kitchen",
+        "desc": "Floor, splashback, paint."
+      },
+      "flooring": {
+        "title": "Flooring",
+        "desc": "Tiles or stone, adhesive and waste."
+      },
+      "painting": {
+        "title": "Painting",
+        "desc": "Walls and ceiling, filler if needed."
+      },
+      "waterproofing": {
+        "title": "Waterproofing",
+        "desc": "Terrace, roof or wet room."
+      },
+      "construction": {
+        "title": "Structural work",
+        "desc": "Concrete slab and block walls."
+      }
+    },
+    "dims": {
+      "title": "Room or area dimensions",
+      "length": "Length",
+      "width": "Width",
+      "height": "Ceiling height",
+      "doors": "Doors",
+      "windows": "Windows",
+      "slabThickness": "Slab thickness"
+    },
+    "mats": {
+      "title": "Which items should we include?",
+      "desc": "We pre-selected the usual items for this type of project. Adjust freely.",
+      "floorTiles": "Floor tiles",
+      "wallTiles": "Wall tiles (1.20 m high)",
+      "adhesive": "Tile adhesive",
+      "paint": "Wall paint",
+      "ceilingPaint": "Ceiling paint",
+      "plaster": "Filler",
+      "waterproofing": "Waterproofing",
+      "concrete": "Concrete slab",
+      "blocks": "Block walls"
+    },
+    "calc": {
+      "title": "Estimated quantities",
+      "desc": "Calculated with the Boukir calculators' formulas. Assumptions shown under each line.",
+      "nothing": "Select at least one item in the previous step.",
+      "detail": "Detail"
+    },
+    "review": {
+      "title": "Your summary",
+      "project": "Project",
+      "dimensions": "Dimensions",
+      "quantities": "Quantities",
+      "costs": "Costs",
+      "known": "Known",
+      "unknown": "To be priced",
+      "unknownDesc": "Prices are never guessed: add them in the budget estimator or ask for a quote.",
+      "labor": "Labour, delivery and installation are not included.",
+      "assumptions": "Key assumptions",
+      "suggestions": "Aisles to explore"
+    },
+    "action": {
+      "title": "What's next?",
+      "shop": "Explore products",
+      "list": "Copy the shopping list",
+      "listCopied": "List copied",
+      "whatsapp": "Send to an advisor (WhatsApp)",
+      "print": "Print / PDF",
+      "budget": "Price it in the budget estimator",
+      "edit": "Edit the project",
+      "maalem": "Find a craftsman",
+      "note": "Nothing is sent automatically: WhatsApp opens with a prefilled message you can review before sending."
+    }
+  },
+  "product": {
+    "calculate": "Calculate the quantity needed",
+    "calculateHint": "Estimate based on your area, with this product's packaging"
+  },
+  "carousel": {
+    "prev": "Previous",
+    "next": "Next",
+    "play": "Play autoplay",
+    "pause": "Pause",
+    "slideOf": "Slide {current} of {total}",
+    "goTo": "Go to slide {index}",
+    "chooseSlide": "Choose a slide",
+    "dragHint": "Drag to browse · autoplay pauses on hover"
+  }
+}
