@@ -117,10 +117,15 @@ function TileImage({ src, remote, priority }: { src: string; remote: boolean; pr
 
 function SlideTitle({ title, as }: { title: string; as: "h1" | "h2" }) {
   let index = 0
+  let inAccent = false // *accent* may span several words
   const words = title.split(/(\s+)/).map((token, i) => {
     if (/^\s+$/.test(token)) return " "
-    const accent = /^\*.*\*[.,!?:;»]*$/.test(token)
-    const clean = accent ? token.replace(/\*/g, "") : token
+    const starts = token.startsWith("*")
+    const ends = /\*[.,!?:;»]*$/.test(token)
+    if (starts) inAccent = true
+    const accent = inAccent
+    if (ends && (inAccent || starts)) inAccent = false
+    const clean = token.replace(/\*/g, "")
     const delay = 150 + index++ * 80
     return (
       <span key={i} className="kinetic-word">
