@@ -123,7 +123,10 @@
         "tools": "免费计算器"
       },
       "badgePromo": "促销",
-      "badgeNew": "新品"
+      "badgeNew": "新品",
+      "ourProducts": "我们的产品",
+      "seeAll": "全部商品",
+      "nextProduct": "下一个产品"
     },
     "campaigns": {
       "kicker": "01 · 精选",
@@ -294,6 +297,11 @@
       "desc": "选择项目类型、输入尺寸，即可获得预估材料清单，无需注册账户。",
       "cta": "开始我的项目",
       "cta2": "打开可视化工作室"
+    },
+    "promoRail": {
+      "kicker": "当前促销",
+      "title": "工地 *超值好物。*",
+      "desc": "随机展示我们的促销产品，每次访问都会更新。"
     }
   },
   "tools": {
@@ -977,7 +985,20 @@
   },
   "product": {
     "calculate": "计算所需用量",
-    "calculateHint": "根据您的面积和此产品的包装进行估算"
+    "calculateHint": "根据您的面积和此产品的包装进行估算",
+    "share": "分享",
+    "linkCopied": "已复制商品链接",
+    "save": "节省 {amount} MAD",
+    "promo": "促销",
+    "new": "新品",
+    "ref": "编号",
+    "decrease": "减少数量",
+    "increase": "增加数量",
+    "adviceTitle": "需要建议？",
+    "adviceDesc": "我们丹吉尔门店的团队为您解答。",
+    "adviceMessage": "您好，我想咨询：{name}",
+    "call": "致电",
+    "detailsKicker": "产品资料"
   },
   "carousel": {
     "prev": "上一个",
@@ -988,5 +1009,12 @@
     "goTo": "转到第 {index} 张",
     "chooseSlide": "选择幻灯片",
     "dragHint": "拖动浏览 · 悬停时自动播放暂停"
+  },
+  "maalems": {
+    "statMaalems": "师傅",
+    "statTrades": "工种",
+    "statServices": "服务",
+    "ctaTitle": "有项目想法？<accent>我们聊聊。</accent>",
+    "ctaServices": "查看服务"
   }
 }

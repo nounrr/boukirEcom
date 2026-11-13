@@ -123,7 +123,10 @@
         "tools": "Free calculators"
       },
       "badgePromo": "Sale",
-      "badgeNew": "New"
+      "badgeNew": "New",
+      "ourProducts": "Our products",
+      "seeAll": "Whole shop",
+      "nextProduct": "Next product"
     },
     "campaigns": {
       "kicker": "01 · Featured",
@@ -294,6 +297,11 @@
       "desc": "Choose the project type, enter your dimensions and get an estimated materials list, no account needed.",
       "cta": "Start my project",
       "cta2": "Open the Visual Studio"
+    },
+    "promoRail": {
+      "kicker": "Current promotions",
+      "title": "This week's *best deals.*",
+      "desc": "A random selection of our discounted products, refreshed on every visit."
     }
   },
   "tools": {
@@ -977,7 +985,20 @@
   },
   "product": {
     "calculate": "Calculate the quantity needed",
-    "calculateHint": "Estimate based on your area, with this product's packaging"
+    "calculateHint": "Estimate based on your area, with this product's packaging",
+    "share": "Share",
+    "linkCopied": "Product link copied",
+    "save": "Save {amount} MAD",
+    "promo": "Sale",
+    "new": "New",
+    "ref": "Ref.",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "adviceTitle": "Need advice?",
+    "adviceDesc": "Our Tangier store team will answer you.",
+    "adviceMessage": "Hello, I have a question about: {name}",
+    "call": "Call",
+    "detailsKicker": "Product sheet"
   },
   "carousel": {
     "prev": "Previous",
@@ -988,5 +1009,12 @@
     "goTo": "Go to slide {index}",
     "chooseSlide": "Choose a slide",
     "dragHint": "Drag to browse · autoplay pauses on hover"
+  },
+  "maalems": {
+    "statMaalems": "Maalems",
+    "statTrades": "Trades",
+    "statServices": "Services",
+    "ctaTitle": "Got a project in mind? <accent>Let's talk.</accent>",
+    "ctaServices": "See the services"
   }
 }

@@ -7,15 +7,11 @@ import { useTranslations } from "next-intl"
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { DiamondFacet } from "@/components/brand/brand-lockup"
 import { Magnetic } from "@/components/motion/primitives"
 import { API_CONFIG } from "@/lib/api-config"
 import { catalogHref } from "@/lib/catalog/registry"
 import { cn } from "@/lib/utils"
-import { productModel } from "@/components/home/professional/professional-catalog"
-import { getLocalizedProductName } from "@/lib/localized-fields"
-import { productHref } from "@/lib/seo/product-url"
-import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
+import { HeroProductDeck } from "./hero-product-deck"
 import { useGetHeroSlidesQuery } from "@/state/api/hero-slides-api-slice"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
 
@@ -34,18 +30,6 @@ type Slide = {
   tertiary?: { href: string; label: string }
   mosaic?: boolean
 }
-
-const TILE_SHAPES = [
-  { clip: "polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 22%)", className: "col-span-2 row-span-2" },
-  { clip: "polygon(0 0, 100% 0, 100% 78%, 78% 100%, 0 100%)", className: "" },
-  { clip: "polygon(0 0, 100% 0, 100% 100%, 22% 100%, 0 78%)", className: "" },
-  { clip: "polygon(0 0, 82% 0, 100% 18%, 100% 100%, 0 100%)", className: "col-span-2" },
-] as const
-
-/** Number of clickable product images shown in the hero (matches the former mosaic). */
-const TILE_COUNT = 4
-
-type Tile = { id: string; href: string; image: string; title: string; sub?: string; price?: number; oldPrice?: number; remote: boolean; badge?: "promo" | "new" }
 
 function absoluteImage(src?: string | null) {
   const value = String(src ?? "").trim()
@@ -98,23 +82,6 @@ function adminSlide(slide: HeroSlideApi, locale: string, fallbackLabel: string):
   }
 }
 
-function TileImage({ src, remote, priority }: { src: string; remote: boolean; priority: boolean }) {
-  const [failed, setFailed] = useState(false)
-  return (
-    <Image
-      src={failed ? "/product-fallbacks/metal.webp" : src}
-      alt=""
-      fill
-      unoptimized={!failed && remote}
-      sizes="(min-width:1024px) 30vw, 0px"
-      draggable={false}
-      priority={priority}
-      onError={() => setFailed(true)}
-      className="object-cover transition-transform duration-[1.6s] ease-[var(--ease-premium)] group-hover:scale-110"
-    />
-  )
-}
-
 function SlideTitle({ title, as }: { title: string; as: "h1" | "h2" }) {
   let index = 0
   let inAccent = false // *accent* may span several words
@@ -129,7 +96,7 @@ function SlideTitle({ title, as }: { title: string; as: "h1" | "h2" }) {
     const delay = 150 + index++ * 80
     return (
       <span key={i} className="kinetic-word">
-        <span className={accent ? "text-gold" : undefined} style={{ transitionDelay: `${delay}ms` }}>
+        <span className={accent ? "hero-accent" : undefined} style={{ transitionDelay: `${delay}ms` }}>
           {clean}
         </span>
       </span>
@@ -201,47 +168,6 @@ export function FlagshipHero({ locale }: { locale: string }) {
     return base
   }, [locale, t, ts])
 
-  // Clickable product images: back-office hero slides first (Back-office → Hero Slides),
-  // then automatically completed with promotions and new arrivals from the catalogue.
-  const { data: promoData } = useGetFeaturedPromoQuery(8)
-  const { data: newData } = useGetNewArrivalsQuery(8)
-  const tiles = useMemo<Tile[]>(() => {
-    const out: Tile[] = []
-    const used = new Set<string>()
-    for (const s of adminData ?? []) {
-      const a = adminSlide(s, locale, tHome("ctaShop"))
-      if (!a || out.length >= TILE_COUNT) continue
-      out.push({ id: a.id, href: a.primary.href, image: a.image, title: a.title, sub: a.kicker !== "Boukir" ? a.kicker : undefined, remote: true })
-      used.add(a.primary.href)
-    }
-    const push = (items: typeof promoData, badge: "promo" | "new") => {
-      for (const item of items ?? []) {
-        if (out.length >= TILE_COUNT) return
-        const href = productHref({ id: item.id, designation: item.designation, designation_ar: item.designation_ar, designation_en: item.designation_en, designation_zh: item.designation_zh }, locale)
-        if (used.has(href) || out.some((o) => o.id === `p-${item.id}`)) continue
-        const m = productModel(item, locale)
-        out.push({
-          id: `p-${item.id}`,
-          href,
-          image: m.image,
-          title: getLocalizedProductName(item, locale) || item.designation,
-          sub: m.brand || m.category || undefined,
-          price: m.price,
-          oldPrice: m.originalPrice,
-          remote: /^https?:/i.test(m.image),
-          badge: m.originalPrice ? "promo" : badge,
-        })
-      }
-    }
-    // products that really have a photo come first
-    const withPhoto = (items: typeof promoData) => (items ?? []).filter((i) => i.image_url)
-    push(withPhoto(promoData), "promo")
-    push(withPhoto(newData), "new")
-    push(promoData, "promo")
-    push(newData, "new")
-    return out
-  }, [adminData, promoData, newData, locale, tHome])
-
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const [hover, setHover] = useState(false)
@@ -291,7 +217,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
   return (
     <section
       ref={ref}
-      className="grain relative isolate flex min-h-[100svh] touch-pan-y flex-col overflow-hidden bg-ink text-white"
+      className="grain relative isolate flex min-h-[100svh] touch-pan-y flex-col overflow-hidden bg-[#f2f1ed] text-ink dark:bg-ink dark:text-white"
       aria-roledescription="carousel"
       aria-label={t("kicker")}
       onMouseEnter={() => setHover(true)}
@@ -335,7 +261,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
               sizes="100vw"
               draggable={false}
               className={cn(
-                "object-cover opacity-60 will-change-transform motion-safe:transition-transform motion-safe:duration-[8000ms] motion-safe:ease-out",
+                "object-cover opacity-[0.22] will-change-transform dark:opacity-60 motion-safe:transition-transform motion-safe:duration-[8000ms] motion-safe:ease-out",
                 slide.position ?? "object-center",
                 index === active ? "scale-100" : "motion-safe:scale-[1.09]"
               )}
@@ -343,12 +269,12 @@ export function FlagshipHero({ locale }: { locale: string }) {
           </div>
         ))}
       </motion.div>
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,#0d0d0d_6%,rgba(13,13,13,0.86)_40%,rgba(13,13,13,0.3)_75%,rgba(13,13,13,0.55))] rtl:bg-[linear-gradient(260deg,#0d0d0d_6%,rgba(13,13,13,0.86)_40%,rgba(13,13,13,0.3)_75%,rgba(13,13,13,0.55))]" aria-hidden="true" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-56 bg-gradient-to-t from-ink to-transparent" aria-hidden="true" />
-      <div className="bd-grid absolute inset-0 -z-10 opacity-80 [--grid-color:rgba(255,255,255,0.035)] [background-size:96px_96px]" aria-hidden="true" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(100deg,#f2f1ed_8%,rgba(242,241,237,0.9)_42%,rgba(242,241,237,0.55)_75%,rgba(242,241,237,0.85))] rtl:bg-[linear-gradient(260deg,#f2f1ed_8%,rgba(242,241,237,0.9)_42%,rgba(242,241,237,0.55)_75%,rgba(242,241,237,0.85))] dark:bg-[linear-gradient(100deg,#0d0d0d_6%,rgba(13,13,13,0.86)_40%,rgba(13,13,13,0.3)_75%,rgba(13,13,13,0.55))] dark:rtl:bg-[linear-gradient(260deg,#0d0d0d_6%,rgba(13,13,13,0.86)_40%,rgba(13,13,13,0.3)_75%,rgba(13,13,13,0.55))]" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-56 bg-gradient-to-t from-[#f2f1ed] to-transparent dark:from-ink" aria-hidden="true" />
+      <div className="bd-grid absolute inset-0 -z-10 opacity-80 [--grid-color:rgba(13,13,13,0.05)] [background-size:96px_96px] dark:[--grid-color:rgba(255,255,255,0.035)]" aria-hidden="true" />
       <svg className="pointer-events-none absolute inset-0 -z-10 size-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" data-draw>
-        <path className="draw" pathLength={1} d="M96 0V900" stroke="rgba(255,255,255,0.08)" fill="none" />
-        <path className="draw" pathLength={1} d="M0 760H1440" stroke="rgba(255,255,255,0.08)" fill="none" style={{ ["--draw-delay" as string]: "150ms" }} />
+        <path className="draw stroke-ink/10 dark:stroke-white/[0.08]" pathLength={1} d="M96 0V900" fill="none" />
+        <path className="draw stroke-ink/10 dark:stroke-white/[0.08]" pathLength={1} d="M0 760H1440" fill="none" style={{ ["--draw-delay" as string]: "150ms" }} />
         <path className="draw" pathLength={1} d="M1392 180V700" stroke="#f29f04" strokeOpacity="0.7" fill="none" style={{ ["--draw-delay" as string]: "700ms" }} />
         <path className="draw" pathLength={1} d="M1380 180H1404M1380 700H1404" stroke="#f29f04" strokeOpacity="0.7" fill="none" style={{ ["--draw-delay" as string]: "900ms" }} />
       </svg>
@@ -368,13 +294,13 @@ export function FlagshipHero({ locale }: { locale: string }) {
                 aria-roledescription="slide"
                 aria-label={tc("slideOf", { current: index + 1, total: count })}
               >
-                <p className="kicker !text-brand-yellow flex items-center gap-3" data-slide-fade style={{ transitionDelay: "60ms" }}>
-                  <span className="h-px w-10 bg-brand-yellow" aria-hidden="true" />
+                <p className="kicker flex items-center gap-3" data-slide-fade style={{ transitionDelay: "60ms" }}>
+                  <span className="h-px w-10 bg-current" aria-hidden="true" />
                   {slide.kicker}
                 </p>
                 <SlideTitle title={slide.title} as={index === 0 ? "h1" : "h2"} />
                 {slide.lead ? (
-                  <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/70 sm:text-xl" data-slide-fade style={{ transitionDelay: "520ms" }}>
+                  <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink/70 sm:text-xl dark:text-white/70" data-slide-fade style={{ transitionDelay: "520ms" }}>
                     {slide.lead}
                   </p>
                 ) : null}
@@ -393,13 +319,13 @@ export function FlagshipHero({ locale }: { locale: string }) {
                     <Link
                       href={slide.secondary.href}
                       draggable={false}
-                      className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-white/[0.04] px-7 text-[15px] font-semibold text-white backdrop-blur-md transition-colors hover:border-white/50 hover:bg-white/10 sm:w-auto"
+                      className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-ink/20 bg-white/70 px-7 text-[15px] font-semibold text-ink backdrop-blur-md transition-colors hover:border-ink/50 hover:bg-white sm:w-auto dark:border-white/20 dark:bg-white/[0.04] dark:text-white dark:hover:border-white/50 dark:hover:bg-white/10"
                     >
                       {slide.secondary.label}
                     </Link>
                   ) : null}
                   {slide.tertiary ? (
-                    <Link href={slide.tertiary.href} draggable={false} className="link-underline inline-flex items-center justify-center px-2 py-3 text-[15px] font-medium text-white/75 hover:text-white">
+                    <Link href={slide.tertiary.href} draggable={false} className="link-underline inline-flex items-center justify-center px-2 py-3 text-[15px] font-medium text-ink/75 hover:text-ink dark:text-white/75 dark:hover:text-white">
                       {slide.tertiary.label}
                     </Link>
                   ) : null}
@@ -409,64 +335,23 @@ export function FlagshipHero({ locale }: { locale: string }) {
           })}
         </motion.div>
 
-        {/* Clickable product images (editable in the back-office) */}
+        {/* Our products: real product cards (back-office hero slides first) */}
         <div className="relative hidden lg:block">
-          <div className="pointer-events-none absolute -inset-10 text-brand-orange/30" data-draw aria-hidden="true">
-            <DiamondFacet className="size-full" strokeWidth={1} />
-          </div>
-          <div className="relative grid aspect-[4/3.6] grid-cols-3 grid-rows-3 gap-3" data-reveal="scale" style={{ ["--reveal-delay" as string]: "300ms" }}>
-            {TILE_SHAPES.map((shape, index) => {
-              const tile = tiles[index]
-              return tile ? (
-                <Link
-                  key={tile.id}
-                  href={tile.href}
-                  draggable={false}
-                  aria-label={tile.title}
-                  className={cn("group relative block overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-brand-orange", shape.className)}
-                  style={{ clipPath: shape.clip }}
-                >
-                  <TileImage src={tile.image} remote={tile.remote} priority={index === 0} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent" />
-                  {tile.badge ? (
-                    <span className={cn("absolute start-4 top-4 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]", tile.badge === "promo" ? "bg-gold text-ink" : "bg-white/90 text-ink")}>
-                      {t(tile.badge === "promo" ? "badgePromo" : "badgeNew")}
-                    </span>
-                  ) : null}
-                  <div className="absolute inset-x-0 bottom-0 p-4 pb-5 [clip-path:inset(0)]">
-                    {tile.sub ? <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-yellow">{tile.sub}</p> : null}
-                    <p className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-white">{tile.title}</p>
-                    {tile.price !== undefined ? (
-                      <p className="mt-1.5 flex items-baseline gap-2 text-sm font-bold tabular text-white">
-                        {tile.price.toFixed(2)} <span className="text-[10px] font-semibold text-white/60">MAD</span>
-                        {tile.oldPrice ? <span className="text-xs font-medium text-white/45 line-through">{tile.oldPrice.toFixed(2)}</span> : null}
-                      </p>
-                    ) : null}
-                  </div>
-                </Link>
-              ) : (
-                <div key={`empty-${index}`} className={cn("bg-white/[0.04]", shape.className)} style={{ clipPath: shape.clip }} aria-hidden="true" />
-              )
-            })}
-            <div className="col-start-3 row-start-3 flex flex-col justify-between rounded-sm border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-yellow">Boukir</span>
-              <span className="text-sm leading-snug text-white/75">{t("manifesto")}</span>
-            </div>
-          </div>
+          <HeroProductDeck locale={locale} active={active} adminSlides={adminData} />
         </div>
       </div>
 
       {/* Slider controls + facts */}
       <div className="relative mx-auto w-full max-w-[1440px] px-5 pb-8 sm:px-8 lg:px-10 lg:pb-10">
-        <div className="flex flex-col gap-6 border-t border-white/10 pt-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-6 border-t border-ink/10 pt-6 lg:flex-row dark:border-white/10 lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-4">
-            <span className="text-xs font-semibold tabular text-white/60">
-              {String(active + 1).padStart(2, "0")} <span className="text-white/30">/ {String(count).padStart(2, "0")}</span>
+            <span className="text-xs font-semibold tabular text-ink/60 dark:text-white/60">
+              {String(active + 1).padStart(2, "0")} <span className="text-ink/30 dark:text-white/30">/ {String(count).padStart(2, "0")}</span>
             </span>
             <div className="flex gap-1.5" role="tablist" aria-label={tc("chooseSlide")}>
               {slides.map((slide, index) => (
                 <button key={slide.id} type="button" role="tab" aria-selected={index === active} aria-label={tc("goTo", { index: index + 1 })} onClick={() => go(index)} className="relative h-6 w-10 sm:w-14">
-                  <span className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 overflow-hidden rounded-full bg-white/20">
+                  <span className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 overflow-hidden rounded-full bg-ink/15 dark:bg-white/20">
                     <span
                       key={index === active ? `${cycle}-${running}` : "idle"}
                       className={cn("absolute inset-y-0 start-0 bg-gold", index < active ? "w-full" : index > active ? "w-0" : "w-full")}
@@ -477,21 +362,21 @@ export function FlagshipHero({ locale }: { locale: string }) {
               ))}
             </div>
             <div className="ms-1 flex gap-1.5">
-              <button type="button" onClick={() => setPaused((p) => !p)} aria-label={paused ? tc("play") : tc("pause")} className="grid size-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-white/40 hover:text-white">
+              <button type="button" onClick={() => setPaused((p) => !p)} aria-label={paused ? tc("play") : tc("pause")} className="grid size-9 place-items-center rounded-full border border-ink/15 text-ink/80 hover:border-ink/40 hover:text-ink dark:border-white/15 dark:text-white/80 dark:hover:border-white/40 dark:hover:text-white">
                 {paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
               </button>
-              <button type="button" onClick={prev} aria-label={tc("prev")} className="grid size-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-white/40 hover:text-white">
+              <button type="button" onClick={prev} aria-label={tc("prev")} className="grid size-9 place-items-center rounded-full border border-ink/15 text-ink/80 hover:border-ink/40 hover:text-ink dark:border-white/15 dark:text-white/80 dark:hover:border-white/40 dark:hover:text-white">
                 <ChevronLeft className="size-4 rtl:rotate-180" />
               </button>
-              <button type="button" onClick={next} aria-label={tc("next")} className="grid size-9 place-items-center rounded-full border border-white/15 text-white/80 hover:border-white/40 hover:text-white">
+              <button type="button" onClick={next} aria-label={tc("next")} className="grid size-9 place-items-center rounded-full border border-ink/15 text-ink/80 hover:border-ink/40 hover:text-ink dark:border-white/15 dark:text-white/80 dark:hover:border-white/40 dark:hover:text-white">
                 <ChevronRight className="size-4 rtl:rotate-180" />
               </button>
             </div>
           </div>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 lg:flex lg:gap-8">
             {facts.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2.5 text-[13px] text-white/70">
-                <Icon className="size-4 shrink-0 text-brand-yellow" strokeWidth={1.6} aria-hidden="true" />
+              <li key={label} className="flex items-center gap-2.5 text-[13px] text-ink/70 dark:text-white/70">
+                <Icon className="size-4 shrink-0 text-[var(--accent-text)]" strokeWidth={1.6} aria-hidden="true" />
                 {label}
               </li>
             ))}

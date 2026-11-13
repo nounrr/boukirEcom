@@ -129,9 +129,9 @@ export default async function ProductDetailsRouteLayout({
 
   return (
     <>
-      <nav className="container mx-auto px-6 pt-4 flex gap-4 text-sm" aria-label={locale === 'ar' ? 'الفئة والعلامة' : 'Catégorie et marque'}>
-        {product.categorie?.id && <Link href={catalogHref(locale, 'categories', product.categorie.id)}>{locale === 'ar' ? product.categorie.nom_ar || product.categorie.nom : product.categorie.nom}</Link>}
-        {product.brand?.id && <Link href={catalogHref(locale, 'marques', product.brand.id)}>{product.brand.nom}</Link>}
+      <nav className="mx-auto flex max-w-[1440px] flex-wrap gap-2 px-5 pt-5 text-xs font-semibold sm:px-8 lg:px-10" aria-label={locale === 'ar' ? 'الفئة والعلامة' : 'Catégorie et marque'}>
+        {product.categorie?.id && <Link className="inline-flex h-8 items-center rounded-full border border-border bg-card px-3.5 uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-500 hover:border-[rgba(242,159,4,0.6)] hover:text-accent-text rtl:tracking-normal" href={catalogHref(locale, 'categories', product.categorie.id)}>{locale === 'ar' ? product.categorie.nom_ar || product.categorie.nom : product.categorie.nom}</Link>}
+        {product.brand?.id && <Link className="inline-flex h-8 items-center rounded-full bg-ink px-3.5 uppercase tracking-[0.12em] text-brand-yellow transition-opacity duration-500 hover:opacity-85 rtl:tracking-normal dark:bg-white/10" href={catalogHref(locale, 'marques', product.brand.id)}>{product.brand.nom}</Link>}
       </nav>
       {children}
       <script

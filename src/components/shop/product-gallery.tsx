@@ -3,11 +3,11 @@
 import { useCallback, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
 import { getImageEdgeColor } from "@/lib/image-edge-color"
 import { ChevronLeft, ChevronRight, Package } from "lucide-react"
+import { textureFor } from "@/lib/product-ui"
 
 export interface GalleryImage { id: number; image_url: string }
 
@@ -24,6 +24,8 @@ interface ProductGalleryProps {
   thumbSize?: number
   thumbsOnRight?: boolean
   thumbsOnLeft?: boolean
+  /** Seed for the material texture shown when there is no usable photo. */
+  fallbackSeed?: number | string
 }
 
 export function ProductGallery({
@@ -39,6 +41,7 @@ export function ProductGallery({
   thumbSize = 48,
   thumbsOnRight = false,
   thumbsOnLeft = false,
+  fallbackSeed,
 }: ProductGalleryProps) {
   const [brokenIds, setBrokenIds] = useState<Set<number>>(() => new Set())
   const [imageBackgrounds, setImageBackgrounds] = useState<Record<string, string>>({})
@@ -149,92 +152,69 @@ export function ProductGallery({
     }
   }
 
-  const verticalThumbs = (
-    images.length > 1 && (
-      <div
-        className="flex flex-col gap-2"
-        style={{ maxHeight: maxHeight, overflowY: "auto" }}
-      >
-        {resolvedImages.map((image, index) => (
-          <button
-            key={image.id}
-            onClick={() => onSelectedChange(index)}
-            className={cn(
-              "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer",
-              selectedIndex === index
-                ? "border-primary border-2 ring-1 ring-primary/20"
-                : "border-border hover:border-primary/50"
-            )}
-            style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
-          >
-            {image.resolvedSrc && !brokenIds.has(image.id) ? (
-              <Image
-                src={image.resolvedSrc}
-                alt={`Image ${index + 1}`}
-                fill
-                className="object-contain"
-                onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
-                onError={() => markBroken(image.id)}
-              />
-            ) : (
-              <div className="absolute inset-0 grid place-items-center">
-                <Package className="h-5 w-5 text-muted-foreground/40" />
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-    )
+  const fallback = (size: "lg" | "sm") => (
+    <>
+      <Image src={textureFor(fallbackSeed ?? altText)} alt="" fill sizes={size === "lg" ? "(min-width: 1024px) 55vw, 100vw" : "96px"} className="object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/35 to-transparent" aria-hidden="true" />
+      <Package className={cn("absolute text-white/85", size === "lg" ? "bottom-4 end-4 size-7" : "bottom-1 end-1 size-3.5")} aria-hidden="true" />
+    </>
   )
 
-  const mobileThumbs = (
-    images.length > 1 && (
-      <div className="md:hidden w-full">
-        <div className="w-full overflow-x-auto">
-          <div className="flex gap-2 min-w-max py-2">
-            {resolvedImages.map((image, index) => (
-              <button
-                key={image.id}
-                onClick={() => onSelectedChange(index)}
-                className={cn(
-                  "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer shrink-0",
-                  selectedIndex === index
-                    ? "border-primary border-2 ring-1 ring-primary/20"
-                    : "border-border hover:border-primary/50"
-                )}
-                style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
-              >
-                {image.resolvedSrc && !brokenIds.has(image.id) ? (
-                  <Image
-                    src={image.resolvedSrc}
-                    alt={`Image ${index + 1}`}
-                    fill
-                    className="object-contain"
-                    onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
-                    onError={() => markBroken(image.id)}
-                  />
-                ) : (
-                  <div className="absolute inset-0 grid place-items-center">
-                    <Package className="h-5 w-5 text-muted-foreground/40" />
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+  const thumb = (image: (typeof resolvedImages)[number], index: number, extra?: string) => (
+    <button
+      key={image.id}
+      type="button"
+      onClick={() => onSelectedChange(index)}
+      aria-label={`Image ${index + 1}`}
+      aria-current={selectedIndex === index ? "true" : undefined}
+      className={cn(
+        "relative shrink-0 cursor-pointer overflow-hidden rounded-xl border transition-[border-color,box-shadow,opacity,transform] duration-700 ease-[var(--ease-slow)]",
+        selectedIndex === index
+          ? "border-transparent opacity-100 ring-2 ring-brand-orange ring-offset-2 ring-offset-background"
+          : "border-border opacity-70 hover:-translate-y-0.5 hover:opacity-100",
+        extra
+      )}
+      style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
+    >
+      {image.resolvedSrc && !brokenIds.has(image.id) ? (
+        <Image
+          src={image.resolvedSrc}
+          alt={`Image ${index + 1}`}
+          fill
+          sizes={`${thumbSize}px`}
+          className="object-contain p-1"
+          onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
+          onError={() => markBroken(image.id)}
+        />
+      ) : fallback("sm")}
+    </button>
   )
+
+  const verticalThumbs = images.length > 1 && (
+    <div className="flex flex-col gap-3 overflow-y-auto p-1" style={{ maxHeight }}>
+      {resolvedImages.map((image, index) => thumb(image, index))}
+    </div>
+  )
+
+  const mobileThumbs = images.length > 1 && (
+    <div className="w-full overflow-x-auto md:hidden">
+      <div className="flex min-w-max gap-2.5 px-1 py-3">
+        {resolvedImages.map((image, index) => thumb(image, index))}
+      </div>
+    </div>
+  )
+
+  const showFallback = !current?.resolvedSrc || brokenIds.has(current.id)
 
   return (
-    <div className={cn("sticky top-2 w-full", className)}>
-      <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex flex-col md:flex-row items-start gap-2" : "space-y-2")}>
+    <div className={cn("w-full lg:sticky lg:top-28", className)}>
+      <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex flex-col items-start gap-3 md:flex-row" : "space-y-3")}>
         {thumbsOnLeft && <div className="hidden md:block">{verticalThumbs}</div>}
-        <div className={cn((thumbsOnRight || thumbsOnLeft) ? "flex-1 w-full" : "w-full")}>
+        <div className={cn((thumbsOnRight || thumbsOnLeft) ? "w-full flex-1" : "w-full")}>
           <div
-            className="relative aspect-square w-full rounded-md overflow-hidden bg-white border border-border/40 group cursor-pointer"
+            className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-[1.75rem] border border-border shadow-[0_40px_80px_-60px_rgba(13,13,13,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-brand-orange"
             tabIndex={0}
-            style={{ maxHeight: maxHeight, touchAction: "pan-y", backgroundColor: imageBackgrounds[current?.resolvedSrc || ''] || '#ffffff' }}
+            style={{ maxHeight, touchAction: "pan-y", backgroundColor: showFallback ? undefined : imageBackgrounds[current?.resolvedSrc || ''] || '#ffffff' }}
             onKeyDown={(e) => {
               if (e.key === "ArrowLeft") goPrev()
               if (e.key === "ArrowRight") goNext()
@@ -253,74 +233,73 @@ export function ProductGallery({
               if (current) onMainClick ? onMainClick(current, selectedIndex) : goNext()
             }}
           >
-          {current?.resolvedSrc && !brokenIds.has(current.id) ? (
-          <Image
-              src={current.resolvedSrc}
-              alt={altText}
-            fill
-            className="object-contain"
-            onLoad={(event) => detectBackground(current.resolvedSrc!, event.currentTarget)}
-            priority
-              onError={() => markBroken(current.id)}
-          />
-        ) : (
-              <div className="absolute inset-0 grid place-items-center">
-                <Package className="h-14 w-14 text-muted-foreground/25" />
-          </div>
-        )}
+            {!showFallback && current ? (
+              <Image
+                key={current.resolvedSrc}
+                src={current.resolvedSrc!}
+                alt={altText}
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-contain p-6 transition-transform duration-[1600ms] ease-[var(--ease-slow)] group-hover:scale-[1.08] sm:p-10"
+                onLoad={(event) => detectBackground(current.resolvedSrc!, event.currentTarget)}
+                priority
+                onError={() => markBroken(current.id)}
+              />
+            ) : (
+              <div className="absolute inset-0 transition-transform duration-[1600ms] ease-[var(--ease-slow)] group-hover:scale-[1.05]">{fallback("lg")}</div>
+            )}
 
-        {promoPercent && promoPercent > 0 && (
-          <Badge className="absolute top-3 left-3 bg-red-500 hover:bg-red-500 text-white px-2 py-0.5 text-xs font-semibold">
-            -{promoPercent}%
-          </Badge>
-        )}
+            {/* slow light sweep */}
+            <span className="pointer-events-none absolute inset-y-0 -start-1/2 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-0 transition-[inset-inline-start,opacity] duration-[1800ms] ease-[var(--ease-slow)] group-hover:start-[120%] group-hover:opacity-100" aria-hidden="true" />
 
-        {images.length > 1 && (
-          <>
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                  className="pointer-events-auto h-8 w-8 rounded-full bg-background/60 hover:bg-background/80 border border-border/40 shadow-sm"
-                aria-label="Image précédente"
-                  onClick={(e) => { e.stopPropagation(); goPrev(); }}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                  className="pointer-events-auto h-8 w-8 rounded-full bg-background/60 hover:bg-background/80 border border-border/40 shadow-sm"
-                aria-label="Image suivante"
-                  onClick={(e) => { e.stopPropagation(); goNext(); }}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-background/60 px-1.5 py-0.5 rounded-full border border-border/40 shadow-sm">
-              {images.map((_, i) => (
-                <span
-                  key={i}
-                  aria-hidden="true"
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    i === selectedIndex ? "bg-primary" : "bg-muted-foreground/30"
-                  )}
-                />
-              ))}
-            </div>
-              {showIndex && (
-                <div className="absolute top-2 right-2 text-xs px-1.5 py-0.5 rounded-full bg-background/70 border border-border/40 text-muted-foreground">
-                  {selectedIndex + 1}/{images.length}
+            {promoPercent && promoPercent > 0 ? (
+              <span className="absolute start-4 top-4 inline-flex items-center rounded-full bg-gold px-3 py-1.5 text-sm font-extrabold text-ink shadow-[0_10px_24px_-10px_rgba(242,159,4,0.8)]">
+                -{promoPercent}%
+              </span>
+            ) : null}
+
+            {images.length > 1 && (
+              <>
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-3">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:-translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
+                    aria-label="Image précédente"
+                    onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                  >
+                    <ChevronLeft className="size-5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
+                    aria-label="Image suivante"
+                    onClick={(e) => { e.stopPropagation(); goNext(); }}
+                  >
+                    <ChevronRight className="size-5" />
+                  </Button>
                 </div>
-              )}
-          </>
-        )}
+                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink/55 px-2.5 py-1.5 backdrop-blur-md">
+                  {images.map((_, i) => (
+                    <span
+                      key={i}
+                      aria-hidden="true"
+                      className={cn("h-1.5 rounded-full transition-all duration-700 ease-[var(--ease-slow)]", i === selectedIndex ? "w-5 bg-brand-yellow" : "w-1.5 bg-white/45")}
+                    />
+                  ))}
+                </div>
+                {showIndex && (
+                  <div className="absolute end-4 top-4 rounded-full bg-ink/55 px-2.5 py-1 text-xs font-semibold tabular text-white backdrop-blur-md">
+                    {selectedIndex + 1}/{images.length}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
-          {/* Mobile/small: thumbnails under main image, horizontal row */}
           {mobileThumbs}
         </div>
 
@@ -328,35 +307,8 @@ export function ProductGallery({
           thumbsOnRight ? (
             <div className="hidden md:block">{verticalThumbs}</div>
           ) : (
-            <div className="hidden md:flex md:flex-wrap gap-1">
-              {resolvedImages.map((image, index) => (
-                <button
-                  key={image.id}
-                  onClick={() => onSelectedChange(index)}
-                  className={cn(
-                    "relative rounded-md overflow-hidden bg-white border transition-all cursor-pointer",
-                    selectedIndex === index
-                      ? "border-primary border-2 ring-1 ring-primary/20"
-                      : "border-border hover:border-primary/50"
-                  )}
-                  style={{ width: thumbSize, height: thumbSize, backgroundColor: imageBackgrounds[image.resolvedSrc || ''] || '#ffffff' }}
-                >
-                  {image.resolvedSrc && !brokenIds.has(image.id) ? (
-                    <Image
-                      src={image.resolvedSrc}
-                      alt={`Image ${index + 1}`}
-                      fill
-                      className="object-contain"
-                      onLoad={(event) => detectBackground(image.resolvedSrc!, event.currentTarget)}
-                      onError={() => markBroken(image.id)}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 grid place-items-center">
-                      <Package className="h-5 w-5 text-muted-foreground/40" />
-                    </div>
-                  )}
-                </button>
-              ))}
+            <div className="hidden gap-2.5 md:flex md:flex-wrap">
+              {resolvedImages.map((image, index) => thumb(image, index))}
             </div>
           )
         )}

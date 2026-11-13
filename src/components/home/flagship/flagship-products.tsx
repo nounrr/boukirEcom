@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { ArrowRight, Package, Tag } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import { productModel } from "@/components/home/professional/professional-catalog"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
@@ -55,7 +55,7 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
           ) : (
             <DragCarousel label={t("newArrivalsTitle")} autoplay={4500} slideClassName={SLIDE}>
               {products.map((product) => (
-                <ProductCardTile key={product.id} product={product} viewMode="grid" />
+                <ProductCardTile key={product.id} product={product} viewMode="grid" isWide />
               ))}
             </DragCarousel>
           )}
@@ -65,25 +65,39 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
   )
 }
 
-/** Promotions — only rendered when real promotional products exist. */
+function shuffled<T extends { id: number }>(items: T[], seed: number) {
+  const score = (id: number) => {
+    const x = Math.sin(id * 12.9898 + seed * 78.233) * 43758.5453
+    return x - Math.floor(x)
+  }
+  return [...items].sort((a, b) => score(a.id) - score(b.id))
+}
+
+/**
+ * Promotions right after the hero — real promotional products in a random
+ * order (new order on every visit), draggable autoplay carousel.
+ * Only rendered when promotional products exist.
+ */
 export function FlagshipPromotions({ locale }: { locale: string }) {
   const t = useTranslations("shop")
-  const tn = useTranslations("xp.nav")
-  const { data, isLoading, isError } = useGetFeaturedPromoQuery(12)
-  const products = useMemo(() => (data ?? []).map((p) => productModel(p, locale)), [data, locale])
+  const tr = useTranslations("xp.home.promoRail")
+  const { data, isLoading, isError } = useGetFeaturedPromoQuery(16)
+  const [seed] = useState(() => Math.random() * 1000)
+  const products = useMemo(() => shuffled(data ?? [], seed).map((p) => productModel(p, locale)), [data, locale, seed])
 
   if (!isLoading && (isError || products.length === 0)) return null
 
   return (
-    <section className="relative overflow-hidden bg-ink py-20 text-white lg:py-28" aria-labelledby="promos-title">
-      <div className="absolute inset-0 bg-[radial-gradient(50%_70%_at_0%_0%,rgba(242,159,4,0.22),transparent_70%)]" aria-hidden="true" />
+    <section className="relative overflow-hidden bg-ink py-16 text-white lg:py-24" aria-labelledby="promos-title">
+      <div className="absolute inset-0 bg-[radial-gradient(50%_70%_at_0%_0%,rgba(242,159,4,0.24),transparent_70%)]" aria-hidden="true" />
+      <div className="bd-grid absolute inset-0 opacity-50 [--grid-color:rgba(255,255,255,0.03)]" aria-hidden="true" />
       <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
         <SectionHeading
           tone="dark"
           id="promos-title"
-          kicker={tn("promotions")}
-          title={t("featuredTitle")}
-          description={t("featuredDesc")}
+          kicker={tr("kicker")}
+          title={tr("title")}
+          description={tr("desc")}
           action={
             <Link href={`/${locale}/shop?sort=promo`} className="inline-flex h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink">
               <Tag className="size-4" aria-hidden="true" />
@@ -97,10 +111,10 @@ export function FlagshipPromotions({ locale }: { locale: string }) {
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[380px] rounded-2xl bg-white/5" />)}
             </div>
           ) : (
-            <DragCarousel label={t("featuredTitle")} autoplay={5000} tone="dark" slideClassName={SLIDE}>
+            <DragCarousel label={tr("kicker")} autoplay={3800} tone="dark" slideClassName={SLIDE}>
               {products.map((product) => (
-                <div key={product.id} className="h-full rounded-2xl bg-background text-foreground [&>div]:h-full">
-                  <ProductCardTile product={product} viewMode="grid" />
+                <div key={product.id} className="h-full text-foreground [&>div]:h-full">
+                  <ProductCardTile product={product} viewMode="grid" isWide />
                 </div>
               ))}
             </DragCarousel>

@@ -1,7 +1,5 @@
 "use client"
-import Link from 'next/link'
 import { productIdFromSegment, productSlug } from '@/lib/seo/product-url'
-import { catalogHref } from '@/lib/catalog/registry'
 
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useAuthDialog } from "@/components/providers/auth-dialog-provider"
@@ -10,9 +8,6 @@ import { ProductSuggestions } from "@/components/shop/product-suggestions"
 import { VariantSelector } from "@/components/shop/variant-selector"
 import { TechnicalSheet } from "@/components/shop/technical-sheet"
 import { ProductCalculatorLink } from "@/components/shop/product-calculator-link"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { getLocalizedCategoryName } from "@/lib/localized-fields"
 import { cn } from "@/lib/utils"
@@ -22,16 +17,19 @@ import {
   useRemoveFromWishlistByProductMutation
 } from "@/state/api/wishlist-api-slice"
 import { useAppSelector } from "@/state/hooks"
-import { Heart, Minus, Plus, Share2, ShoppingCart, Tag } from "lucide-react"
+import { Flame, Headset, Heart, MessageCircle, Minus, Phone, Plus, Share2, ShoppingCart } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useParams, useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import DOMPurify from "dompurify"
 import type { ProductDetail } from '@/types/api/products'
 import { isOutOfStockLike } from '@/lib/stock'
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 import { resolveProductOfferPrice } from '@/lib/product-price'
 import { mergeProductSessionState } from '@/lib/product-client-snapshot'
+import { flyToCart, splitPrice } from '@/lib/product-ui'
+import { toAbsoluteImageUrl } from '@/lib/image-url'
+import { CONTACT, whatsappHref } from '@/lib/contact'
 
 function galleryFromProduct(product: ProductDetail) {
   const firstVariant = product.is_obligatoire_variant ? product.variants?.[0] : null
@@ -117,6 +115,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
     return requested?.id ?? (initialProduct.is_obligatoire_variant ? initialProduct.variants?.[0]?.id ?? null : null)
   })
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const galleryRef = useRef<HTMLDivElement>(null)
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(() => defaultUnitId(initialProduct))
 
   // The server has already validated the route and supplied public data. This
@@ -259,6 +258,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
 
     if (cartRef?.current) {
       try {
+        flyToCart(galleryRef.current, toAbsoluteImageUrl(displayImages[selectedImage]?.image_url) || '')
         await cartRef.current.addItem(cartItem)
         toast.success(t("addedToCartTitle"), {
           description: t("addedToCartDesc", { quantity, name: baseName }),
@@ -266,7 +266,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
 
         setTimeout(() => {
           cartRef.current?.open()
-        }, 300)
+        }, 800)
       } catch (error) {
         const data = (error as any)?.data
         const code = data?.code || data?.error
@@ -419,12 +419,21 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
     ? `${baseDesignation} • ${titleSuffixParts.join(' · ')}`
     : baseDesignation
 
+  const tx = useTranslations("xp.product")
+  const price = splitPrice(currentPrice, locale)
+  const savings = hasDiscount ? Math.max(0, computedPriceBeforeDiscount - currentPrice) : 0
+  const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
+  const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
+  const description = getLocalizedDescription(product)
+  const whatsapp = whatsappHref(tx("adviceMessage", { name: baseDesignation }))
+  const sectionLabel = "text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground rtl:tracking-normal"
+
   return (
-    <div className="bg-white">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* Left: Image Gallery */}
-          <div className="lg:col-span-6">
+    <div className="bg-background pb-24 text-foreground lg:pb-0">
+      <div className="mx-auto max-w-[1440px] px-5 pb-16 pt-4 sm:px-8 lg:px-10 lg:pb-24 lg:pt-6">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+          {/* Gallery */}
+          <div ref={galleryRef} className="min-w-0 lg:col-span-7">
             <ProductGallery
               images={displayImages}
               selectedIndex={selectedImage}
@@ -434,249 +443,250 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
               altText={baseDesignation}
               onMainClick={() => goNextImage()}
               showIndex
-              maxHeight={520}
-              thumbSize={72}
+              maxHeight={640}
+              thumbSize={76}
               thumbsOnLeft={!isArabic}
+              fallbackSeed={product.id}
             />
           </div>
 
-          {/* Right: Product Info */}
-          <div className="lg:col-span-6 space-y-4">
-            {/* Breadcrumb/Category */}
-            {categoryLabel && (
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
-                  <Link href={catalogHref(locale, 'categories', product.categorie.id)} className="inline-flex items-center gap-1 text-muted-foreground"><Tag className="w-3 h-3" /> {categoryLabel}</Link>
-                </Badge>
-                {product.brand?.nom && (
-                  <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-full border-border/50">
-                    <Link href={catalogHref(locale, 'marques', product.brand.id)} className="inline-flex items-center gap-1 text-muted-foreground">{product.brand.nom}</Link>
-                  </Badge>
-                )}
-              </div>
-            )}
-
-            {/* Product Name */}
-            <h1 className="text-2xl font-bold text-foreground leading-tight">
-              {titleDisplayName}
-            </h1>
-
-            {/* Price */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
-                  {currentPrice.toFixed(2)} {unitRate}
-                </span>
-                {hasDiscount && product.pourcentage_promo && (
-                  <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-0.5 h-6 font-bold">
-                    -{product.pourcentage_promo}%
-                  </Badge>
-                )}
-              </div>
-              {hasDiscount && (
-                <span className="text-base text-muted-foreground line-through">
-                  {computedPriceBeforeDiscount.toFixed(2)} {unitRate}
-                </span>
-              )}
-            </div>
-
-            {/* Stock Status */}
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className={cn("text-xs px-2 py-0.5", isOutOfStock ? "border-red-500/50 text-red-600" : "border-green-500/50 text-green-600")}>
-                {t(isOutOfStock ? "outOfStock" : "inStock")}
-              </Badge>
-            </div>
-            <Separator />
-
-            <div className="cursor-pointer">
-              <VariantSelector
-                colorVariants={colorVariants as any}
-                sizeVariants={sizeVariants as any}
-                otherVariants={otherVariants as any}
-                selectedId={selectedVariant}
-                onChange={(id, v) => {
-                  setSelectedVariant(id)
-                  const url = new URL(window.location.href)
-                  url.searchParams.set('variant', `${id}-${productSlug({ id, name: v.variant_name || String(id) }, locale)}`)
-                  window.history.replaceState(null, '', url)
-                  if (v.image_url) setSelectedImage(0)
-                }}
-                onPreviewImage={(img) => {
-                  if (img) {
-                    const idx = displayImages.findIndex((g) => g.image_url === img)
-                    setSelectedImage(idx >= 0 ? idx : 0)
-                  }
-                }}
-                style="circle"
-              />
-            </div>
-
-            {/* Units Selector */}
-            {(product.units && product.units.length > 0) && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">{t("unitLabel")}</label>
+          {/* Buy box */}
+          <div className="min-w-0 lg:col-span-5">
+            <div className="space-y-7 lg:sticky lg:top-28">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="kicker flex items-center gap-3"><span className="h-px w-8 bg-[var(--accent-text)]" aria-hidden="true" />{tx("ref")} {product.id}</span>
+                  {hasDiscount && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-yellow dark:bg-white/10">
+                      <Flame className="size-3" aria-hidden="true" />{tx("promo")}
+                    </span>
+                  )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.units.map((u: any) => (
-                    <button
-                      key={u.id}
-                      onClick={() => setSelectedUnitId(u.id)}
-                      className={cn(
-                        "px-3 py-1.5 text-sm font-medium rounded-md border transition-all cursor-pointer",
-                        selectedUnitId === u.id
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border hover:border-primary/50 hover:bg-muted/50"
-                      )}
-                      title={formatCommercialUnit(u.unit_name || u.name, locale as any)}
-                    >
-                      <span className="mr-2 rtl:mr-0 rtl:ml-2">{formatCommercialUnit(u.unit_name || u.name, locale as any)}</span>
-                      {typeof u.prix_vente === 'number' && (
-                        <span className="text-xs text-muted-foreground">{Number(u.prix_vente).toFixed(2)} {formatUnitRate(currency, u.unit_name || u.name, locale as any)}</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                <h1 className="display-lg text-[1.9rem] leading-[1.08] sm:text-4xl xl:text-[2.6rem]">{titleDisplayName}</h1>
               </div>
-            )}
 
-            <Separator />
-
-            {/* Quantity Selector */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t("quantityLabel")}</label>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center border border-border rounded-md">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-r-none hover:bg-muted"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </Button>
-                  <span className="px-4 text-sm font-medium min-w-10 text-center">
-                    {quantity}
+              {/* Price */}
+              <div className="relative overflow-hidden rounded-[1.6rem] border border-border bg-card p-5 sm:p-6">
+                <div className="pointer-events-none absolute -end-20 -top-20 size-56 rounded-full bg-[radial-gradient(closest-side,rgba(242,159,4,0.16),transparent)]" aria-hidden="true" />
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="sr-only">{currentPrice.toFixed(2)} {unitRate}</p>
+                    <div className="flex items-start gap-1.5" aria-hidden="true">
+                      <span className="display-lg tabular text-5xl leading-none sm:text-6xl">{price.int}</span>
+                      <span className="mt-1 flex flex-col">
+                        <span className="text-xl font-extrabold leading-none tabular">{price.mark}{price.dec}</span>
+                        <span className="mt-1.5 text-[11px] font-bold uppercase tracking-wider text-accent-text">{unitRate}</span>
+                      </span>
+                    </div>
+                    {hasDiscount && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <span className="text-sm tabular text-muted-foreground line-through">{computedPriceBeforeDiscount.toFixed(2)} {unitRate}</span>
+                        {savings > 0 && <span className="rounded-full bg-emerald-500/12 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">{tx("save", { amount: savings.toFixed(2) })}</span>}
+                      </div>
+                    )}
+                  </div>
+                  {hasDiscount && product.pourcentage_promo ? (
+                    <span className="grid size-16 shrink-0 -rotate-[8deg] place-items-center rounded-full bg-gold text-lg font-extrabold text-ink shadow-[0_14px_30px_-12px_rgba(242,159,4,0.8)]">-{product.pourcentage_promo}%</span>
+                  ) : null}
+                </div>
+                <div className="relative mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-sm">
+                  <span className={cn("inline-flex items-center gap-2 font-semibold", isOutOfStock ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400")}>
+                    <span className="size-2 rounded-full bg-current shadow-[0_0_0_4px_color-mix(in_oklab,currentColor_18%,transparent)]" aria-hidden="true" />
+                    {t(isOutOfStock ? "outOfStock" : "inStock")}
                   </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-l-none hover:bg-muted"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={(() => {
-                      const rawLimit = (product as any)?.purchase_limit ?? (product as any)?.purchaseLimit
-                      const purchaseLimit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) ? rawLimit : null
-                      return purchaseLimit != null ? quantity >= purchaseLimit : false
-                    })()}
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </Button>
+                  {categoryLabel && <span className="text-muted-foreground">{categoryLabel}</span>}
+                  {product.brand?.nom && <span className="text-muted-foreground">{product.brand.nom}</span>}
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {t("totalLabel")}: <span className="font-semibold text-emerald-700 dark:text-emerald-400">{(currentPrice * quantity).toFixed(2)} {currency}</span>
-                  <span className="ml-2 rtl:ml-0 rtl:mr-2 text-xs text-muted-foreground">({quantity} × {displayUnit})</span>
-                </span>
+              </div>
+
+              <div className="cursor-pointer">
+                <VariantSelector
+                  colorVariants={colorVariants as any}
+                  sizeVariants={sizeVariants as any}
+                  otherVariants={otherVariants as any}
+                  selectedId={selectedVariant}
+                  onChange={(id, v) => {
+                    setSelectedVariant(id)
+                    const url = new URL(window.location.href)
+                    url.searchParams.set('variant', `${id}-${productSlug({ id, name: v.variant_name || String(id) }, locale)}`)
+                    window.history.replaceState(null, '', url)
+                    if (v.image_url) setSelectedImage(0)
+                  }}
+                  onPreviewImage={(img) => {
+                    if (img) {
+                      const idx = displayImages.findIndex((g) => g.image_url === img)
+                      setSelectedImage(idx >= 0 ? idx : 0)
+                    }
+                  }}
+                  style="circle"
+                />
+              </div>
+
+              {/* Units */}
+              {(product.units && product.units.length > 0) && (
+                <div className="space-y-3">
+                  <p className={sectionLabel}>{t("unitLabel")}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {product.units.map((u: any) => {
+                      const selected = selectedUnitId === u.id
+                      return (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => setSelectedUnitId(u.id)}
+                          aria-pressed={selected}
+                          title={formatCommercialUnit(u.unit_name || u.name, locale as any)}
+                          className={cn(
+                            "inline-flex cursor-pointer flex-col items-start rounded-2xl border px-4 py-2.5 text-start transition-[border-color,background-color,color,box-shadow,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
+                            selected
+                              ? "border-transparent bg-ink text-white shadow-[0_14px_30px_-16px_rgba(13,13,13,0.6)] dark:bg-brand-yellow dark:text-ink"
+                              : "border-border bg-card hover:border-[rgba(242,159,4,0.6)]"
+                          )}
+                        >
+                          <span className="text-sm font-semibold">{formatCommercialUnit(u.unit_name || u.name, locale as any)}</span>
+                          {typeof u.prix_vente === 'number' && (
+                            <span className={cn("text-xs tabular", selected ? "text-white/70 dark:text-ink/70" : "text-muted-foreground")}>{Number(u.prix_vente).toFixed(2)} {formatUnitRate(currency, u.unit_name || u.name, locale as any)}</span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity + total */}
+              <div className="space-y-3">
+                <p className={sectionLabel}>{t("quantityLabel")}</p>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="inline-flex h-12 items-center rounded-full border border-border bg-card p-1">
+                    <button type="button" aria-label={tx("decrease")} onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1} className="grid size-10 cursor-pointer place-items-center rounded-full transition-colors duration-500 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40">
+                      <Minus className="size-4" aria-hidden="true" />
+                    </button>
+                    <span className="min-w-12 text-center text-base font-bold tabular" aria-live="polite">{quantity}</span>
+                    <button type="button" aria-label={tx("increase")} onClick={() => handleQuantityChange(1)} disabled={purchaseLimit != null ? quantity >= purchaseLimit : false} className="grid size-10 cursor-pointer place-items-center rounded-full transition-colors duration-500 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40">
+                      <Plus className="size-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {t("totalLabel")}: <span className="text-lg font-bold tabular text-foreground">{(currentPrice * quantity).toFixed(2)} {currency}</span>
+                    <span className="ms-1.5 text-xs">({quantity} × {displayUnit})</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="group/cta relative inline-flex h-14 flex-1 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gold px-5 text-[15px] font-semibold whitespace-nowrap text-ink shadow-[0_18px_40px_-16px_rgba(242,159,4,0.85)] transition-[transform,box-shadow] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:shadow-[0_28px_54px_-18px_rgba(242,159,4,0.95)] active:translate-y-0 disabled:opacity-70"
+                >
+                  <span className="pointer-events-none absolute inset-y-0 start-0 w-1/3 -translate-x-[120%] -skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1600ms] ease-[var(--ease-slow)] group-hover/cta:translate-x-[360%] rtl:translate-x-[120%] rtl:group-hover/cta:-translate-x-[360%]" aria-hidden="true" />
+                  <ShoppingCart className="relative size-[18px]" aria-hidden="true" />
+                  <span className="relative">{tProductCard("addToCart")}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleWishlist}
+                  disabled={isWishlistLoading}
+                  aria-pressed={isInWishlist}
+                  aria-label={isInWishlist ? tProductCard("removeFromWishlist") : tProductCard("addToWishlist")}
+                  title={isInWishlist ? tProductCard("removeFromWishlist") : tProductCard("addToWishlist")}
+                  className={cn(
+                    "grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border transition-[background-color,border-color,color,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
+                    isInWishlist ? "border-transparent bg-[#e0303a] text-white" : "border-border bg-card hover:border-[#e0303a]/50 hover:text-[#e0303a]"
+                  )}
+                >
+                  <Heart className={cn("size-5", isInWishlist && "fill-current")} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  aria-label={tx("share")}
+                  title={tx("share")}
+                  className="grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border border-border bg-card transition-[border-color,color,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:border-[rgba(242,159,4,0.6)] hover:text-accent-text"
+                >
+                  <Share2 className="size-5" aria-hidden="true" />
+                </button>
+              </div>
+
+              <ProductCalculatorLink
+                productId={product.id}
+                designation={product.designation}
+                categoryId={(product as any)?.categorie?.id ?? null}
+                parentCategoryId={(product as any)?.categorie?.parent_id ?? null}
+              />
+
+              {/* Advice: the store's verified phone and WhatsApp */}
+              <div className="flex flex-wrap items-center gap-3 rounded-[1.4rem] border border-border bg-muted/40 p-4">
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-brand-yellow dark:bg-white/10" aria-hidden="true"><Headset className="size-5" /></span>
+                <div className="min-w-[11rem] flex-1">
+                  <p className="text-sm font-semibold">{tx("adviceTitle")}</p>
+                  <p className="text-xs text-muted-foreground">{tx("adviceDesc")}</p>
+                </div>
+                <div className="ms-auto flex gap-2">
+                  <a href={CONTACT.phoneHref} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 text-xs font-semibold transition-colors duration-500 hover:border-foreground/40">
+                    <Phone className="size-3.5" aria-hidden="true" />{tx("call")}
+                  </a>
+                  {whatsapp && (
+                    <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#25d366] px-3.5 text-xs font-semibold text-[#06361b] transition-[filter] duration-500 hover:brightness-105">
+                      <MessageCircle className="size-3.5" aria-hidden="true" />WhatsApp
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-2">
-              <Button
-                size="lg"
-                className="flex-1 h-11 text-sm font-semibold"
-                onClick={handleAddToCart}
-                disabled={isAddingToCart}
-              >
-                <ShoppingCart className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
-                {tProductCard("addToCart")}
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className={cn(
-                  "h-11 w-11 p-0",
-                  isInWishlist && "bg-red-50 border-red-200 hover:bg-red-100"
-                )}
-                onClick={handleToggleWishlist}
-                disabled={isWishlistLoading}
-              >
-                <Heart className={cn(
-                  "w-4 h-4",
-                  isInWishlist && "fill-red-500 text-red-500"
-                )} />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-11 w-11 p-0"
-                onClick={handleShare}
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <ProductCalculatorLink
-              productId={product.id}
-              designation={product.designation}
-              categoryId={(product as any)?.categorie?.id ?? null}
-              parentCategoryId={(product as any)?.categorie?.parent_id ?? null}
-            />
-
-            <Separator />
-
-            {/* Description */}
-            {getLocalizedDescription(product) && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold">{t("descriptionHeading")}</h3>
-                {(() => {
-                  const desc = getLocalizedDescription(product)
-                  if (!desc) return null
-
-                  if (looksLikeHtml(desc)) {
-                    const clean = DOMPurify.sanitize(desc, {
-                      USE_PROFILES: { html: true },
-                    })
-
-                    return (
-                      <div
-                        className="text-sm text-muted-foreground leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: clean }}
-                      />
-                    )
-                  }
-
-                  return (
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {desc}
-                    </p>
-                  )
-                })()}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Technical Sheet - Full Width Below */}
-        {product.fiche_technique && (
-          <div className="mt-8">
-            <TechnicalSheet fiche={product.fiche_technique} />
-          </div>
+        {/* Description + technical sheet */}
+        {(description || product.fiche_technique) && (
+          <section className="mt-16 grid gap-8 border-t border-border pt-12 lg:mt-24 lg:grid-cols-12 lg:gap-12 lg:pt-16" aria-labelledby="product-details-title">
+            <div className="lg:col-span-4">
+              <p className="kicker flex items-center gap-3" data-reveal><span className="h-px w-8 bg-[var(--accent-text)]" aria-hidden="true" />{tx("detailsKicker")}</p>
+              <h2 id="product-details-title" className="display-lg mt-4 text-3xl sm:text-4xl" data-reveal>{description ? t("descriptionHeading") : tx("detailsKicker")}</h2>
+            </div>
+            <div className="min-w-0 space-y-10 lg:col-span-8">
+              {description && (looksLikeHtml(description) ? (
+                <div
+                  className="max-w-3xl text-base leading-relaxed text-muted-foreground [&_a]:text-accent-text [&_a]:underline [&_h3]:mt-6 [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1 [&_ol]:ms-5 [&_ol]:list-decimal [&_p]:my-3 [&_strong]:text-foreground [&_ul]:ms-5 [&_ul]:list-disc"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description, { USE_PROFILES: { html: true } }) }}
+                />
+              ) : (
+                <p className="max-w-3xl whitespace-pre-line text-base leading-relaxed text-muted-foreground">{description}</p>
+              ))}
+              {product.fiche_technique && <TechnicalSheet fiche={product.fiche_technique} />}
+            </div>
+          </section>
         )}
       </div>
 
-      {/* Similar Products */}
+      {/* Similar products */}
       {similarProducts.length > 0 && (
-        <div className="bg-muted/30 py-12 mt-12">
-          <div className="container mx-auto px-6 sm:px-8 lg:px-16">
+        <section className="border-t border-border bg-muted/30 py-16 lg:py-24">
+          <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
             <ProductSuggestions
               products={similarProducts}
               title={t("similarTitle")}
               description={t("similarDesc")}
             />
           </div>
-        </div>
+        </section>
       )}
+
+      {/* Mobile buy bar (the floating contact button lifts above it) */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pt-3 backdrop-blur-xl lg:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+        <div className="mx-auto flex max-w-xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs text-muted-foreground">{baseDesignation}</p>
+            <p className="text-lg font-extrabold tabular">{currentPrice.toFixed(2)} <span className="text-[11px] font-bold uppercase text-accent-text">{unitRate}</span></p>
+          </div>
+          <button type="button" onClick={handleAddToCart} disabled={isAddingToCart} className="inline-flex h-12 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink disabled:opacity-70">
+            <ShoppingCart className="size-4" aria-hidden="true" />{tProductCard("addToCart")}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -274,6 +274,7 @@ export const CartPopover = forwardRef<
         <Button
           variant="ghost"
           size="icon"
+          data-cart-trigger
           className={cn(
             "relative transition-all duration-200 h-9 w-9 group",
             tone === "onPrimary" ? "hover:bg-white/10" : "hover:bg-muted/50",

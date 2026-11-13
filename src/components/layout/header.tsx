@@ -187,7 +187,7 @@ export function Header() {
         className={cn(
           "relative w-full text-white transition-[background-color,border-color,backdrop-filter] duration-500",
           overlay
-            ? "border-b border-white/10 bg-gradient-to-b from-black/70 via-black/30 to-transparent"
+            ? "border-b border-white/10 bg-ink/95 backdrop-blur-xl dark:bg-transparent dark:bg-gradient-to-b dark:from-black/70 dark:via-black/30 dark:to-transparent dark:backdrop-blur-none"
             : "border-b border-white/[0.07] bg-ink/90 backdrop-blur-xl backdrop-saturate-150"
         )}
       >

@@ -123,7 +123,10 @@
         "tools": "Calculateurs gratuits"
       },
       "badgePromo": "Promo",
-      "badgeNew": "Nouveau"
+      "badgeNew": "Nouveau",
+      "ourProducts": "Nos produits",
+      "seeAll": "Toute la boutique",
+      "nextProduct": "Produit suivant"
     },
     "campaigns": {
       "kicker": "01 · À la une",
@@ -294,6 +297,11 @@
       "desc": "Choisissez le type de projet, saisissez vos dimensions et obtenez une liste de matériaux estimée, sans créer de compte.",
       "cta": "Démarrer mon projet",
       "cta2": "Ouvrir le Visual Studio"
+    },
+    "promoRail": {
+      "kicker": "Promotions du moment",
+      "title": "Les *bonnes affaires* du chantier.",
+      "desc": "Une sélection aléatoire de nos produits en promotion, renouvelée à chaque visite."
     }
   },
   "tools": {
@@ -977,7 +985,20 @@
   },
   "product": {
     "calculate": "Calculer la quantité nécessaire",
-    "calculateHint": "Estimation selon votre surface, avec le conditionnement de ce produit"
+    "calculateHint": "Estimation selon votre surface, avec le conditionnement de ce produit",
+    "share": "Partager",
+    "linkCopied": "Lien du produit copié",
+    "save": "Économisez {amount} MAD",
+    "promo": "Promo",
+    "new": "Nouveau",
+    "ref": "Réf.",
+    "decrease": "Diminuer la quantité",
+    "increase": "Augmenter la quantité",
+    "adviceTitle": "Besoin d'un conseil ?",
+    "adviceDesc": "Notre équipe du magasin de Tanger vous répond.",
+    "adviceMessage": "Bonjour, j'ai une question sur : {name}",
+    "call": "Appeler",
+    "detailsKicker": "Fiche produit"
   },
   "carousel": {
     "prev": "Précédent",
@@ -988,5 +1009,12 @@
     "goTo": "Aller à la diapositive {index}",
     "chooseSlide": "Choisir une diapositive",
     "dragHint": "Faites glisser pour parcourir · le défilement se met en pause au survol"
+  },
+  "maalems": {
+    "statMaalems": "Maalems",
+    "statTrades": "Métiers",
+    "statServices": "Services",
+    "ctaTitle": "Un projet en tête ? <accent>Parlons-en.</accent>",
+    "ctaServices": "Voir les services"
   }
 }
