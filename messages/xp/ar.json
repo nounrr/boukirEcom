@@ -121,7 +121,9 @@
         "payment": "دفع آمن",
         "store": "متجر في طنجة",
         "tools": "حاسبات مجانية"
-      }
+      },
+      "badgePromo": "عرض",
+      "badgeNew": "جديد"
     },
     "campaigns": {
       "kicker": "01 · في الواجهة",

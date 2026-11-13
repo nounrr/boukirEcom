@@ -121,7 +121,9 @@
         "payment": "Paiement sécurisé",
         "store": "Magasin à Tanger",
         "tools": "Calculateurs gratuits"
-      }
+      },
+      "badgePromo": "Promo",
+      "badgeNew": "Nouveau"
     },
     "campaigns": {
       "kicker": "01 · À la une",

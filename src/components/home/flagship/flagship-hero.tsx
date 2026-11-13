@@ -12,6 +12,10 @@ import { Magnetic } from "@/components/motion/primitives"
 import { API_CONFIG } from "@/lib/api-config"
 import { catalogHref } from "@/lib/catalog/registry"
 import { cn } from "@/lib/utils"
+import { productModel } from "@/components/home/professional/professional-catalog"
+import { getLocalizedProductName } from "@/lib/localized-fields"
+import { productHref } from "@/lib/seo/product-url"
+import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
 import { useGetHeroSlidesQuery } from "@/state/api/hero-slides-api-slice"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
 
@@ -31,12 +35,17 @@ type Slide = {
   mosaic?: boolean
 }
 
-const MOSAIC = [
-  { src: "/product-fallbacks/mineral.webp", clip: "polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 22%)", className: "col-span-2 row-span-2" },
-  { src: "/product-fallbacks/tile.webp", clip: "polygon(0 0, 100% 0, 100% 78%, 78% 100%, 0 100%)", className: "" },
-  { src: "/product-fallbacks/metal.webp", clip: "polygon(0 0, 100% 0, 100% 100%, 22% 100%, 0 78%)", className: "" },
-  { src: "/product-fallbacks/wood.webp", clip: "polygon(0 0, 82% 0, 100% 18%, 100% 100%, 0 100%)", className: "col-span-2" },
+const TILE_SHAPES = [
+  { clip: "polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 22%)", className: "col-span-2 row-span-2" },
+  { clip: "polygon(0 0, 100% 0, 100% 78%, 78% 100%, 0 100%)", className: "" },
+  { clip: "polygon(0 0, 100% 0, 100% 100%, 22% 100%, 0 78%)", className: "" },
+  { clip: "polygon(0 0, 82% 0, 100% 18%, 100% 100%, 0 100%)", className: "col-span-2" },
 ] as const
+
+/** Number of clickable product images shown in the hero (matches the former mosaic). */
+const TILE_COUNT = 4
+
+type Tile = { id: string; href: string; image: string; title: string; sub?: string; price?: number; oldPrice?: number; remote: boolean; badge?: "promo" | "new" }
 
 function absoluteImage(src?: string | null) {
   const value = String(src ?? "").trim()
@@ -87,6 +96,23 @@ function adminSlide(slide: HeroSlideApi, locale: string, fallbackLabel: string):
     remote: true,
     primary: { href, label: (typeof localized === "string" ? localized : undefined) ?? slide.cta_resolved?.primary?.label ?? fallbackLabel },
   }
+}
+
+function TileImage({ src, remote, priority }: { src: string; remote: boolean; priority: boolean }) {
+  const [failed, setFailed] = useState(false)
+  return (
+    <Image
+      src={failed ? "/product-fallbacks/metal.webp" : src}
+      alt=""
+      fill
+      unoptimized={!failed && remote}
+      sizes="(min-width:1024px) 30vw, 0px"
+      draggable={false}
+      priority={priority}
+      onError={() => setFailed(true)}
+      className="object-cover transition-transform duration-[1.6s] ease-[var(--ease-premium)] group-hover:scale-110"
+    />
+  )
 }
 
 function SlideTitle({ title, as }: { title: string; as: "h1" | "h2" }) {
@@ -167,9 +193,49 @@ export function FlagshipHero({ locale }: { locale: string }) {
         secondary: { href: `/${locale}/maalems`, label: ts("services.cta2") },
       },
     ]
-    const admin = (adminData ?? []).map((s) => adminSlide(s, locale, tHome("ctaShop"))).filter((s): s is Slide => s !== null)
-    return [...base, ...admin]
-  }, [adminData, locale, t, ts, tHome])
+    return base
+  }, [locale, t, ts])
+
+  // Clickable product images: back-office hero slides first (Back-office → Hero Slides),
+  // then automatically completed with promotions and new arrivals from the catalogue.
+  const { data: promoData } = useGetFeaturedPromoQuery(8)
+  const { data: newData } = useGetNewArrivalsQuery(8)
+  const tiles = useMemo<Tile[]>(() => {
+    const out: Tile[] = []
+    const used = new Set<string>()
+    for (const s of adminData ?? []) {
+      const a = adminSlide(s, locale, tHome("ctaShop"))
+      if (!a || out.length >= TILE_COUNT) continue
+      out.push({ id: a.id, href: a.primary.href, image: a.image, title: a.title, sub: a.kicker !== "Boukir" ? a.kicker : undefined, remote: true })
+      used.add(a.primary.href)
+    }
+    const push = (items: typeof promoData, badge: "promo" | "new") => {
+      for (const item of items ?? []) {
+        if (out.length >= TILE_COUNT) return
+        const href = productHref({ id: item.id, designation: item.designation, designation_ar: item.designation_ar, designation_en: item.designation_en, designation_zh: item.designation_zh }, locale)
+        if (used.has(href) || out.some((o) => o.id === `p-${item.id}`)) continue
+        const m = productModel(item, locale)
+        out.push({
+          id: `p-${item.id}`,
+          href,
+          image: m.image,
+          title: getLocalizedProductName(item, locale) || item.designation,
+          sub: m.brand || m.category || undefined,
+          price: m.price,
+          oldPrice: m.originalPrice,
+          remote: /^https?:/i.test(m.image),
+          badge: m.originalPrice ? "promo" : badge,
+        })
+      }
+    }
+    // products that really have a photo come first
+    const withPhoto = (items: typeof promoData) => (items ?? []).filter((i) => i.image_url)
+    push(withPhoto(promoData), "promo")
+    push(withPhoto(newData), "new")
+    push(promoData, "promo")
+    push(newData, "new")
+    return out
+  }, [adminData, promoData, newData, locale, tHome])
 
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -338,18 +404,45 @@ export function FlagshipHero({ locale }: { locale: string }) {
           })}
         </motion.div>
 
-        {/* Faceted material mosaic (brand slide) */}
-        <div data-fade-ok className={cn("relative hidden transition-opacity duration-700 lg:block", slides[active]?.mosaic ? "opacity-100" : "opacity-0")} aria-hidden="true">
-          <div className="absolute -inset-10 text-brand-orange/30" data-draw>
+        {/* Clickable product images (editable in the back-office) */}
+        <div className="relative hidden lg:block">
+          <div className="pointer-events-none absolute -inset-10 text-brand-orange/30" data-draw aria-hidden="true">
             <DiamondFacet className="size-full" strokeWidth={1} />
           </div>
           <div className="relative grid aspect-[4/3.6] grid-cols-3 grid-rows-3 gap-3" data-reveal="scale" style={{ ["--reveal-delay" as string]: "300ms" }}>
-            {MOSAIC.map((tile, index) => (
-              <div key={tile.src} className={`group relative overflow-hidden ${tile.className}`} style={{ clipPath: tile.clip }}>
-                <Image src={tile.src} alt="" fill sizes="(min-width:1024px) 30vw, 0px" draggable={false} className="object-cover transition-transform duration-[1.6s] ease-[var(--ease-premium)] group-hover:scale-110" priority={index === 0} />
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-ink/50" />
-              </div>
-            ))}
+            {TILE_SHAPES.map((shape, index) => {
+              const tile = tiles[index]
+              return tile ? (
+                <Link
+                  key={tile.id}
+                  href={tile.href}
+                  draggable={false}
+                  aria-label={tile.title}
+                  className={cn("group relative block overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-brand-orange", shape.className)}
+                  style={{ clipPath: shape.clip }}
+                >
+                  <TileImage src={tile.image} remote={tile.remote} priority={index === 0} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-transparent" />
+                  {tile.badge ? (
+                    <span className={cn("absolute start-4 top-4 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]", tile.badge === "promo" ? "bg-gold text-ink" : "bg-white/90 text-ink")}>
+                      {t(tile.badge === "promo" ? "badgePromo" : "badgeNew")}
+                    </span>
+                  ) : null}
+                  <div className="absolute inset-x-0 bottom-0 p-4 pb-5 [clip-path:inset(0)]">
+                    {tile.sub ? <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-yellow">{tile.sub}</p> : null}
+                    <p className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-white">{tile.title}</p>
+                    {tile.price !== undefined ? (
+                      <p className="mt-1.5 flex items-baseline gap-2 text-sm font-bold tabular text-white">
+                        {tile.price.toFixed(2)} <span className="text-[10px] font-semibold text-white/60">MAD</span>
+                        {tile.oldPrice ? <span className="text-xs font-medium text-white/45 line-through">{tile.oldPrice.toFixed(2)}</span> : null}
+                      </p>
+                    ) : null}
+                  </div>
+                </Link>
+              ) : (
+                <div key={`empty-${index}`} className={cn("bg-white/[0.04]", shape.className)} style={{ clipPath: shape.clip }} aria-hidden="true" />
+              )
+            })}
             <div className="col-start-3 row-start-3 flex flex-col justify-between rounded-sm border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md">
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-yellow">Boukir</span>
               <span className="text-sm leading-snug text-white/75">{t("manifesto")}</span>

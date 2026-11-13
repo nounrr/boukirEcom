@@ -121,7 +121,9 @@
         "payment": "Secure payment",
         "store": "Store in Tangier",
         "tools": "Free calculators"
-      }
+      },
+      "badgePromo": "Sale",
+      "badgeNew": "New"
     },
     "campaigns": {
       "kicker": "01 · Featured",

@@ -121,7 +121,9 @@
         "payment": "安全支付",
         "store": "丹吉尔门店",
         "tools": "免费计算器"
-      }
+      },
+      "badgePromo": "促销",
+      "badgeNew": "新品"
     },
     "campaigns": {
       "kicker": "01 · 精选",
