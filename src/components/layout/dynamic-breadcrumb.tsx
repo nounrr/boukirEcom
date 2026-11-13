@@ -42,6 +42,7 @@ export function DynamicBreadcrumb() {
   const locale = useLocale()
   const t = useTranslations('breadcrumb')
   const requestText = useTranslations('serviceRequests')
+  const tx = useTranslations('xp')
 
   const supportedLocales = getSupportedLocales()
 
@@ -85,6 +86,17 @@ export function DynamicBreadcrumb() {
         ...(page ? [{ title: catalogText(page, locale).name, href: pathname, active: true, icon: iconMap.category }] : []),
       ]
     }
+
+    // Smart tools: human labels for the calculator hub, each calculator, studio and planner.
+    if (filteredParts[0] === 'calculateurs') {
+      const slug = filteredParts[1]
+      return [
+        { title: tx('nav.calculators'), href: `/${locale}/calculateurs`, active: !slug, icon: undefined, filter: undefined as string | null | undefined },
+        ...(slug && tx.has(`calc.${slug}.title`) ? [{ title: tx(`calc.${slug}.title`), href: pathname, active: true, icon: undefined, filter: undefined as string | null | undefined }] : []),
+      ]
+    }
+    if (filteredParts[0] === 'studio') return [{ title: tx('nav.studio'), href: pathname, active: true, icon: undefined, filter: undefined as string | null | undefined }]
+    if (filteredParts[0] === 'projet') return [{ title: tx('nav.planner'), href: pathname, active: true, icon: undefined, filter: undefined as string | null | undefined }]
 
     // Request route segments are implementation details, not visitor-facing destinations.
     if (filteredParts[0] === 'service-requests' || (filteredParts[0] === 'services' && filteredParts.includes('request'))) {
@@ -193,7 +205,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
+  }, [pathname, searchParams, t, tx, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)
@@ -216,8 +228,8 @@ export function DynamicBreadcrumb() {
   if (!segments.length) return null
 
   return (
-    <div className="bg-background/60 backdrop-blur-sm border-b border-border/20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-16 py-2 sm:py-3 md:py-4">
+    <div className="no-print border-b border-border bg-background">
+      <div className="mx-auto max-w-[1440px] px-4 py-2.5 sm:px-6 lg:px-10">
         <Breadcrumb>
           <BreadcrumbList className="flex-nowrap md:flex-wrap gap-1 overflow-x-auto md:overflow-visible">
             <BreadcrumbItem>
@@ -268,7 +280,7 @@ export function DynamicBreadcrumb() {
                   </BreadcrumbSeparator>
                   <BreadcrumbItem>
                     {item.active ? (
-                      <BreadcrumbPage className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary">
+                      <BreadcrumbPage className="flex items-center gap-1 px-2 py-1 rounded-md text-foreground">
                         {Icon && <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />}
                         <span className="text-[11px] sm:text-sm font-semibold inline-block truncate max-w-56 sm:max-w-90 md:max-w-[560px] lg:max-w-[720px]">
                           {item.title}

@@ -12,7 +12,10 @@ import { AuthDebugPanel } from "@/components/auth/auth-debug-panel"
 import { GoogleOneTapWrapper } from "@/components/auth/google-one-tap-wrapper"
 import { ArtisanRequestPromptWrapper } from "@/components/auth/artisan-request-prompt-wrapper"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
-import { WhatsAppFloatingButton } from "@/components/layout/whatsapp-floating-button"
+import { SmartFab } from "@/components/layout/smart-fab"
+import { ThemeProvider } from "@/components/theme/theme-provider"
+import { RevealObserver } from "@/components/motion/reveal-observer"
+import { revealInitScript, themeInitScript } from "@/lib/init-scripts"
 import { AuthDialogProvider } from "@/components/providers/auth-dialog-provider"
 import { LocalePreferenceInitializer } from "@/components/i18n/locale-preference-initializer"
 
@@ -67,15 +70,22 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={isRtl ? "rtl" : "ltr"} suppressHydrationWarning>
+      <head>
+        {/* Resolve theme + motion readiness before first paint (no flash). */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript + revealInitScript }} />
+        <meta name="theme-color" content="#0d0d0d" />
+      </head>
       <body className={`${inter.variable} ${tajawal.variable} ${inter.className} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
+          <ThemeProvider>
           <StoreProvider>
             <LocalePreferenceInitializer />
             <UserSessionInitializer session={session} />
             <CurrentUserInitializer />
             <AuthDebugPanel />
             <GoogleOneTapWrapper />
-            <WhatsAppFloatingButton />
+            <SmartFab />
+            <RevealObserver />
             <ArtisanRequestPromptWrapper />
             <CartContextProvider>
               <AuthDialogProvider>
@@ -85,12 +95,14 @@ export default async function RootLayout({
               </AuthDialogProvider>
             </CartContextProvider>
           </StoreProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
 
         <Toaster
           position={isRtl ? "top-left" : "top-right"}
           dir={isRtl ? "rtl" : "ltr"}
           theme="system"
+          offset={88}
           richColors={false}
           closeButton={false}
           expand={true}

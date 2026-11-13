@@ -1,0 +1,990 @@
+{
+  "theme": {
+    "toDark": "切换到深色模式",
+    "toLight": "切换到浅色模式"
+  },
+  "nav": {
+    "skipToContent": "跳到主要内容",
+    "mainNavigation": "主导航",
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "promotions": "促销",
+    "calculators": "计算器",
+    "calculatorsHint": "几秒钟估算用量",
+    "studio": "可视化工作室",
+    "planner": "我的项目",
+    "favorites": "收藏",
+    "categories": "分类"
+  },
+  "fab": {
+    "open": "打开帮助菜单",
+    "close": "关闭帮助菜单",
+    "title": "我们能为您做什么？",
+    "panelLabel": "快捷操作",
+    "whatsappGeneric": "您好 Boukir Diamond，我想咨询一些信息。",
+    "whatsappProduct": "您好 Boukir Diamond，我对这个产品感兴趣：{url}",
+    "whatsapp": {
+      "label": "WhatsApp",
+      "hint": "直接联系顾问"
+    },
+    "calculator": {
+      "label": "计算器",
+      "hint": "瓷砖、涂料、混凝土…"
+    },
+    "project": {
+      "label": "我的项目",
+      "hint": "逐步规划您的项目"
+    },
+    "maalem": {
+      "label": "需要师傅？",
+      "hint": "找到合适的工匠"
+    },
+    "contact": {
+      "label": "联系我们",
+      "hint": "地址、电话、表单"
+    },
+    "top": {
+      "label": "返回顶部"
+    }
+  },
+  "footer": {
+    "kicker": "Boukir Diamond · 丹吉尔",
+    "headline": "携手共建 *下一步。*",
+    "homeHeadline": "您的下一个项目 *从这里* 开始。",
+    "subtitle": "材料、专业知识、用量计算与建议：推进项目所需的一切，尽在一处。",
+    "ctaShop": "浏览商店",
+    "ctaCalc": "计算我的材料",
+    "ctaAdvisor": "咨询顾问",
+    "homeCtaShop": "探索商店",
+    "homeCtaEstimate": "估算我的需求",
+    "homeCtaContact": "联系 Boukir Diamond",
+    "whatsappMessage": "您好 Boukir Diamond，我想和顾问交流。",
+    "statement": "为业主和专业人士提供建筑材料、工具和技术解决方案，并由熟悉工地的团队提供建议。",
+    "whatsappCta": "与顾问聊天",
+    "colProducts": "产品",
+    "colServices": "服务",
+    "colTools": "工具与模拟器",
+    "colHelp": "帮助与账户",
+    "colCompany": "公司",
+    "allProducts": "全部商品",
+    "services": "我们的服务",
+    "maalems": "师傅名录",
+    "quickRequest": "快速需求",
+    "becomeMaalem": "成为师傅",
+    "planner": "项目规划器",
+    "studio": "可视化工作室",
+    "allTools": "全部模拟器",
+    "contact": "联系我们",
+    "account": "我的账户",
+    "orders": "我的订单",
+    "favorites": "我的收藏",
+    "findUs": "找到我们",
+    "review": "在 Google 留下评价",
+    "team": "我们的顾问",
+    "rights": "保留所有权利。",
+    "legal": "销售条款",
+    "backToTop": "返回顶部",
+    "estimator": {
+      "kicker": "快速估算",
+      "title": "需要快速估算？",
+      "materialLabel": "材料类型",
+      "materials": {
+        "carrelage": "瓷砖",
+        "peinture": "涂料",
+        "beton": "混凝土板",
+        "etancheite": "防水"
+      },
+      "areaLabel": "面积",
+      "result": "估算",
+      "noteTiles": "60×60 瓷砖，每箱 1.44 m²，损耗 10%",
+      "notePaint": "墙面，2 遍，10 m²/L，余量 5%",
+      "noteConcrete": "12 cm 楼板，350 kg/m³，50 kg 袋装，余量 5%",
+      "noteWaterproofing": "2 遍 × 1.5 kg/m²，20 kg 桶装，余量 5%",
+      "invalid": "请输入有效面积",
+      "indicative": "参考估算",
+      "openFull": "打开完整计算器"
+    }
+  },
+  "home": {
+    "hero": {
+      "kicker": "Boukir Diamond · 建材商店 · 丹吉尔",
+      "title": "以品质 *塑造* 您的 *抱负。*",
+      "lead": "用于建造、翻新并自信完成项目的材料、工具与解决方案。",
+      "manifesto": "我们不只是提供材料，更帮助您建造经得起时间考验的作品。",
+      "ctaShop": "浏览我们的产品",
+      "ctaCalc": "计算我的材料",
+      "ctaMaalem": "寻找师傅",
+      "scroll": "向下滚动",
+      "facts": {
+        "delivery": "配送至摩洛哥全境",
+        "payment": "安全支付",
+        "store": "丹吉尔门店",
+        "tools": "免费计算器"
+      }
+    },
+    "campaigns": {
+      "kicker": "01 · 精选",
+      "title": "当季亮点",
+      "prev": "上一个",
+      "next": "下一个"
+    },
+    "universes": {
+      "kicker": "02 · 材料世界",
+      "title": "从地基到收尾，*建造* 所需一应俱全。",
+      "desc": "浏览我们的主要产品系列。每个系列都直接通往商店中对应的分区。",
+      "explore": "探索该系列",
+      "all": "查看全部商品",
+      "items": {
+        "73-matieres-de-construction": "用于主体结构的水泥、沙子、碎石和胶结材料。",
+        "75-etancheite-bitume": "防水卷材、沥青及防水产品。",
+        "50-colles-carrelage-marbre": "瓷砖和大理石用胶粘剂与砂浆。",
+        "72-peinture": "涂料、腻子及基面处理。",
+        "53-plomberie": "管材、管件及水暖设备。",
+        "48-outillage-carreleur": "瓷砖和石材工匠的切割、铺贴工具及配件。",
+        "10-outillage": "工地与车间用工具和设备。"
+      }
+    },
+    "journeys": {
+      "kicker": "按用途"
+    },
+    "arrivals": {
+      "kicker": "新品上架"
+    },
+    "showcase": {
+      "kicker": "04 · Boukir 智能计算器",
+      "title": "想象。测量。*计算。* 建造。",
+      "desc": "绘制房间、选择材料：用量实时计算，假设条件清晰且可修改。",
+      "tabs": {
+        "carrelage": "瓷砖",
+        "peinture": "涂料",
+        "beton": "混凝土",
+        "etancheite": "防水"
+      },
+      "live": "实时计算",
+      "dragHint": "拖动手柄或输入尺寸",
+      "open": "打开完整模拟器",
+      "discover": "了解相关材料",
+      "length": "长度",
+      "width": "宽度",
+      "height": "层高",
+      "thickness": "厚度",
+      "tileFormat": "规格",
+      "area": "面积",
+      "notes": {
+        "carrelage": "{format} cm 瓷砖，损耗 10%，每箱 1.44 m²（可在完整模拟器中修改）。",
+        "peinture": "4 面墙，扣除 1 扇门和 1 扇窗，2 遍，10 m²/L。",
+        "beton": "楼板，示例配比 350 kg/m³，50 kg 袋装，余量 5%。",
+        "etancheite": "屋顶平台含 15 cm 翻边，2 遍 × 1.5 kg/m²（请核对技术资料）。"
+      }
+    },
+    "services": {
+      "kicker": "07 · 服务与师傅",
+      "title": "由 *合格工匠* 让项目落地。",
+      "desc": "描述需求、选择服务并提交请求：我们的团队会先审核，再为您安排。",
+      "steps": {
+        "describe": {
+          "title": "描述您的需求",
+          "desc": "几句话，如有需要可附照片。"
+        },
+        "choose": {
+          "title": "选择服务",
+          "desc": "水暖、电工、涂装、贴砖…"
+        },
+        "send": {
+          "title": "提交请求",
+          "desc": "我们会联系您安排施工。"
+        }
+      },
+      "available": "可提供的服务",
+      "ctaServices": "查看全部服务",
+      "ctaQuick": "提交快速需求",
+      "ctaMaalems": "浏览师傅"
+    },
+    "brands": {
+      "kicker": "06 · 品牌",
+      "title": "知名品牌，现货供应。",
+      "desc": "精选在我们目录中有售的制造商。",
+      "viewAll": "查看商店"
+    },
+    "store": {
+      "kicker": "09 · 欢迎到店"
+    },
+    "heroSlides": {
+      "villa": {
+        "kicker": "从构想到现实",
+        "title": "*一步* *一步* 建造您的家。",
+        "lead": "见证一栋别墅从空地到交付的全过程，并找到每个阶段所需的材料。",
+        "cta": "观看建造过程",
+        "cta2": "开始我的项目"
+      },
+      "tools": {
+        "kicker": "Boukir 智能计算器",
+        "title": "*精准* 计算，更好建造。",
+        "lead": "瓷砖、涂料、混凝土、防水：13 款免费工具，假设条件清晰。",
+        "cta": "打开计算器",
+        "cta2": "可视化工作室"
+      },
+      "services": {
+        "kicker": "服务与师傅",
+        "title": "为您的工地提供 *合格工匠。*",
+        "lead": "描述您的需求：我们的团队审核后为您推荐合适的师傅。",
+        "cta": "提交需求",
+        "cta2": "浏览师傅"
+      }
+    },
+    "sequence": {
+      "kicker": "从构想到现实",
+      "title": "一步一步建造您的家。",
+      "indicator": "施工阶段",
+      "scrollHint": "滚动以建造",
+      "loading": "加载中",
+      "finalTitle": "建造经久之作。",
+      "cta": {
+        "plan": "规划我的项目",
+        "concrete": "计算混凝土",
+        "structure": "水泥与建材",
+        "bricks": "计算砖块",
+        "waterproofing": "计算防水",
+        "tiles": "计算瓷砖",
+        "paint": "计算涂料",
+        "start": "开始我的项目",
+        "estimate": "估算我的项目"
+      },
+      "chapters": {
+        "terrain": {
+          "title": "场地",
+          "text": "每个项目都始于一个愿景。"
+        },
+        "foundations": {
+          "title": "地基",
+          "text": "坚固始于正确的地基。"
+        },
+        "structure": {
+          "title": "结构",
+          "text": "持久的建筑依靠坚实的结构。"
+        },
+        "masonry": {
+          "title": "砌筑",
+          "text": "每一面墙都塑造着您的项目。"
+        },
+        "waterproofing": {
+          "title": "防水",
+          "text": "为未来多年保护您的投资。"
+        },
+        "coverings": {
+          "title": "饰面",
+          "text": "每个细节都彰显品质。"
+        },
+        "finishes": {
+          "title": "收尾",
+          "text": "精准让建筑成为家。"
+        },
+        "reality": {
+          "title": "竣工",
+          "text": "您的愿景成为现实。"
+        }
+      }
+    },
+    "plannerTeaser": {
+      "kicker": "08 · Boukir 项目规划器",
+      "title": "*几步* 规划您的项目。",
+      "desc": "选择项目类型、输入尺寸，即可获得预估材料清单，无需注册账户。",
+      "cta": "开始我的项目",
+      "cta2": "打开可视化工作室"
+    }
+  },
+  "tools": {
+    "hubKicker": "Boukir 智能计算器",
+    "hubTitle": "*精准* 计算，更好建造。",
+    "hubLead": "为工地设计的估算工具：公式透明、假设可调、结果即时。所有计算都在您的浏览器中完成。",
+    "hubMetaTitle": "建筑材料计算器",
+    "hubMetaDescription": "免费计算瓷砖、涂料、混凝土、防水、胶粘剂、砌块、大理石等用量，假设条件清晰。",
+    "stats": {
+      "stat1": {
+        "value": "13",
+        "label": "款估算工具"
+      },
+      "stat2": {
+        "value": "100%",
+        "label": "本地计算"
+      },
+      "stat3": {
+        "value": "0",
+        "label": "无需账户"
+      },
+      "stat4": {
+        "value": "PDF",
+        "label": "导出与分享"
+      }
+    },
+    "featuredLabel": "互动体验",
+    "studioTitle": "Boukir 可视化工作室",
+    "studioDesc": "二维房间模拟、材料可视化、瓷砖排版与预算面板。",
+    "plannerTitle": "项目规划器",
+    "plannerDesc": "浴室、厨房、地面、涂装…六步规划您的项目。",
+    "open": "打开",
+    "families": {
+      "surfaces": {
+        "kicker": "地面与饰面",
+        "title": "表面",
+        "desc": "瓷砖、大理石、铺路砖与防水：面积、损耗与包装。"
+      },
+      "structure": {
+        "kicker": "主体结构",
+        "title": "结构",
+        "desc": "混凝土、砌块、回填与屋面：参考体积与用量。"
+      },
+      "finishes": {
+        "kicker": "装修收尾",
+        "title": "收尾",
+        "desc": "涂料、胶粘剂、砂浆与石膏：耗量与袋数。"
+      },
+      "planning": {
+        "kicker": "工具",
+        "title": "预算与换算"
+      }
+    },
+    "disclaimerTitle": "仅为参考估算，并非认证",
+    "disclaimerLong": "结果根据您输入的尺寸和假设（损耗、耗量、配比、密度）计算，不能替代工程设计、专业工程量计算或报价。请务必核对制造商技术资料。除非另有说明，不含配送、人工、安装及税费。正式订单金额以购物车和结算为准。",
+    "backToHub": "全部计算器",
+    "related": "相关计算器",
+    "optional": "可选",
+    "estimate": "估算",
+    "diagramLabel": "交互式平面图",
+    "dragHint": "拖动手柄 · 键盘方向键",
+    "diagramHint": "图示随尺寸实时更新",
+    "resultsLabel": "估算结果",
+    "fixErrors": "请修正标出的字段以获得估算。",
+    "openingsWarning": "门窗面积超过墙面面积：请检查数值。",
+    "assumptionsTitle": "假设与限制",
+    "show": "展开",
+    "hide": "收起",
+    "disclaimer": "参考估算 —— 不含配送、人工、安装及税费。请核对制造商技术资料。",
+    "catalogTitle": "相关材料",
+    "catalogDesc": "用量不针对特定产品：请比较不同型号及其包装。",
+    "seeDetails": "详情",
+    "productContext": "为「{name}」计算",
+    "productPrice": "目录价格：{price} MAD",
+    "packCatalog": "目录包装：{pack}",
+    "packName": "从产品名称识别的包装：{pack}（请核实）",
+    "backToProduct": "返回产品",
+    "groups": {
+      "dimensions": "尺寸",
+      "material": "材料",
+      "packaging": "包装",
+      "assumptions": "假设",
+      "pricing": "价格（可选）"
+    },
+    "actions": {
+      "reset": "重置",
+      "copy": "复制",
+      "copied": "摘要已复制",
+      "linkCopied": "链接已复制",
+      "print": "打印 / PDF",
+      "share": "分享",
+      "whatsapp": "通过 WhatsApp 发送"
+    },
+    "summary": {
+      "heading": "Boukir Diamond 估算",
+      "inputs": "输入",
+      "results": "结果",
+      "assumptions": "假设",
+      "disclaimer": "参考估算，不含配送、人工、安装及税费。不能替代技术研究或报价。",
+      "date": "生成日期"
+    },
+    "diagram": {
+      "length": "长度",
+      "width": "宽度",
+      "height": "高度",
+      "depth": "厚度",
+      "area": "面积",
+      "handle": "调整大小手柄",
+      "developed": "展开",
+      "slope": "坡长",
+      "pitch": "坡度",
+      "eave": "檐口",
+      "planes": "坡面",
+      "bagsCaption": "{count, plural, =0 {无需袋装} other {需要 # 袋}}"
+    }
+  },
+  "calc": {
+    "carrelage": {
+      "title": "瓷砖与饰面",
+      "short": "面积、损耗、瓷砖数量与箱数。",
+      "desc": "根据规格、铺贴方式和包装，计算需覆盖的面积以及应购买的瓷砖数量和箱数。",
+      "metaTitle": "瓷砖计算器"
+    },
+    "peinture": {
+      "title": "涂料",
+      "short": "涂刷面积、升数与桶数。",
+      "desc": "扣除门窗后估算涂刷面积，再根据覆盖率计算涂料用量和桶数。",
+      "metaTitle": "涂料计算器"
+    },
+    "beton": {
+      "title": "混凝土与水泥",
+      "short": "体积、水泥、袋数、沙子与碎石。",
+      "desc": "计算楼板、基础、梁或柱的混凝土体积，以及按您选择的配比所需的水泥量。",
+      "metaTitle": "混凝土与水泥计算器"
+    },
+    "etancheite": {
+      "title": "防水",
+      "short": "面积、翻边、公斤数或卷数。",
+      "desc": "计算平台、浴室或屋面所需的液体防水材料或卷材数量，含翻边。",
+      "metaTitle": "防水计算器"
+    },
+    "colle-mortier": {
+      "title": "胶粘剂、砂浆与自流平",
+      "short": "按耗量计算公斤数与袋数。",
+      "desc": "根据面积、厚度和耗量计算瓷砖胶、砂浆或自流平的袋数。",
+      "metaTitle": "胶粘剂与砂浆计算器"
+    },
+    "murs-blocs": {
+      "title": "墙体与砌块",
+      "short": "每平方米及总计的砌块或砖数量。",
+      "desc": "计算一面墙所需的混凝土砌块或砖数量，扣除门窗并计入灰缝。",
+      "metaTitle": "砌块与砖计算器"
+    },
+    "marbre-pierre": {
+      "title": "大理石与天然石材",
+      "short": "面积、切割损耗与板材数量。",
+      "desc": "根据面积和规格计算大理石或天然石材板数量，并预留合适的切割余量。",
+      "metaTitle": "大理石计算器"
+    },
+    "sable-gravier": {
+      "title": "沙子、碎石与回填",
+      "short": "体积、吨数（需密度）与车次。",
+      "desc": "计算沙子、碎石或回填料体积（含松散系数）；仅在确认密度后计算吨数。",
+      "metaTitle": "沙石计算器"
+    },
+    "platre-enduit": {
+      "title": "石膏、腻子与吊顶",
+      "short": "腻子袋数或石膏板张数。",
+      "desc": "根据厚度计算腻子或石膏用量，或计算吊顶所需的石膏板张数。",
+      "metaTitle": "石膏与腻子计算器"
+    },
+    "paves-terrasse": {
+      "title": "铺路砖、板材与露台",
+      "short": "块数与包数，含缝隙。",
+      "desc": "根据规格、缝宽和铺设方式计算露台或小路所需的铺路砖或板材数量。",
+      "metaTitle": "铺路砖计算器"
+    },
+    "toiture": {
+      "title": "屋面瓦与屋顶",
+      "short": "屋面面积与瓦片数量。",
+      "desc": "根据制造商覆盖参数计算坡面面积和瓦片的大致数量。不含结构计算。",
+      "metaTitle": "屋面瓦计算器"
+    },
+    "budget": {
+      "title": "项目预算",
+      "short": "分项、方案与不可预见费。",
+      "desc": "逐项构建预算：选择产品时使用目录价格，人工单独列出，并预留不可预见费。",
+      "metaTitle": "项目预算估算器",
+      "short2": ""
+    },
+    "convertisseur": {
+      "title": "单位换算",
+      "short": "mm、m、m²、m³、L、kg、t —— 精确换算。",
+      "desc": "换算长度、面积、体积和质量。由体积换算为重量必须提供明确的密度。",
+      "metaTitle": "建筑单位换算器"
+    }
+  },
+  "fields": {
+    "length": "长度",
+    "width": "宽度",
+    "widthOrHeight": "宽度或高度",
+    "extraArea": "额外面积",
+    "tileFormat": "瓷砖规格",
+    "tileLength": "瓷砖长度",
+    "tileWidth": "瓷砖宽度",
+    "pattern": "铺贴方式",
+    "packMode": "包装方式",
+    "m2PerBox": "每箱 m²",
+    "tilesPerBox": "每箱片数",
+    "waste": "损耗余量",
+    "pricePerBox": "每箱价格",
+    "paintMode": "涂刷范围",
+    "wallHeight": "墙高",
+    "includeCeiling": "包含天花板",
+    "doors": "扣除门数",
+    "windows": "扣除窗数",
+    "coats": "涂刷遍数",
+    "coverage": "覆盖率",
+    "containerL": "桶容量",
+    "pricePerContainer": "每桶价格",
+    "element": "构件",
+    "thickness": "厚度",
+    "diameter": "直径",
+    "count": "构件数量",
+    "dosage": "水泥配比",
+    "dosageKg": "自定义配比",
+    "bagKg": "每袋重量",
+    "sandRecipe": "每 m³ 沙子",
+    "gravelRecipe": "每 m³ 碎石",
+    "waterRecipe": "每 m³ 水",
+    "pricePerBag": "每袋价格",
+    "wpMode": "防水类型",
+    "upstand": "翻边高度",
+    "coatsLayers": "遍数 / 层数",
+    "consumptionKgM2": "每遍耗量",
+    "packKg": "每桶重量",
+    "rollArea": "每卷面积",
+    "overlap": "搭接",
+    "pricePerPack": "单位价格",
+    "productType": "产品",
+    "area": "面积",
+    "consumption": "耗量",
+    "consumptionPerMm": "每毫米耗量",
+    "layerThickness": "层厚",
+    "wallLength": "墙长",
+    "openings": "扣除门窗面积",
+    "blockType": "砌块",
+    "blockLength": "砌块长度",
+    "blockHeight": "砌块高度",
+    "joint": "灰缝厚度",
+    "pricePerUnit": "单价",
+    "surfaces": "相同表面数量",
+    "slabFormat": "板材规格",
+    "slabLength": "板材长度",
+    "slabWidth": "板材宽度",
+    "pricePerM2": "每平方米价格",
+    "fillDepth": "回填厚度",
+    "compaction": "松散 / 压实系数",
+    "fillMaterial": "材料",
+    "density": "已确认密度",
+    "truckCapacity": "货车容量",
+    "pricePerM3": "每立方米价格",
+    "plasterMode": "工程类型",
+    "sheetLength": "板长",
+    "sheetWidth": "板宽",
+    "pricePerBagOrSheet": "每袋或每张价格",
+    "pieceFormat": "规格",
+    "pieceLength": "块长",
+    "pieceWidth": "块宽",
+    "m2PerPack": "每包 m²",
+    "piecesPerPack": "每包块数",
+    "eaveLength": "檐口长度",
+    "slopeMode": "坡长测量方式",
+    "slopeLength": "坡长",
+    "run": "水平投影",
+    "pitch": "坡度",
+    "planes": "坡面数量",
+    "tilesPerM2": "每平方米瓦数",
+    "piecesPerPallet": "每托瓦数",
+    "pricePerPiece": "每片价格"
+  },
+  "options": {
+    "f30x30": "30 × 30",
+    "f45x45": "45 × 45",
+    "f60x60": "60 × 60",
+    "f60x120": "60 × 120",
+    "f20x120": "20 × 120",
+    "f40x40": "40 × 40",
+    "f280x160": "280 × 160",
+    "p20x10": "20 × 10",
+    "p60x40": "60 × 40",
+    "custom": "自定义",
+    "straight": "直铺",
+    "offset": "错缝",
+    "diagonal": "斜铺",
+    "herringbone": "人字形",
+    "m2PerBox": "m² / 箱",
+    "tilesPerBox": "片 / 箱",
+    "m2PerPack": "m² / 包",
+    "piecesPerPack": "块 / 包",
+    "room": "整个房间",
+    "singleWall": "单面墙",
+    "slab": "楼板",
+    "footing": "基础",
+    "beam": "梁",
+    "column": "柱",
+    "roundColumn": "圆柱",
+    "d250": "250 kg/m³",
+    "d300": "300 kg/m³",
+    "d350": "350 kg/m³",
+    "liquid": "液体材料",
+    "membrane": "卷材",
+    "tileAdhesive": "瓷砖胶",
+    "leveling": "自流平",
+    "mortar": "砂浆 / 水泥抹灰",
+    "agglo40": "砌块 40 × 20",
+    "agglo50": "砌块 50 × 20",
+    "brick30": "砖 30 × 20",
+    "densityUnknown": "密度未知",
+    "drySand": "干沙（≈ 1.6）",
+    "gravel": "碎石（≈ 1.5）",
+    "customDensity": "其他密度",
+    "plasterCoat": "腻子 / 石膏",
+    "plasterboard": "石膏板",
+    "measuredSlope": "实测坡长",
+    "runAndPitch": "投影 + 坡度"
+  },
+  "help": {
+    "extraArea": "例如加上已按 m² 测量的壁龛、走廊或踢脚线。",
+    "waste": "用于切割、破损和调整的余量。常用值，请根据工地调整。",
+    "packaging": "见包装或产品页面。",
+    "price": "价格未知时请留空：成本将显示为不可用。",
+    "doors": "标准门按 0.90 × 2.10 m 计算。",
+    "windows": "标准窗按 1.20 × 1.00 m 计算。",
+    "coverage": "制造商给出的每遍覆盖率（每升 m²）。",
+    "dosage": "配比需根据用途和工地要求确认。",
+    "recipe": "可修改的参考配方；留空则只计算水泥。",
+    "upstand": "防水层在四周墙面上的翻边。",
+    "consumption": "请采用所选产品技术资料中的数值。",
+    "openings": "门窗总面积（m²）。",
+    "compaction": "考虑材料铺设后沉降的增量。",
+    "density": "仅限供应商确认的数值。没有密度则不计算吨数。",
+    "truck": "每车运输体积（如已知）。",
+    "tilesPerM2": "屋面瓦制造商数据（取决于挂瓦距）。"
+  },
+  "results": {
+    "netArea": "净面积",
+    "areaWithWaste": "含损耗面积",
+    "tiles": "瓷砖",
+    "boxes": "需购买箱数",
+    "purchasedArea": "购买面积",
+    "surplus": "预计剩余",
+    "cost": "材料预计成本",
+    "wallArea": "墙面面积",
+    "ceilingArea": "天花板",
+    "openingsArea": "扣除门窗",
+    "paintableArea": "涂刷面积",
+    "liters": "所需涂料",
+    "containers": "需购买桶数",
+    "purchasedLiters": "购买容量",
+    "volume": "毛体积",
+    "adjustedVolume": "含余量体积",
+    "cementKg": "水泥",
+    "cementBags": "水泥袋数",
+    "sand": "沙子",
+    "gravel": "碎石",
+    "water": "水",
+    "baseArea": "地面面积",
+    "upstandArea": "翻边",
+    "totalArea": "处理面积",
+    "materialKg": "所需材料",
+    "packs": "需购买数量",
+    "membraneArea": "所需卷材",
+    "rolls": "卷数",
+    "bags": "需购买袋数",
+    "purchasedKg": "购买数量",
+    "grossArea": "毛面积",
+    "netWallArea": "墙体面积",
+    "unitsPerM2": "每 m² 砌块数",
+    "units": "所需砌块",
+    "slabs": "需购买板数",
+    "tonnes": "预计吨数",
+    "loads": "车次",
+    "surface": "处理面积",
+    "sheets": "板数",
+    "pieces": "所需块数",
+    "slopeLength": "坡长",
+    "roofArea": "屋面面积",
+    "roofTiles": "瓦片",
+    "pallets": "托数",
+    "packagingMissing": "未提供包装信息",
+    "priceUnavailable": "价格不可用",
+    "notIncluded": "未包含",
+    "noRecipe": "未提供配方",
+    "densityRequired": "需要密度",
+    "capacityUnknown": "容量未知"
+  },
+  "units": {
+    "boxes": "箱",
+    "tiles": "片",
+    "pots": "桶",
+    "bags": "袋",
+    "packs": "件",
+    "rolls": "卷",
+    "units": "块",
+    "perM2": "/ m²",
+    "slabs": "块板",
+    "loads": "车",
+    "sheets": "张",
+    "pieces": "块"
+  },
+  "assumptions": {
+    "indicative": "参考估算：不含配送、人工、安装及税费。",
+    "tileWaste": "损耗余量涵盖切割和破损；错缝、斜铺或人字形铺贴时会增加。",
+    "tilePattern": "图示为排版预览，并非可执行的切割图。",
+    "packagingCheck": "箱数向上取整；请核实产品的实际包装。",
+    "openingsStandard": "门窗按标准尺寸扣除（门 0.90 × 2.10 m，窗 1.20 × 1.00 m）。",
+    "coverageCheck": "覆盖率取决于基面和产品：请采用技术资料中的数值。",
+    "surfacePrep": "未计入底漆和基面处理。",
+    "dosageUser": "配比由您选择，须与预期用途相符。",
+    "recipeReference": "沙/石/水配方为可修改的常用参考，并非通用配比。",
+    "notStructural": "这不是结构计算：任何承重工程均须由合格专业人员确认。",
+    "consumptionDatasheet": "耗量须来自所用产品的技术资料。",
+    "upstands": "翻边按表面整个周长计算。",
+    "supportPrep": "未包含底漆、加强带及配件。",
+    "notchTrowel": "瓷砖胶耗量随齿形抹刀尺寸和瓷砖规格而变化。",
+    "jointIncluded": "每平方米砌块数已考虑灰缝厚度。",
+    "noMortar": "未计入砌筑砂浆和圈梁。",
+    "stoneWaste": "天然石材通常需要更高余量（纹理、尺寸、切割）。",
+    "stoneVeining": "如需对纹铺贴，请额外预留余量。",
+    "densitySupplier": "仅在供应商确认密度后计算吨数。",
+    "compactionFactor": "松散系数为估计增量，随材料和压实程度而变化。",
+    "boardVsPlaster": "石膏板按其尺寸和切割余量计算，而非腻子耗量。",
+    "paverCuts": "错缝、人字形或斜铺会产生更多切割。",
+    "borders": "未包含路缘、垫层沙和土工布。",
+    "tilesPerM2Maker": "每平方米瓦数取决于型号和挂瓦距：以制造商数据为准。",
+    "roofNoStructure": "不进行屋架、荷载或防水性能的核查。"
+  },
+  "errors": {
+    "invalid": "数值无效",
+    "negative": "数值不能为负",
+    "tooLarge": "数值过大",
+    "zero": "必须大于零",
+    "required": "必填字段"
+  },
+  "budget": {
+    "scenario": "方案",
+    "duplicateB": "与方案 B 比较",
+    "searchCatalog": "添加目录产品…",
+    "addRow": "自由行",
+    "catalogNote": "仅对您选择的产品使用目录价格。其他行在您输入价格前保持「价格不可用」。",
+    "empty": "添加目录产品或自由行以开始。",
+    "label": "名称",
+    "labelPlaceholder": "例如：瓷砖铺贴",
+    "group": "类别",
+    "quantity": "数量",
+    "unit": "单位",
+    "unitPrice": "单价",
+    "remove": "删除此行",
+    "fromCatalog": "价格来自 Boukir Diamond 目录",
+    "priceUnavailable": "价格不可用",
+    "noResults": "未找到产品",
+    "total": "预计总预算",
+    "materialSubtotal": "材料小计",
+    "otherSubtotal": "人工及其他费用",
+    "contingency": "不可预见费",
+    "unpricedNote": "{count, plural, other {# 行无价格，未计入。}}",
+    "comparison": "方案比较",
+    "breakdown": "按类别分布",
+    "noPricedRows": "添加价格以查看分布。",
+    "separationNote": "人工、配送和安装与材料分开列出。正式订单金额以购物车为准。",
+    "summaryHeading": "Boukir Diamond 项目预算",
+    "sample": {
+      "tiles": "地砖",
+      "labor": "铺贴（工匠报价）"
+    },
+    "units": {
+      "box": "箱",
+      "flat": "包干"
+    },
+    "groups": {
+      "materials": "材料",
+      "tiles": "瓷砖与石材",
+      "paint": "涂料",
+      "waterproofing": "防水",
+      "cement": "水泥与砂浆",
+      "plumbing": "水暖",
+      "electrical": "电气",
+      "tools": "工具",
+      "labor": "人工",
+      "delivery": "配送",
+      "installation": "安装",
+      "other": "其他"
+    }
+  },
+  "converter": {
+    "dimension": "物理量",
+    "dimensions": {
+      "length": "长度",
+      "area": "面积",
+      "volume": "体积",
+      "mass": "质量",
+      "density": "体积 ↔ 重量"
+    },
+    "value": "数值",
+    "from": "从",
+    "to": "到",
+    "swap": "互换",
+    "result": "结果",
+    "density": "密度",
+    "densityHelp": "必填：供应商确认的数值。",
+    "note": "仅提供量纲一致的换算。由体积（m³）换算为重量（t）始终需要明确的密度。"
+  },
+  "studio": {
+    "kicker": "Boukir 可视化工作室",
+    "title": "先可视化，再 *建造。*",
+    "lead": "一个互动工作台，可确定房间尺寸、试用饰面、探索瓷砖排版并可视化预算。用量始终基于明确的尺寸计算。",
+    "metaTitle": "可视化工作室 —— 房间与材料模拟器",
+    "tabs": {
+      "room": "房间模拟器",
+      "materials": "材料可视化",
+      "layout": "瓷砖排版",
+      "structure": "楼板与墙体",
+      "budget": "预算"
+    },
+    "room": {
+      "floor": "地面视图",
+      "walls": "墙面视图",
+      "height": "层高",
+      "doors": "门",
+      "windows": "窗",
+      "floorArea": "地面面积",
+      "perimeter": "周长",
+      "wallArea": "墙面面积（已扣除门窗）",
+      "tileBoxes": "瓷砖箱数（60×60，10%）",
+      "paintLiters": "墙面涂料（2 遍，10 m²/L）",
+      "openTile": "详细瓷砖计算",
+      "openPaint": "详细涂料计算"
+    },
+    "materials": {
+      "intro": "在示例房间中比较饰面效果。照片材质来自我们的素材；涂料颜色仅供参考。",
+      "floor": "地面",
+      "wall": "墙面",
+      "before": "之前",
+      "after": "之后",
+      "compare": "拖动以比较前后效果",
+      "illustrative": "示意效果 —— 并非照片级渲染，也不代表选择了特定产品。",
+      "swatches": {
+        "tile": "陶土砖",
+        "stone": "矿物 / 混凝土",
+        "wood": "浅色木材",
+        "metal": "拉丝金属",
+        "paintSand": "沙色涂料",
+        "paintGraphite": "石墨灰涂料",
+        "paintWhite": "米白涂料",
+        "paintOchre": "赭石色涂料"
+      },
+      "browse": "浏览相关分区"
+    },
+    "layout": {
+      "intro": "根据瓷砖和房间的实际尺寸进行排版。",
+      "fullTiles": "整砖",
+      "cutTiles": "切割砖",
+      "totalPositions": "位置数",
+      "preview": "预览：从墙角开始直铺时，整砖和切割砖数量为精确值；其他铺法仅供参考。这不是可直接用于工地的切割图。",
+      "startCorner": "从墙角开始铺贴，不含灰缝。"
+    },
+    "structure": {
+      "slab": "混凝土楼板",
+      "wall": "砌块墙",
+      "openConcrete": "详细混凝土计算",
+      "openBlocks": "详细砌块计算"
+    },
+    "budget": {
+      "title": "预算面板",
+      "desc": "组合各分项，比较两个方案并可视化分布。仅对您选择的产品使用目录价格。",
+      "open": "打开预算估算器"
+    }
+  },
+  "planner": {
+    "kicker": "Boukir 项目规划器",
+    "title": "*几步* 规划您的项目。",
+    "lead": "引导式流程，无需账户：草稿仅保存在本设备上。",
+    "metaTitle": "建筑与翻新项目规划器",
+    "draftSaved": "草稿已保存在本设备",
+    "reset": "新项目",
+    "steps": {
+      "type": "项目",
+      "dimensions": "尺寸",
+      "materials": "材料",
+      "calculate": "计算",
+      "review": "汇总",
+      "action": "下一步"
+    },
+    "stepOf": "第 {current} 步，共 {total} 步",
+    "back": "返回",
+    "next": "继续",
+    "types": {
+      "renovation": {
+        "title": "翻新",
+        "desc": "焕新房间：地面、墙面、收尾。"
+      },
+      "bathroom": {
+        "title": "浴室",
+        "desc": "瓷砖、瓷砖下防水、胶粘剂。"
+      },
+      "kitchen": {
+        "title": "厨房",
+        "desc": "地面、防溅墙、涂料。"
+      },
+      "flooring": {
+        "title": "地面铺装",
+        "desc": "瓷砖或石材、胶粘剂及损耗。"
+      },
+      "painting": {
+        "title": "涂装",
+        "desc": "墙面和天花板，按需使用腻子。"
+      },
+      "waterproofing": {
+        "title": "防水",
+        "desc": "露台、屋面或潮湿房间。"
+      },
+      "construction": {
+        "title": "主体结构",
+        "desc": "混凝土楼板和砌块墙。"
+      }
+    },
+    "dims": {
+      "title": "房间或区域尺寸",
+      "length": "长度",
+      "width": "宽度",
+      "height": "层高",
+      "doors": "门",
+      "windows": "窗",
+      "slabThickness": "楼板厚度"
+    },
+    "mats": {
+      "title": "需要包含哪些项目？",
+      "desc": "我们已预选此类项目的常见项目，可自由调整。",
+      "floorTiles": "地砖",
+      "wallTiles": "墙砖（高 1.20 m）",
+      "adhesive": "瓷砖胶",
+      "paint": "墙面涂料",
+      "ceilingPaint": "天花板涂料",
+      "plaster": "修补腻子",
+      "waterproofing": "防水",
+      "concrete": "混凝土楼板",
+      "blocks": "砌块墙"
+    },
+    "calc": {
+      "title": "预计用量",
+      "desc": "使用 Boukir 计算器的公式计算。每行下方显示假设条件。",
+      "nothing": "请在上一步至少选择一个项目。",
+      "detail": "详情"
+    },
+    "review": {
+      "title": "您的汇总",
+      "project": "项目",
+      "dimensions": "尺寸",
+      "quantities": "用量",
+      "costs": "费用",
+      "known": "已知",
+      "unknown": "待报价",
+      "unknownDesc": "我们不会猜测价格：请在预算估算器中添加或索取报价。",
+      "labor": "不含人工、配送和安装。",
+      "assumptions": "重要假设",
+      "suggestions": "推荐浏览的分区"
+    },
+    "action": {
+      "title": "接下来？",
+      "shop": "浏览产品",
+      "list": "复制购物清单",
+      "listCopied": "清单已复制",
+      "whatsapp": "发送给顾问（WhatsApp）",
+      "print": "打印 / PDF",
+      "budget": "在预算估算器中报价",
+      "edit": "修改项目",
+      "maalem": "寻找工匠",
+      "note": "不会自动发送任何内容：WhatsApp 将打开预填消息，您可在发送前查看。"
+    }
+  },
+  "product": {
+    "calculate": "计算所需用量",
+    "calculateHint": "根据您的面积和此产品的包装进行估算"
+  },
+  "carousel": {
+    "prev": "上一个",
+    "next": "下一个",
+    "play": "开启自动播放",
+    "pause": "暂停",
+    "slideOf": "第 {current} 张，共 {total} 张",
+    "goTo": "转到第 {index} 张",
+    "chooseSlide": "选择幻灯片",
+    "dragHint": "拖动浏览 · 悬停时自动播放暂停"
+  }
+}
