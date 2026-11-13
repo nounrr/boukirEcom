@@ -15,6 +15,7 @@ export const GOOGLE_ONE_TAP_CONFIG = {
     '/reset-password',
     '/activate-account',
     '/auth', // Exclude all auth routes
+    '/comptage/', // Public inventory links have their own name-first flow.
   ],
   
   // Cooldown period (milliseconds) - don't show again after user dismisses
@@ -31,8 +32,6 @@ export const GOOGLE_ONE_TAP_CONFIG = {
  * Check if One Tap should be shown
  */
 export function shouldShowOneTap(pathname: string): boolean {
-  console.log('[Google One Tap Config] Checking shouldShowOneTap for:', pathname)
-  
   // Check if on excluded path
   const isExcludedPath = GOOGLE_ONE_TAP_CONFIG.EXCLUDED_PATHS.some(path => 
     pathname?.includes(path)

@@ -16,16 +16,10 @@ export function GoogleOneTapWrapper() {
     pathname?.includes(path)
   )
   
-  console.log('[Google One Tap Wrapper] Pathname:', pathname)
-  console.log('[Google One Tap Wrapper] Is Auth Page:', isAuthPage)
-  console.log('[Google One Tap Wrapper] Excluded Paths:', GOOGLE_ONE_TAP_CONFIG.EXCLUDED_PATHS)
-  
   // Don't render on auth pages to prevent conflicts with login form
   if (isAuthPage) {
-    console.log('[Google One Tap Wrapper] Skipping - on auth page:', pathname)
     return null
   }
   
-  console.log('[Google One Tap Wrapper] Rendering GoogleOneTap component')
   return <GoogleOneTap />
 }
