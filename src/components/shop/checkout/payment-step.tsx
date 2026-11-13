@@ -116,15 +116,17 @@ export function PaymentStep({
     ? Math.max(0, Math.min(100, (Math.max(0, Number(soldeCumule || 0)) / plafond) * 100))
     : 0
 
-  // If the plafond is exceeded, prevent keeping "solde" selected (better UX)
+  const canPayOnCredit = isAuthenticated && isSoldeEligible
+
+  // Reset the selection if authorization is revoked or the limit is exceeded.
   useEffect(() => {
     if (!setValue) return
-    if (!isSoldeLimitExceeded) return
+    if (canPayOnCredit && !isSoldeLimitExceeded) return
     if (paymentMethod !== "solde") return
 
     const fallbackMethod = isPickup ? "pay_in_store" : "cash_on_delivery"
     setValue("paymentMethod", fallbackMethod, { shouldValidate: true, shouldDirty: true })
-  }, [isPickup, isSoldeLimitExceeded, paymentMethod, setValue])
+  }, [canPayOnCredit, isPickup, isSoldeLimitExceeded, paymentMethod, setValue])
 
   // Filter payment methods based on delivery method
   const availablePaymentMethods = useMemo(() => {
@@ -362,7 +364,7 @@ export function PaymentStep({
       </div>
 
       {/* Solde (Buy Now, Pay Later) - Only for eligible users */}
-      {isSoldeEligible && (
+      {canPayOnCredit && (
         <div className="flex flex-col gap-3 bg-linear-to-br from-violet-50/60 via-background to-purple-50/40 dark:from-violet-950/25 dark:via-background dark:to-purple-950/15 border border-violet-200/70 dark:border-violet-800/40 rounded-xl p-4 shadow-sm transition-all duration-300">
           <div className="flex items-center gap-2 pb-3 border-b border-violet-200/50 dark:border-violet-800/30">
             <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center">
@@ -519,7 +521,7 @@ export function PaymentStep({
           </div>
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold text-foreground">
-              {isSoldeEligible ? t("payment.methods.otherTitle") : t("payment.methods.title")}
+              {canPayOnCredit ? t("payment.methods.otherTitle") : t("payment.methods.title")}
             </h3>
             <p className="text-[11px] text-muted-foreground">{t("payment.methods.subtitle")}</p>
           </div>

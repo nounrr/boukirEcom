@@ -1043,7 +1043,7 @@
     "units": "الوحدات",
     "inStockOnly": "المتوفر فقط",
     "sort": {
-      "category": "الفئة",
+      "category": "الفئة، العلامة التجارية، السعر من الأعلى إلى الأقل",
       "newest": "الأحدث",
       "priceAsc": "السعر: من الأقل للأعلى",
       "priceDesc": "السعر: من الأعلى للأقل",
@@ -1732,7 +1732,7 @@
           "description": "فيزا، ماستركارد، CMI — أداء آمن عبر شعبي باي"
         },
         "solde": {
-          "label": "دفع مؤجل (Solde)",
+          "label": "الدفع بالآجل",
           "description": "اشترِ الآن وادفع لاحقاً"
         },
         "bank_transfer": {
@@ -1762,7 +1762,7 @@
         "insufficient": "الرصيد غير كافٍ لهذه السلة."
       },
       "solde": {
-        "title": "Solde — اشترِ الآن وادفع لاحقاً",
+        "title": "الدفع بالآجل",
         "badgeExclusive": "حصري",
         "eligibleSubtitle": "أنت مؤهل للدفع المؤجل",
         "plafond": "السقف",
@@ -1772,7 +1772,7 @@
         "usage": "الاستخدام",
         "limitExceededTitle": "حد السولد غير كافٍ",
         "limitExceededDesc": "السولد المتاح لديك هو {available} {currency}. قلّل السلة أو اختر طريقة دفع أخرى.",
-        "payLaterLabel": "الدفع لاحقاً (Solde)",
+        "payLaterLabel": "الدفع بالآجل",
         "remaining": "المتبقي: {amount} {currency}",
         "payLaterDesc": "استلم طلبك الآن وادفع لاحقاً",
         "verifiedAccount": "حساب موثّق",

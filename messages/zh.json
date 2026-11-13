@@ -1043,7 +1043,7 @@
     "units": "单位",
     "inStockOnly": "仅显示有货",
     "sort": {
-      "category": "类别",
+      "category": "类别、品牌、价格从高到低",
       "newest": "最新",
       "priceAsc": "价格从低到高",
       "priceDesc": "价格从高到低",
@@ -1732,7 +1732,7 @@
           "description": "Visa、Mastercard、CMI — Chaabi Payment 安全支付"
         },
         "solde": {
-          "label": "延期支付（Solde）",
+          "label": "赊账支付",
           "description": "先买后付"
         },
         "bank_transfer": {
@@ -1762,7 +1762,7 @@
         "insufficient": "余额不足以覆盖该购物车。"
       },
       "solde": {
-        "title": "Solde — 先买后付",
+        "title": "赊账支付",
         "badgeExclusive": "专属",
         "eligibleSubtitle": "你符合延期支付资格",
         "plafond": "上限",
@@ -1772,7 +1772,7 @@
         "usage": "使用情况",
         "limitExceededTitle": "Solde 额度不足",
         "limitExceededDesc": "你的可用 Solde 为 {available} {currency}。请减少商品或选择其他支付方式。",
-        "payLaterLabel": "稍后支付（Solde）",
+        "payLaterLabel": "赊账支付",
         "remaining": "剩余：{amount} {currency}",
         "payLaterDesc": "立即收货，稍后付款",
         "verifiedAccount": "已验证账户",

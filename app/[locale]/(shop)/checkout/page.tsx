@@ -372,10 +372,11 @@ export default function CheckoutPage() {
   // Quote is now triggered manually when moving to next step.
 
   const didPrefillFromReduxRef = useRef(false)
-  const didFetchMeRef = useRef(false)
 
   const { data: meUser, refetch: refetchMe } = useGetCurrentUserQuery(undefined, {
     skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
   })
 
   const applyIfEmpty = useCallback(
@@ -415,8 +416,7 @@ export default function CheckoutPage() {
 
   // 2) Fetch /me (GET via RTK Query) to load latest user details and prefill any missing fields
   useEffect(() => {
-    if (!isAuthenticated || !meUser || didFetchMeRef.current) return
-    didFetchMeRef.current = true
+    if (!isAuthenticated || !meUser) return
 
     // Keep Redux user in sync (optional but helps other screens)
     dispatch(setUser(meUser as any))
@@ -475,6 +475,11 @@ export default function CheckoutPage() {
         toast.error(t("errors.authRequiredForSolde"))
         const next = encodeURIComponent(`/${locale}/checkout`)
         router.push(`/${locale}/login?next=${next}`)
+        return
+      }
+
+      if (!isSoldeEligible) {
+        toast.error(t("errors.soldeNotAllowed"))
         return
       }
 
@@ -654,7 +659,7 @@ export default function CheckoutPage() {
         toast.error(error?.data?.message || t("errors.orderCreateFailed"))
       }
     })
-  }, [items, remiseBalance, total, soldeAvailable, router, locale, promoCodeValue, createOrder, isAuthenticated, dispatch, clearCartApi, refetchMe, t, currency])
+  }, [items, remiseBalance, total, soldeAvailable, router, locale, promoCodeValue, createOrder, isAuthenticated, isSoldeEligible, dispatch, clearCartApi, refetchMe, t, currency])
 
   // Navigate between steps with validation
   const goToNextStep = useCallback(async () => {
@@ -703,6 +708,11 @@ export default function CheckoutPage() {
       const paymentMethod = watch("paymentMethod")
       isValid = await trigger("paymentMethod")
 
+      if (isValid && paymentMethod === "solde" && !isSoldeEligible) {
+        toast.error(t("errors.soldeNotAllowed"))
+        return
+      }
+
       // Early Solde plafond check
       if (isValid && paymentMethod === "solde" && isAuthenticated) {
         const useRemiseBalance = !!watch("useRemiseBalance")
@@ -731,7 +741,7 @@ export default function CheckoutPage() {
     if (isValid) {
       setCurrentStep((prev) => Math.min(prev + 1, wizardSteps.length))
     }
-  }, [currentStep, trigger, watch, wizardSteps.length, quoteOrder, isAuthenticated, items, promoCodeValue, getValues, t, currency, soldeAvailable, remiseBalance, total])
+  }, [currentStep, trigger, watch, wizardSteps.length, quoteOrder, isAuthenticated, isSoldeEligible, items, promoCodeValue, getValues, t, currency, soldeAvailable, remiseBalance, total])
 
   const goToPreviousStep = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 1))

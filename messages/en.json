@@ -1043,7 +1043,7 @@
     "units": "Units",
     "inStockOnly": "In stock only",
     "sort": {
-      "category": "Category",
+      "category": "Category, brand, price high to low",
       "newest": "Newest",
       "priceAsc": "Price: low to high",
       "priceDesc": "Price: high to low",
@@ -1732,7 +1732,7 @@
           "description": "Visa, Mastercard, CMI — secure Chaabi Payment"
         },
         "solde": {
-          "label": "Deferred payment (Solde)",
+          "label": "Pay on credit",
           "description": "Buy now, pay later"
         },
         "bank_transfer": {
@@ -1762,7 +1762,7 @@
         "insufficient": "Insufficient balance for this cart."
       },
       "solde": {
-        "title": "Solde — Buy now, pay later",
+        "title": "Pay on credit",
         "badgeExclusive": "Exclusive",
         "eligibleSubtitle": "You are eligible for deferred payment",
         "plafond": "Ceiling",
@@ -1772,7 +1772,7 @@
         "usage": "Usage",
         "limitExceededTitle": "Insufficient Solde limit",
         "limitExceededDesc": "Your available Solde is {available} {currency}. Reduce the cart or choose another payment method.",
-        "payLaterLabel": "Pay later (Solde)",
+        "payLaterLabel": "Pay on credit",
         "remaining": "Remaining: {amount} {currency}",
         "payLaterDesc": "Receive your order now and pay later",
         "verifiedAccount": "Verified account",

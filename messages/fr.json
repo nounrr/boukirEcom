@@ -486,7 +486,7 @@
         "cashOnDelivery": "Paiement à la livraison",
         "card": "Carte bancaire",
         "payInStore": "Paiement en boutique",
-        "solde": "Paiement différé"
+        "solde": "Paiement à crédit"
       },
       "deliveryMethod": {
         "placeholder": "Livraison",
@@ -561,7 +561,7 @@
       "delivery": "Livraison à domicile"
     },
     "paymentMethod": {
-      "solde": "Paiement différé",
+      "solde": "Paiement à crédit",
       "pay_in_store": "Paiement en boutique",
       "cash_on_delivery": "Paiement à la livraison",
       "card": "Carte bancaire",
@@ -624,7 +624,7 @@
       "card": "Carte bancaire",
       "bank_transfer": "Virement bancaire",
       "mobile_payment": "Paiement mobile",
-      "solde": "Paiement différé"
+      "solde": "Paiement à crédit"
     },
     "header": {
       "orderNumber": "Commande #{number}"
@@ -787,7 +787,7 @@
       "card": "Carte bancaire",
       "bank_transfer": "Virement bancaire",
       "mobile_payment": "Paiement mobile",
-      "solde": "Paiement différé"
+      "solde": "Paiement à crédit"
     },
     "footer": {
       "emailLabel": "EMAIL:",
@@ -916,10 +916,10 @@
     "units": "Unités de mesure",
     "inStockOnly": "En stock uniquement",
     "sort": {
-      "category": "Catégorie",
+      "category": "Catégorie, marque, prix décroissant",
       "newest": "Plus récents",
       "priceAsc": "Prix croissant",
-      "priceDesc": "Prix décroissant",
+      "priceDesc": "Prix du plus élevé au plus bas",
       "bestPromos": "Meilleures promos",
       "popular": "Les plus populaires"
     }
@@ -1605,7 +1605,7 @@
           "description": "Visa, Mastercard, CMI — paiement sécurisé Chaabi Payment"
         },
         "solde": {
-          "label": "Paiement différé (Solde)",
+          "label": "Payer à crédit",
           "description": "Achetez maintenant, payez plus tard"
         },
         "bank_transfer": {
@@ -1635,9 +1635,9 @@
         "insufficient": "Solde insuffisant pour ce panier."
       },
       "solde": {
-        "title": "Solde — Achetez maintenant, payez plus tard",
+        "title": "Paiement à crédit",
         "badgeExclusive": "Exclusif",
-        "eligibleSubtitle": "Vous êtes éligible au paiement différé",
+        "eligibleSubtitle": "Votre compte est autorisé à commander à crédit",
         "plafond": "Plafond",
         "notLimited": "Non limité",
         "cumulated": "Solde cumulé",
@@ -1645,9 +1645,9 @@
         "usage": "Utilisation",
         "limitExceededTitle": "Plafond solde insuffisant",
         "limitExceededDesc": "Votre solde disponible est de {available} {currency}. Réduisez le panier ou choisissez un autre mode de paiement.",
-        "payLaterLabel": "Payer plus tard (Solde)",
+        "payLaterLabel": "Payer à crédit",
         "remaining": "Restant: {amount} {currency}",
-        "payLaterDesc": "Recevez votre commande maintenant et payez ultérieurement",
+        "payLaterDesc": "Ajoutez cette commande à votre crédit client et réglez selon les conditions convenues",
         "verifiedAccount": "Compte vérifié",
         "noFees": "Sans frais",
         "amountDueLater": "Montant à régler ultérieurement",
