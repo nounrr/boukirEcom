@@ -424,6 +424,16 @@
     "viewAll": "عرض الكل"
   },
   "profile": {
+    "photo": {
+      "title": "صورة الملف الشخصي",
+      "choose": "اختيار صورة",
+      "hint": "JPEG أو PNG أو WebP · حتى 5 ميغابايت. تُحفظ الصورة مباشرة.",
+      "saving": "جارٍ الحفظ…",
+      "success": "تم حفظ صورة الملف الشخصي",
+      "error": "تعذر حفظ الصورة. حاول مرة أخرى.",
+      "invalidType": "اختر صورة JPEG أو PNG أو WebP.",
+      "tooLarge": "يجب ألا يتجاوز حجم الصورة 5 ميغابايت."
+    },
     "layoutTitle": "حسابي",
     "layoutSubtitle": "إدارة ملفك الشخصي وتفضيلاتك",
     "headerTitle": "ملفي الشخصي",
@@ -1388,6 +1398,11 @@
     "mapDesc": "خريطة تفاعلية لإرشادك إلى المتجر."
   },
   "header": {
+    "logoutConfirmTitle": "تأكيد تسجيل الخروج",
+    "logoutConfirmDescription": "هل تريد تسجيل الخروج من حسابك؟",
+    "logoutCancel": "إلغاء",
+    "logoutConfirmAction": "تسجيل الخروج",
+    "logoutPending": "جارٍ تسجيل الخروج…",
     "home": "الرئيسية",
     "categories": "الفئات",
     "shop": "المتجر",

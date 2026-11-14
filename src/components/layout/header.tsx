@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
+import { LogoutConfirmation } from "@/components/auth/logout-confirmation"
 import { clearAuth } from "@/state/slices/user-slice"
 import {
   Calculator,
@@ -74,6 +75,8 @@ export function Header() {
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
   const isAuthLoading = !!accessToken && !user
@@ -144,13 +147,22 @@ export function Header() {
 
   const { cartRef } = useCart()
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setIsMobileMenuOpen(false)
+    setShowLogoutConfirmation(true)
+  }
+
+  const confirmLogout = async () => {
+    if (isLoggingOut) return
+    setIsLoggingOut(true)
     try {
       await fetch("/api/auth/logout", { method: "POST" })
     } catch {
       // ignore network errors; still clear client state
     } finally {
       dispatch(clearAuth())
+      setShowLogoutConfirmation(false)
+      setIsLoggingOut(false)
       setIsMobileMenuOpen(false)
       router.replace(`/${locale}/shop`)
       router.refresh()
@@ -183,6 +195,7 @@ export function Header() {
         !isHeaderVisible && "-translate-y-full"
       )}
     >
+      <LogoutConfirmation open={showLogoutConfirmation} busy={isLoggingOut} onOpenChange={setShowLogoutConfirmation} onConfirm={confirmLogout} />
       <header
         className={cn(
           "relative w-full text-white transition-[background-color,border-color,backdrop-filter] duration-500",

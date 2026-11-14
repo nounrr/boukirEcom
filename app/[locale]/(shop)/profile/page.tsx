@@ -1,5 +1,6 @@
 "use client"
 
+import { ProfilePhotoUploader } from "@/components/account/profile-photo-uploader"
 import { AccountSidebar } from "@/components/account/account-sidebar"
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Button } from "@/components/ui/button"
@@ -352,6 +353,8 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+
+          <ProfilePhotoUploader />
 
           {/* Artisan status / request (keep in viewport) */}
           {user && (

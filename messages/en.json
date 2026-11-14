@@ -424,6 +424,16 @@
     "viewAll": "View all"
   },
   "profile": {
+    "photo": {
+      "title": "Profile photo",
+      "choose": "Choose a photo",
+      "hint": "JPEG, PNG or WebP · Up to 5 MB. Saves immediately.",
+      "saving": "Saving…",
+      "success": "Profile photo saved",
+      "error": "Unable to save your photo. Please try again.",
+      "invalidType": "Choose a JPEG, PNG or WebP image.",
+      "tooLarge": "Your photo must not exceed 5 MB."
+    },
     "layoutTitle": "My account",
     "layoutSubtitle": "Manage your profile and preferences",
     "headerTitle": "My profile",
@@ -1388,6 +1398,11 @@
     "mapDesc": "Interactive map to guide you to the store."
   },
   "header": {
+    "logoutConfirmTitle": "Confirm sign out",
+    "logoutConfirmDescription": "Are you sure you want to sign out of your account?",
+    "logoutCancel": "Cancel",
+    "logoutConfirmAction": "Sign out",
+    "logoutPending": "Signing out…",
     "home": "Home",
     "categories": "Categories",
     "shop": "Shop",

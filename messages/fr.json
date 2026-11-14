@@ -1261,6 +1261,11 @@
     "mapDesc": "Carte interactive pour vous guider vers le magasin."
   },
   "header": {
+    "logoutConfirmTitle": "Confirmer la déconnexion",
+    "logoutConfirmDescription": "Voulez-vous vraiment vous déconnecter de votre compte ?",
+    "logoutCancel": "Annuler",
+    "logoutConfirmAction": "Se déconnecter",
+    "logoutPending": "Déconnexion…",
     "home": "Accueil",
     "categories": "Catégories",
     "shop": "Boutique",
@@ -1795,6 +1800,16 @@
     "orderTotal": "Total"
   },
   "profile": {
+    "photo": {
+      "title": "Photo de profil",
+      "choose": "Choisir une photo",
+      "hint": "JPEG, PNG ou WebP · 5 Mo maximum. Enregistrement immédiat.",
+      "saving": "Enregistrement…",
+      "success": "Photo de profil enregistrée",
+      "error": "Impossible d’enregistrer la photo. Réessayez.",
+      "invalidType": "Choisissez une image JPEG, PNG ou WebP.",
+      "tooLarge": "La photo ne doit pas dépasser 5 Mo."
+    },
     "layoutTitle": "Mon compte",
     "layoutSubtitle": "Gérez votre profil et vos préférences",
     "headerTitle": "Mon profil",

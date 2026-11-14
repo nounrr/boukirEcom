@@ -9,7 +9,7 @@ import { clearAuth } from '@/state/slices/user-slice';
  */
 const baseQuery = fetchBaseQuery({
   baseUrl: API_CONFIG.BASE_URL,
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: (headers, { getState, arg }) => {
     const state = getState() as RootState;
     const accessToken = state.user.accessToken;
 
@@ -19,7 +19,11 @@ const baseQuery = fetchBaseQuery({
     }
 
     // Add common headers
-    headers.set('Content-Type', 'application/json');
+    if (typeof FormData !== 'undefined' && typeof arg !== 'string' && arg.body instanceof FormData) {
+      headers.delete('Content-Type'); // fetch adds the multipart boundary.
+    } else {
+      headers.set('Content-Type', 'application/json');
+    }
     headers.set('Platform', 'web');
 
     return headers;
@@ -65,7 +69,7 @@ export const baseQueryWithAuth = baseQueryWithReauth;
  */
 export const baseQueryPublic = fetchBaseQuery({
   baseUrl: API_CONFIG.BASE_URL,
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: (headers, { getState, arg }) => {
     const state = getState() as RootState;
     const accessToken = state.user.accessToken;
 
@@ -77,7 +81,11 @@ export const baseQueryPublic = fetchBaseQuery({
       headers.set('Authorization', `Bearer ${accessToken}`);
     }
 
-    headers.set('Content-Type', 'application/json');
+    if (typeof FormData !== 'undefined' && typeof arg !== 'string' && arg.body instanceof FormData) {
+      headers.delete('Content-Type'); // fetch adds the multipart boundary.
+    } else {
+      headers.set('Content-Type', 'application/json');
+    }
     headers.set('Platform', 'web');
 
     return headers;

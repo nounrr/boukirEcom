@@ -424,6 +424,16 @@
     "viewAll": "查看全部"
   },
   "profile": {
+    "photo": {
+      "title": "个人头像",
+      "choose": "选择照片",
+      "hint": "JPEG、PNG 或 WebP · 最大 5 MB。选择后立即保存。",
+      "saving": "正在保存…",
+      "success": "头像已保存",
+      "error": "无法保存照片，请重试。",
+      "invalidType": "请选择 JPEG、PNG 或 WebP 图片。",
+      "tooLarge": "照片不得超过 5 MB。"
+    },
     "layoutTitle": "我的账户",
     "layoutSubtitle": "管理你的个人资料和偏好设置",
     "headerTitle": "我的资料",
@@ -1388,6 +1398,11 @@
     "mapDesc": "交互式地图，帮助你找到门店。"
   },
   "header": {
+    "logoutConfirmTitle": "确认退出登录",
+    "logoutConfirmDescription": "确定要退出您的账户吗？",
+    "logoutCancel": "取消",
+    "logoutConfirmAction": "退出登录",
+    "logoutPending": "正在退出…",
     "home": "首页",
     "categories": "分类",
     "shop": "商店",

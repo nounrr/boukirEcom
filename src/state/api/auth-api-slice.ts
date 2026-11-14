@@ -65,6 +65,16 @@ export const authApi = createApi({
       invalidatesTags: ['Auth'],
     }),
 
+    uploadProfileAvatar: builder.mutation<User, File>({
+      query: file => {
+        const body = new FormData();
+        body.append('avatar', file);
+        return { url: '/api/users/auth/me', method: 'PUT', body };
+      },
+      transformResponse: (response: { user: User }) => response.user,
+      invalidatesTags: ['Auth'],
+    }),
+
     requestArtisan: builder.mutation<
       { message: string; status?: string; user?: Partial<User> },
       void
@@ -144,6 +154,7 @@ export const {
   useLogoutMutation,
   useGetCurrentUserQuery,
   useUpdateProfileMutation,
+  useUploadProfileAvatarMutation,
   useRequestArtisanMutation,
   useGetMaalemProfileQuery,
   useGetMaalemNotificationsQuery,
