@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
+import { compareCategoryOrder } from '@/lib/category-order'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 type CategoryByParent = Map<number, Category[]>
@@ -19,13 +20,7 @@ function getCategoryLabel(category: Category, locale: string) {
 }
 
 function byLabelThenId(locale: string) {
-  return (a: Category, b: Category) => {
-    const nameA = getCategoryLabel(a, locale) || ''
-    const nameB = getCategoryLabel(b, locale) || ''
-    const nameCmp = nameA.localeCompare(nameB)
-    if (nameCmp !== 0) return nameCmp
-    return (a.id ?? 0) - (b.id ?? 0)
-  }
+  return (a: Category, b: Category) => compareCategoryOrder(a, b, (c) => getCategoryLabel(c, locale) || '')
 }
 
 function buildChildrenMap(categories: Category[], locale: string): CategoryByParent {

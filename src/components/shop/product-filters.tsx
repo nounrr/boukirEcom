@@ -388,16 +388,15 @@ export function ProductFilters({
   // Helper function to render category tree recursively
   // Flatten categories to leaves for quick-pick grid
   const flattenCategories = useCallback((nodes: ProductCategory[]): ProductCategory[] => {
+    // Depth-first, in the order sent by the API (backoffice drag & drop order)
     const result: ProductCategory[] = []
-    const stack = [...nodes]
-    while (stack.length) {
-      const node = stack.pop()!
-      if (node.children && node.children.length) {
-        stack.push(...node.children)
-      } else {
-        result.push(node)
+    const visit = (list: ProductCategory[]) => {
+      for (const node of list) {
+        if (node.children && node.children.length) visit(node.children)
+        else result.push(node)
       }
     }
+    visit(nodes)
     return result
   }, [])
 

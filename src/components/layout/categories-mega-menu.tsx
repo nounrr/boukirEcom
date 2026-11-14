@@ -11,13 +11,12 @@ import { cn } from '@/lib/utils'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
+import { compareCategoryOrder } from '@/lib/category-order'
 
 type CategoryByParent = Map<number, Category[]>
 
 function byNameThenId(a: Category, b: Category) {
-  const nameCmp = (a.nom || '').localeCompare(b.nom || '')
-  if (nameCmp !== 0) return nameCmp
-  return (a.id ?? 0) - (b.id ?? 0)
+  return compareCategoryOrder(a, b, (c) => c.nom || '')
 }
 
 function buildChildrenMap(categories: Category[]): CategoryByParent {

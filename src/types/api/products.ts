@@ -101,6 +101,7 @@ export interface ProductCategory {
   nom_en?: string | null;
   nom_zh?: string | null;
   parent_id?: number | null;
+  sort_order?: number | null;
   children?: ProductCategory[];
 }
 
