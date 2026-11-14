@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, type Middleware } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { productsApi } from './api/products-api-slice';
 import { categoriesApi } from './api/categories-api-slice';
@@ -13,8 +13,21 @@ import { promoApiSlice } from './api/promo-api-slice';
 import { heroSlidesApi } from './api/hero-slides-api-slice';
 import { searchSuggestionsApi } from './api/search-suggestions-api-slice';
 import { maalemMissionsApi } from './api/maalem-missions-api-slice';
-import userReducer from './slices/user-slice';
+import userReducer, { clearAuth } from './slices/user-slice';
 import cartReducer from './slices/cart-slice';
+
+// Drop account-specific caches so another login cannot inherit the previous user.
+const resetApisOnLogout: Middleware = store => next => action => {
+  const result = next(action);
+  if (clearAuth.match(action)) {
+    for (const api of [productsApi, categoriesApi, brandsApi, authApi, ordersApi,
+      ecommercePublicApiSlice, subscriptionApi, cartApi, wishlistApi, promoApiSlice,
+      heroSlidesApi, searchSuggestionsApi, maalemMissionsApi]) {
+      store.dispatch(api.util.resetApiState());
+    }
+  }
+  return result;
+};
 
 export const makeStore = () => {
   const store = configureStore({
@@ -39,7 +52,7 @@ export const makeStore = () => {
       cart: cartReducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
+      getDefaultMiddleware().prepend(resetApisOnLogout)
         .concat(productsApi.middleware)
         .concat(categoriesApi.middleware)
         .concat(brandsApi.middleware)

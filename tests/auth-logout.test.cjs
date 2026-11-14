@@ -1,0 +1,38 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+require('../scripts/register-project.cjs')
+const { makeStore } = require('../src/state/store.ts')
+const { setAuth, clearAuth } = require('../src/state/slices/user-slice.ts')
+const { authApi } = require('../src/state/api/auth-api-slice.ts')
+const { ordersApi } = require('../src/state/api/orders-api-slice.ts')
+
+test('logout drops the user and cached private data before another account signs in', async () => {
+  const store = makeStore()
+  store.dispatch(setAuth({user:{id:1,email:'one@example.test'},accessToken:'first',refreshToken:null}))
+  await store.dispatch(authApi.util.upsertQueryData('getCurrentUser',undefined,{id:1,email:'one@example.test'}))
+  await store.dispatch(ordersApi.util.upsertQueryData('getOrder',{id:42},{id:42,orderNumber:'PRIVATE'}))
+  assert.equal(Object.keys(store.getState().authApi.queries).length,1)
+  assert.equal(Object.keys(store.getState().ordersApi.queries).length,1)
+  store.dispatch(clearAuth())
+  assert.equal(store.getState().user.accessToken,null)
+  assert.equal(store.getState().user.user,null)
+  assert.equal(store.getState().user.isAuthenticated,false)
+  assert.deepEqual(store.getState().authApi.queries,{})
+  assert.deepEqual(store.getState().ordersApi.queries,{})
+  store.dispatch(setAuth({user:{id:2,email:'two@example.test'},accessToken:'second',refreshToken:null}))
+  assert.equal(authApi.endpoints.getCurrentUser.select()(store.getState()).data,undefined)
+  assert.equal(ordersApi.endpoints.getOrder.select({id:42})(store.getState()).data,undefined)
+  store.dispatch(clearAuth())
+})
+
+test('cookie logout succeeds without waiting for an unavailable backend', async () => {
+  const deleted=[]
+  const headersPath=require.resolve('next/headers')
+  require.cache[headersPath]={id:headersPath,filename:headersPath,loaded:true,exports:{cookies:async()=>({delete:name=>deleted.push(name)})}}
+  const {POST}=require('../app/api/auth/logout/route.ts')
+  const response=await POST()
+  assert.equal(response.status,200)
+  assert.deepEqual(await response.json(),{success:true})
+  assert.deepEqual(deleted,['accessToken','refreshToken'])
+  assert.equal(response.headers.get('Cache-Control'),'no-store')
+})
