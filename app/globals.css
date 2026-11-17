@@ -27,6 +27,11 @@
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.5, 0, 0.2, 1);
 
+  /* Survol en douceur : durée et courbe par défaut de toutes les classes transition-*
+     (entrée et sortie identiques, symétriques). */
+  --default-transition-duration: 450ms;
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
   --animate-draw: bd-draw 1.4s var(--ease-premium) both;
   --animate-rise: bd-rise 0.9s var(--ease-premium) both;
   --animate-sheen: bd-sheen 2.8s var(--ease-premium) both;
@@ -190,6 +195,37 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+
+  /* Survol en douceur : tout ce qui réagit au survol sans transition propre en reçoit une,
+     sur l'élément lui-même, donc lente à l'entrée comme à la sortie. Couche « base » :
+     les classes transition-* des composants restent prioritaires. */
+  :where(a, button, summary, select, label[for], [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="switch"], [class*="hover:"], [class*="group-hover:"]) {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, translate, scale, filter, backdrop-filter;
+    transition-duration: var(--hover-dur);
+    transition-timing-function: var(--hover-ease);
+  }
+}
+
+/* Survol en douceur : réglages communs (une seule valeur à changer : --hover-dur). */
+:root {
+  --hover-dur: 450ms;
+  --hover-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --press-dur: 120ms;
+}
+
+/* Les durées courtes écrites dans les composants (150-300 ms) passent à la même lenteur ;
+   les effets volontairement longs (500 ms et plus, zoom des images…) sont conservés. */
+:is(.duration-75, .duration-100, .duration-150, .duration-180, .duration-200, .duration-300) {
+  transition-duration: var(--hover-dur);
+}
+
+/* Appui : retour immédiat ; le relâchement repart lentement. */
+:is(a, button, [role="button"], [role="tab"], [role="menuitem"]):active:not(:disabled) {
+  transition-duration: var(--press-dur);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --hover-dur: 1ms; --press-dur: 1ms; }
 }
 
 /* Smooth colour interpolation only while the theme is being switched. */
