@@ -20,6 +20,14 @@ const cgvBreadcrumbLabels: Record<string, string> = {
   zh: '销售条款',
 }
 
+type BreadcrumbSegment = {
+  title: string
+  href: string
+  active: boolean
+  icon?: React.ComponentType<{ className?: string }>
+  filter?: string | null
+}
+
 import { 
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -77,7 +85,7 @@ export function DynamicBreadcrumb() {
     'maalems': HardHat,
   }
 
-  const segments = React.useMemo(() => {
+  const segments = React.useMemo<BreadcrumbSegment[]>(() => {
     const parts = pathname.split('/').filter(Boolean)
     // Filter out locale segments (fr/ar/en/zh)
     const filteredParts = parts.filter(part => !(supportedLocales as readonly string[]).includes(part))
