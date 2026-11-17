@@ -376,7 +376,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 lg:flex lg:gap-8">
             {facts.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2.5 text-[13px] text-ink/70 dark:text-white/70">
-                <Icon className="size-4 shrink-0 text-[var(--accent-text)]" strokeWidth={1.6} aria-hidden="true" />
+                <Icon className="size-4 shrink-0 fill-white text-[var(--accent-text)]" strokeWidth={1.6} aria-hidden="true" />
                 {label}
               </li>
             ))}

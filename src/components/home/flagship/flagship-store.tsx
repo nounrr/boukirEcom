@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight, Clock, MapPin, Navigation, Phone } from "lucide-react"
+import { ArrowRight, Clock, MapPin, Navigation, Phone, Star } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { CONTACT } from "@/lib/contact"
 
@@ -8,6 +8,7 @@ import { CONTACT } from "@/lib/contact"
 export function FlagshipStore() {
   const t = useTranslations("footer")
   const tx = useTranslations("xp.home.store")
+  const tf = useTranslations("xp.footer")
   const query = (process.env.NEXT_PUBLIC_STORE_MAP_QUERY || "BOUKIR DIAMOND CONSTUCTION STORE").trim()
 
   return (
@@ -24,24 +25,33 @@ export function FlagshipStore() {
           </div>
           <dl className="mt-10 space-y-5 text-sm">
             <div className="flex gap-3">
-              <MapPin className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+              <MapPin className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
               <div><dt className="text-xs text-white/45">{t("storeContactAddress")}</dt><dd className="mt-1 font-medium leading-relaxed">{CONTACT.address}</dd></div>
             </div>
             <div className="flex gap-3">
-              <Phone className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+              <Phone className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
               <div><dt className="text-xs text-white/45">{t("storeContactPhone")}</dt><dd className="mt-1 font-medium" dir="ltr"><a href={CONTACT.phoneHref} className="hover:text-brand-yellow">{CONTACT.phoneDisplay}</a></dd></div>
             </div>
             {CONTACT.hours ? (
               <div className="flex gap-3">
-                <Clock className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                <Clock className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                 <div><dt className="text-xs text-white/45">{t("storeContactHours")}</dt><dd className="mt-1 font-medium">{CONTACT.hours}</dd></div>
               </div>
             ) : null}
           </dl>
-          <a href={CONTACT.mapUrl} target="_blank" rel="noopener noreferrer" className="group mt-10 inline-flex h-12 w-fit items-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink">
-            {t("openInMaps")}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180" aria-hidden="true" />
-          </a>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <a href={CONTACT.mapUrl} target="_blank" rel="noopener noreferrer" className="group inline-flex h-12 w-fit items-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink">
+              {t("openInMaps")}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180" aria-hidden="true" />
+            </a>
+            {/* Avis Google : lien officiel « écrire un avis » de la fiche Google de la boutique */}
+            {CONTACT.reviewUrl ? (
+              <a href={CONTACT.reviewUrl} target="_blank" rel="noopener noreferrer" className="group inline-flex h-12 w-fit items-center gap-2 rounded-full border border-white/25 bg-white px-6 text-sm font-semibold text-ink transition-colors hover:border-brand-yellow hover:bg-brand-yellow">
+                <Star className="size-4 fill-brand-yellow text-brand-orange transition-transform group-hover:scale-110 group-hover:fill-white" aria-hidden="true" />
+                {tf("review")}
+              </a>
+            ) : null}
+          </div>
         </div>
         <div className="relative min-h-[360px] overflow-hidden rounded-[2rem] border border-border bg-muted" data-reveal="scale">
           <iframe

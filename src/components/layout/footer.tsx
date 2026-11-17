@@ -200,7 +200,7 @@ export function Footer({
               <ul className="mt-8 space-y-3.5 text-sm">
                 <li>
                   <a href={CONTACT.phoneHref} className="group flex items-start gap-3 text-white/80 hover:text-white">
-                    <Phone className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                    <Phone className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                     <span>
                       <span className="block text-xs text-white/45">{tf('storeContactPhone')}</span>
                       <span dir="ltr" className="font-medium">{CONTACT.phoneDisplay}</span>
@@ -210,7 +210,7 @@ export function Footer({
                 {wa ? (
                   <li>
                     <a href={wa} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 text-white/80 hover:text-white">
-                      <MessageCircle className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                      <MessageCircle className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                       <span>
                         <span className="block text-xs text-white/45">WhatsApp</span>
                         <span className="font-medium">{t('whatsappCta')}</span>
@@ -221,7 +221,7 @@ export function Footer({
                 {CONTACT.email ? (
                   <li>
                     <a href={`mailto:${CONTACT.email}`} className="flex items-start gap-3 text-white/80 hover:text-white">
-                      <Mail className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                      <Mail className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                       <span>
                         <span className="block text-xs text-white/45">{tf('storeContactEmail')}</span>
                         <span dir="ltr" className="break-all font-medium">{CONTACT.email}</span>
@@ -232,7 +232,7 @@ export function Footer({
                 {CONTACT.address ? (
                   <li>
                     <a href={CONTACT.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 text-white/80 hover:text-white">
-                      <MapPin className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                      <MapPin className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                       <span>
                         <span className="block text-xs text-white/45">{tf('storeContactAddress')}</span>
                         <span className="font-medium leading-relaxed">{CONTACT.address}</span>
@@ -242,7 +242,7 @@ export function Footer({
                 ) : null}
                 {CONTACT.hours ? (
                   <li className="flex items-start gap-3 text-white/80">
-                    <Clock className="mt-0.5 size-4 shrink-0 text-brand-yellow" aria-hidden="true" />
+                    <Clock className="mt-0.5 size-4 shrink-0 fill-white text-brand-yellow" aria-hidden="true" />
                     <span>
                       <span className="block text-xs text-white/45">{tf('storeContactHours')}</span>
                       <span className="font-medium">{CONTACT.hours}</span>

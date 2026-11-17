@@ -127,22 +127,6 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
             <p className="mt-4 max-w-xl text-base leading-relaxed text-white/70">
               {t('subtitle', { universes: roots.length, subcategories: subcategoriesTotal })}
             </p>
-            <label className="relative mt-8 block max-w-xl">
-              <span className="sr-only">{t('searchPlaceholder')}</span>
-              <Search className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-white/45" aria-hidden="true" />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={t('searchPlaceholder')}
-                className="h-14 w-full rounded-2xl border border-white/15 bg-white/[0.07] ps-12 pe-12 text-base text-white placeholder:text-white/40 outline-none backdrop-blur transition-colors focus:border-brand-orange/70 focus:bg-white/10"
-              />
-              {query ? (
-                <button type="button" onClick={() => setQuery('')} aria-label={t('clearSearch')} className="absolute end-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-white/60 hover:bg-white/10 hover:text-white">
-                  <X className="size-4" />
-                </button>
-              ) : null}
-            </label>
           </div>
 
           {/* Mosaïque des univers */}
@@ -167,9 +151,43 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
         </div>
       </section>
 
+      {/* Barre de recherche : reste collée sous le menu pendant le défilement */}
+      <div className="sticky top-[var(--site-header-h,64px)] z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:flex-nowrap lg:px-10">
+          <label className="relative min-w-0 flex-1 lg:max-w-2xl">
+            <span className="sr-only">{t('searchPlaceholder')}</span>
+            <Search className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="h-12 w-full rounded-2xl border border-border bg-card ps-12 pe-12 text-[15px] outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
+            />
+            {query ? (
+              <button type="button" onClick={() => setQuery('')} aria-label={t('clearSearch')} className="absolute end-2.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground">
+                <X className="size-4" />
+              </button>
+            ) : null}
+          </label>
+          <p className="text-sm text-muted-foreground lg:ms-auto" aria-live="polite">
+            {t('resultsCount', { count: visibleRoots.length })}
+          </p>
+          <button
+            type="button"
+            onClick={toggleAll}
+            disabled={Boolean(matches) || visibleRoots.length === 0}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold transition-colors hover:border-brand-orange/50 hover:bg-muted/60 disabled:opacity-40"
+          >
+            {allOpen ? <ChevronsDownUp className="size-4" aria-hidden="true" /> : <ChevronsUpDown className="size-4" aria-hidden="true" />}
+            {allOpen ? t('collapseAll') : t('expandAll')}
+          </button>
+        </div>
+      </div>
+
       <div className="mx-auto grid max-w-[1440px] gap-8 px-4 pt-8 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
         {/* Filtres par univers */}
-        <aside className="min-w-0 lg:sticky lg:top-32 lg:self-start">
+        <aside className="min-w-0 lg:sticky lg:top-[calc(var(--site-header-h,112px)+5.5rem)] lg:self-start">
           <div className="flex items-center justify-between gap-2">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <LayoutGrid className="size-4" aria-hidden="true" />{t('filtersTitle')}
@@ -183,7 +201,7 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
           <p className="mt-1 text-xs text-muted-foreground">
             {selected.size > 0 ? t('selectedCount', { count: selected.size }) : t('filtersHint')}
           </p>
-          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] lg:mx-0 lg:max-h-[calc(100vh-14rem)] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overflow-x-visible lg:px-0 lg:pe-1">
+          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] lg:mx-0 lg:max-h-[calc(100vh-var(--site-header-h,112px)-11rem)] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overflow-x-visible lg:px-0 lg:pe-1">
             {roots.map((root) => {
               const active = selected.has(root.id)
               const count = childrenMap.get(root.id)?.length ?? 0
@@ -216,20 +234,6 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
 
         {/* Univers */}
         <section className="min-w-0" aria-label={t('title')}>
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              {t('resultsCount', { count: visibleRoots.length })}
-            </p>
-            <button
-              type="button"
-              onClick={toggleAll}
-              disabled={Boolean(matches) || visibleRoots.length === 0}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold transition-colors hover:border-brand-orange/50 hover:bg-muted/60 disabled:opacity-40"
-            >
-              {allOpen ? <ChevronsDownUp className="size-4" aria-hidden="true" /> : <ChevronsUpDown className="size-4" aria-hidden="true" />}
-              {allOpen ? t('collapseAll') : t('expandAll')}
-            </button>
-          </div>
 
           {categories.length === 0 ? (
             <p className="rounded-3xl border border-dashed border-border p-10 text-center text-muted-foreground">{t('empty')}</p>
@@ -314,7 +318,7 @@ function UniverseCard({
     <li
       ref={itemRef}
       id={`cat-${root.id}`}
-      className="scroll-mt-32 animate-in fade-in-0 slide-in-from-bottom-3 duration-700 motion-reduce:animate-none"
+      className="scroll-mt-[calc(var(--site-header-h,112px)+6rem)] animate-in fade-in-0 slide-in-from-bottom-3 duration-700 motion-reduce:animate-none"
       style={{ animationDelay: `${Math.min(order, 8) * 60}ms`, animationFillMode: 'both' } as CSSProperties}
     >
       <article className={cn(

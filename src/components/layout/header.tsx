@@ -87,29 +87,34 @@ export function Header() {
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
   const headerVisibleRef = useRef(true)
+  const headerRootRef = useRef<HTMLDivElement | null>(null)
+
+  // Hauteur réelle du menu fixe, pour les éléments collants des pages (barre de recherche, filtres).
+  useEffect(() => {
+    const element = headerRootRef.current
+    if (!element || typeof ResizeObserver === 'undefined') return
+    const publish = () => document.documentElement.style.setProperty('--site-header-h', `${element.offsetHeight}px`)
+    publish()
+    const observer = new ResizeObserver(publish)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     headerVisibleRef.current = isHeaderVisible
   }, [isHeaderVisible])
 
-  // Hide on scroll down, reveal on scroll up; frosted once the page moves.
+  // Menu fixe sur toutes les pages : il reste toujours visible ; il devient givré dès que la page défile.
   useEffect(() => {
     lastScrollYRef.current = window.scrollY
     setIsScrolled(window.scrollY > 24)
+    if (!headerVisibleRef.current) setIsHeaderVisible(true)
     const handleScroll = () => {
       if (tickingRef.current) return
       tickingRef.current = true
       window.requestAnimationFrame(() => {
         const currentY = window.scrollY
-        const delta = currentY - lastScrollYRef.current
         setIsScrolled(currentY > 24)
-        if (currentY < 120 || isMobileMenuOpen) {
-          if (!headerVisibleRef.current) setIsHeaderVisible(true)
-        } else if (delta > 10 && headerVisibleRef.current) {
-          setIsHeaderVisible(false)
-        } else if (delta < -8 && !headerVisibleRef.current) {
-          setIsHeaderVisible(true)
-        }
         lastScrollYRef.current = currentY
         tickingRef.current = false
       })
@@ -189,6 +194,7 @@ export function Header() {
 
   return (
     <div
+      ref={headerRootRef}
       data-site-header
       className={cn(
         "sticky top-0 z-50 w-full transition-transform duration-500 ease-[var(--ease-premium)] will-change-transform",

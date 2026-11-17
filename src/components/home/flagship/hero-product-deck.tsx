@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import { isRequiredVariant } from "@/lib/product-card-price"
 import { productModel } from "@/components/home/professional/professional-catalog"
@@ -13,7 +13,9 @@ import { cn } from "@/lib/utils"
 import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery, useGetProductQuery } from "@/state/api/products-api-slice"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
 
-const DECK_SIZE = 4
+const DECK_SIZE = 6
+/** Nombre de promotions et de nouveautés parmi lesquelles le paquet est tiré au hasard. */
+const POOL_SIZE = 24
 
 type CardModel = ReturnType<typeof productModel>
 type DeckItem = { key: string; kind: "product"; model: CardModel } | { key: string; kind: "admin"; productId: number; fallbackImage?: string | null }
@@ -59,43 +61,107 @@ function AdminProductCard({ productId, fallbackImage }: { productId: number; fal
   return <ProductCardTile product={detailToModel(data as Record<string, any>, fallbackImage)} viewMode="grid" isWide />
 }
 
+/** Petit générateur pseudo-aléatoire (reproductible pour un tirage donné). */
+function mulberry32(seed: number) {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function shuffle<T>(list: T[], seed: number): T[] {
+  const random = mulberry32(seed)
+  const out = list.slice()
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
+
+const DRAG_THRESHOLD = 8
+const SWIPE_DISTANCE = 90
+
 /**
  * Right side of the hero: a deck of real product cards (add to cart, like and
- * share work in place). Back-office "Hero Slides" of type product come first;
- * the deck is completed with promotions and new arrivals.
+ * share work in place). A new random draw at every visit, from the back-office
+ * "Hero Slides" of type product, the promotions and the new arrivals.
+ * The front card can be dragged left or right to bring the next or previous one.
  */
 export function HeroProductDeck({ locale, active, adminSlides }: { locale: string; active: number; adminSlides?: HeroSlideApi[] }) {
   const t = useTranslations("xp.home.hero")
-  const { data: promoData } = useGetFeaturedPromoQuery(8)
-  const { data: newData } = useGetNewArrivalsQuery(8)
+  const { data: promoData } = useGetFeaturedPromoQuery(POOL_SIZE)
+  const { data: newData } = useGetNewArrivalsQuery(POOL_SIZE)
   const [manual, setManual] = useState(0)
+  // Tirage aléatoire fait côté navigateur uniquement (pas de différence avec le rendu serveur).
+  const [seed, setSeed] = useState<number | null>(null)
+  useEffect(() => setSeed(Math.floor(Math.random() * 2 ** 31)), [])
 
   const items = useMemo<DeckItem[]>(() => {
-    const out: DeckItem[] = []
+    const candidates: DeckItem[] = []
     const seen = new Set<number>()
     for (const slide of adminSlides ?? []) {
       const id = slide.type === "product" ? Number(slide.target?.product_id ?? slide.target?.id) : NaN
-      if (!Number.isFinite(id) || seen.has(id) || out.length >= DECK_SIZE) continue
+      if (!Number.isFinite(id) || seen.has(id)) continue
       seen.add(id)
-      out.push({ key: `a-${id}`, kind: "admin", productId: id, fallbackImage: slide.media?.image_url })
+      candidates.push({ key: `a-${id}`, kind: "admin", productId: id, fallbackImage: slide.media?.image_url })
     }
-    const add = (list: typeof promoData) => {
-      for (const item of list ?? []) {
-        if (out.length >= DECK_SIZE || seen.has(item.id)) continue
-        seen.add(item.id)
-        out.push({ key: `p-${item.id}`, kind: "product", model: productModel(item, locale) })
-      }
+    const withPhoto: DeckItem[] = []
+    const withoutPhoto: DeckItem[] = []
+    for (const item of [...(promoData ?? []), ...(newData ?? [])]) {
+      if (seen.has(item.id)) continue
+      seen.add(item.id)
+      const entry: DeckItem = { key: `p-${item.id}`, kind: "product", model: productModel(item, locale) }
+      ;(item.image_url ? withPhoto : withoutPhoto).push(entry)
     }
-    const withPhoto = (list: typeof promoData) => (list ?? []).filter((i) => i.image_url)
-    add(withPhoto(promoData))
-    add(withPhoto(newData))
-    add(promoData)
-    add(newData)
-    return out
-  }, [adminSlides, promoData, newData, locale])
+    if (seed === null) return [...candidates, ...withPhoto, ...withoutPhoto].slice(0, DECK_SIZE)
+    // Les produits avec photo passent d'abord ; l'ordre change à chaque visite.
+    return [...shuffle([...candidates, ...withPhoto], seed), ...shuffle(withoutPhoto, seed + 1)].slice(0, DECK_SIZE)
+  }, [adminSlides, promoData, newData, locale, seed])
 
   // A manual pick lasts until the slider moves on.
   useEffect(() => setManual(0), [active])
+
+  // ---- Glisser la carte de devant ----
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const pointer = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null)
+  const suppressClick = useRef(false)
+
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || (event.target as Element).closest("button, input, select, textarea")) return
+    pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false }
+  }
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = pointer.current
+    if (!start || start.id !== event.pointerId) return
+    const dx = event.clientX - start.x
+    const dy = event.clientY - start.y
+    if (!start.moved) {
+      if (Math.abs(dx) < DRAG_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return
+      start.moved = true
+      setDragging(true)
+      event.currentTarget.setPointerCapture(event.pointerId)
+    }
+    setDragX(dx)
+  }
+  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = pointer.current
+    pointer.current = null
+    if (!start || !start.moved) return
+    const dx = event.clientX - start.x
+    if (dx <= -SWIPE_DISTANCE) setManual((m) => m + 1)
+    else if (dx >= SWIPE_DISTANCE) setManual((m) => m - 1)
+    setDragging(false)
+    setDragX(0)
+    // Le relâchement après un glisser n'ouvre pas la fiche produit.
+    suppressClick.current = true
+    window.setTimeout(() => { suppressClick.current = false }, 0)
+  }
 
   const n = items.length
   if (n === 0) return <div className="mx-auto aspect-[1/1.45] w-full max-w-[330px] animate-pulse rounded-[1.6rem] bg-ink/5 dark:bg-white/5" aria-hidden="true" />
@@ -116,6 +182,7 @@ export function HeroProductDeck({ locale, active, adminSlides }: { locale: strin
       <div className="relative mx-auto h-[500px] w-full max-w-[300px] xl:h-[540px] xl:max-w-[320px]">
         {items.map((item, index) => {
           const k = (index - front + n) % n
+          const isFront = k === 0
           const pose =
             k === 0
               ? "z-30 translate-x-0 rotate-0 scale-100 opacity-100"
@@ -128,9 +195,27 @@ export function HeroProductDeck({ locale, active, adminSlides }: { locale: strin
             <div
               key={item.key}
               data-fade-ok
-              className={cn("absolute inset-x-0 top-0 transition-all duration-[800ms] ease-[var(--ease-premium)] will-change-transform", pose, k !== 0 && "pointer-events-none")}
-              aria-hidden={k !== 0}
-              inert={k !== 0}
+              className={cn(
+                "absolute inset-x-0 top-0 will-change-transform",
+                dragging && isFront ? "transition-none" : "transition-all duration-[800ms] ease-hover",
+                pose,
+                !isFront && "pointer-events-none",
+                isFront && "cursor-grab touch-pan-y select-none active:cursor-grabbing"
+              )}
+              style={isFront && dragX ? { transform: `translateX(${dragX}px) rotate(${dragX / 18}deg)` } : undefined}
+              aria-hidden={!isFront}
+              inert={!isFront}
+              onPointerDown={isFront ? onPointerDown : undefined}
+              onPointerMove={isFront ? onPointerMove : undefined}
+              onPointerUp={isFront ? endDrag : undefined}
+              onPointerCancel={isFront ? endDrag : undefined}
+              onClickCapture={isFront ? (event) => {
+                if (suppressClick.current) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }
+              } : undefined}
+              onDragStart={(event) => event.preventDefault()}
             >
               <div className="rounded-[1.4rem] shadow-[0_40px_80px_-40px_rgba(13,13,13,0.55)]">
                 {item.kind === "product" ? (
@@ -157,9 +242,18 @@ export function HeroProductDeck({ locale, active, adminSlides }: { locale: strin
               ))
           : null}
       </div>
-      <div className="mt-5 flex justify-center gap-1.5" aria-hidden="true">
+      <div className="mt-5 flex justify-center gap-1.5">
         {items.map((item, index) => (
-          <span key={item.key} className={cn("h-1 rounded-full transition-all duration-500", index === front ? "w-6 bg-brand-orange" : "w-1.5 bg-ink/20 dark:bg-white/25")} />
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => setManual((m) => m + ((index - front + n) % n))}
+            aria-label={`${index + 1} / ${n}`}
+            aria-current={index === front ? "true" : undefined}
+            className="grid h-4 place-items-center px-0.5"
+          >
+            <span className={cn("block h-1 rounded-full transition-all duration-500", index === front ? "w-6 bg-brand-orange" : "w-1.5 bg-ink/20 dark:bg-white/25")} />
+          </button>
         ))}
       </div>
     </div>
