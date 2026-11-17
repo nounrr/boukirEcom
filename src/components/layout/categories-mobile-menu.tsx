@@ -12,7 +12,7 @@ import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 import { compareCategoryOrder } from '@/lib/category-order'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { CategoryThumb } from './category-thumb'
+import { CategoryThumb, useCategoryCovers } from './category-thumb'
 
 type CategoryByParent = Map<number, Category[]>
 
@@ -64,6 +64,16 @@ export function CategoriesMobileMenu({
     list.sort(byLabelThenId(locale))
     return list
   }, [categories, locale])
+
+  // Photos : rayons affichés + sous-catégories des rayons ouverts (photo d'un produit si besoin).
+  const coverTargets = useMemo(() => {
+    const visibleRoots = roots.slice(0, 18)
+    const expanded = visibleRoots
+      .filter((c) => expandedParents.includes(c.id))
+      .flatMap((c) => (childrenMap.get(c.id) ?? []).slice(0, 24))
+    return [...visibleRoots, ...expanded]
+  }, [roots, expandedParents, childrenMap])
+  const coverOf = useCategoryCovers(coverTargets, childrenMap, open)
 
   const toggleParent = (id: number) => {
     setExpandedParents((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -150,6 +160,7 @@ export function CategoriesMobileMenu({
                       <CategoryThumb
                         category={c}
                         label={label}
+                        cover={coverOf(c)}
                         className={cn('h-11 w-11 text-sm', isOnPrimary && 'ring-white/15')}
                         imgClassName="group-hover:scale-110"
                       />
@@ -192,7 +203,7 @@ export function CategoriesMobileMenu({
                   </div>
 
                   {hasChildren && isExpanded ? (
-                    <div className="grid grid-cols-2 gap-1.5 px-1.5 pb-1.5 animate-in fade-in-0 duration-200 motion-reduce:animate-none">
+                    <div className="grid grid-cols-2 gap-2 px-2 pb-2 animate-in fade-in-0 duration-200 motion-reduce:animate-none">
                       {children.slice(0, 24).map((child) => {
                         const childLabel = getCategoryLabel(child, locale)
                         return (
@@ -204,19 +215,23 @@ export function CategoriesMobileMenu({
                               setOpen(false)
                             }}
                             className={cn(
-                              'group flex min-w-0 items-center gap-2 rounded-xl p-1.5 text-xs font-medium transition-colors',
+                              'group flex min-w-0 flex-col overflow-hidden rounded-xl text-xs font-semibold transition-colors',
                               isOnPrimary
-                                ? 'bg-white/[0.06] text-white/80 hover:bg-white/[0.12] hover:text-white'
-                                : 'bg-background text-foreground/80 hover:bg-muted/60 hover:text-foreground'
+                                ? 'bg-white/[0.06] text-white/85 ring-1 ring-white/10 hover:bg-white/[0.12] hover:text-white'
+                                : 'bg-background text-foreground/85 ring-1 ring-border/50 hover:bg-muted/60 hover:text-foreground'
                             )}
                           >
                             <CategoryThumb
                               category={child}
                               label={childLabel}
-                              rounded="rounded-lg"
-                              className={cn('h-8 w-8 text-[11px]', isOnPrimary && 'ring-white/15')}
+                              cover={coverOf(child)}
+                              rounded="rounded-none"
+                              className="aspect-4/3 w-full text-xl ring-0"
+                              imgClassName="group-hover:scale-105"
                             />
-                            <span className="min-w-0 line-clamp-2 leading-snug [overflow-wrap:anywhere]">{childLabel}</span>
+                            <span className="block px-2 py-1.5">
+                              <span className="line-clamp-2 min-h-[2.5em] leading-snug [overflow-wrap:anywhere]">{childLabel}</span>
+                            </span>
                           </Link>
                         )
                       })}
