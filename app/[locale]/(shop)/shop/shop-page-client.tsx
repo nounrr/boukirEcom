@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button"
 import { useGetProductsQuery } from "@/state/api/products-api-slice"
 import { filterStateToApiRequest, type FilterState, type ProductsListResponse } from "@/types/api/products"
 import { sameFilterState, shopPageHref } from '@/lib/seo/shop-url'
-import type { ProductBrand, ProductCategory } from "@/types/api/products"
-import { Grid3x3, LayoutGrid, Package, SlidersHorizontal } from "lucide-react"
+import type { ProductBrand, ProductCategory, ProductListItem } from "@/types/api/products"
+import { Grid3x3, LayoutGrid, Package, Search, SlidersHorizontal, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 function getCategoryLabel(category: ProductCategory | undefined, locale: string) {
   if (!category) return ""
@@ -181,11 +181,60 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   // Convert filter state to API request
   const apiFilters = useMemo(() => filterStateToApiRequest(filterState), [filterState])
 
-  // Fetch products with filters (capture refetch for manual refresh)
-  const { data: queryData, isLoading: queryLoading, isFetching, error, refetch } = useGetProductsQuery(apiFilters)
-  const canUseInitialData = !queryData && sameFilterState(filterState, initialFilters)
+  // Chargement continu : pour les mêmes filtres, les pages suivantes s'ajoutent sous la liste
+  // (défilement ou bouton « Voir plus »). Changer un filtre repart de la page de départ.
+  const startPage = filterState.page || 1
+  const baseKey = useMemo(() => {
+    const { page: _page, ...rest } = apiFilters
+    return JSON.stringify(rest)
+  }, [apiFilters])
+  const listKey = `${baseKey}|${startPage}`
+  type LoadState = { key: string; lastPage: number; pages: Record<number, ProductListItem[]>; pagination?: ProductsListResponse['pagination'] }
+  const [loadState, setLoadState] = useState<LoadState>(() => ({ key: listKey, lastPage: startPage, pages: {} }))
+  const activeLoad: LoadState = loadState.key === listKey ? loadState : { key: listKey, lastPage: startPage, pages: {} }
+
+  const queryArgs = useMemo(() => ({ ...apiFilters, page: activeLoad.lastPage }), [apiFilters, activeLoad.lastPage])
+  const { currentData: queryData, isLoading: queryLoading, isFetching, error, refetch } = useGetProductsQuery(queryArgs)
+  const canUseInitialData = activeLoad.lastPage === startPage && sameFilterState(filterState, initialFilters)
   const data = queryData ?? (canUseInitialData ? initialData : undefined)
-  const isLoading = queryLoading && !canUseInitialData
+
+  // Range chaque page reçue à sa place (les pages déjà chargées restent affichées).
+  useEffect(() => {
+    if (!data) return
+    const page = data.pagination?.current_page ?? activeLoad.lastPage
+    setLoadState((prev) => {
+      const base = prev.key === listKey ? prev : { key: listKey, lastPage: startPage, pages: {} }
+      if (base.pages[page] === data.products && base.pagination === data.pagination) return base
+      return { ...base, pages: { ...base.pages, [page]: data.products }, pagination: data.pagination }
+    })
+  }, [data, listKey, startPage, activeLoad.lastPage])
+
+  const loadedProducts = useMemo(() => {
+    const seen = new Set<number>()
+    const out: ProductListItem[] = []
+    for (let page = startPage; page <= activeLoad.lastPage; page++) {
+      for (const product of activeLoad.pages[page] ?? (page === activeLoad.lastPage ? data?.products ?? [] : [])) {
+        if (seen.has(product.id)) continue
+        seen.add(product.id)
+        out.push(product)
+      }
+    }
+    return out
+  }, [activeLoad, startPage, data])
+
+  const isLoading = loadedProducts.length === 0 && (queryLoading || isFetching) && !canUseInitialData
+  const isLoadingMore = activeLoad.lastPage > startPage && !activeLoad.pages[activeLoad.lastPage]
+  // Dernière pagination connue (reste affichée pendant le chargement de la suite).
+  const lastPagination = data?.pagination ?? activeLoad.pagination
+  const hasMore = Boolean(lastPagination?.has_next) && !isLoadingMore && lastPagination?.current_page === activeLoad.lastPage
+
+  const loadMore = useCallback(() => {
+    if (!hasMore) return
+    setLoadState((prev) => {
+      const base = prev.key === listKey ? prev : { key: listKey, lastPage: startPage, pages: {} }
+      return { ...base, lastPage: base.lastPage + 1 }
+    })
+  }, [hasMore, listKey, startPage])
 
   // Extract metadata from API response
   const categories = data?.filters?.categories || []
@@ -195,8 +244,8 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   const availableUtilityTypes = data?.filters?.utility_types || []
   const minPrice = data?.filters?.price_range?.min || 0
   const maxPrice = data?.filters?.price_range?.max || 10000
-  const products = data?.products || []
-  const pagination = data?.pagination
+  const products = loadedProducts
+  const pagination = lastPagination
 
   const selectedCategoryLabels = useMemo(() => {
     if (!filterState.categories.length) return []
@@ -225,6 +274,33 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     setFilterState(filters)
   }, [])
 
+  // Barre de recherche centrée : saisie libre, appliquée après une courte pause.
+  const [searchInput, setSearchInput] = useState(filterState.search)
+  const lastAppliedSearch = useRef(filterState.search)
+  const resultsTopRef = useRef<HTMLDivElement | null>(null)
+  // Nouvelle recherche : si l'on était descendu dans la liste, on remonte au début des résultats.
+  const applySearch = useCallback((value: string) => {
+    lastAppliedSearch.current = value
+    setFilterState((prev) => ({ ...prev, search: value, page: 1 }))
+    const element = resultsTopRef.current
+    if (element && element.getBoundingClientRect().top < 0) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [])
+  useEffect(() => {
+    // Recherche modifiée ailleurs (URL, retour arrière) : la barre suit.
+    if (filterState.search !== lastAppliedSearch.current) {
+      lastAppliedSearch.current = filterState.search
+      setSearchInput(filterState.search)
+    }
+  }, [filterState.search])
+  useEffect(() => {
+    const value = searchInput.trim()
+    if (value === lastAppliedSearch.current) return
+    const id = window.setTimeout(() => applySearch(value), 350)
+    return () => window.clearTimeout(id)
+  }, [searchInput, applySearch])
+
   const handleAddToCart = useCallback((productId: number, variantId?: number) => {
     console.log("Add to cart:", productId, variantId)
     // TODO: Implement add to cart
@@ -243,10 +319,6 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     // TODO: Implement quick view modal
   }, [])
 
-  const handlePageChange = useCallback((page: number) => {
-    setFilterState((prev) => ({ ...prev, page }))
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }, [])
 
   const viewToggle = (
     <div className="flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-full bg-muted/40 px-1.5 sm:px-2 shadow-sm ring-1 ring-border/30">
@@ -290,8 +362,42 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{heading}</h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
         </header>
+        {/* Barre de recherche : centrée, reste collée sous le menu pendant le défilement */}
+        <div className="sticky top-[var(--site-header-h,64px)] z-30 -mx-6 mb-5 border-b border-border/50 bg-background/85 px-6 py-3 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16">
+          <form
+            role="search"
+            onSubmit={(event) => {
+              event.preventDefault()
+              applySearch(searchInput.trim())
+            }}
+            className="relative mx-auto w-full max-w-2xl"
+          >
+            <label htmlFor="shop-search" className="sr-only">{t("searchBarPlaceholder")}</label>
+            <Search className="pointer-events-none absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <input
+              id="shop-search"
+              type="search"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder={t("searchBarPlaceholder")}
+              enterKeyHint="search"
+              className="h-12 w-full rounded-full border border-border bg-card ps-12 pe-12 text-[15px] shadow-sm outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
+            />
+            {searchInput ? (
+              <button
+                type="button"
+                onClick={() => setSearchInput("")}
+                aria-label={t("clearSearch")}
+                className="absolute end-2.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </form>
+        </div>
+
         {/* Toolbar: filter toggle, results, view toggle */}
-        <div className="mb-5 rounded-2xl border border-border/40 bg-card/60 px-5 py-3 shadow-sm backdrop-blur-sm">
+        <div ref={resultsTopRef} className="scroll-mt-[calc(var(--site-header-h,64px)+5.5rem)] mb-5 rounded-2xl border border-border/40 bg-card/60 px-5 py-3 shadow-sm backdrop-blur-sm">
           <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Left: Desktop filters collapse toggle */}
             <div className="hidden lg:flex items-center">
@@ -322,24 +428,14 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
                     <span>
                       <span className="font-semibold">{pagination?.total_items || 0}</span>{" "}
                       {t("productsLabel", { defaultValue: "produits" })}
-                      {pagination && pagination.total_items > 0 && (
-                        <span className="ml-2 text-[11px] sm:text-xs opacity-90 text-primary">
-                          ·{" "}
-                          {t("pageXofY", {
-                            current: pagination.current_page,
-                            total: pagination.total_pages,
-                            defaultValue: "Page {current}/{total}",
-                          })}
-                        </span>
-                      )}
+
                     </span>
                   </div>
                   <p className="mt-2 text-[11px] text-muted-foreground sm:text-xs">
                     {pagination && pagination.total_items > 0 ? (
-                      <>
-                        {t("showing", { defaultValue: "Affichage" })} <span className="font-medium text-foreground">{pagination.from}-{pagination.to}</span>{" "}
-                        {t("of", { defaultValue: "sur" })} <span className="font-medium text-foreground">{pagination.total_items}</span>
-                      </>
+                      <span className="font-medium text-foreground">
+                        {t("loadedOf", { loaded: products.length, total: pagination.total_items })}
+                      </span>
                     ) : null}
                     <span className="ml-2">• {t("taglineShort", { defaultValue: "Livraison rapide • Paiement sécurisé" })}</span>
                   </p>
@@ -381,8 +477,10 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
             selectedCategoryLabels={selectedCategoryLabels}
             selectedBrandLabels={selectedBrandLabels}
             pagination={pagination}
-            pageHref={(page) => shopPageHref(pathname, searchParams, page)}
-            onPageChange={handlePageChange}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={loadMore}
+            nextHref={shopPageHref(pathname, searchParams, activeLoad.lastPage + 1)}
             onAddToCart={handleAddToCart}
             onToggleWishlist={handleToggleWishlist}
             onQuickView={handleQuickView}

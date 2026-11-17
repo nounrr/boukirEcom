@@ -982,7 +982,10 @@
     "heroStatDeliveryDesc": "إلى جميع مدن المغرب",
     "viewAll": "عرض الكل",
     "noProducts": "لا توجد منتجات حالياً.",
-    "trustPayment": "دفع آمن"
+    "trustPayment": "دفع آمن",
+    "searchBarPlaceholder": "ابحث عن منتج أو علامة تجارية أو مرجع…",
+    "clearSearch": "مسح البحث",
+    "loadedOf": "{loaded} من {total} منتج"
   },
   "productsList": {
     "filtersSummaryLabel": "تمت التصفية حسب",
@@ -998,7 +1001,11 @@
     "badges": {
       "new": "جديد",
       "promo": "عرض"
-    }
+    },
+    "loadMore": "عرض المزيد من المنتجات",
+    "remaining": "{count, plural, one {متبقٍ واحد} other {# متبقية}}",
+    "loadingMore": "جارٍ التحميل…",
+    "allLoaded": "لقد شاهدت جميع المنتجات"
   },
   "productCard": {
     "priceUnavailable": "السعر غير متوفر",

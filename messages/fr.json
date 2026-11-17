@@ -845,7 +845,10 @@
     "heroStatDeliveryDesc": "partout au Maroc",
     "viewAll": "Voir tout",
     "noProducts": "Aucun produit pour le moment.",
-    "trustPayment": "Paiement sécurisé"
+    "trustPayment": "Paiement sécurisé",
+    "searchBarPlaceholder": "Rechercher un produit, une marque, une référence…",
+    "clearSearch": "Effacer la recherche",
+    "loadedOf": "{loaded} sur {total} produits"
   },
   "productsList": {
     "filtersSummaryLabel": "Filtré par",
@@ -861,7 +864,11 @@
     "badges": {
       "new": "NOUVEAU",
       "promo": "PROMO"
-    }
+    },
+    "loadMore": "Voir plus de produits",
+    "remaining": "{count, plural, one {# restant} other {# restants}}",
+    "loadingMore": "Chargement…",
+    "allLoaded": "Vous avez vu tous les produits"
   },
   "productCard": {
     "priceUnavailable": "Prix indisponible",

@@ -982,7 +982,10 @@
     "heroStatDeliveryDesc": "across Morocco",
     "viewAll": "View all",
     "noProducts": "No products available right now.",
-    "trustPayment": "Secure payment"
+    "trustPayment": "Secure payment",
+    "searchBarPlaceholder": "Search a product, a brand, a reference…",
+    "clearSearch": "Clear search",
+    "loadedOf": "{loaded} of {total} products"
   },
   "productsList": {
     "filtersSummaryLabel": "Filtered by",
@@ -998,7 +1001,11 @@
     "badges": {
       "new": "NEW",
       "promo": "DEAL"
-    }
+    },
+    "loadMore": "Show more products",
+    "remaining": "{count, plural, one {# left} other {# left}}",
+    "loadingMore": "Loading…",
+    "allLoaded": "You have seen all products"
   },
   "productCard": {
     "priceUnavailable": "Price unavailable",

@@ -546,20 +546,7 @@ export function ProductFilters({
           </Select>
         </div>
 
-        {/* Search */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{t('searchTitle')}</span>
-          </div>
-          <Input
-            type="search"
-            placeholder={t('searchPlaceholder')}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="h-9 text-sm"
-          />
-        </div>
+        {/* La recherche est dans la barre centrée en haut de la boutique. */}
 
         {/* Categories */}
         {categories.length > 0 && (

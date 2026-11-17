@@ -4,8 +4,8 @@ import { isRequiredVariant } from '@/lib/product-card-price'
 import { ProductCardRow } from "@/components/shop/product-card-row"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Package, Tag, Store } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { ChevronDown, Loader2, Package, Tag, Store } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
 import Link from 'next/link'
@@ -29,8 +29,12 @@ interface ProductsListProps {
     from: number
     to: number
   }
-  onPageChange: (page: number) => void
-  pageHref: (page: number) => string
+  /** Chargement continu : plus de pagination numérotée, la suite s'ajoute sous la liste. */
+  hasMore: boolean
+  isLoadingMore: boolean
+  onLoadMore: () => void
+  /** Lien réel vers la page suivante (lisible par les moteurs de recherche). */
+  nextHref?: string
   onAddToCart: (productId: number, variantId?: number) => void
   onToggleWishlist: (productId: number) => void
   onQuickView: (productId: number) => void
@@ -47,8 +51,10 @@ export function ProductsList({
   selectedCategoryLabels,
   selectedBrandLabels,
   pagination,
-  onPageChange,
-  pageHref,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
+  nextHref,
   onAddToCart,
   onToggleWishlist,
   onQuickView,
@@ -60,6 +66,21 @@ export function ProductsList({
 
   const isListView = viewMode === 'list'
   const [isMobile, setIsMobile] = useState(false)
+
+  // Défilement infini : quand le bas de la liste approche de l'écran, on charge la suite.
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const loadMoreRef = useRef(onLoadMore)
+  loadMoreRef.current = onLoadMore
+  useEffect(() => {
+    const element = sentinelRef.current
+    if (!element || !hasMore || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) loadMoreRef.current()
+    }, { rootMargin: '900px 0px' })
+    observer.observe(element)
+    return () => observer.disconnect()
+    // Ré-armé après chaque chargement : si le bas de la liste est encore visible, la suite arrive aussi.
+  }, [hasMore, isLoadingMore, products.length])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -267,58 +288,49 @@ export function ProductsList({
                   )
       )}
 
-      {/* Pagination */}
-      {pagination && pagination.total_pages > 1 && !isLoading && (
-        <div className="mt-6 flex justify-center">
-          <div className="inline-flex items-center gap-2 border border-border/40 rounded-lg p-2">
-            {pagination.current_page > 1 ? (
-              <Button asChild variant="ghost" size="sm" className="h-9 px-3">
-                <Link href={pageHref(pagination.current_page - 1)} onClick={() => onPageChange(pagination.current_page - 1)}>
-                  <ChevronLeft className="w-4 h-4 mr-1" />{t('previous')}
-                </Link>
-              </Button>
-            ) : (
-              <Button variant="ghost" size="sm" disabled className="h-9 px-3"><ChevronLeft className="w-4 h-4 mr-1" />{t('previous')}</Button>
-            )}
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
-                let pageNum: number;
-                if (pagination.total_pages <= 5) {
-                  pageNum = i + 1;
-                } else if (pagination.current_page <= 3) {
-                  pageNum = i + 1;
-                } else if (pagination.current_page >= pagination.total_pages - 2) {
-                  pageNum = pagination.total_pages - 4 + i;
-                } else {
-                  pageNum = pagination.current_page - 2 + i;
-                }
-
-                return (
-                  <Button asChild
-                    key={pageNum}
-                    variant={pagination.current_page === pageNum ? 'default' : 'ghost'}
-                    size="sm"
-                    className="h-9 w-9"
-                  >
-                    <Link href={pageHref(pageNum)} aria-current={pagination.current_page === pageNum ? 'page' : undefined} onClick={() => onPageChange(pageNum)}>{pageNum}</Link>
-                  </Button>
-                );
-              })}
+      {/* Suite de la liste : chargement automatique au défilement + bouton « Voir plus » */}
+      {!isLoading && !error && transformedProducts.length > 0 ? (
+        <div className="mt-8 flex flex-col items-center gap-3">
+          {isLoadingMore ? (
+            <div className={`grid w-full gap-5 ${isListView && isMobile ? 'grid-cols-1' : isListView ? gridColumnsLarge : gridColumns}`} aria-hidden="true">
+              {Array.from({ length: isMobile ? 2 : 3 }).map((_, i) => (
+                <div key={i} className="overflow-hidden rounded-[1.4rem] border border-border/40 bg-card">
+                  <div className="aspect-square animate-pulse bg-muted" />
+                  <div className="space-y-3 p-4">
+                    <div className="h-4 animate-pulse rounded bg-muted/70" />
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-muted/50" />
+                  </div>
+                </div>
+              ))}
             </div>
-
-            {pagination.current_page < pagination.total_pages ? (
-              <Button asChild variant="ghost" size="sm" className="h-9 px-3">
-                <Link href={pageHref(pagination.current_page + 1)} onClick={() => onPageChange(pagination.current_page + 1)}>
-                  {t('next')}<ChevronRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
-            ) : (
-              <Button variant="ghost" size="sm" disabled className="h-9 px-3">{t('next')}<ChevronRight className="w-4 h-4 ml-1" /></Button>
-            )}
-          </div>
+          ) : null}
+          <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />
+          {hasMore ? (
+            <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-7 text-sm font-semibold">
+              <Link
+                href={nextHref ?? '#'}
+                rel="next"
+                scroll={false}
+                aria-busy={isLoadingMore}
+                onClick={(event) => {
+                  event.preventDefault()
+                  onLoadMore()
+                }}
+              >
+                {isLoadingMore ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
+                {isLoadingMore ? t('loadingMore') : t('loadMore')}
+                {pagination && !isLoadingMore ? (
+                  <span className="text-xs font-normal text-muted-foreground">
+                    · {t('remaining', { count: Math.max(0, pagination.total_items - transformedProducts.length) })}
+                  </span>
+                ) : null}
+              </Link>
+            </Button>
+          ) : pagination && pagination.total_items > (pagination.per_page || 0) ? (
+            <p className="rounded-full border border-border/50 px-5 py-2 text-xs font-medium text-muted-foreground">{t('allLoaded')}</p>
+          ) : null}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

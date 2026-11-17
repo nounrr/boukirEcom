@@ -982,7 +982,10 @@
     "heroStatDeliveryDesc": "摩洛哥全境",
     "viewAll": "查看全部",
     "noProducts": "暂无商品。",
-    "trustPayment": "安全支付"
+    "trustPayment": "安全支付",
+    "searchBarPlaceholder": "搜索产品、品牌或型号…",
+    "clearSearch": "清除搜索",
+    "loadedOf": "已显示 {loaded} / {total} 件产品"
   },
   "productsList": {
     "filtersSummaryLabel": "筛选条件",
@@ -998,7 +1001,11 @@
     "badges": {
       "new": "新品",
       "promo": "优惠"
-    }
+    },
+    "loadMore": "查看更多产品",
+    "remaining": "{count, plural, other {还有 # 件}}",
+    "loadingMore": "加载中…",
+    "allLoaded": "已显示全部产品"
   },
   "productCard": {
     "priceUnavailable": "价格不可用",
