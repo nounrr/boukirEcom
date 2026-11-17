@@ -1335,7 +1335,8 @@
     "showMore": "Afficher plus",
     "productNumber": "Produit #{id}",
     "orderNumber": "Commande #{id}",
-    "paymentResult": "Résultat du paiement"
+    "paymentResult": "Résultat du paiement",
+    "back": "Retour"
   },
   "auth": {
     "login": "Connexion",

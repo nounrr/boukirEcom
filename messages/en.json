@@ -1474,7 +1474,8 @@
     "showMore": "Show more",
     "productNumber": "Product #{id}",
     "orderNumber": "Order #{id}",
-    "paymentResult": "Payment result"
+    "paymentResult": "Payment result",
+    "back": "Back"
   },
   "auth": {
     "login": "Login",

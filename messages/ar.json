@@ -1474,7 +1474,8 @@
     "showMore": "عرض المزيد",
     "productNumber": "منتج #{id}",
     "orderNumber": "طلب #{id}",
-    "paymentResult": "نتيجة الأداء"
+    "paymentResult": "نتيجة الأداء",
+    "back": "رجوع"
   },
   "auth": {
     "login": "تسجيل الدخول",

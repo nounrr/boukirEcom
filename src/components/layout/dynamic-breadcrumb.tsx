@@ -12,6 +12,7 @@ import { useGetOrderQuery } from '@/state/api/orders-api-slice'
 import { getSupportedLocales } from '@/components/i18n/locale-preference-initializer'
 import { catalogPage } from '@/lib/catalog/registry'
 import { catalogText } from '@/lib/catalog/i18n'
+import { BackButton } from '@/components/layout/back-button'
 
 const cgvBreadcrumbLabels: Record<string, string> = {
   fr: 'Conditions générales de vente',
@@ -250,10 +251,15 @@ export function DynamicBreadcrumb() {
 
   if (!segments.length) return null
 
+  // Repli du bouton « Retour » quand on est arrivé directement ici : la page parente du fil d'Ariane.
+  const parentHref = segments.length > 1 ? segments[segments.length - 2].href : `/${locale}`
+
   return (
     <div className="no-print border-b border-border bg-background">
-      <div className="mx-auto max-w-[1440px] px-4 py-2.5 sm:px-6 lg:px-10">
-        <Breadcrumb>
+      <div className="mx-auto flex max-w-[1440px] items-center gap-2 px-4 py-2 sm:gap-3 sm:px-6 lg:px-10">
+        <BackButton fallbackHref={parentHref} label={t('back')} />
+        <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
+        <Breadcrumb className="min-w-0 flex-1">
           <BreadcrumbList className="flex-nowrap md:flex-wrap gap-1 overflow-x-auto md:overflow-visible">
             <BreadcrumbItem>
               <BreadcrumbLink 
