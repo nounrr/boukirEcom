@@ -44,3 +44,10 @@ export const MOBILE_APP = {
   appStoreUrl: (process.env.NEXT_PUBLIC_APP_STORE_URL || '').trim() || null,
   playStoreUrl: (process.env.NEXT_PUBLIC_PLAY_STORE_URL || '').trim() || null,
 } as const
+
+/** Captures de l'application mobile (500×877), affichées dans les téléphones de la section « Application ». */
+export const APP_SCREENS = {
+  home: '/store/app/app-accueil.webp',
+  catalogue: '/store/app/app-catalogue.webp',
+  deals: '/store/app/app-bons-plans.webp',
+} as const

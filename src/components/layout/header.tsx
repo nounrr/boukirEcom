@@ -224,7 +224,7 @@ export function Header() {
         </a>
 
         {/* Row 1 — brand, search, actions */}
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 xl:px-10">
           <div className="flex h-16 items-center gap-3 lg:h-[72px] lg:gap-6">
             <Link href={`/${locale}`} className="shrink-0 rounded-md outline-offset-4" aria-label="Boukir Construction">
               <BrandLockup />
@@ -368,7 +368,7 @@ export function Header() {
 
         {/* Row 2 — catalogue navigation (desktop) */}
         <div className={cn("hidden border-t lg:block", overlay ? "border-white/10" : "border-white/[0.06]")}>
-          <div className="mx-auto flex h-12 max-w-[1440px] items-center gap-2 px-10">
+          <div className="mx-auto flex h-12 max-w-[1440px] items-center gap-2 px-6 xl:px-10">
             {/* « Catégories » : simple bouton vers la page de toutes les catégories (plus de menu au survol) */}
             <Link
               href={`/${locale}/categories`}
@@ -385,7 +385,7 @@ export function Header() {
               </span>
               {t("categories")}
             </Link>
-            <span className="mx-2 h-5 w-px bg-white/15" aria-hidden="true" />
+            <span className="mx-1 h-5 w-px bg-white/15 xl:mx-2" aria-hidden="true" />
             <nav aria-label={tx("mainNavigation")} className="flex min-w-0 items-center gap-0.5">
               {primaryLinks.map((link) => (
                 <Link
@@ -393,7 +393,7 @@ export function Header() {
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
                   className={cn(
-                    "relative whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5",
+                    "relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5",
                     "after:absolute after:inset-x-3.5 after:-bottom-[9px] after:h-px after:origin-center after:scale-x-0 after:bg-brand-orange after:transition-transform after:duration-300 hover:after:scale-x-100",
                     isActive(link.href) && "text-white after:scale-x-100"
                   )}
@@ -411,17 +411,19 @@ export function Header() {
               </Link>
               <Link
                 href={`/${locale}/studio`}
-                className="whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5"
+                className="whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5"
               >
                 {tx("studio")}
               </Link>
             </nav>
             <Link
               href={`/${locale}/contact`}
-              className="ms-auto inline-flex shrink-0 items-center gap-2 whitespace-nowrap text-[13px] font-medium text-white/75 transition-colors hover:text-white"
+              title={t("contactUs")}
+              className="ms-auto inline-flex size-9 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-[13px] font-medium text-white/75 transition-colors hover:bg-white/10 hover:text-white xl:size-auto xl:hover:bg-transparent"
             >
               <Mail className="size-3.5" aria-hidden="true" />
-              {t("contactUs")}
+              {/* Entre 1024 et 1280 px, seule l'icône tient sur la ligne ; le texte reste lu par les lecteurs d'écran. */}
+              <span className="sr-only xl:not-sr-only">{t("contactUs")}</span>
             </Link>
           </div>
         </div>
