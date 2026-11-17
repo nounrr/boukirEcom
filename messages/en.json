@@ -2299,5 +2299,18 @@
         "description": "Waiting for the bank’s confirmation. This takes a few seconds."
       }
     }
+  },
+  "clientFeedback": {
+    "title": "The work is finished",
+    "text": "The Maalem has finished. Validate the work, or file a complaint: the team reads your comment.",
+    "validate": "Validate the work",
+    "complaint": "Complaint",
+    "commentPh": "A comment (optional)",
+    "complaintPh": "Explain what is wrong",
+    "complaintNeedsText": "Explain what is wrong for the complaint.",
+    "send": "Send",
+    "validatedDone": "You validated the work. Thank you!",
+    "complaintDone": "Your complaint was sent: the team will contact you.",
+    "error": "Could not send. Try again."
   }
 }

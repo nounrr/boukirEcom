@@ -2299,5 +2299,18 @@
         "description": "正在等待银行确认，需要几秒钟。"
       }
     }
+  },
+  "clientFeedback": {
+    "title": "工作已完成",
+    "text": "师傅已完成工作。请确认工作，或提出投诉：团队会阅读您的意见。",
+    "validate": "确认工作",
+    "complaint": "投诉",
+    "commentPh": "意见（可选）",
+    "complaintPh": "请说明问题",
+    "complaintNeedsText": "投诉时请说明问题。",
+    "send": "发送",
+    "validatedDone": "您已确认工作，谢谢！",
+    "complaintDone": "您的投诉已发送，团队会联系您。",
+    "error": "发送失败，请重试。"
   }
 }

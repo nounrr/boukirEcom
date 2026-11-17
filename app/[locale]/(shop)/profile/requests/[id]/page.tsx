@@ -31,6 +31,7 @@ import {
 import { AccountSidebar } from '@/components/account/account-sidebar'
 import { MaalemReviewForm } from '@/components/service-requests/maalem-review-form'
 import { ServicePaymentCard } from '@/components/service-requests/service-payment-card'
+import { ClientFeedbackCard } from '@/components/service-requests/client-feedback-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getServiceRequestStatusPresentation } from '@/lib/service-request-display'
@@ -311,6 +312,8 @@ export default function ServiceRequestTrackingPage() {
                   </div>
                 </div>
               </section>
+
+              <ClientFeedbackCard details={details} accessToken={accessToken!} onSent={() => void getServiceRequestDetails(request.id, accessToken!).then(setDetails).catch(() => {})} />
 
               <ServicePaymentCard requestId={request.id} accessToken={accessToken!} />
 

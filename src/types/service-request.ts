@@ -233,6 +233,10 @@ export interface ServiceRequestDetails extends CreateServiceRequestResponse {
     actor_name: string
     created_at: string
   }>
+  /** The client's verdict on the finished work, once given. */
+  client_feedback?: { kind: 'validated' | 'complaint'; at?: string } | null
+  /** True once the Maalem (or the team) finished: the client can validate or file a complaint. */
+  can_give_feedback?: boolean
 }
 
 export interface MaalemReview {
