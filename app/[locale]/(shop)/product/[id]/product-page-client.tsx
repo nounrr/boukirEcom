@@ -537,7 +537,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                           aria-pressed={selected}
                           title={formatCommercialUnit(u.unit_name || u.name, locale as any)}
                           className={cn(
-                            "inline-flex cursor-pointer flex-col items-start rounded-2xl border px-4 py-2.5 text-start transition-[border-color,background-color,color,box-shadow,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
+                            "inline-flex cursor-pointer flex-col items-start rounded-2xl border px-4 py-2.5 text-start transition-[border-color,background-color,color,box-shadow,transform,translate,scale,rotate] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
                             selected
                               ? "border-transparent bg-ink text-white shadow-[0_14px_30px_-16px_rgba(13,13,13,0.6)] dark:bg-brand-yellow dark:text-ink"
                               : "border-border bg-card hover:border-[rgba(242,159,4,0.6)]"
@@ -580,7 +580,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                   type="button"
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className="group/cta relative inline-flex h-14 flex-1 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gold px-5 text-[15px] font-semibold whitespace-nowrap text-ink shadow-[0_18px_40px_-16px_rgba(242,159,4,0.85)] transition-[transform,box-shadow] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:shadow-[0_28px_54px_-18px_rgba(242,159,4,0.95)] active:translate-y-0 disabled:opacity-70"
+                  className="group/cta relative inline-flex h-14 flex-1 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gold px-5 text-[15px] font-semibold whitespace-nowrap text-ink shadow-[0_18px_40px_-16px_rgba(242,159,4,0.85)] transition-[transform,translate,scale,rotate,box-shadow] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:shadow-[0_28px_54px_-18px_rgba(242,159,4,0.95)] active:translate-y-0 disabled:opacity-70"
                 >
                   <span className="pointer-events-none absolute inset-y-0 start-0 w-1/3 -translate-x-[120%] -skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-[1600ms] ease-[var(--ease-slow)] group-hover/cta:translate-x-[360%] rtl:translate-x-[120%] rtl:group-hover/cta:-translate-x-[360%]" aria-hidden="true" />
                   <ShoppingCart className="relative size-[18px]" aria-hidden="true" />
@@ -594,7 +594,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                   aria-label={isInWishlist ? tProductCard("removeFromWishlist") : tProductCard("addToWishlist")}
                   title={isInWishlist ? tProductCard("removeFromWishlist") : tProductCard("addToWishlist")}
                   className={cn(
-                    "grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border transition-[background-color,border-color,color,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
+                    "grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border transition-[background-color,border-color,color,transform,translate,scale,rotate] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5",
                     isInWishlist ? "border-transparent bg-[#e0303a] text-white" : "border-border bg-card hover:border-[#e0303a]/50 hover:text-[#e0303a]"
                   )}
                 >
@@ -605,7 +605,7 @@ export default function ProductPage({ initialProduct }: { initialProduct: Produc
                   onClick={handleShare}
                   aria-label={tx("share")}
                   title={tx("share")}
-                  className="grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border border-border bg-card transition-[border-color,color,transform] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:border-[rgba(242,159,4,0.6)] hover:text-accent-text"
+                  className="grid size-14 shrink-0 cursor-pointer place-items-center rounded-full border border-border bg-card transition-[border-color,color,transform,translate,scale,rotate] duration-700 ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:border-[rgba(242,159,4,0.6)] hover:text-accent-text"
                 >
                   <Share2 className="size-5" aria-hidden="true" />
                 </button>

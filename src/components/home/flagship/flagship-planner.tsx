@@ -35,10 +35,10 @@ export function FlagshipPlanner({ locale }: { locale: string }) {
         />
         <ol className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
           {steps.map((step, index) => (
-            <li key={step} data-reveal style={{ ["--reveal-delay" as string]: `${index * 80}ms` }}>
+            <li key={step} className="group" data-reveal style={{ ["--reveal-delay" as string]: `${index * 80}ms` }}>
               <Link
                 href={`/${locale}/projet`}
-                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] border border-border bg-surface p-5 transition-[transform,border-color] duration-500 hover:-translate-y-1 hover:border-primary/50 lg:min-h-[190px]"
+                className="relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] border border-border bg-surface p-5 transition-[transform,translate,scale,rotate,border-color] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 group-hover:border-primary/50 lg:min-h-[190px]"
               >
                 <span className="text-4xl font-extrabold text-foreground/10 tabular transition-colors duration-500 group-hover:text-accent-text">{String(index + 1).padStart(2, "0")}</span>
                 <span className="mt-8 flex items-center justify-between gap-2 text-sm font-semibold">

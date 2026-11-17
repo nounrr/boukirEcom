@@ -76,13 +76,14 @@ export function HomeUtilityTypeSelector({
             const href = buildShopHref(activeLocale, item.value)
 
             return (
+              // Cadre fixe qui reçoit le survol ; seule la carte se soulève.
+              <div key={item.value} className="group relative">
               <Link
-                key={item.value}
                 href={href}
                 className={cn(
-                  'group relative block h-[224px] overflow-hidden rounded-3xl border border-white/15 bg-black shadow-lg outline-none md:h-[276px]',
-                  'motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-500 motion-safe:ease-out',
-                  'hover:border-primary/55 hover:shadow-[0_22px_55px_-25px_rgba(0,0,0,0.8)] motion-safe:hover:-translate-y-1',
+                  'relative block h-[224px] overflow-hidden rounded-3xl border border-white/15 bg-black shadow-lg outline-none md:h-[276px]',
+                  'motion-safe:transition-[transform,translate,scale,rotate,box-shadow,border-color] motion-safe:duration-[700ms] motion-safe:ease-hover motion-safe:will-change-transform',
+                  'group-hover:border-primary/55 group-hover:shadow-[0_22px_55px_-25px_rgba(0,0,0,0.8)] motion-safe:group-hover:-translate-y-1',
                   'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
                 )}
               >
@@ -119,6 +120,7 @@ export function HomeUtilityTypeSelector({
                   <ArrowRight className="h-5 w-5" strokeWidth={2.25} />
                 </span>
               </Link>
+              </div>
             )
           })}
         </div>

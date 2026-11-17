@@ -27,10 +27,12 @@ function apiLogo(src?: string | null) {
 function LogoTile({ brand, locale }: { brand: LogoBrand; locale: string }) {
   const [src, setSrc] = useState(brand.src)
   return (
+    // Cadre fixe qui reçoit le survol ; seule la tuile se soulève.
+    <div className="group relative shrink-0">
     <Link
       href={catalogHref(locale, "marques", brand.id)}
       draggable={false}
-      className="group relative flex h-28 w-[180px] items-center justify-center overflow-hidden rounded-2xl border border-black/[0.06] bg-white px-5 shadow-[0_10px_30px_-18px_rgba(13,13,13,0.35)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_22px_40px_-20px_rgba(242,159,4,0.55)] sm:h-32 sm:w-[210px]"
+      className="relative flex h-28 w-[180px] items-center justify-center overflow-hidden rounded-2xl border border-black/[0.06] bg-white px-5 shadow-[0_10px_30px_-18px_rgba(13,13,13,0.35)] transition-[transform,translate,scale,rotate,box-shadow] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 group-hover:shadow-[0_22px_40px_-20px_rgba(242,159,4,0.55)] sm:h-32 sm:w-[210px]"
       aria-label={brand.name}
     >
       <Image
@@ -48,6 +50,7 @@ function LogoTile({ brand, locale }: { brand: LogoBrand; locale: string }) {
       />
       <span className="absolute inset-x-6 bottom-0 h-0.5 origin-center scale-x-0 bg-gold transition-transform duration-500 group-hover:scale-x-100" aria-hidden="true" />
     </Link>
+    </div>
   )
 }
 

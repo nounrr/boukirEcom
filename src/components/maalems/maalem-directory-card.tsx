@@ -27,8 +27,9 @@ export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0 }
   const ratingLabel = hasRating ? labels.ratingLabel.replace('{rating}', ratingValue as string).replace('{count}', String(stats.review_count)) : labels.noReviews
   const blurb = maalem.professional_summary?.trim() || (maalem.skills.length > 0 ? maalem.skills.join(' · ') : null)
 
-  return <article
-    className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.4rem] border border-border bg-card transition-[transform,box-shadow,border-color] duration-[800ms] ease-[var(--ease-slow)] focus-within:border-[rgba(242,159,4,0.6)] hover:-translate-y-1 hover:border-[rgba(242,159,4,0.6)] hover:shadow-[0_30px_60px_-34px_rgba(13,13,13,0.5)]"
+  // Cadre fixe qui reçoit le survol ; seule la carte se soulève (pas de tremblement au bord).
+  return <div className="group relative flex h-full min-w-0"><article
+    className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden rounded-[1.4rem] border border-border bg-card transition-[transform,translate,scale,rotate,box-shadow,border-color] duration-[700ms] ease-hover will-change-transform focus-within:border-[rgba(242,159,4,0.6)] group-hover:-translate-y-1 group-hover:border-[rgba(242,159,4,0.6)] group-hover:shadow-[0_30px_60px_-34px_rgba(13,13,13,0.5)]"
     data-reveal
     style={{ ['--reveal-delay' as string]: `${(index % 4) * 80}ms` } as CSSProperties}
   >
@@ -62,5 +63,5 @@ export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0 }
         </Link>
       </div>
     </div>
-  </article>
+  </article></div>
 }

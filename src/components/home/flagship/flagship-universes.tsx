@@ -91,7 +91,7 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
                 <div
                   key={u.slug}
                   className={cn(
-                    "absolute inset-0 transition-[opacity,transform,clip-path] duration-[1100ms] ease-[var(--ease-premium)]",
+                    "absolute inset-0 transition-[opacity,transform,translate,scale,rotate,clip-path] duration-[1100ms] ease-[var(--ease-premium)]",
                     index === active ? "opacity-100 [clip-path:inset(0_0_0_0)]" : "opacity-0 [clip-path:inset(8%_8%_8%_8%)] scale-[1.04]"
                   )}
                   aria-hidden={index !== active}

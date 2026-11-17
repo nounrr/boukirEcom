@@ -166,7 +166,7 @@ export function Footer({
                     data-reveal
                     style={{ ['--reveal-delay' as string]: `${300 + index * 90}ms` }}
                     className={cn(
-                      'group inline-flex h-13 items-center justify-center gap-2.5 rounded-full px-6 text-sm font-semibold transition-[background-color,color,box-shadow,transform] duration-300',
+                      'group inline-flex h-13 items-center justify-center gap-2.5 rounded-full px-6 text-sm font-semibold transition-[background-color,color,box-shadow,transform,translate,scale,rotate] duration-300',
                       action.style === 'gold'
                         ? 'order-first bg-gold text-ink shadow-[0_18px_40px_-16px_rgba(242,159,4,0.9)] hover:-translate-y-0.5 sm:order-none'
                         : 'border border-white/15 bg-white/[0.03] text-white hover:border-white/40 hover:bg-white/[0.07]'

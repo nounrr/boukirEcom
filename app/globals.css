@@ -22,15 +22,17 @@
 
   /* Motion tokens */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
-  /* Slow-motion hovers: long, very soft deceleration */
-  --ease-slow: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Slow-motion hovers: slow start AND slow stop, identical going in and coming out
+     (an ease-out curve here made hovers look instant: most of the move happened in the first frames). */
+  --ease-slow: cubic-bezier(0.45, 0, 0.2, 1);
+  --ease-hover: cubic-bezier(0.45, 0, 0.2, 1);
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.5, 0, 0.2, 1);
 
   /* Survol en douceur : durée et courbe par défaut de toutes les classes transition-*
      (entrée et sortie identiques, symétriques). */
   --default-transition-duration: 450ms;
-  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
 
   --animate-draw: bd-draw 1.4s var(--ease-premium) both;
   --animate-rise: bd-rise 0.9s var(--ease-premium) both;
@@ -209,7 +211,7 @@
 /* Survol en douceur : réglages communs (une seule valeur à changer : --hover-dur). */
 :root {
   --hover-dur: 450ms;
-  --hover-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --hover-ease: cubic-bezier(0.45, 0, 0.2, 1);
   --press-dur: 120ms;
 }
 

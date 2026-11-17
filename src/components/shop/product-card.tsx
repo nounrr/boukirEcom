@@ -433,25 +433,28 @@ export function ProductCard({
       aria-label={t('addToCart')}
       title={t('addToCart')}
       className={cn(
-        'relative grid shrink-0 place-items-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow] duration-300 ease-[var(--ease-premium)] active:scale-90',
+        // Survol lent et symétrique ; l'appui reste vif (active:duration-150).
+        'relative grid shrink-0 place-items-center overflow-hidden rounded-full transition-[transform,translate,rotate,scale,background-color,box-shadow] duration-[500ms] ease-hover will-change-transform active:scale-90 active:duration-150',
         size === 'lg' ? 'size-12' : 'size-10',
         isAddedToCart
           ? 'bg-[#1f9d55] text-white shadow-[0_10px_24px_-10px_rgba(31,157,85,0.9)]'
-          : 'bg-gold text-ink shadow-[0_12px_26px_-12px_rgba(242,159,4,0.95)] hover:scale-110 hover:shadow-[0_16px_32px_-12px_rgba(242,159,4,1)]'
+          : 'bg-gold text-ink shadow-[0_12px_26px_-12px_rgba(242,159,4,0.95)] hover:scale-[1.08] hover:shadow-[0_16px_32px_-12px_rgba(242,159,4,1)]'
       )}
     >
-      <Plus className={cn('absolute size-5 transition-all duration-300', isAddedToCart ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100')} strokeWidth={2.6} />
-      <Check className={cn('absolute size-5 transition-all duration-300', isAddedToCart ? 'scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0')} strokeWidth={2.8} />
+      <Plus className={cn('absolute size-5 transition-[transform,translate,rotate,scale,opacity] duration-[500ms] ease-hover', isAddedToCart ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100')} strokeWidth={2.6} />
+      <Check className={cn('absolute size-5 transition-[transform,translate,rotate,scale,opacity] duration-[500ms] ease-hover', isAddedToCart ? 'scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0')} strokeWidth={2.8} />
       {isAddedToCart ? <span className="absolute inset-0 rounded-full bg-white/40 motion-safe:animate-ping" aria-hidden="true" /> : null}
     </button>
   )
 
   const actionButton =
-    'grid size-9 place-items-center rounded-full border border-black/5 bg-white/95 text-ink shadow-[0_8px_18px_-10px_rgba(13,13,13,0.45)] backdrop-blur transition-[transform,background-color,color] duration-300 hover:scale-110'
+    'grid size-9 place-items-center rounded-full border border-black/5 bg-white/95 text-ink shadow-[0_8px_18px_-10px_rgba(13,13,13,0.45)] backdrop-blur transition-[transform,translate,rotate,scale,background-color,color] duration-[500ms] ease-hover hover:scale-[1.08]'
 
   if (layout === 'row') {
     return (
-      <div className="group relative w-full overflow-hidden rounded-[1.25rem] border border-border bg-card text-card-foreground transition-[transform,box-shadow,border-color] duration-[800ms] ease-[var(--ease-slow)] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-premium">
+      // Cadre fixe qui reçoit le survol ; seule la carte intérieure se soulève (pas de tremblement au bord).
+      <div className="group relative w-full">
+      <div className="relative w-full overflow-hidden rounded-[1.25rem] border border-border bg-card text-card-foreground transition-[transform,scale,rotate,translate,box-shadow,border-color] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-premium">
         <Link href={href} className="flex gap-3 p-2.5 sm:gap-4 sm:p-3">
           <div ref={imageBoxRef} className="relative size-28 shrink-0 overflow-hidden rounded-2xl sm:size-32" style={{ backgroundColor: imageBackground }}>
             {currentImage && !imageError ? (
@@ -512,15 +515,16 @@ export function ProductCard({
           </div>
         </Link>
       </div>
+      </div>
     )
   }
 
   return (
+    // Cadre fixe qui reçoit le survol : la carte intérieure se soulève sans sortir de sous la
+    // souris, donc plus d'aller-retour (tremblement) quand le pointeur est près du bas ou sur « + ».
+    <div className={cn('group relative flex w-full', isWide ? 'max-w-none' : 'mx-auto max-w-none sm:max-w-[300px]')}>
     <div
-      className={cn(
-        'group relative flex w-full flex-col overflow-hidden rounded-[1.4rem] border border-border bg-card text-card-foreground transition-[transform,box-shadow,border-color] duration-[800ms] ease-[var(--ease-slow)] hover:-translate-y-1.5 hover:border-primary/45 hover:shadow-[0_30px_60px_-30px_rgba(13,13,13,0.45),0_0_0_1px_rgba(242,159,4,0.15)] dark:hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9),0_0_0_1px_rgba(242,159,4,0.25)]',
-        isWide ? 'max-w-none' : 'mx-auto max-w-none sm:max-w-[300px]'
-      )}
+      className="relative flex w-full flex-1 flex-col overflow-hidden rounded-[1.4rem] border border-border bg-card text-card-foreground transition-[transform,scale,rotate,translate,box-shadow,border-color] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1.5 group-hover:border-primary/45 group-hover:shadow-[0_30px_60px_-30px_rgba(13,13,13,0.45),0_0_0_1px_rgba(242,159,4,0.15)] dark:group-hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9),0_0_0_1px_rgba(242,159,4,0.25)]"
     >
       {/* Image stage */}
       <div ref={imageBoxRef} className="relative aspect-[1/1.02] overflow-hidden" style={{ backgroundColor: imageBackground }}>
@@ -640,6 +644,7 @@ export function ProductCard({
           <div onClick={stop}>{addButton('lg')}</div>
         </div>
       </Link>
+    </div>
     </div>
   )
 

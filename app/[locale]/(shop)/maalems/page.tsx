@@ -27,7 +27,7 @@ function href(locale: string, values: Record<string, string | number | undefined
   return `/${locale}/maalems${query ? `?${query}` : ''}`
 }
 
-const PRIMARY = 'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink shadow-[0_14px_34px_-14px_rgba(242,159,4,0.75)] transition-[filter,transform] hover:brightness-105 active:scale-[0.98]'
+const PRIMARY = 'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink shadow-[0_14px_34px_-14px_rgba(242,159,4,0.75)] transition-[filter,transform,translate,scale,rotate] hover:brightness-105 active:scale-[0.98]'
 const SECONDARY = 'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border px-5 text-sm font-semibold text-foreground transition-colors hover:border-foreground/40 hover:bg-muted'
 const FIELD = 'grid min-w-0 gap-2 text-xs font-semibold text-foreground/75'
 const INPUT = 'h-12 w-full min-w-0 rounded-xl border border-border bg-background px-3.5 text-sm font-normal text-foreground outline-none transition-[border-color,box-shadow] focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/25'
@@ -248,7 +248,7 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
         <ol className="mt-12 grid gap-5 md:grid-cols-3">
           {STEPS.map((step, index) => <li key={step.number} className="group overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.03] transition-colors duration-500 hover:border-[rgba(242,159,4,0.5)]" data-reveal style={delay(index * 120)}>
             <div className="relative aspect-[16/10] overflow-hidden">
-              <Image src={step.image} alt="" fill sizes="(min-width: 768px) 30vw, 100vw" className="object-cover opacity-75 transition-[transform,opacity] duration-[900ms] ease-[var(--ease-premium)] group-hover:scale-105 group-hover:opacity-100" />
+              <Image src={step.image} alt="" fill sizes="(min-width: 768px) 30vw, 100vw" className="object-cover opacity-75 transition-[transform,translate,scale,rotate,opacity] duration-[900ms] ease-[var(--ease-premium)] group-hover:scale-105 group-hover:opacity-100" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" aria-hidden="true" />
               <span className="text-gold tabular absolute bottom-3 start-5 text-6xl font-extrabold leading-none" aria-hidden="true">{step.number}</span>
             </div>

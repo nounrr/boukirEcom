@@ -38,15 +38,17 @@ export function ServiceCard({
   return (
     // La carte entiere est cliquable via le lien etire du titre (after:inset-0).
     // Le bouton de demande repasse au-dessus avec `relative z-10`.
+    // Cadre fixe qui reçoit le survol ; seule la carte se soulève (pas de tremblement au bord).
+    <div className="group relative flex min-h-full min-w-0">
     <article
-      className="group relative flex min-h-full min-w-0 flex-col rounded-[26px] border border-black/[0.06] bg-card p-3
+      className="relative flex w-full min-w-0 flex-1 flex-col rounded-[26px] border border-black/[0.06] bg-card p-3
         shadow-[0_6px_20px_-14px_rgba(16,24,40,.28)]
-        transition-[transform,box-shadow,border-color] duration-150 ease-out
-        hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_28px_52px_-24px_rgba(16,24,40,.45)]
+        transition-[transform,translate,scale,rotate,box-shadow,border-color] duration-[700ms] ease-hover will-change-transform
+        group-hover:-translate-y-1 group-hover:border-black/10 group-hover:shadow-[0_28px_52px_-24px_rgba(16,24,40,.45)]
         focus-within:-translate-y-1 focus-within:border-black/10 focus-within:shadow-[0_28px_52px_-24px_rgba(16,24,40,.45)]
         motion-reduce:transform-none motion-reduce:transition-none
         dark:border-white/10 dark:shadow-[0_6px_20px_-14px_rgba(0,0,0,.6)]
-        dark:hover:border-white/20 dark:hover:shadow-[0_28px_52px_-24px_rgba(0,0,0,.75)]"
+        dark:group-hover:border-white/20 dark:group-hover:shadow-[0_28px_52px_-24px_rgba(0,0,0,.75)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden rounded-[18px] bg-emerald-950">
         {imageUrl ? (
@@ -134,5 +136,6 @@ export function ServiceCard({
         </div>
       </div>
     </article>
+    </div>
   )
 }

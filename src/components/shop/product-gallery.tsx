@@ -168,7 +168,7 @@ export function ProductGallery({
       aria-label={`Image ${index + 1}`}
       aria-current={selectedIndex === index ? "true" : undefined}
       className={cn(
-        "relative shrink-0 cursor-pointer overflow-hidden rounded-xl border transition-[border-color,box-shadow,opacity,transform] duration-700 ease-[var(--ease-slow)]",
+        "relative shrink-0 cursor-pointer overflow-hidden rounded-xl border transition-[border-color,box-shadow,opacity,transform,translate,scale,rotate] duration-700 ease-[var(--ease-slow)]",
         selectedIndex === index
           ? "border-transparent opacity-100 ring-2 ring-brand-orange ring-offset-2 ring-offset-background"
           : "border-border opacity-70 hover:-translate-y-0.5 hover:opacity-100",
@@ -265,7 +265,7 @@ export function ProductGallery({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:-translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
+                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,translate,scale,rotate,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:-translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
                     aria-label="Image précédente"
                     onClick={(e) => { e.stopPropagation(); goPrev(); }}
                   >
@@ -275,7 +275,7 @@ export function ProductGallery({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
+                    className="pointer-events-auto size-11 rounded-full border border-white/20 bg-ink/55 text-white backdrop-blur-md transition-[opacity,transform,translate,scale,rotate,background-color] duration-700 ease-[var(--ease-slow)] hover:bg-ink/80 hover:text-white [@media(hover:hover)]:translate-x-2 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
                     aria-label="Image suivante"
                     onClick={(e) => { e.stopPropagation(); goNext(); }}
                   >

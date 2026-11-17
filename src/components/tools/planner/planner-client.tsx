@@ -214,7 +214,7 @@ export function PlannerClient() {
                   aria-checked={draft.type === key}
                   onClick={() => setDraft((d) => ({ ...d, type: key, mats }))}
                   className={cn(
-                    "flex h-full w-full flex-col items-start rounded-3xl border p-6 text-start transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5",
+                    "flex h-full w-full flex-col items-start rounded-3xl border p-6 text-start transition-[border-color,background-color,transform,translate,scale,rotate] duration-300 hover:-translate-y-0.5",
                     draft.type === key ? "border-primary bg-accent" : "border-border bg-surface hover:border-foreground/25"
                   )}
                 >

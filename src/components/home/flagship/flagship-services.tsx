@@ -29,10 +29,11 @@ export function FlagshipServices({ locale, services }: { locale: string; service
           {steps.map(({ key, icon: Icon }, index) => (
             <li
               key={key}
-              className="group relative overflow-hidden rounded-[1.75rem] border border-border bg-surface p-7 transition-[transform,border-color] duration-500 hover:-translate-y-1 hover:border-primary/40"
+              className="group relative flex"
               data-reveal
               style={{ ["--reveal-delay" as string]: `${index * 110}ms` }}
             >
+              <div className="relative w-full overflow-hidden rounded-[1.75rem] border border-border bg-surface p-7 transition-[transform,translate,scale,rotate,border-color] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 group-hover:border-primary/40">
               <span className="absolute -end-3 -top-6 select-none text-[7rem] font-extrabold leading-none text-foreground/[0.04] tabular" aria-hidden="true">
                 0{index + 1}
               </span>
@@ -42,6 +43,7 @@ export function FlagshipServices({ locale, services }: { locale: string; service
               <h3 className="mt-8 text-xl font-bold">{t(`steps.${key}.title`)}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(`steps.${key}.desc`)}</p>
               {index < 2 ? <span className="absolute end-6 top-1/2 hidden h-px w-10 bg-gradient-to-r from-primary to-transparent md:block rtl:bg-gradient-to-l" aria-hidden="true" /> : null}
+              </div>
             </li>
           ))}
         </ol>

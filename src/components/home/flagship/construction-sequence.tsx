@@ -441,7 +441,7 @@ export function ConstructionSequence({ locale }: { locale: string }) {
                       aria-hidden="true"
                     />
                     <span className="tabular">{String(index + 1).padStart(2, "0")}</span>
-                    <span className={cn("transition-[opacity,transform] duration-500", index === chapter ? "translate-x-0 opacity-100" : "opacity-70")}>{t(`chapters.${c.key}.title`)}</span>
+                    <span className={cn("transition-[opacity,transform,translate,scale,rotate] duration-500", index === chapter ? "translate-x-0 opacity-100" : "opacity-70")}>{t(`chapters.${c.key}.title`)}</span>
                   </button>
                 </li>
               ))}

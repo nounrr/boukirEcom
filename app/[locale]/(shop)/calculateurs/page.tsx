@@ -62,13 +62,12 @@ export default async function CalculatorsHubPage({ params }: { params: Promise<{
             { href: `/${locale}/projet`, icon: ClipboardList, title: t('plannerTitle'), desc: t('plannerDesc') },
             { href: `/${locale}/calculateurs/budget`, icon: TOOL_ICONS.budget, title: tc('budget.title'), desc: tc('budget.desc') },
           ].map((card, index) => (
+            // Cadre fixe qui reçoit le survol ; seule la carte se soulève.
+            <div key={card.href} className="group relative flex" data-reveal style={{ ['--reveal-delay' as string]: `${index * 90}ms` }}>
             <Link
-              key={card.href}
               href={card.href}
-              data-reveal
-              style={{ ['--reveal-delay' as string]: `${index * 90}ms` }}
               className={
-                'group relative overflow-hidden rounded-3xl border p-6 shadow-premium transition-transform duration-500 hover:-translate-y-1 sm:p-7 ' +
+                'relative block w-full overflow-hidden rounded-3xl border p-6 shadow-premium transition-transform duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 sm:p-7 ' +
                 (card.accent ? 'border-brand-orange/40 bg-gold text-ink' : 'border-border bg-surface')
               }
             >
@@ -80,6 +79,7 @@ export default async function CalculatorsHubPage({ params }: { params: Promise<{
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden="true" />
               </span>
             </Link>
+            </div>
           ))}
         </section>
 
@@ -97,10 +97,10 @@ export default async function CalculatorsHubPage({ params }: { params: Promise<{
               {items.map((calc, index) => {
                 const Icon = TOOL_ICONS[calc.slug]
                 return (
-                  <li key={calc.slug} data-reveal style={{ ['--reveal-delay' as string]: `${index * 70}ms` }}>
+                  <li key={calc.slug} className="group" data-reveal style={{ ['--reveal-delay' as string]: `${index * 70}ms` }}>
                     <Link
                       href={`/${locale}/calculateurs/${calc.slug}`}
-                      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface p-6 transition-[border-color,transform,box-shadow] duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-premium"
+                      className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface p-6 transition-[border-color,transform,translate,scale,rotate,box-shadow] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-premium"
                     >
                       <span className="grid size-12 place-items-center rounded-2xl bg-muted text-foreground transition-colors duration-500 group-hover:bg-gold group-hover:text-ink">
                         <Icon className="size-6" strokeWidth={1.5} aria-hidden="true" />
