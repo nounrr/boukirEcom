@@ -16,9 +16,10 @@ import {
   type MissionStatus,
 } from '@/state/api/maalem-missions-api-slice'
 
+/** Same wording as the app and the mission page: no "en route" / "arrivé" steps for the Maalem. */
 const labels: Record<MissionStatus, string> = {
-  assigned: 'À planifier', scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé',
-  work_in_progress: 'Travaux en cours', completed: 'Terminée — en attente de clôture', closed: 'Clôturée',
+  assigned: 'À planifier', scheduled: 'Validée par l’équipe', to_do: 'Validée par l’équipe', en_route: 'Validée par l’équipe',
+  arrived: 'Validée par l’équipe', work_in_progress: 'Travaux en cours', completed: 'Terminée — en attente de clôture', closed: 'Clôturée',
 }
 
 type Filter = 'all' | 'todo' | 'active' | 'done'
