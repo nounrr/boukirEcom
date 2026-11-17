@@ -1283,7 +1283,10 @@
     "logout": "Déconnexion",
     "login": "Connexion",
     "register": "S'inscrire",
-    "view": "Voir"
+    "view": "Voir",
+    "subcategoriesCount": "{count, plural, =0 {Voir les produits} one {# sous-catégorie} other {# sous-catégories}}",
+    "viewAllIn": "Tout voir",
+    "exploreCategory": "Explorer le rayon"
   },
   "headerSearch": {
     "placeholder": "Rechercher un produit, une marque…",

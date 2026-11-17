@@ -1420,7 +1420,10 @@
     "logout": "Logout",
     "login": "Login",
     "register": "Register",
-    "view": "View"
+    "view": "View",
+    "subcategoriesCount": "{count, plural, =0 {View products} one {# subcategory} other {# subcategories}}",
+    "viewAllIn": "View all",
+    "exploreCategory": "Explore the aisle"
   },
   "headerSearch": {
     "placeholder": "Search a product, a brand…",

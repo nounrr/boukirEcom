@@ -4,7 +4,7 @@ import { catalogHref } from '@/lib/catalog/registry'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { ChevronDown, ChevronRight, Menu } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronRight, Menu } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 import { compareCategoryOrder } from '@/lib/category-order'
+import { CategoryThumb, categoryImageSrc } from './category-thumb'
 
 type CategoryByParent = Map<number, Category[]>
 
@@ -43,6 +44,59 @@ function hasChildren(childrenMap: CategoryByParent, parentId: number) {
 
 function getCategoryLabel(category: Category, locale: string) {
   return getLocalizedCategoryName(category, locale)
+}
+
+/** Bandeau du rayon survolé : grande image, nom, nombre de sous-catégories, bouton « Tout voir ». */
+function ParentBanner({
+  category,
+  label,
+  count,
+  href,
+  eyebrow,
+  countLabel,
+  cta,
+  onNavigate,
+}: {
+  category: Category
+  label: string
+  count: number
+  href: string
+  eyebrow: string
+  countLabel: string
+  cta: string
+  onNavigate: () => void
+}) {
+  const src = categoryImageSrc(category)
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className="group relative flex min-h-32 items-end overflow-hidden rounded-2xl bg-linear-to-br from-primary to-primary/70 p-5 text-white"
+    >
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- image servie par l'API
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : null}
+      <span className="absolute inset-0 bg-linear-to-r from-black/75 via-black/45 to-black/10 rtl:bg-linear-to-l" aria-hidden="true" />
+      <span className="relative flex w-full items-end justify-between gap-4">
+        <span className="min-w-0">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">{eyebrow}</span>
+          <span className="mt-1 line-clamp-2 text-2xl font-extrabold leading-tight">{label}</span>
+          {count > 0 ? <span className="mt-0.5 block text-xs text-white/80">{countLabel}</span> : null}
+        </span>
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-neutral-900 shadow-md transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+          {cta}
+          <ArrowUpRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+        </span>
+      </span>
+    </Link>
+  )
 }
 
 export function CategoriesMegaMenu({
@@ -165,7 +219,7 @@ export function CategoriesMegaMenu({
       {open && (
         <div
           className={cn(
-            'absolute top-full mt-3 z-50',
+            'absolute top-full mt-3 z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200 motion-reduce:animate-none',
             isArabic ? 'right-0' : 'left-0'
           )}
           onMouseEnter={() => {
@@ -177,18 +231,18 @@ export function CategoriesMegaMenu({
         >
           <div
             className={cn(
-              'rounded-2xl border border-border/50 bg-background/98 backdrop-blur-xl shadow-xl shadow-black/15 overflow-hidden',
-              'w-[min(980px,calc(100vw-3rem))]'
+              'overflow-hidden rounded-3xl border border-border/60 bg-background shadow-2xl shadow-black/20 ring-1 ring-black/5 dark:ring-white/10',
+              'w-[min(1040px,calc(100vw-3rem))]'
             )}
           >
             <div
               dir={isArabic ? 'rtl' : 'ltr'}
-              className="grid grid-cols-[280px_minmax(0,1fr)] text-start"
+              className="grid grid-cols-[320px_minmax(0,1fr)] text-start"
             >
-              {/* Parents */}
-              <div className="border-border/50 bg-muted/30">
-                <div className="px-4 py-3 text-sm font-bold text-foreground/90 flex items-center justify-between">
-                  <span>{triggerLabel}</span>
+              {/* Rayons : liste avec vignettes */}
+              <div className="border-e border-border/50 bg-muted/40">
+                <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{triggerLabel}</span>
                   <Link
                     href={`/${locale}/shop`}
                     className="text-xs font-semibold text-primary hover:underline underline-offset-4"
@@ -198,19 +252,23 @@ export function CategoriesMegaMenu({
                   </Link>
                 </div>
 
-                <div className="py-2">
+                <div className="max-h-[min(560px,calc(100vh-11rem))] overflow-y-auto overscroll-contain px-2 pb-3 [scrollbar-width:thin]">
                   {isLoading ? (
-                    <div className="px-4 py-2 space-y-2">
-                      <div className="h-9 rounded-md bg-muted animate-pulse" />
-                      <div className="h-9 rounded-md bg-muted animate-pulse" />
-                      <div className="h-9 rounded-md bg-muted animate-pulse" />
-                      <div className="h-9 rounded-md bg-muted animate-pulse" />
+                    <div className="space-y-2 px-2 py-1">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
+                          <div className="h-4 flex-1 rounded bg-muted animate-pulse" />
+                        </div>
+                      ))}
                     </div>
                   ) : roots.length === 0 ? (
                     <div className="px-4 py-3 text-sm text-muted-foreground">—</div>
                   ) : (
                     roots.slice(0, 18).map((c) => {
                       const isActive = c.id === activeParentId
+                      const label = getCategoryLabel(c, locale)
+                      const count = childrenMap.get(c.id)?.length ?? 0
                       return (
                         <Link
                           key={c.id}
@@ -219,17 +277,37 @@ export function CategoriesMegaMenu({
                           onFocus={() => setActiveParentId(c.id)}
                           onClick={() => setOpen(false)}
                           className={cn(
-                            'mx-2 my-0.5 flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                            'group relative my-0.5 flex items-center gap-3 rounded-2xl px-2.5 py-2 text-sm transition-all duration-200',
                             isActive
-                              ? 'bg-background text-primary'
-                              : 'text-foreground/85 hover:bg-background/60 hover:text-foreground'
+                              ? 'bg-background text-foreground shadow-sm ring-1 ring-border/60'
+                              : 'text-foreground/80 hover:bg-background/70 hover:text-foreground'
                           )}
                         >
-                          <span className="truncate">{getCategoryLabel(c, locale)}</span>
+                          <span
+                            className={cn(
+                              'absolute inset-y-2 start-0 w-1 rounded-full bg-primary transition-opacity',
+                              isActive ? 'opacity-100' : 'opacity-0'
+                            )}
+                            aria-hidden="true"
+                          />
+                          <CategoryThumb
+                            category={c}
+                            label={label}
+                            className="h-10 w-10 text-sm"
+                            imgClassName="group-hover:scale-110"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className={cn('line-clamp-2 text-[13px] font-semibold leading-snug', isActive && 'text-primary')}>{label}</span>
+                            {count > 0 ? (
+                              <span className="block truncate text-[11px] text-muted-foreground">
+                                {t('subcategoriesCount', { count })}
+                              </span>
+                            ) : null}
+                          </span>
                           <ChevronRight
                             className={cn(
-                              'h-4 w-4 shrink-0 rtl:rotate-180',
-                              isActive ? 'text-primary' : 'text-muted-foreground'
+                              'h-4 w-4 shrink-0 transition-transform duration-200 rtl:rotate-180',
+                              isActive ? 'text-primary' : 'text-muted-foreground/70'
                             )}
                           />
                         </Link>
@@ -239,77 +317,114 @@ export function CategoriesMegaMenu({
                 </div>
               </div>
 
-              {/* Children */}
-              <div className="min-w-0 p-5">
+              {/* Sous-catégories : bandeau du rayon + cartes illustrées */}
+              <div className="min-w-0 max-h-[min(620px,calc(100vh-8rem))] overflow-y-auto overscroll-contain p-5 [scrollbar-width:thin]">
                 {isLoading ? (
-                  <div className="space-y-3">
-                    <div className="h-5 w-48 bg-muted rounded animate-pulse" />
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="h-24 bg-muted rounded animate-pulse" />
-                      <div className="h-24 bg-muted rounded animate-pulse" />
-                      <div className="h-24 bg-muted rounded animate-pulse" />
+                  <div className="space-y-4">
+                    <div className="h-28 rounded-2xl bg-muted animate-pulse" />
+                    <div className="grid grid-cols-3 gap-3">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />
+                      ))}
                     </div>
                   </div>
                 ) : !activeParent ? (
                   <div className="text-sm text-muted-foreground">—</div>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                            <div className="text-sm font-bold text-foreground truncate">{getCategoryLabel(activeParent, locale)}</div>
-                      </div>
-                      <Link
-                        href={catalogHref(locale, 'categories', activeParent.id)}
-                        className="text-xs font-semibold text-primary hover:underline underline-offset-4 shrink-0"
-                        onClick={() => setOpen(false)}
-                      >
-                            {t('view')}
-                      </Link>
-                    </div>
+                  <div key={activeParent.id} className="space-y-5 animate-in fade-in-0 duration-200 motion-reduce:animate-none">
+                    <ParentBanner
+                      category={activeParent}
+                      label={getCategoryLabel(activeParent, locale)}
+                      count={level1.length}
+                      href={catalogHref(locale, 'categories', activeParent.id)}
+                      eyebrow={t('exploreCategory')}
+                      countLabel={t('subcategoriesCount', { count: level1.length })}
+                      cta={t('viewAllIn')}
+                      onNavigate={() => setOpen(false)}
+                    />
 
                     {level1.length === 0 ? null : hasGrandChildren ? (
-                      <div className="grid gap-6 md:grid-cols-3">
+                      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                         {level1.slice(0, 12).map((group) => {
                           const grand = childrenMap.get(group.id) ?? []
-                          if (grand.length === 0) return null
+                          const groupLabel = getCategoryLabel(group, locale)
                           return (
-                            <div key={group.id} className="min-w-0">
+                            <div
+                              key={group.id}
+                              className="min-w-0 rounded-2xl border border-border/60 bg-card p-3 transition-colors hover:border-primary/30"
+                            >
                               <Link
                                 href={catalogHref(locale, 'categories', group.id)}
-                                className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                                className="group flex items-center gap-3"
                                 onClick={() => setOpen(false)}
                               >
-                                {getCategoryLabel(group, locale)}
+                                <CategoryThumb
+                                  category={group}
+                                  label={groupLabel}
+                                  className="h-12 w-12 text-base"
+                                  imgClassName="group-hover:scale-110"
+                                />
+                                <span className="min-w-0 line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+                                  {groupLabel}
+                                </span>
                               </Link>
-                              <ul className="mt-2 space-y-1.5">
-                                {grand.slice(0, 10).map((leaf) => (
-                                  <li key={leaf.id}>
-                                    <Link
-                                      href={catalogHref(locale, 'categories', leaf.id)}
-                                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                      onClick={() => setOpen(false)}
-                                    >
-                                      {getCategoryLabel(leaf, locale)}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
+                              {grand.length > 0 ? (
+                                <ul className="mt-2.5 flex flex-wrap gap-1.5">
+                                  {grand.slice(0, 8).map((leaf) => (
+                                    <li key={leaf.id} className="max-w-full">
+                                      <Link
+                                        href={catalogHref(locale, 'categories', leaf.id)}
+                                        className="block max-w-full truncate rounded-full bg-muted/70 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                                        onClick={() => setOpen(false)}
+                                      >
+                                        {getCategoryLabel(leaf, locale)}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                  {grand.length > 8 ? (
+                                    <li>
+                                      <Link
+                                        href={catalogHref(locale, 'categories', group.id)}
+                                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-primary hover:underline underline-offset-4"
+                                        onClick={() => setOpen(false)}
+                                      >
+                                        +{grand.length - 8}
+                                      </Link>
+                                    </li>
+                                  ) : null}
+                                </ul>
+                              ) : null}
                             </div>
                           )
                         })}
                       </div>
                     ) : (
-                      <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                        {level1.slice(0, 24).map((child) => (
-                          <Link
-                            key={child.id}
-                            href={catalogHref(locale, 'categories', child.id)}
-                            className="rounded-lg px-3 py-2 text-sm font-medium text-foreground/85 hover:text-foreground hover:bg-muted/50 transition-colors"
-                            onClick={() => setOpen(false)}
-                          >
-                            {getCategoryLabel(child, locale)}
-                          </Link>
-                        ))}
+                      <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                        {level1.slice(0, 24).map((child) => {
+                          const childLabel = getCategoryLabel(child, locale)
+                          return (
+                            <Link
+                              key={child.id}
+                              href={catalogHref(locale, 'categories', child.id)}
+                              className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-black/10 motion-reduce:hover:translate-y-0"
+                              onClick={() => setOpen(false)}
+                            >
+                              <CategoryThumb
+                                category={child}
+                                label={childLabel}
+                                rounded="rounded-none"
+                                className="aspect-[4/3] w-full text-2xl ring-0"
+                                imgClassName="group-hover:scale-105"
+                              />
+                              <span className="flex items-center justify-between gap-2 px-3 py-2.5">
+                                <span className="min-w-0 line-clamp-2 text-[13px] font-semibold leading-snug text-foreground/90 group-hover:text-primary">
+                                  {childLabel}
+                                </span>
+                                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 rtl:-scale-x-100" />
+                              </span>
+                            </Link>
+                          )
+                        })}
                       </div>
                     )}
                   </div>

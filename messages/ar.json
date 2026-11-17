@@ -1420,7 +1420,10 @@
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
     "register": "التسجيل",
-    "view": "عرض"
+    "view": "عرض",
+    "subcategoriesCount": "{count, plural, =0 {عرض المنتجات} one {فئة فرعية واحدة} other {# فئات فرعية}}",
+    "viewAllIn": "عرض الكل",
+    "exploreCategory": "استكشف القسم"
   },
   "headerSearch": {
     "placeholder": "ابحث عن منتج أو علامة…",

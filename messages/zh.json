@@ -1420,7 +1420,10 @@
     "logout": "退出登录",
     "login": "登录",
     "register": "注册",
-    "view": "查看"
+    "view": "查看",
+    "subcategoriesCount": "{count, plural, =0 {查看产品} other {# 个子分类}}",
+    "viewAllIn": "查看全部",
+    "exploreCategory": "浏览此类别"
   },
   "headerSearch": {
     "placeholder": "搜索商品、品牌…",
