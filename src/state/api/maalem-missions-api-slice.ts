@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseQueryWithAuth } from '@/lib/base-query'
 
-export type MissionStatus = 'scheduled' | 'to_do' | 'en_route' | 'arrived' | 'work_in_progress' | 'completed'
+export type MissionStatus = 'assigned' | 'scheduled' | 'to_do' | 'en_route' | 'arrived' | 'work_in_progress' | 'completed'
 
 export interface MaalemMission {
   id: number

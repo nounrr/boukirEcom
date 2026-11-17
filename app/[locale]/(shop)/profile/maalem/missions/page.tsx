@@ -10,13 +10,13 @@ import { Button } from '@/components/ui/button'
 import { useGetMaalemMissionsQuery, type MissionStatus } from '@/state/api/maalem-missions-api-slice'
 
 const labels: Record<MissionStatus, string> = {
-  scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé',
+  assigned: 'À planifier', scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé',
   work_in_progress: 'Travaux en cours', completed: 'Terminée — en attente de clôture',
 }
 
 export default function MaalemMissionsPage() {
   const locale = useLocale()
-  const { data, isLoading, error, refetch } = useGetMaalemMissionsQuery()
+  const { data, isLoading, error, refetch } = useGetMaalemMissionsQuery(undefined, { pollingInterval: 15_000, refetchOnFocus: true, refetchOnReconnect: true, refetchOnMountOrArgChange: true })
   return (
     <ShopPageLayout title="Mes missions" showHeader={false}>
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-4 lg:grid-cols-4 lg:gap-10">
@@ -31,7 +31,7 @@ export default function MaalemMissionsPage() {
           </header>
           {isLoading && <p role="status" className="py-14 text-sm text-muted-foreground">Chargement des missions…</p>}
           {error && <p role="alert" className="border-b border-border py-10 text-sm leading-6 text-destructive">Accès impossible. Votre profil doit être approuvé et actif.</p>}
-          {!isLoading && !error && !data?.missions.length && <p className="border-b border-border py-14 text-sm leading-6 text-muted-foreground">Aucune mission planifiée ne vous est actuellement affectée.</p>}
+          {!isLoading && !error && !data?.missions.length && <p className="border-b border-border py-14 text-sm leading-6 text-muted-foreground">Aucune mission ne vous est actuellement affectée.</p>}
           <div className="divide-y divide-border">
             {data?.missions.map((mission) => (
               <Link key={mission.id} href={'/' + locale + '/profile/maalem/missions/' + mission.id} className="group block py-6 transition-colors hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4">
