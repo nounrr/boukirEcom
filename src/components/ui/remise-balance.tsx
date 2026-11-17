@@ -1,7 +1,7 @@
 "use client"
 
 import { Coins } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
 interface RemiseBalanceProps {
@@ -11,13 +11,14 @@ interface RemiseBalanceProps {
   className?: string
 }
 
-export function RemiseBalance({ 
-  balance, 
-  size = "md", 
+export function RemiseBalance({
+  balance,
+  size = "md",
   showLabel = true,
-  className 
+  className
 }: RemiseBalanceProps) {
   const locale = useLocale()
+  const t = useTranslations("rewardWallet")
 
   const sizeClasses = {
     sm: {
@@ -60,7 +61,7 @@ export function RemiseBalance({
         </span>
         {showLabel && (
           <span className={cn("text-muted-foreground", classes.label)}>
-            Solde remise
+            {t("title")}
           </span>
         )}
       </div>

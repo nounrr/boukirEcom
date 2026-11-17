@@ -21,6 +21,8 @@ import type {
   SoldeStatementTimelineRow,
   CmiPaymentForm,
   CmiPaymentStatus,
+  SoldePaymentAttempt,
+  SoldePaymentInitiation,
 } from '@/types/order';
 
 // Helpers to map backend snake_case structures to our frontend camelCase types
@@ -365,6 +367,17 @@ export const ordersApi = createApi({
       transformResponse: (response: any): CmiPaymentForm => response.cmi_payment,
     }),
 
+    createSoldeCmiPayment: builder.mutation<SoldePaymentInitiation, { amount: number; locale: string }>({
+      query: (body) => ({ url: `${API_CONFIG.ENDPOINTS.CMI_PAYMENTS}/solde`, method: 'POST', body }),
+    }),
+    getSoldePaymentBalance: builder.query<{ balance: number; owed: number; minimum: number; currency: 'MAD' }, number>({
+      query: () => `${API_CONFIG.ENDPOINTS.CMI_PAYMENTS}/solde`,
+      providesTags: ['Orders'],
+    }),
+    getSoldeCmiPaymentStatus: builder.query<SoldePaymentAttempt, { oid: string; customerId: number }>({
+      query: ({ oid }) => `${API_CONFIG.ENDPOINTS.CMI_PAYMENTS}/solde/${encodeURIComponent(oid)}`,
+    }),
+
     // Cancel an order (customer)
     cancelOrder: builder.mutation<{ orderId: number; orderNumber: string }, CancelOrderData>({
       query: ({ id, email, reason }) => ({
@@ -601,6 +614,9 @@ export const {
   useCancelOrderMutation,
   useGetCmiPaymentStatusQuery,
   useRetryCmiPaymentMutation,
+  useCreateSoldeCmiPaymentMutation,
+  useGetSoldeCmiPaymentStatusQuery,
+  useGetSoldePaymentBalanceQuery,
   useGetSoldeOrdersTimelineQuery,
   useGetSoldeOrdersHistoryQuery,
 } = ordersApi;

@@ -1,6 +1,7 @@
 "use client"
 
 import { AccountSidebar } from "@/components/account/account-sidebar"
+import { BalancePaymentCard } from "@/components/account/balance-payment-card"
 import { ShopPageLayout } from "@/components/layout/shop-page-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,10 +15,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { useGetSoldeOrdersHistoryQuery } from "@/state/api/orders-api-slice"
+import { useGetSoldeOrdersHistoryQuery, useGetSoldePaymentBalanceQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { SoldeStatementSource } from "@/types/order"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 
 const SOURCE_BADGE: Record<SoldeStatementSource, { label: string; className: string }> = {
@@ -55,16 +56,23 @@ function formatDate(value: string, locale: string) {
 
 export default function SoldeHistoriquePage() {
   const locale = useLocale()
+  const t = useTranslations("balancePayment")
   const { isAuthenticated, user, accessToken } = useAppSelector((state) => state.user)
 
   const isAuthLoading = !!accessToken && !user
-  const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
+  const canUseSolde = user?.is_solde === true || String(user?.is_solde) === "1"
+  const balance = useGetSoldePaymentBalanceQuery(user?.id || 0, {
+    skip: !isAuthenticated || !canUseSolde,
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  })
 
   const [selected, setSelected] = useState<Record<number, boolean>>({})
 
-  const { data, isLoading, refetch, isFetching } = useGetSoldeOrdersHistoryQuery(
+  const { data, isLoading, refetch, isFetching, isError } = useGetSoldeOrdersHistoryQuery(
     { view: "statement", limit: 500, offset: 0 },
-    { skip: !isAuthenticated || !canUseSolde }
+    { skip: !isAuthenticated || !canUseSolde, refetchOnMountOrArgChange: true, refetchOnFocus: true }
   )
 
   const statement = data && data.view === "statement" ? data : undefined
@@ -98,31 +106,32 @@ export default function SoldeHistoriquePage() {
 
   return (
     <ShopPageLayout
-      title="Solde historique"
-      subtitle="Relevé solde (commandes, avoirs, paiements…)."
+      title={t("title")}
+      subtitle={t("subtitle")}
       icon="cart"
     >
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         <AccountSidebar active="solde" />
 
         <main className="lg:col-span-3">
+          {isAuthenticated && canUseSolde && <><BalancePaymentCard key={user?.id} balance={Number(balance.currentData?.balance)} ready={balance.isSuccess && !balance.isFetching && !balance.isError && Number.isFinite(balance.currentData?.balance)} refresh={() => { void balance.refetch(); void refetch() }} />{balance.isError && <p role="alert" className="mb-5 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{t("loadError")} <button type="button" className="font-semibold underline" onClick={() => void balance.refetch()}>{t("refresh")}</button></p>}</>}
           <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
             <div className="flex items-center justify-end">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => refetch()}
-                disabled={!isAuthenticated || !canUseSolde || isFetching}
+                onClick={() => { void refetch(); void balance.refetch() }}
+                disabled={!isAuthenticated || !canUseSolde || isFetching || balance.isFetching}
                 className="h-7 px-2.5 text-xs"
               >
-                Actualiser
+                {t("refresh")}
               </Button>
             </div>
 
             {!isAuthenticated && !isAuthLoading && (
               <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
                 <p className="text-sm text-muted-foreground">
-                  Connectez-vous pour accéder à votre historique solde.
+                  {t("loginRequired")}
                 </p>
               </div>
             )}
@@ -130,13 +139,14 @@ export default function SoldeHistoriquePage() {
             {isAuthenticated && !canUseSolde && !isAuthLoading && (
               <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
                 <p className="text-sm text-muted-foreground">
-                  Votre compte n’est pas autorisé au paiement par solde.
+                  {t("notEligible")}
                 </p>
               </div>
             )}
 
-            {canUseSolde && (
+            {isAuthenticated && canUseSolde && (
               <div className="mt-3 space-y-3">
+                {isError && <p role="alert" className="rounded-lg bg-destructive/5 p-3 text-sm text-destructive">{t("historyError")}</p>}
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="outline" className="text-[11px] h-7 px-2 rounded-md">
                     Plafond: {formatMAD(Number(statement?.contact?.plafond ?? 0), locale)}
@@ -157,7 +167,7 @@ export default function SoldeHistoriquePage() {
                     Crédit: {formatMAD(Number(statement?.summary?.creditTotal ?? 0), locale)}
                   </Badge>
                   <Badge variant="outline" className="text-[11px] h-7 px-2 rounded-md">
-                    Final: {formatMAD(Number(statement?.summary?.finalSolde ?? 0), locale)}
+                    {t("historyEndBalance")}: {formatMAD(Number(statement?.summary?.finalSolde ?? 0), locale)}
                   </Badge>
                 </div>
 

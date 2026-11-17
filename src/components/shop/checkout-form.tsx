@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -55,6 +56,7 @@ export function CheckoutFormSection({
   remiseBalance,
   isAuthenticated,
 }: CheckoutFormSectionProps) {
+  const wallet = useTranslations("checkout.payment.remise")
   const [selectedCountry, setSelectedCountry] = useState(PHONE_COUNTRIES[0])
 
   const paymentMethodError = errors?.paymentMethod?.message
@@ -225,18 +227,18 @@ export function CheckoutFormSection({
                 <Coins className="w-3.5 h-3.5 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-foreground">Solde remise</p>
-                <p className="text-[11px] text-muted-foreground">Utilisez votre remise pour réduire le montant à payer</p>
+                <p className="text-xs font-semibold text-foreground">{wallet("title")}</p>
+                <p className="text-[11px] text-muted-foreground">{wallet("subtitle")}</p>
               </div>
             </div>
 
             {!isAuthenticated ? (
-              <p className="text-[11px] text-muted-foreground">Connectez-vous pour utiliser votre solde remise.</p>
+              <p className="text-[11px] text-muted-foreground">{wallet("loginToUse")}</p>
             ) : (
               <div className="space-y-3">
                 {typeof remiseBalance === "number" && (
                   <p className="text-[11px] text-muted-foreground">
-                    Disponible: <span className="font-semibold text-foreground">{remiseBalance.toFixed(2)} DH</span>
+                    {wallet("availableLabel")} <span className="font-semibold text-foreground">{remiseBalance.toFixed(2)} DH</span>
                   </p>
                 )}
 
@@ -246,13 +248,13 @@ export function CheckoutFormSection({
                     {...register("useRemiseBalance")}
                     className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
                   />
-                  <span className="font-medium">Utiliser ma remise</span>
+                  <span className="font-medium">{wallet("useMyRemise")}</span>
                 </label>
 
                 {useRemiseBalance && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium">Montant remise (DH)</Label>
+                      <Label className="text-xs font-medium">{wallet("amountToUse")} (DH)</Label>
                       <Input
                         {...register("remiseToUse")}
                         type="number"
