@@ -89,7 +89,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
   }, [clearErrors, role, setValue])
 
   // Initialize Google OAuth with custom button
-  const { isLoading: isGoogleLoading, signIn: handleGoogleSignIn } = useGoogleAuth({
+  const { isLoading: isGoogleLoading, signIn: handleGoogleSignIn, isConfigured: isGoogleConfigured } = useGoogleAuth({
     context: "signup",
     role: role,
     artisanPath,
@@ -688,6 +688,8 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
         </Button>
       </form>
 
+      {/* Google sign-in only when the site has a Google client id */}
+      {isGoogleConfigured && (<>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border"></div>
@@ -716,6 +718,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
           )}
         </Button>
       </div>
+      </>)}
 
       {/* Footer */}
       <div className="text-center pt-2 border-t border-border">

@@ -79,6 +79,17 @@ interface UseGoogleAuthOptions {
   skipRedirect?: boolean
 }
 
+/** Google sign-in needs this public id; without it (e.g. a local copy) the Google buttons and One Tap stay hidden. */
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+export const isGoogleAuthConfigured = GOOGLE_CLIENT_ID.length > 0
+
+const isDev = process.env.NODE_ENV !== "production"
+/** Development-only trace. Never pass tokens, credentials or server answers to it. */
+const debug = (...args: unknown[]) => {
+  if (isDev) console.debug("[Google Auth]", ...args)
+}
+let warnedMissingClientId = false
+
 export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
   const {
     onSuccess,
@@ -99,23 +110,37 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
   const credentialInFlightRef = useRef(false)
   const signInInFlightRef = useRef(false)
 
   // Load Google Identity Services script
   useEffect(() => {
     if (isScriptLoaded || typeof window === "undefined") return
+    if (!isGoogleAuthConfigured) {
+      // Said once, quietly: the site works without Google sign-in (email / password stay available).
+      if (isDev && !warnedMissingClientId) {
+        warnedMissingClientId = true
+        console.warn("[Google Auth] NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set: Google sign-in is hidden.")
+      }
+      return
+    }
+    // Already on the page (another component loaded it): reuse it.
+    if (window.google?.accounts?.id) {
+      setIsScriptLoaded(true)
+      return
+    }
 
     const script = document.createElement("script")
     script.src = "https://accounts.google.com/gsi/client"
     script.async = true
     script.defer = true
     script.onload = () => {
-      console.log("[Google Auth] Script loaded successfully")
+      debug("script loaded")
       setIsScriptLoaded(true)
     }
     script.onerror = () => {
-      console.error("[Google Auth] Failed to load Google Identity Services script")
+      console.warn("[Google Auth] Google Identity Services could not be loaded")
       toast.error(t("googleLoadError"), { description: t("googleLoadErrorDesc") })
     }
 
@@ -134,26 +159,21 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
     async (response: GoogleCredentialResponse) => {
       if (credentialInFlightRef.current) return
       credentialInFlightRef.current = true
-      console.log("[Google Auth] Credential received")
-      console.log("[Google Auth] Response object:", response)
-      console.log("[Google Auth] Credential exists:", !!response.credential)
-      console.log("[Google Auth] Credential preview:", response.credential?.substring(0, 50))
+      debug("credential received")
       setIsLoading(true)
 
       try {
         if (!response.credential) {
-          console.error("[Google Auth] No credential in response!")
           toast.error(t("googleError"), { description: t("missingTokenDesc") })
           setIsLoading(false)
           return
         }
 
         const result = await googleAuth(response.credential, role, artisanPath, maalemCategoryId)
-        console.log("[Google Auth] Backend response:", result)
 
         if (result.success) {
-          console.log("[Google Auth] Authentication successful")
-          
+          debug("signed in")
+
           // Dispatch to Redux store
           if (result.accessToken) {
             dispatch(setAuth({
@@ -161,9 +181,6 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
               accessToken: result.accessToken,
               refreshToken: null
             }))
-            console.log("[Google Auth] User data dispatched to Redux store")
-          } else {
-            console.warn("[Google Auth] Missing accessToken in response")
           }
           
           // Show success toast
@@ -193,7 +210,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             }, 500)
           }
         } else {
-          console.error("[Google Auth] Authentication failed:", result.error)
+          debug("sign-in refused by the server")
 
           // Friendlier guidance for common backend responses
           const msg = (result.error || '').toLowerCase()
@@ -209,7 +226,7 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           }
         }
       } catch (error) {
-        console.error("[Google Auth] Unexpected error:", error)
+        debug("unexpected error", error instanceof Error ? error.message : "unknown")
         const errorMessage = error instanceof Error ? error.message : t("unexpectedErrorDesc")
         toast.error(t("googleError"), { description: errorMessage })
         
@@ -226,20 +243,11 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
 
   // Initialize Google Identity Services
   useEffect(() => {
-    if (!isScriptLoaded || !window.google || typeof window === "undefined") return
-
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    
-    if (!clientId) {
-      console.error("[Google Auth] Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID")
-      return
-    }
-
-    console.log("[Google Auth] Initializing with client ID:", clientId.substring(0, 20) + "...")
+    if (!isGoogleAuthConfigured || !isScriptLoaded || typeof window === "undefined" || !window.google) return
 
     try {
       window.google.accounts.id.initialize({
-        client_id: clientId,
+        client_id: GOOGLE_CLIENT_ID,
         callback: handleCredentialResponse,
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
@@ -248,19 +256,17 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         itp_support: true,
       })
 
-      console.log("[Google Auth] Initialized successfully")
+      setIsInitialized(true)
+      debug("initialized")
     } catch (error) {
-      console.error("[Google Auth] Initialization error:", error)
+      console.warn("[Google Auth] Initialization failed", error instanceof Error ? error.message : "")
     }
   }, [isScriptLoaded, handleCredentialResponse, autoSelect, context])
 
   // Render Google Sign-In button
   const renderButton = useCallback(
     (element: HTMLElement, config: Partial<GoogleButtonConfig> = {}) => {
-      if (!isScriptLoaded || !window.google) {
-        console.warn("[Google Auth] Cannot render button - Google not loaded")
-        return
-      }
+      if (!isInitialized || !window.google) return
 
       const defaultConfig: GoogleButtonConfig = {
         type: "standard",
@@ -277,39 +283,30 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
           ...defaultConfig,
           ...config,
         })
-        console.log("[Google Auth] Button rendered successfully")
       } catch (error) {
-        console.error("[Google Auth] Failed to render button:", error)
+        console.warn("[Google Auth] Button could not be rendered", error instanceof Error ? error.message : "")
       }
     },
-    [isScriptLoaded, context]
+    [isInitialized, context]
   )
 
   // Trigger One Tap prompt
   const promptOneTap = useCallback(() => {
-    if (!isScriptLoaded || !window.google) {
-      console.warn("[Google Auth] Cannot show One Tap - Google not loaded")
-      return
-    }
+    if (!isInitialized || !window.google) return
 
     try {
       window.google.accounts.id.prompt((notification) => {
-        console.log("[Google Auth] One Tap notification:", {
-          isDisplayed: notification.isDisplayed(),
-          isNotDisplayed: notification.isNotDisplayed(),
-          reason: notification.isNotDisplayed() ? notification.getNotDisplayedReason() : null,
-        })
+        if (notification.isNotDisplayed()) debug("One Tap not shown:", notification.getNotDisplayedReason())
       })
     } catch (error) {
-      console.error("[Google Auth] One Tap error:", error)
+      console.warn("[Google Auth] One Tap failed", error instanceof Error ? error.message : "")
     }
-  }, [isScriptLoaded])
+  }, [isInitialized])
 
   // Programmatically trigger Google Sign-In (for custom buttons)
   const signIn = useCallback(() => {
     if (signInInFlightRef.current) return
-    if (!isScriptLoaded || !window.google) {
-      console.warn("[Google Auth] Cannot sign in - Google not loaded")
+    if (!isInitialized || !window.google) {
       toast.error(t("googleLoadError"), { description: t("googleLoadErrorDesc") })
       return
     }
@@ -337,7 +334,6 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
       setTimeout(() => {
         const googleButton = hiddenContainer.querySelector('div[role="button"]') as HTMLElement
         if (googleButton) {
-          console.log("[Google Auth] Triggering Google Sign-In click")
           googleButton.click()
           
           // Clean up after a delay
@@ -349,7 +345,6 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
             setIsLoading(false)
           }, 1000)
         } else {
-          console.error("[Google Auth] Could not find Google button")
           if (hiddenContainer.parentNode) {
             hiddenContainer.parentNode.removeChild(hiddenContainer)
           }
@@ -359,12 +354,12 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
         }
       }, 100)
     } catch (error) {
-      console.error("[Google Auth] Sign-in trigger error:", error)
+      debug("sign-in trigger failed", error instanceof Error ? error.message : "")
       signInInFlightRef.current = false
       setIsLoading(false)
       toast.error(t("googleError"), { description: t("initFailedDesc") })
     }
-  }, [isScriptLoaded, toast, t, context])
+  }, [isInitialized, toast, t, context])
 
   // Cancel One Tap
   const cancelOneTap = useCallback(() => {
@@ -375,7 +370,10 @@ export function useGoogleAuth(options: UseGoogleAuthOptions = {}) {
 
   return {
     isLoading,
-    isReady: isScriptLoaded,
+    /** Google is loaded and set up: One Tap and the button can be used. */
+    isReady: isInitialized,
+    /** False when the site has no Google client id: hide every Google button. */
+    isConfigured: isGoogleAuthConfigured,
     renderButton,
     signIn,
     promptOneTap,
