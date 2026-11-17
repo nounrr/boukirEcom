@@ -15,6 +15,7 @@ import { clearAuth } from "@/state/slices/user-slice"
 import {
   Calculator,
   ChevronDown,
+  ChevronRight,
   HardHat,
   Heart,
   LayoutGrid,
@@ -357,6 +358,20 @@ export function Header() {
         <div className={cn("hidden border-t lg:block", overlay ? "border-white/10" : "border-white/[0.06]")}>
           <div className="mx-auto flex h-12 max-w-[1440px] items-center gap-2 px-10">
             <CategoriesMegaMenu tone="onPrimary" />
+            {/* Page « Toutes les catégories » : grandes cartes par univers, filtres, photos */}
+            <Link
+              href={`/${locale}/categories`}
+              aria-current={pathname === `/${locale}/categories` ? "page" : undefined}
+              className={cn(
+                "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-xl border px-3 text-[13px] font-semibold transition-[background-color,border-color,color] duration-500 ease-hover",
+                pathname === `/${locale}/categories`
+                  ? "border-brand-orange bg-brand-orange text-ink"
+                  : "border-brand-orange/40 bg-brand-orange/10 text-brand-yellow hover:border-brand-orange hover:bg-brand-orange hover:text-ink"
+              )}
+            >
+              <LayoutGrid className="size-4" aria-hidden="true" />
+              {t("allCategories")}
+            </Link>
             <span className="mx-2 h-5 w-px bg-white/15" aria-hidden="true" />
             <nav aria-label={tx("mainNavigation")} className="flex min-w-0 items-center gap-0.5">
               {primaryLinks.map((link) => (
@@ -457,6 +472,18 @@ export function Header() {
 
             <div className="mt-5">
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">{tx("categories")}</p>
+              <Link
+                href={`/${locale}/categories`}
+                className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-brand-orange/50 bg-brand-orange/15 px-3 py-3 text-sm font-semibold text-brand-yellow transition-colors duration-500 ease-hover hover:bg-brand-orange hover:text-ink"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="grid size-7 place-items-center rounded-lg bg-brand-orange text-ink" aria-hidden="true">
+                    <LayoutGrid className="size-4" />
+                  </span>
+                  {t("allCategories")}
+                </span>
+                <ChevronRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+              </Link>
               <CategoriesMobileMenu tone="onPrimary" />
             </div>
 

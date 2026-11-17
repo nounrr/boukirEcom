@@ -1423,7 +1423,8 @@
     "view": "View",
     "subcategoriesCount": "{count, plural, =0 {View products} one {# subcategory} other {# subcategories}}",
     "viewAllIn": "View all",
-    "exploreCategory": "Explore the aisle"
+    "exploreCategory": "Explore the aisle",
+    "allCategories": "All categories"
   },
   "headerSearch": {
     "placeholder": "Search a product, a brand…",
@@ -2043,5 +2044,34 @@
     "storeContactAddress": "Address:",
     "storeContactHours": "Hours:",
     "storeContactUnavailable": "Contact information coming soon."
+  },
+  "categoriesPage": {
+    "metadata": {
+      "title": "All categories — building materials, tools and finishes",
+      "description": "Browse every department of the Boukir Diamond catalogue in Tangier: building materials, tools, waterproofing, tiling, paint, plumbing and their subcategories."
+    },
+    "eyebrow": "Boukir Diamond catalogue",
+    "title": "All our categories",
+    "subtitle": "{universes} departments and {subcategories} subcategories. Open a department to see its aisles, or pick the ones you need in the filters.",
+    "searchPlaceholder": "Search a category…",
+    "clearSearch": "Clear search",
+    "filtersTitle": "Departments",
+    "filtersHint": "Tap a department to show only that one.",
+    "showAll": "Show all",
+    "selectedCount": "{count, plural, one {# department selected} other {# departments selected}}",
+    "resultsCount": "{count, plural, =0 {No departments} one {# department shown} other {# departments shown}}",
+    "expandAll": "Open all",
+    "collapseAll": "Close all",
+    "open": "See subcategories",
+    "close": "Hide",
+    "viewAll": "View all",
+    "viewProducts": "View products",
+    "universeLabel": "Department {index}",
+    "subCount": "{count, plural, =0 {No subcategories} one {# subcategory} other {# subcategories}}",
+    "leavesCount": "{count, plural, one {# aisle} other {# aisles}}",
+    "noResults": "No category matches “{query}”.",
+    "noSelection": "No department to show.",
+    "resetFilters": "Reset",
+    "empty": "The catalogue is temporarily unavailable. Please try again shortly."
   }
 }

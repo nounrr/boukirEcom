@@ -1286,7 +1286,8 @@
     "view": "Voir",
     "subcategoriesCount": "{count, plural, =0 {Voir les produits} one {# sous-catégorie} other {# sous-catégories}}",
     "viewAllIn": "Tout voir",
-    "exploreCategory": "Explorer le rayon"
+    "exploreCategory": "Explorer le rayon",
+    "allCategories": "Toutes les catégories"
   },
   "headerSearch": {
     "placeholder": "Rechercher un produit, une marque…",
@@ -2043,5 +2044,34 @@
       "sendFailedTitle": "Impossible d'envoyer la demande",
       "sendFailedDesc": "Réessayez dans un instant."
     }
+  },
+  "categoriesPage": {
+    "metadata": {
+      "title": "Toutes les catégories — matériaux, outillage et finitions",
+      "description": "Parcourez tous les univers du catalogue Boukir Diamond à Tanger : matériaux de construction, outillage, étanchéité, carrelage, peinture, plomberie et leurs sous-catégories."
+    },
+    "eyebrow": "Catalogue Boukir Diamond",
+    "title": "Toutes nos catégories",
+    "subtitle": "{universes} univers et {subcategories} sous-catégories. Ouvrez un univers pour voir ses rayons, ou choisissez ceux qui vous intéressent dans les filtres.",
+    "searchPlaceholder": "Rechercher une catégorie…",
+    "clearSearch": "Effacer la recherche",
+    "filtersTitle": "Univers",
+    "filtersHint": "Touchez un univers pour n’afficher que lui.",
+    "showAll": "Tout afficher",
+    "selectedCount": "{count, plural, one {# univers sélectionné} other {# univers sélectionnés}}",
+    "resultsCount": "{count, plural, =0 {Aucun univers} one {# univers affiché} other {# univers affichés}}",
+    "expandAll": "Tout ouvrir",
+    "collapseAll": "Tout fermer",
+    "open": "Voir les sous-catégories",
+    "close": "Masquer",
+    "viewAll": "Voir tout",
+    "viewProducts": "Voir les produits",
+    "universeLabel": "Univers {index}",
+    "subCount": "{count, plural, =0 {Aucune sous-catégorie} one {# sous-catégorie} other {# sous-catégories}}",
+    "leavesCount": "{count, plural, one {# rayon} other {# rayons}}",
+    "noResults": "Aucune catégorie ne correspond à « {query} ».",
+    "noSelection": "Aucun univers à afficher.",
+    "resetFilters": "Réinitialiser",
+    "empty": "Le catalogue est momentanément indisponible. Réessayez dans un instant."
   }
 }

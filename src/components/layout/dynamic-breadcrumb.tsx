@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Home, Store, Package, ShoppingCart, Heart, CreditCard, UserCircle, Settings as SettingsIcon, LogIn, UserPlus, Tag, Wrench, HardHat } from 'lucide-react'
+import { ChevronRight, Home, Store, Package, ShoppingCart, Heart, CreditCard, UserCircle, Settings as SettingsIcon, LogIn, UserPlus, Tag, Wrench, HardHat, LayoutGrid } from 'lucide-react'
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import * as React from "react"
@@ -43,6 +43,7 @@ export function DynamicBreadcrumb() {
   const t = useTranslations('breadcrumb')
   const requestText = useTranslations('serviceRequests')
   const tx = useTranslations('xp')
+  const th = useTranslations('header')
 
   const supportedLocales = getSupportedLocales()
 
@@ -79,6 +80,10 @@ export function DynamicBreadcrumb() {
     const parts = pathname.split('/').filter(Boolean)
     // Filter out locale segments (fr/ar/en/zh)
     const filteredParts = parts.filter(part => !(supportedLocales as readonly string[]).includes(part))
+    // Page « Toutes les catégories »
+    if (filteredParts[0] === 'categories' && !filteredParts[1]) {
+      return [{ title: th('allCategories'), href: pathname, active: true, icon: LayoutGrid, filter: undefined as string | null | undefined }]
+    }
     if (filteredParts[0] === 'categories' || filteredParts[0] === 'marques') {
       const page = catalogPage(filteredParts[0], filteredParts[1])
       return [
@@ -205,7 +210,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, tx, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
+  }, [pathname, searchParams, t, tx, th, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)

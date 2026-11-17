@@ -3,6 +3,7 @@ import { catalogHref } from '@/lib/catalog/registry'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { ArrowUpRight, ChevronDown, ChevronRight, Layers, Menu } from 'lucide-react'
 
@@ -112,7 +113,7 @@ function ParentBanner({
 }
 
 /** Carte d'une sous-catégorie : grande photo, nom, et ses propres sous-catégories en pastilles. */
-function SubcategoryCard({
+export function SubcategoryCard({
   category,
   label,
   cover,
@@ -195,6 +196,7 @@ export function CategoriesMegaMenu({
 }) {
   const t = useTranslations('header')
   const locale = useLocale()
+  const router = useRouter()
   const isArabic = locale === 'ar'
 
   const { data: categories = [], isLoading } = useGetCategoriesQuery()
@@ -323,6 +325,11 @@ export function CategoriesMegaMenu({
         variant="ghost"
         className={triggerClassName}
         onFocus={() => setOpen(true)}
+        // Survol : le menu s'ouvre ; clic : page « Toutes les catégories ».
+        onClick={() => {
+          setOpen(false)
+          router.push(`/${locale}/categories`)
+        }}
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -364,11 +371,12 @@ export function CategoriesMegaMenu({
                 <div className="flex shrink-0 items-center justify-between px-5 pt-4 pb-2">
                   <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{triggerLabel}</span>
                   <Link
-                    href={`/${locale}/shop`}
-                    className="text-xs font-semibold text-primary hover:underline underline-offset-4"
+                    href={`/${locale}/categories`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline underline-offset-4"
                     onClick={close}
                   >
-                    {t('shop')}
+                    {t('allCategories')}
+                    <ArrowUpRight className="h-3 w-3 rtl:-scale-x-100" aria-hidden="true" />
                   </Link>
                 </div>
 

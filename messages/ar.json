@@ -1423,7 +1423,8 @@
     "view": "عرض",
     "subcategoriesCount": "{count, plural, =0 {عرض المنتجات} one {فئة فرعية واحدة} other {# فئات فرعية}}",
     "viewAllIn": "عرض الكل",
-    "exploreCategory": "استكشف القسم"
+    "exploreCategory": "استكشف القسم",
+    "allCategories": "جميع الفئات"
   },
   "headerSearch": {
     "placeholder": "ابحث عن منتج أو علامة…",
@@ -2043,5 +2044,34 @@
       "sendFailedTitle": "تعذر إرسال الطلب",
       "sendFailedDesc": "أعد المحاولة بعد قليل."
     }
+  },
+  "categoriesPage": {
+    "metadata": {
+      "title": "جميع الفئات — مواد البناء والأدوات والتشطيبات",
+      "description": "تصفح جميع أقسام كتالوج بوكير دياموند في طنجة: مواد البناء، الأدوات، العزل، البلاط، الدهانات، السباكة وفئاتها الفرعية."
+    },
+    "eyebrow": "كتالوج بوكير دياموند",
+    "title": "جميع فئاتنا",
+    "subtitle": "{universes} قسماً و{subcategories} فئة فرعية. افتح قسماً لرؤية فروعه، أو اختر الأقسام التي تهمك من المرشحات.",
+    "searchPlaceholder": "ابحث عن فئة…",
+    "clearSearch": "مسح البحث",
+    "filtersTitle": "الأقسام",
+    "filtersHint": "اضغط على قسم لعرضه وحده.",
+    "showAll": "عرض الكل",
+    "selectedCount": "{count, plural, one {قسم واحد محدد} other {# أقسام محددة}}",
+    "resultsCount": "{count, plural, =0 {لا توجد أقسام} one {قسم واحد معروض} other {# أقسام معروضة}}",
+    "expandAll": "فتح الكل",
+    "collapseAll": "إغلاق الكل",
+    "open": "عرض الفئات الفرعية",
+    "close": "إخفاء",
+    "viewAll": "عرض الكل",
+    "viewProducts": "عرض المنتجات",
+    "universeLabel": "القسم {index}",
+    "subCount": "{count, plural, =0 {لا توجد فئات فرعية} one {فئة فرعية واحدة} other {# فئات فرعية}}",
+    "leavesCount": "{count, plural, one {رف واحد} other {# رفوف}}",
+    "noResults": "لا توجد فئة تطابق «{query}».",
+    "noSelection": "لا يوجد قسم للعرض.",
+    "resetFilters": "إعادة التعيين",
+    "empty": "الكتالوج غير متاح حالياً. حاول مرة أخرى بعد قليل."
   }
 }
