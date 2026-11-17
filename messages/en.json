@@ -1437,7 +1437,8 @@
     "subcategoriesCount": "{count, plural, =0 {View products} one {# subcategory} other {# subcategories}}",
     "viewAllIn": "View all",
     "exploreCategory": "Explore the aisle",
-    "allCategories": "All categories"
+    "allCategories": "All categories",
+    "ourStore": "Our store"
   },
   "headerSearch": {
     "placeholder": "Search a product, a brand…",
@@ -2152,5 +2153,85 @@
   },
   "rewardWallet": {
     "title": "Earned amount"
+  },
+  "storePage": {
+    "metadata": {
+      "title": "Our store in Tangier — photos, videos and contact",
+      "description": "Visit Boukir Diamond Construction Store in Tangier: store photos and videos, opening hours, directions, WhatsApp, Instagram, Facebook and the mobile app."
+    },
+    "hero": {
+      "kicker": "Boukir Diamond · Tangier",
+      "title": "Our store",
+      "description": "Thousands of products on the shelves: building materials, tools, tiling, waterproofing, paint. Come see, touch and leave with the right product.",
+      "address": "Address",
+      "phone": "Phone",
+      "hours": "Opening hours",
+      "directions": "Directions",
+      "whatsapp": "Message us on WhatsApp",
+      "seePhotos": "See the photos"
+    },
+    "gallery": {
+      "kicker": "In pictures",
+      "title": "The store in photos",
+      "description": "Front, aisles, showroom: a glimpse of what awaits you.",
+      "alt": "Boukir Diamond store in Tangier — photo {index}",
+      "open": "Enlarge photo {index}",
+      "viewerTitle": "Store photos",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "close": "Close"
+    },
+    "videos": {
+      "kicker": "On video",
+      "title": "A walk through the store",
+      "play": "Play video",
+      "pause": "Pause",
+      "labels": {
+        "showroom": "The machine showroom",
+        "entree": "The store entrance",
+        "rayons": "The aisles",
+        "sika": "The Sika corner",
+        "facade": "The front",
+        "carrelage": "The tiling corner"
+      }
+    },
+    "socials": {
+      "kicker": "Stay in touch",
+      "title": "Follow us everywhere",
+      "instagram": "New arrivals and projects",
+      "facebook": "News and promotions",
+      "whatsapp": "A question? Quick answer",
+      "reviewTitle": "Google review",
+      "review": "Share your experience",
+      "appTitle": "Mobile app",
+      "app": "Order from your phone",
+      "whatsappMessage": "Hello Boukir Diamond, I have a question."
+    },
+    "app": {
+      "kicker": "Mobile app",
+      "title": "Boukir Diamond in your pocket",
+      "description": "Order, track deliveries, check your balance and find a Maalem, wherever you are.",
+      "features": {
+        "order": "Order in seconds",
+        "track": "Track your orders",
+        "balance": "Your balance and payments",
+        "maalems": "Find a Maalem",
+        "alerts": "Deals and alerts"
+      },
+      "soon": "Soon",
+      "appStoreSmall": "Download on the",
+      "playStoreSmall": "Get it on"
+    },
+    "teaser": {
+      "kicker": "Our store",
+      "title": "Come and see us in Tangier",
+      "description": "A large store, tidy aisles and a team to advise you. Discover it in photos and on video.",
+      "cta": "Discover the store"
+    },
+    "randomProducts": {
+      "kicker": "From the catalogue",
+      "title": "Discover today",
+      "seeAll": "The whole shop"
+    }
   }
 }

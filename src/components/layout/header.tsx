@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { LogoutConfirmation } from "@/components/auth/logout-confirmation"
 import { clearAuth } from "@/state/slices/user-slice"
 import {
+  Building2,
   Calculator,
   ChevronDown,
   ChevronRight,
@@ -185,6 +186,7 @@ export function Header() {
     { href: `/${locale}/shop?sort=promo`, label: tx("promotions"), icon: Percent },
     { href: `/${locale}/services`, label: t("services"), icon: Wrench },
     { href: `/${locale}/maalems`, label: t("maalems"), icon: HardHat },
+    { href: `/${locale}/magasin`, label: t("ourStore"), icon: Building2 },
   ]
 
   const isActive = (href: string) => {

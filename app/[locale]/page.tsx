@@ -10,6 +10,9 @@ import { FlagshipServices } from '@/components/home/flagship/flagship-services'
 import { FlagshipShowcase } from '@/components/home/flagship/flagship-showcase'
 import { FlagshipStore } from '@/components/home/flagship/flagship-store'
 import { FlagshipUniverses, type Universe } from '@/components/home/flagship/flagship-universes'
+import { AppDownloadSection } from '@/components/store/app-download-section'
+import { RandomProductsCarousel } from '@/components/store/random-products-carousel'
+import { StoreTeaser } from '@/components/store/store-teaser'
 import { normalizeLocale } from '@/i18n/locale'
 import { API_CONFIG } from '@/lib/api-config'
 import { catalogHref, categories as catalogCategories } from '@/lib/catalog/registry'
@@ -111,6 +114,10 @@ export default async function HomePage({
       <Header />
       <main id="main-content" className="overflow-x-clip">
         {/* 1 */}<FlagshipHero locale={locale} />
+        {/* Sélection aléatoire de petites cartes produits, défilement automatique */}
+        <RandomProductsCarousel />
+        {/* Application mobile : App Store et Google Play */}
+        <AppDownloadSection locale={locale} />
         <FlagshipPromotions locale={locale} />
         {/* 2 */}<FlagshipUniverses locale={locale} universes={universes} />
         {/* 3 */}<ConstructionSequence locale={locale} />
@@ -120,6 +127,8 @@ export default async function HomePage({
         {/* 6 */}<FlagshipBrands locale={locale} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
         {/* 8 */}<FlagshipPlanner locale={locale} />
+        {/* Notre magasin : photos, vidéo, réseaux */}
+        <StoreTeaser locale={locale} />
         <FlagshipStore />
       </main>
       <Footer cta="home" />

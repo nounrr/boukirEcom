@@ -1298,7 +1298,8 @@
     "subcategoriesCount": "{count, plural, =0 {Voir les produits} one {# sous-catégorie} other {# sous-catégories}}",
     "viewAllIn": "Tout voir",
     "exploreCategory": "Explorer le rayon",
-    "allCategories": "Toutes les catégories"
+    "allCategories": "Toutes les catégories",
+    "ourStore": "Notre magasin"
   },
   "headerSearch": {
     "placeholder": "Rechercher un produit, une marque…",
@@ -2152,5 +2153,85 @@
   },
   "rewardWallet": {
     "title": "Montant gagné"
+  },
+  "storePage": {
+    "metadata": {
+      "title": "Notre magasin à Tanger — photos, vidéos et contact",
+      "description": "Visitez Boukir Diamond Construction Store à Tanger : photos et vidéos du magasin, horaires, itinéraire, WhatsApp, Instagram, Facebook et application mobile."
+    },
+    "hero": {
+      "kicker": "Boukir Diamond · Tanger",
+      "title": "Notre magasin",
+      "description": "Des milliers de références en rayon : matériaux, outillage, carrelage, étanchéité, peinture. Venez voir, toucher et repartir avec le bon produit.",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "hours": "Horaires",
+      "directions": "Itinéraire",
+      "whatsapp": "Écrire sur WhatsApp",
+      "seePhotos": "Voir les photos"
+    },
+    "gallery": {
+      "kicker": "En images",
+      "title": "Le magasin en photos",
+      "description": "Façade, rayons, showroom : un aperçu de ce qui vous attend sur place.",
+      "alt": "Magasin Boukir Diamond à Tanger — photo {index}",
+      "open": "Agrandir la photo {index}",
+      "viewerTitle": "Photos du magasin",
+      "previous": "Photo précédente",
+      "next": "Photo suivante",
+      "close": "Fermer"
+    },
+    "videos": {
+      "kicker": "En vidéo",
+      "title": "Une visite en mouvement",
+      "play": "Lire la vidéo",
+      "pause": "Mettre en pause",
+      "labels": {
+        "showroom": "Le showroom machines",
+        "entree": "L’entrée du magasin",
+        "rayons": "Les rayons",
+        "sika": "L’espace Sika",
+        "facade": "La façade",
+        "carrelage": "L’espace carrelage"
+      }
+    },
+    "socials": {
+      "kicker": "Restons en contact",
+      "title": "Suivez-nous partout",
+      "instagram": "Nouveautés, chantiers et coulisses",
+      "facebook": "Actualités et promotions",
+      "whatsapp": "Une question ? Réponse rapide",
+      "reviewTitle": "Avis Google",
+      "review": "Partagez votre expérience",
+      "appTitle": "Application",
+      "app": "Commandez depuis votre téléphone",
+      "whatsappMessage": "Bonjour Boukir Diamond, j’ai une question."
+    },
+    "app": {
+      "kicker": "Application mobile",
+      "title": "Boukir Diamond dans votre poche",
+      "description": "Commandez, suivez vos livraisons, consultez votre solde et trouvez un Maalem, où que vous soyez.",
+      "features": {
+        "order": "Commandez en quelques secondes",
+        "track": "Suivez vos commandes",
+        "balance": "Votre solde et vos paiements",
+        "maalems": "Trouvez un Maalem",
+        "alerts": "Promos et alertes"
+      },
+      "soon": "Bientôt",
+      "appStoreSmall": "Télécharger dans l’",
+      "playStoreSmall": "Disponible sur"
+    },
+    "teaser": {
+      "kicker": "Notre magasin",
+      "title": "Venez nous voir à Tanger",
+      "description": "Un grand magasin, des rayons bien rangés et une équipe pour vous conseiller. Découvrez-le en photos et en vidéo.",
+      "cta": "Découvrir le magasin"
+    },
+    "randomProducts": {
+      "kicker": "Au hasard du catalogue",
+      "title": "À découvrir aujourd’hui",
+      "seeAll": "Toute la boutique"
+    }
   }
 }

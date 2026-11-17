@@ -1437,7 +1437,8 @@
     "subcategoriesCount": "{count, plural, =0 {查看产品} other {# 个子分类}}",
     "viewAllIn": "查看全部",
     "exploreCategory": "浏览此类别",
-    "allCategories": "全部分类"
+    "allCategories": "全部分类",
+    "ourStore": "我们的门店"
   },
   "headerSearch": {
     "placeholder": "搜索商品、品牌…",
@@ -2152,5 +2153,85 @@
   },
   "rewardWallet": {
     "title": "已赚取金额"
+  },
+  "storePage": {
+    "metadata": {
+      "title": "丹吉尔门店 — 照片、视频与联系方式",
+      "description": "欢迎光临丹吉尔 Boukir Diamond 建材门店：门店照片与视频、营业时间、路线、WhatsApp、Instagram、Facebook 和手机应用。"
+    },
+    "hero": {
+      "kicker": "Boukir Diamond · 丹吉尔",
+      "title": "我们的门店",
+      "description": "数千种商品现货陈列：建筑材料、工具、瓷砖、防水、涂料。欢迎到店选购合适的产品。",
+      "address": "地址",
+      "phone": "电话",
+      "hours": "营业时间",
+      "directions": "路线",
+      "whatsapp": "通过 WhatsApp 联系",
+      "seePhotos": "查看照片"
+    },
+    "gallery": {
+      "kicker": "图片",
+      "title": "门店照片",
+      "description": "门面、货架、展厅：先睹为快。",
+      "alt": "丹吉尔 Boukir Diamond 门店 — 照片 {index}",
+      "open": "放大照片 {index}",
+      "viewerTitle": "门店照片",
+      "previous": "上一张",
+      "next": "下一张",
+      "close": "关闭"
+    },
+    "videos": {
+      "kicker": "视频",
+      "title": "走进门店",
+      "play": "播放视频",
+      "pause": "暂停",
+      "labels": {
+        "showroom": "机械展厅",
+        "entree": "门店入口",
+        "rayons": "货架通道",
+        "sika": "Sika 专区",
+        "facade": "门面",
+        "carrelage": "瓷砖专区"
+      }
+    },
+    "socials": {
+      "kicker": "保持联系",
+      "title": "关注我们",
+      "instagram": "新品与工地动态",
+      "facebook": "新闻与促销",
+      "whatsapp": "有问题？快速回复",
+      "reviewTitle": "Google 评价",
+      "review": "分享您的体验",
+      "appTitle": "手机应用",
+      "app": "用手机下单",
+      "whatsappMessage": "您好 Boukir Diamond，我有一个问题。"
+    },
+    "app": {
+      "kicker": "手机应用",
+      "title": "随身携带 Boukir Diamond",
+      "description": "随时随地下单、跟踪配送、查看余额、寻找师傅。",
+      "features": {
+        "order": "几秒钟完成下单",
+        "track": "跟踪您的订单",
+        "balance": "余额与付款",
+        "maalems": "寻找师傅",
+        "alerts": "优惠与提醒"
+      },
+      "soon": "即将推出",
+      "appStoreSmall": "下载于",
+      "playStoreSmall": "下载于"
+    },
+    "teaser": {
+      "kicker": "我们的门店",
+      "title": "欢迎到丹吉尔门店",
+      "description": "大型门店、整洁货架和专业团队为您服务。通过照片和视频了解门店。",
+      "cta": "了解门店"
+    },
+    "randomProducts": {
+      "kicker": "目录精选",
+      "title": "今日推荐",
+      "seeAll": "全部商品"
+    }
   }
 }
