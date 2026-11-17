@@ -61,7 +61,7 @@ function LogoRow({ brands, locale, reverse, playing }: { brands: LogoBrand[]; lo
     if (rootRef.current) setRtl(getComputedStyle(rootRef.current).direction === "rtl")
   }, [])
   const plugins = useMemo(
-    () => [AutoScroll({ speed: 0.7, startDelay: 400, stopOnInteraction: false, stopOnMouseEnter: true, stopOnFocusIn: true, direction: reverse ? "backward" : "forward" })],
+    () => [AutoScroll({ speed: 0.7, startDelay: 400, stopOnInteraction: false, stopOnMouseEnter: false, stopOnFocusIn: true, direction: reverse ? "backward" : "forward" })],
     [reverse]
   )
   const [viewportRef, api] = useEmblaCarousel({ loop: true, dragFree: true, align: "start", direction: rtl ? "rtl" : "ltr" }, plugins)

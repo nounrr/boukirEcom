@@ -1,9 +1,10 @@
 "use client"
 
 import useEmblaCarousel from "embla-carousel-react"
+import AutoScroll from "embla-carousel-auto-scroll"
 import type { EmblaOptionsType } from "embla-carousel"
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react"
-import { Children, useCallback, useEffect, useRef, useState, type ReactNode } from "react"
+import { Children, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
@@ -15,12 +16,15 @@ import { cn } from "@/lib/utils"
  *   tab is hidden or the carousel is off-screen, and when the user presses
  *   the pause button (WCAG 2.2.2). It never fights the user's own drag.
  * - Arrow keys move between slides when the carousel has focus.
+ * - `glide` instead: the strip moves continuously (no stop between cards) at that speed,
+ *   with the same pauses (hover, focus, drag, off-screen, pause button, reduced motion).
  * - RTL aware.
  */
 export function DragCarousel({
   children,
   label,
   autoplay = 0,
+  glide = 0,
   options,
   slideClassName,
   className,
@@ -33,6 +37,8 @@ export function DragCarousel({
   label: string
   /** autoplay interval in ms, 0 disables */
   autoplay?: number
+  /** continuous scrolling speed (pixels per frame, ~0.5 to 1), 0 disables; replaces `autoplay` */
+  glide?: number
   options?: EmblaOptionsType
   slideClassName?: string
   className?: string
@@ -42,7 +48,12 @@ export function DragCarousel({
 }) {
   const t = useTranslations("xp.carousel")
   const [direction, setDirection] = useState<"ltr" | "rtl">("ltr")
-  const [viewportRef, api] = useEmblaCarousel({ align: "start", loop: true, dragFree: false, containScroll: "trimSnaps", direction, ...options })
+  // Continuous mode: Embla's AutoScroll, started and stopped only by us (see `running`).
+  const plugins = useMemo(
+    () => (glide > 0 ? [AutoScroll({ speed: glide, startDelay: 0, playOnInit: false, stopOnInteraction: false, stopOnMouseEnter: false, stopOnFocusIn: false })] : []),
+    [glide]
+  )
+  const [viewportRef, api] = useEmblaCarousel({ align: "start", loop: true, dragFree: glide > 0, containScroll: "trimSnaps", direction, ...options }, plugins)
   const rootRef = useRef<HTMLDivElement>(null)
   const [selected, setSelected] = useState(0)
   const [snaps, setSnaps] = useState<number[]>([])
@@ -52,6 +63,15 @@ export function DragCarousel({
   const [visible, setVisible] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const update = () => setReducedMotion(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
 
   useEffect(() => {
     if (rootRef.current) setDirection(getComputedStyle(rootRef.current).direction === "rtl" ? "rtl" : "ltr")
@@ -86,16 +106,38 @@ export function DragCarousel({
   }, [])
 
   const canScroll = snaps.length > 1
-  const running = autoplay > 0 && canScroll && !paused && !hovered && !focused && !dragging && visible
+  const moving = glide > 0 || autoplay > 0
+  const running = moving && canScroll && !paused && !hovered && !focused && !dragging && visible && !(glide > 0 && reducedMotion)
+  const runningRef = useRef(running)
+  useEffect(() => { runningRef.current = running }, [running])
+
+  // Continuous mode: play while `running`, and pick up again after the arrows have moved the strip.
+  useEffect(() => {
+    const auto = glide > 0 ? api?.plugins()?.autoScroll : undefined
+    if (!api || !auto) return
+    if (running && !auto.isPlaying()) auto.play()
+    if (!running && auto.isPlaying()) auto.stop()
+    const resume = () => { if (runningRef.current && !auto.isPlaying()) auto.play() }
+    api.on("settle", resume)
+    return () => { api.off("settle", resume) }
+  }, [api, glide, running])
+
+  // Arrows: in continuous mode, stop the glide so the jump is clean (it resumes on "settle").
+  const step = (forward: boolean) => {
+    const auto = glide > 0 ? api?.plugins()?.autoScroll : undefined
+    if (auto?.isPlaying()) auto.stop()
+    if (forward) api?.scrollNext()
+    else api?.scrollPrev()
+  }
 
   useEffect(() => {
-    if (!api || !running) return
+    if (!api || !running || glide > 0) return
     const id = window.setInterval(() => {
       if (document.hidden) return
       api.scrollNext()
     }, autoplay)
     return () => window.clearInterval(id)
-  }, [api, running, autoplay])
+  }, [api, running, autoplay, glide])
 
   const count = Children.count(children)
   const btn =
@@ -106,15 +148,15 @@ export function DragCarousel({
   const controlBar =
     controls === "none" || !canScroll ? null : (
       <div className="flex items-center gap-2">
-        {autoplay > 0 ? (
+        {moving ? (
           <button type="button" onClick={() => setPaused((p) => !p)} aria-label={paused ? t("play") : t("pause")} className={cn("grid size-11 place-items-center rounded-full border transition-colors", btn)}>
             {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
           </button>
         ) : null}
-        <button type="button" onClick={() => api?.scrollPrev()} aria-label={t("prev")} className={cn("grid size-11 place-items-center rounded-full border transition-colors", btn)}>
+        <button type="button" onClick={() => step(false)} aria-label={t("prev")} className={cn("grid size-11 place-items-center rounded-full border transition-colors", btn)}>
           <ChevronLeft className="size-5 rtl:rotate-180" />
         </button>
-        <button type="button" onClick={() => api?.scrollNext()} aria-label={t("next")} className={cn("grid size-11 place-items-center rounded-full border transition-colors", btn)}>
+        <button type="button" onClick={() => step(true)} aria-label={t("next")} className={cn("grid size-11 place-items-center rounded-full border transition-colors", btn)}>
           <ChevronRight className="size-5 rtl:rotate-180" />
         </button>
       </div>
@@ -137,8 +179,7 @@ export function DragCarousel({
         if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
         if ((e.target as HTMLElement).closest("input, textarea, select")) return
         const forward = (e.key === "ArrowRight") !== (direction === "rtl")
-        if (forward) api?.scrollNext()
-        else api?.scrollPrev()
+        step(forward)
       }}
     >
       {controls === "top" && controlBar ? <div className="mb-5 flex justify-end">{controlBar}</div> : null}

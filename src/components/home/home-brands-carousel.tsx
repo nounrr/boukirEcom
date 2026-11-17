@@ -127,7 +127,7 @@ export function HomeBrandsCarousel({
         speed: 0.7,
         startDelay: 600,
         stopOnInteraction: false,
-        stopOnMouseEnter: true,
+        stopOnMouseEnter: false,
         stopOnFocusIn: true,
         breakpoints: {
           '(prefers-reduced-motion: reduce)': { active: false },

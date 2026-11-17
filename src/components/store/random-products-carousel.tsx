@@ -62,7 +62,7 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
 
 /**
  * Deuxième section de l'accueil : petites cartes produits tirées au hasard à chaque visite
- * (promotions et nouveautés), qui défilent seules ; glisser pour parcourir.
+ * (promotions et nouveautés), qui défilent en continu (pause au survol) ; glisser pour parcourir.
  */
 export function RandomProductsCarousel() {
   const locale = useLocale()
@@ -104,7 +104,7 @@ export function RandomProductsCarousel() {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <DragCarousel label={t("title")} autoplay={2600} slideClassName={SLIDE} controls="bottom" options={{ align: "start" }}>
+          <DragCarousel label={t("title")} glide={0.6} slideClassName={SLIDE} controls="bottom" options={{ align: "start" }}>
             {products.map((product) => (
               <MiniProductCard key={product.id} product={product} locale={locale} />
             ))}
