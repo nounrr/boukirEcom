@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseQueryWithAuth } from '@/lib/base-query'
 
-export type MissionStatus = 'assigned' | 'scheduled' | 'to_do' | 'en_route' | 'arrived' | 'work_in_progress' | 'completed'
+export type MissionStatus = 'assigned' | 'scheduled' | 'to_do' | 'en_route' | 'arrived' | 'work_in_progress' | 'completed' | 'closed'
 
 export interface MaalemMission {
   id: number
@@ -42,10 +42,26 @@ export interface MissionPhoto {
   created_at: string
 }
 
+/** What a mission pays the Maalem: to come, available once the team closed it, taken in cash, or moved to purchases. */
+export type EarningState = 'pending' | 'available' | 'paid_cash' | 'to_shop'
+export interface MaalemEarning {
+  id: number
+  service_request_id: number
+  intervention_id: number | null
+  request_number: string
+  service_name: string | null
+  amount: number
+  state: EarningState
+  closed_at: string | null
+  planned_date: string | null
+  settled_at: string | null
+}
+export interface EarningsSummary { available: number; pending: number; paid_cash: number; to_shop: number }
+
 export const maalemMissionsApi = createApi({
   reducerPath: 'maalemMissionsApi',
   baseQuery: baseQueryWithAuth,
-  tagTypes: ['MaalemMission'],
+  tagTypes: ['MaalemMission', 'MaalemEarnings'],
   endpoints: (builder) => ({
     getMaalemMissions: builder.query<{ missions: MaalemMission[] }, void>({
       query: () => '/api/maalem-missions',
@@ -63,6 +79,14 @@ export const maalemMissionsApi = createApi({
       query: ({ id, progress_percent }) => ({ url: `/api/maalem-missions/${id}/progress`, method: 'PATCH', body: { progress_percent } }),
       invalidatesTags: (_result, _error, { id }) => ['MaalemMission', { type: 'MaalemMission', id }],
     }),
+    getMaalemEarnings: builder.query<{ summary: EarningsSummary; earnings: MaalemEarning[] }, void>({
+      query: () => '/api/maalem-missions/earnings',
+      providesTags: ['MaalemEarnings'],
+    }),
+    moveEarningsToShop: builder.mutation<{ total: number; remise_balance: number }, number[]>({
+      query: (earningIds) => ({ url: '/api/maalem-missions/earnings/to-shop', method: 'POST', body: { earning_ids: earningIds } }),
+      invalidatesTags: ['MaalemEarnings'],
+    }),
     updateMaalemMissionReport: builder.mutation<void, { id: number; body: Record<string, unknown> }>({
       query: ({ id, body }) => ({ url: `/api/maalem-missions/${id}/report`, method: 'PATCH', body }),
       invalidatesTags: (_result, _error, { id }) => ['MaalemMission', { type: 'MaalemMission', id }],
@@ -76,4 +100,6 @@ export const {
   useTransitionMaalemMissionMutation,
   useUpdateMaalemMissionProgressMutation,
   useUpdateMaalemMissionReportMutation,
+  useGetMaalemEarningsQuery,
+  useMoveEarningsToShopMutation,
 } = maalemMissionsApi

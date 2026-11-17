@@ -9,7 +9,7 @@ import { maalemAccountEntry } from "@/lib/maalem-account-access"
 import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
-  active?: "profile" | "maalem" | "orders" | "requests" | "solde" | "wishlist" | "settings"
+  active?: "profile" | "maalem" | "earnings" | "orders" | "requests" | "solde" | "wishlist" | "settings"
 }
 
 export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
@@ -70,6 +70,15 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             >
               <BriefcaseBusiness className="w-4 h-4" />
               {t(maalemEntry === "workspace" ? "maalemWorkspace" : "maalemApplication")}
+            </Link>
+          )}
+          {maalemEntry === "workspace" && (
+            <Link
+              href={`/${locale}/profile/maalem/earnings`}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "earnings" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
+            >
+              <Wallet className="w-4 h-4" />
+              {t("maalemEarnings")}
             </Link>
           )}
           <Link

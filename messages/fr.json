@@ -1185,7 +1185,8 @@
     "serviceRequests": "Mes demandes de service",
     "soldeHistory": "Mon solde",
     "wishlist": "Favoris",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "maalemEarnings": "Mes gains"
   },
   "home": {
     "heroKicker": "Votre quincaillerie en ligne",
@@ -2233,6 +2234,70 @@
       "kicker": "Au hasard du catalogue",
       "title": "À découvrir aujourd’hui",
       "seeAll": "Toute la boutique"
+    }
+  },
+  "servicePayment": {
+    "title": "Montant à payer",
+    "choose": "Choisissez comment payer :",
+    "changeMethod": "Vous pouvez aussi changer de mode de paiement :",
+    "methods": {
+      "cmi": "Carte bancaire",
+      "virement": "Virement",
+      "cheque": "Chèque",
+      "especes": "Espèces"
+    },
+    "hints": {
+      "cmi": "Paiement sécurisé sur la page de la banque (CMI). Validé tout de suite.",
+      "virement": "Faites le virement au magasin, puis confirmez ici : l’équipe valide à la réception.",
+      "cheque": "Remettez le chèque au magasin ou au Maalem : l’équipe valide à la réception.",
+      "especes": "Payez en espèces au magasin ou au Maalem : l’équipe valide à la réception."
+    },
+    "payCard": "Payer {amount} par carte",
+    "confirmMethod": "Je paie par {method}",
+    "cardConfirm": "Payer {amount} par carte sur la page sécurisée de la banque ?",
+    "awaiting": "Paiement par {method} annoncé : en attente de confirmation du magasin.",
+    "declaredNotice": "C’est noté : le magasin confirmera la réception.",
+    "paid": "Payé : {amount}",
+    "cardUnavailable": "Le paiement par carte n’est pas disponible pour le moment. Choisissez un autre mode ou réessayez plus tard.",
+    "error": "Une erreur est survenue. Réessayez.",
+    "amountLabel": "Montant",
+    "reference": "Référence de paiement",
+    "signInToVerify": "Se connecter pour vérifier",
+    "verifyAgain": "Vérifier à nouveau",
+    "backToRequest": "Retour à la demande",
+    "result": {
+      "checking": {
+        "title": "Vérification…",
+        "description": "Nous vérifions votre session."
+      },
+      "loginRequired": {
+        "title": "Connexion requise",
+        "description": "Connectez-vous pour vérifier le paiement de votre demande."
+      },
+      "verificationError": {
+        "title": "Vérification impossible",
+        "description": "Le résultat du paiement n’a pas pu être vérifié. Consultez votre demande."
+      },
+      "paid": {
+        "title": "Paiement accepté",
+        "description": "Votre demande est réglée. Merci !"
+      },
+      "declined": {
+        "title": "Paiement refusé",
+        "description": "La banque a refusé le paiement. Vous pouvez réessayer ou choisir un autre mode."
+      },
+      "failed": {
+        "title": "Paiement non abouti",
+        "description": "Le paiement n’a pas abouti. Vous pouvez réessayer ou choisir un autre mode."
+      },
+      "cancelled": {
+        "title": "Paiement annulé",
+        "description": "Vous avez annulé le paiement. Votre demande reste à payer."
+      },
+      "pending": {
+        "title": "Paiement en cours de vérification",
+        "description": "Nous attendons la confirmation de la banque. Cela prend quelques secondes."
+      }
     }
   }
 }

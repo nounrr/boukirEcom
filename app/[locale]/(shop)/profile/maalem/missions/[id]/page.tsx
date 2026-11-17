@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Camera, CheckCircle2, MapPin, Navigation, Phone, Play, Save } from 'lucide-react'
+import { ArrowLeft, Camera, CheckCircle2, MapPin, Navigation, Phone, Play, Save, Wallet } from 'lucide-react'
 import { AccountSidebar } from '@/components/account/account-sidebar'
 import { ShopPageLayout } from '@/components/layout/shop-page-layout'
 import { Badge } from '@/components/ui/badge'
@@ -16,12 +16,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { API_CONFIG } from '@/lib/api-config'
 import { useAppSelector } from '@/state/hooks'
 import {
-  useGetMaalemMissionQuery, useTransitionMaalemMissionMutation,
+  useGetMaalemEarningsQuery, useGetMaalemMissionQuery, useTransitionMaalemMissionMutation,
   useUpdateMaalemMissionProgressMutation, useUpdateMaalemMissionReportMutation,
   type MissionStatus,
 } from '@/state/api/maalem-missions-api-slice'
 
-const labels: Record<MissionStatus, string> = { assigned: 'À planifier', scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé', work_in_progress: 'Travaux en cours', completed: 'Terminée — contrôle équipe requis' }
+const labels: Record<MissionStatus, string> = { assigned: 'À planifier', scheduled: 'Planifiée', to_do: 'À faire', en_route: 'En route', arrived: 'Arrivé', work_in_progress: 'Travaux en cours', completed: 'Terminée — contrôle équipe requis', closed: 'Clôturée' }
 const transitions: Partial<Record<MissionStatus, { status: MissionStatus; label: string; icon: typeof Navigation }>> = {
   scheduled: { status: 'en_route', label: 'Je suis en route', icon: Navigation },
   to_do: { status: 'en_route', label: 'Je suis en route', icon: Navigation },
@@ -41,6 +41,10 @@ export default function MaalemMissionDetailPage() {
   const token = useAppSelector((state) => state.user.accessToken)
   const query = useGetMaalemMissionQuery(id, { skip: !Number.isInteger(id), pollingInterval: 15_000, refetchOnFocus: true, refetchOnReconnect: true })
   const mission = query.data?.mission
+  // What this mission pays the Maalem (entered by the team when assigning them).
+  const earnings = useGetMaalemEarningsQuery(undefined, { refetchOnMountOrArgChange: true })
+  const earning = earnings.data?.earnings.find((e) => e.service_request_id === mission?.service_request_id)
+  const earningLabel = { pending: 'à venir (mission non clôturée)', available: 'disponible', paid_cash: 'retiré en espèces', to_shop: 'utilisé pour vos achats' } as const
   const [transition, transitionState] = useTransitionMaalemMissionMutation()
   const [updateProgress, progressState] = useUpdateMaalemMissionProgressMutation()
   const [updateReport, reportState] = useUpdateMaalemMissionReportMutation()
@@ -76,6 +80,7 @@ export default function MaalemMissionDetailPage() {
       <Card className="gap-5 rounded-none border-0 border-b bg-transparent pb-8 shadow-[0_8px_28px_-20px_rgba(85,62,20,.35)]"><CardHeader className="px-0"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs text-muted-foreground">{mission.request_number}</p><h1 className="mt-2 text-3xl font-bold tracking-tight rtl:tracking-normal">{mission.service_name || mission.category_name || 'Intervention'}</h1></div><Badge variant="outline" className="max-w-full whitespace-normal rounded-md border-emerald-900/15 bg-emerald-50 text-emerald-900 dark:border-emerald-300/20 dark:bg-emerald-950/30 dark:text-emerald-200">{labels[mission.status]}</Badge></div></CardHeader><CardContent className="space-y-4 px-0">
         {feedback && <p className="border-s-2 border-amber-500 bg-muted/30 p-4 text-sm leading-6 text-foreground">{feedback}</p>}
         <div className="grid gap-3 text-sm sm:grid-cols-2"><p><strong>Date :</strong> {mission.planned_date?.slice(0, 10) || 'Date à convenir'} · {mission.planned_time_slot || 'Créneau à convenir'}</p><p><strong>Ville :</strong> {mission.mission_city}</p><p className="sm:col-span-2"><strong>Adresse :</strong> {mission.mission_address}</p><p><strong>Contact :</strong> {mission.mission_contact_name}</p><a className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300" href={`tel:${mission.mission_contact_phone}`}><Phone className="size-4" />{mission.mission_contact_phone}</a></div>
+        {earning && <Link href={`/${locale}/profile/maalem/earnings`} className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 hover:bg-amber-100 dark:bg-amber-950/30 dark:text-amber-200"><Wallet className="size-4" />Votre montant : {new Intl.NumberFormat(locale, { style: 'currency', currency: 'MAD' }).format(earning.amount)} · {earningLabel[earning.state]}</Link>}
         {mission.mission_description && <div className="border-t border-border pt-5 text-sm leading-7"><strong>Mission :</strong><p className="mt-1 whitespace-pre-wrap">{mission.mission_description}</p></div>}
         {mission.latitude != null && <a target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300" href={`https://www.google.com/maps?q=${mission.latitude},${mission.longitude}`}><MapPin className="size-4" />Ouvrir la localisation</a>}
         {mission.shared_instructions && <div className="border-t border-border pt-5 text-sm leading-7"><strong>Instructions :</strong><p className="mt-1 whitespace-pre-wrap">{mission.shared_instructions}</p></div>}

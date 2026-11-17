@@ -1324,7 +1324,8 @@
     "serviceRequests": "My service requests",
     "soldeHistory": "My balance",
     "wishlist": "Wishlist",
-    "settings": "Settings"
+    "settings": "Settings",
+    "maalemEarnings": "My earnings"
   },
   "home": {
     "heroKicker": "Your online hardware store",
@@ -2233,6 +2234,70 @@
       "kicker": "From the catalogue",
       "title": "Discover today",
       "seeAll": "The whole shop"
+    }
+  },
+  "servicePayment": {
+    "title": "Amount to pay",
+    "choose": "Choose how to pay:",
+    "changeMethod": "You can also change the payment method:",
+    "methods": {
+      "cmi": "Bank card",
+      "virement": "Transfer",
+      "cheque": "Cheque",
+      "especes": "Cash"
+    },
+    "hints": {
+      "cmi": "Secure payment on the bank’s page (CMI). Confirmed right away.",
+      "virement": "Make the transfer to the shop, then confirm here: the team validates on receipt.",
+      "cheque": "Hand the cheque to the shop or the Maalem: the team validates on receipt.",
+      "especes": "Pay cash at the shop or to the Maalem: the team validates on receipt."
+    },
+    "payCard": "Pay {amount} by card",
+    "confirmMethod": "I’ll pay by {method}",
+    "cardConfirm": "Pay {amount} by card on the bank’s secure page?",
+    "awaiting": "Payment by {method} announced: waiting for the shop to confirm.",
+    "declaredNotice": "Noted: the shop will confirm the receipt.",
+    "paid": "Paid: {amount}",
+    "cardUnavailable": "Card payment is not available right now. Choose another method or try later.",
+    "error": "Something went wrong. Try again.",
+    "amountLabel": "Amount",
+    "reference": "Payment reference",
+    "signInToVerify": "Sign in to verify",
+    "verifyAgain": "Check again",
+    "backToRequest": "Back to the request",
+    "result": {
+      "checking": {
+        "title": "Checking…",
+        "description": "We are checking your session."
+      },
+      "loginRequired": {
+        "title": "Sign-in required",
+        "description": "Sign in to check the payment of your request."
+      },
+      "verificationError": {
+        "title": "Could not verify",
+        "description": "The payment result could not be verified. Check your request."
+      },
+      "paid": {
+        "title": "Payment accepted",
+        "description": "Your request is settled. Thank you!"
+      },
+      "declined": {
+        "title": "Payment declined",
+        "description": "The bank declined the payment. Try again or choose another method."
+      },
+      "failed": {
+        "title": "Payment failed",
+        "description": "The payment didn’t go through. Try again or choose another method."
+      },
+      "cancelled": {
+        "title": "Payment cancelled",
+        "description": "You cancelled the payment. Your request is still to pay."
+      },
+      "pending": {
+        "title": "Checking the payment",
+        "description": "Waiting for the bank’s confirmation. This takes a few seconds."
+      }
     }
   }
 }

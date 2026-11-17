@@ -1324,7 +1324,8 @@
     "serviceRequests": "我的服务请求",
     "soldeHistory": "我的余额",
     "wishlist": "心愿单",
-    "settings": "设置"
+    "settings": "设置",
+    "maalemEarnings": "我的收入"
   },
   "home": {
     "heroKicker": "你的在线五金与日用品商店",
@@ -2233,6 +2234,70 @@
       "kicker": "目录精选",
       "title": "今日推荐",
       "seeAll": "全部商品"
+    }
+  },
+  "servicePayment": {
+    "title": "应付金额",
+    "choose": "选择支付方式：",
+    "changeMethod": "您也可以更换支付方式：",
+    "methods": {
+      "cmi": "银行卡",
+      "virement": "银行转账",
+      "cheque": "支票",
+      "especes": "现金"
+    },
+    "hints": {
+      "cmi": "在银行页面（CMI）安全支付，立即确认。",
+      "virement": "向商店转账后在此确认：团队收到后核实。",
+      "cheque": "将支票交给商店或师傅：团队收到后核实。",
+      "especes": "在商店或向师傅支付现金：团队收到后核实。"
+    },
+    "payCard": "用银行卡支付 {amount}",
+    "confirmMethod": "我将通过{method}支付",
+    "cardConfirm": "在银行安全页面用银行卡支付 {amount}？",
+    "awaiting": "已告知通过{method}支付：等待商店确认。",
+    "declaredNotice": "已记录：商店将确认收款。",
+    "paid": "已支付：{amount}",
+    "cardUnavailable": "暂时无法使用银行卡支付。请选择其他方式或稍后重试。",
+    "error": "出错了，请重试。",
+    "amountLabel": "金额",
+    "reference": "支付参考号",
+    "signInToVerify": "登录以核实",
+    "verifyAgain": "再次核实",
+    "backToRequest": "返回申请",
+    "result": {
+      "checking": {
+        "title": "正在核实…",
+        "description": "正在核实您的登录状态。"
+      },
+      "loginRequired": {
+        "title": "需要登录",
+        "description": "请登录以核实您申请的付款。"
+      },
+      "verificationError": {
+        "title": "无法核实",
+        "description": "无法核实付款结果。请查看您的申请。"
+      },
+      "paid": {
+        "title": "支付成功",
+        "description": "您的申请已结清，谢谢！"
+      },
+      "declined": {
+        "title": "支付被拒",
+        "description": "银行拒绝了付款。请重试或选择其他方式。"
+      },
+      "failed": {
+        "title": "支付未完成",
+        "description": "付款未完成。请重试或选择其他方式。"
+      },
+      "cancelled": {
+        "title": "支付已取消",
+        "description": "您取消了付款，申请仍待支付。"
+      },
+      "pending": {
+        "title": "正在核实付款",
+        "description": "正在等待银行确认，需要几秒钟。"
+      }
     }
   }
 }
