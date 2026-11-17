@@ -19,12 +19,12 @@ import type { HeroSlideApi } from "@/types/api/hero-slides"
 /** 3 × 3 cases. */
 const CELLS = 9
 /** Each product stays this long, then another one takes its place. */
-const LIFETIME = 4000
+const LIFETIME = 6000
 const FALLBACK_IMAGE = "/product-fallbacks/metal.webp"
 
 /**
  * One product, with what makes it worth a look: category, brand, price (and the old price when on promo),
- * stock, and a thin gold line that fills during its 4 seconds on screen.
+ * stock, and a thin gold line that fills during its 6 seconds on screen.
  */
 function Tile({
   product,
@@ -35,7 +35,7 @@ function Tile({
 }: {
   product: ProductListItem
   locale: string
-  /** Negative delay: where this card starts in its 4 s (cards are staggered so they change one after another). */
+  /** Negative delay: where this card starts in its 6 s (cards are staggered so they change one after another). */
   delay: number
   running: boolean
   onDone: () => void
@@ -56,7 +56,7 @@ function Tile({
       className="group/tile relative flex size-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white text-ink shadow-[0_18px_40px_-28px_rgba(13,13,13,0.7)] outline-none ring-1 ring-black/5 transition-[translate,box-shadow,border-color] duration-500 ease-hover hover:-translate-y-0.5 hover:border-brand-orange/70 hover:shadow-[0_26px_50px_-24px_rgba(242,169,0,0.55)] focus-visible:ring-[3px] focus-visible:ring-brand-orange/60"
     >
       {/* Photo on a warm halo */}
-      <div className="relative min-h-0 flex-1 bg-[radial-gradient(circle_at_50%_45%,#fff_0%,#fbf3df_62%,#f3e4bd_100%)]">
+      <div className="relative min-h-0 flex-1 bg-white">
         <Image
           src={src}
           alt=""
@@ -99,7 +99,7 @@ function Tile({
             </span>
           )}
         </div>
-        {/* 4 s on screen: the line fills, then the next product comes in. */}
+        {/* 6 s on screen: the line fills, then the next product comes in. */}
         <span className="absolute inset-x-0 bottom-0 h-[3px] bg-ink/5" aria-hidden="true">
           <span
             className="block h-full bg-gradient-to-r from-gold to-brand-orange"
@@ -113,7 +113,7 @@ function Tile({
 }
 
 /**
- * Right of the hero: 9 products of 550 DH and more, from many categories. Each one stays 4 s, then another
+ * Right of the hero: 9 products of 550 DH and more, from many categories. Each one stays 6 s, then another
  * product takes its place: never one already on screen or already shown (until all had their turn), and from a
  * category nobody else is showing whenever possible. The cards change one after another, never all at once.
  * Pauses on hover, on focus, with the pause button, and when the visitor prefers reduced motion.
@@ -126,7 +126,7 @@ export function HeroProductGrid({ locale }: { locale: string; adminSlides?: Hero
   useEffect(() => setSeed(Math.floor(Math.random() * 2 ** 31)), [])
   const pool = useMemo(() => (seed === null || !ready ? [] : interleaveByCategory(products, seededRandom(seed))), [products, seed, ready])
 
-  // Index (in `pool`) of the product in each cell, plus a counter so a card restarts its 4 s when replaced.
+  // Index (in `pool`) of the product in each cell, plus a counter so a card restarts its 6 s when replaced.
   const [cells, setCells] = useState<number[]>([])
   const used = useRef(new Set<number>())
   useEffect(() => {
@@ -168,7 +168,7 @@ export function HeroProductGrid({ locale }: { locale: string; adminSlides?: Hero
     })
   }, [pool, canRotate])
 
-  // Cells change one after another: cell order shuffled once, each starts at its own point of the 4 s.
+  // Cells change one after another: cell order shuffled once, each starts at its own point of the 6 s.
   const stagger = useMemo(() => {
     const order = shuffle(Array.from({ length: CELLS }, (_, i) => i), seededRandom((seed ?? 1) + 7))
     const offsets: number[] = []
