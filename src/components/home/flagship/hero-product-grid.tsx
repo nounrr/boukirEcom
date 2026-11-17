@@ -2,173 +2,143 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Flame, Pause, Play } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Flame, Pause, Play } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { productModel } from "@/components/home/professional/professional-catalog"
+import { useShowcaseProducts } from "@/components/home/use-showcase-products"
+import { displayPrice, interleaveByCategory, pickNext, seededRandom, shuffle } from "@/lib/home/product-rotation"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
-import { getLocalizedProductName } from "@/lib/localized-fields"
+import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
 import { splitPrice } from "@/lib/product-ui"
 import { productHref } from "@/lib/seo/product-url"
 import { cn } from "@/lib/utils"
-import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery, useGetProductQuery } from "@/state/api/products-api-slice"
+import type { ProductListItem } from "@/types/api/products"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
 
 /** 3 × 3 cases. */
 const CELLS = 9
-/** Nombre de promotions et de nouveautés chargées : assez pour renouveler la grille longtemps. */
-const POOL_SIZE = 40
-/** Une case change toutes les… */
-const SWAP_EVERY = 2600
+/** Each product stays this long, then another one takes its place. */
+const LIFETIME = 4000
 const FALLBACK_IMAGE = "/product-fallbacks/metal.webp"
 
-type TileModel = {
-  id: number
-  name: string
-  designation?: string | null
-  designation_ar?: string | null
-  designation_en?: string | null
-  designation_zh?: string | null
-  price: number | null
-  originalPrice?: number
-  image: string
-  fallbackImage?: string
-}
-type PoolItem = { key: string; kind: "product"; model: TileModel } | { key: string; kind: "admin"; productId: number; fallbackImage?: string | null }
-
-/** Petit générateur pseudo-aléatoire (reproductible pour un tirage donné). */
-function mulberry32(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = a
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-function shuffle<T>(list: T[], random: () => number): T[] {
-  const out = list.slice()
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    ;[out[i], out[j]] = [out[j], out[i]]
-  }
-  return out
-}
-
-/** Fiche produit (GET /products/:id) → modèle de la case. */
-function detailToTile(p: Record<string, any>, fallbackImage?: string | null): TileModel {
-  const promo = Boolean(p.prix_promo && p.prix_promo < p.prix_vente)
-  return {
-    id: p.id,
-    name: p.designation,
-    designation: p.designation,
-    designation_ar: p.designation_ar,
-    designation_en: p.designation_en,
-    designation_zh: p.designation_zh,
-    price: promo ? p.prix_promo : p.prix_vente ?? null,
-    originalPrice: promo ? p.prix_vente : undefined,
-    image: toAbsoluteImageUrl(p.image_url) || toAbsoluteImageUrl(fallbackImage) || FALLBACK_IMAGE,
-    fallbackImage: FALLBACK_IMAGE,
-  }
-}
-
-function Tile({ model, locale }: { model: TileModel; locale: string }) {
+/**
+ * One product, with what makes it worth a look: category, brand, price (and the old price when on promo),
+ * stock, and a thin gold line that fills during its 4 seconds on screen.
+ */
+function Tile({
+  product,
+  locale,
+  delay,
+  running,
+  onDone,
+}: {
+  product: ProductListItem
+  locale: string
+  /** Negative delay: where this card starts in its 4 s (cards are staggered so they change one after another). */
+  delay: number
+  running: boolean
+  onDone: () => void
+}) {
   const tCommon = useTranslations("common")
-  const [src, setSrc] = useState(model.image)
-  const name = getLocalizedProductName(model as never, locale) || model.name
-  const discount = model.price != null && model.originalPrice && model.originalPrice > model.price
-    ? Math.round(((model.originalPrice - model.price) / model.originalPrice) * 100)
-    : 0
-  const price = model.price != null ? splitPrice(model.price, locale) : null
+  const [src, setSrc] = useState(toAbsoluteImageUrl(product.image_url) || FALLBACK_IMAGE)
+  const name = getLocalizedProductName(product as never, locale) || product.designation
+  const category = product.categorie ? getLocalizedCategoryName(product.categorie as never, locale) : ""
+  const price = displayPrice(product)
+  const discount = product.prix_promo && product.prix_promo < product.prix_vente ? Math.round(((product.prix_vente - product.prix_promo) / product.prix_vente) * 100) : 0
+  const parts = splitPrice(price, locale)
+  const inStock = product.in_stock ?? Number(product.quantite_disponible) > 0
 
   return (
     <Link
-      href={productHref(model as never, locale)}
+      href={productHref(product as never, locale)}
       title={name}
-      className="group/tile relative flex size-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white text-ink shadow-[0_18px_40px_-28px_rgba(13,13,13,0.7)] outline-none transition-[translate,box-shadow,border-color] duration-500 ease-hover hover:-translate-y-0.5 hover:border-brand-orange/60 hover:shadow-[0_24px_46px_-26px_rgba(13,13,13,0.85)] focus-visible:ring-[3px] focus-visible:ring-brand-orange/60 dark:border-white/10"
+      className="group/tile relative flex size-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white text-ink shadow-[0_18px_40px_-28px_rgba(13,13,13,0.7)] outline-none ring-1 ring-black/5 transition-[translate,box-shadow,border-color] duration-500 ease-hover hover:-translate-y-0.5 hover:border-brand-orange/70 hover:shadow-[0_26px_50px_-24px_rgba(242,169,0,0.55)] focus-visible:ring-[3px] focus-visible:ring-brand-orange/60"
     >
-      <div className="relative min-h-0 flex-1">
+      {/* Photo on a warm halo */}
+      <div className="relative min-h-0 flex-1 bg-[radial-gradient(circle_at_50%_45%,#fff_0%,#fbf3df_62%,#f3e4bd_100%)]">
         <Image
           src={src}
           alt=""
           fill
-          sizes="180px"
-          className="object-contain p-2.5 transition-[scale] duration-[1200ms] ease-[var(--ease-slow)] group-hover/tile:scale-[1.07]"
-          onError={() => setSrc(model.fallbackImage || FALLBACK_IMAGE)}
+          sizes="190px"
+          className="object-contain p-3 drop-shadow-[0_10px_12px_rgba(13,13,13,0.18)] transition-[scale,rotate] duration-[1200ms] ease-[var(--ease-slow)] group-hover/tile:-rotate-2 group-hover/tile:scale-[1.09]"
+          onError={() => setSrc(FALLBACK_IMAGE)}
         />
-        {discount > 0 ? (
-          <span className="absolute start-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-extrabold text-ink shadow-sm">
-            <Flame className="size-2.5" strokeWidth={2.6} aria-hidden="true" />-{discount}%
-          </span>
-        ) : null}
+        <div className="absolute inset-x-1.5 top-1.5 flex items-start justify-between gap-1">
+          {category ? (
+            <span className="max-w-[62%] truncate rounded-full bg-ink/80 px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">{category}</span>
+          ) : <span />}
+          {discount > 0 ? (
+            <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-gold px-1.5 py-0.5 text-[9.5px] font-extrabold text-ink shadow-sm">
+              <Flame className="size-2.5" strokeWidth={2.6} aria-hidden="true" />-{discount}%
+            </span>
+          ) : product.brand?.nom ? (
+            <span className="max-w-[45%] shrink-0 truncate rounded-full border border-gold/60 bg-white/90 px-1.5 py-0.5 text-[8.5px] font-extrabold uppercase text-[#9a6b00]">{product.brand.nom}</span>
+          ) : null}
+        </div>
+        <span className="absolute bottom-1.5 end-1.5 grid size-6 translate-y-1 place-items-center rounded-full bg-ink text-white opacity-0 shadow transition-[opacity,translate] duration-500 group-hover/tile:translate-y-0 group-hover/tile:opacity-100" aria-hidden="true">
+          <ArrowUpRight className="size-3.5" />
+        </span>
       </div>
-      <div className="border-t border-ink/5 bg-white px-2.5 pb-2 pt-1.5">
-        <p className="truncate text-[11px] font-semibold leading-tight">{name}</p>
-        {price ? (
-          <p className="mt-0.5 flex items-baseline gap-0.5 tabular text-ink">
-            <span className="text-sm font-extrabold leading-none">{price.int}</span>
-            <span className="text-[10px] font-bold">{price.mark}{price.dec}</span>
+
+      {/* Name, price, stock */}
+      <div className="relative bg-white px-2.5 pb-2.5 pt-1.5">
+        <p className="line-clamp-1 text-[11px] font-semibold leading-tight">{name}</p>
+        <div className="mt-1 flex items-end justify-between gap-1">
+          <p className="flex items-baseline gap-0.5 tabular text-ink">
+            <span className="text-[15px] font-extrabold leading-none">{parts.int}</span>
+            <span className="text-[10px] font-bold">{parts.mark}{parts.dec}</span>
             <span className="ms-0.5 text-[9px] font-semibold text-ink/50">{tCommon("currency")}</span>
           </p>
-        ) : null}
+          {discount > 0 ? (
+            <span className="text-[9.5px] font-semibold text-ink/40 line-through tabular">{Math.round(product.prix_vente)}</span>
+          ) : (
+            <span className={cn("flex items-center gap-1 text-[9px] font-semibold", inStock ? "text-emerald-700" : "text-ink/45")}>
+              <span className={cn("size-1.5 rounded-full", inStock ? "bg-emerald-500" : "bg-ink/30")} aria-hidden="true" />
+            </span>
+          )}
+        </div>
+        {/* 4 s on screen: the line fills, then the next product comes in. */}
+        <span className="absolute inset-x-0 bottom-0 h-[3px] bg-ink/5" aria-hidden="true">
+          <span
+            className="block h-full bg-gradient-to-r from-gold to-brand-orange"
+            style={{ animation: `bd-hero-progress ${LIFETIME}ms linear ${delay}ms forwards`, animationPlayState: running ? "running" : "paused" }}
+            onAnimationEnd={onDone}
+          />
+        </span>
       </div>
     </Link>
   )
 }
 
-function AdminTile({ productId, fallbackImage, locale }: { productId: number; fallbackImage?: string | null; locale: string }) {
-  const { data } = useGetProductQuery(String(productId))
-  if (!data) return <div className="size-full animate-pulse rounded-2xl bg-ink/5 dark:bg-white/10" />
-  return <Tile model={detailToTile(data as Record<string, any>, fallbackImage)} locale={locale} />
-}
-
 /**
- * Droite du hero : un carré de 9 produits (produits « Hero Slides » du back-office, promotions,
- * nouveautés), tirés au hasard à chaque visite. Toutes les ~2,6 s une case au hasard est remplacée
- * par un produit qui n'est pas déjà affiché. Pause au survol, au focus, sur demande, et quand
- * l'utilisateur préfère réduire les animations.
+ * Right of the hero: 9 products of 550 DH and more, from many categories. Each one stays 4 s, then another
+ * product takes its place: never one already on screen or already shown (until all had their turn), and from a
+ * category nobody else is showing whenever possible. The cards change one after another, never all at once.
+ * Pauses on hover, on focus, with the pause button, and when the visitor prefers reduced motion.
  */
-export function HeroProductGrid({ locale, adminSlides }: { locale: string; adminSlides?: HeroSlideApi[] }) {
+export function HeroProductGrid({ locale }: { locale: string; adminSlides?: HeroSlideApi[] }) {
   const t = useTranslations("xp.home.hero")
-  const { data: promoData } = useGetFeaturedPromoQuery(POOL_SIZE)
-  const { data: newData } = useGetNewArrivalsQuery(POOL_SIZE)
-  // Tirage fait côté navigateur uniquement (pas de différence avec le rendu serveur).
+  const { products, ready } = useShowcaseProducts()
+  // Draw made in the browser only (no difference with the server render), once every list has answered.
   const [seed, setSeed] = useState<number | null>(null)
   useEffect(() => setSeed(Math.floor(Math.random() * 2 ** 31)), [])
+  const pool = useMemo(() => (seed === null || !ready ? [] : interleaveByCategory(products, seededRandom(seed))), [products, seed, ready])
 
-  const pool = useMemo<PoolItem[]>(() => {
-    const admin: PoolItem[] = []
-    const seen = new Set<number>()
-    for (const slide of adminSlides ?? []) {
-      const id = slide.type === "product" ? Number(slide.target?.product_id ?? slide.target?.id) : NaN
-      if (!Number.isFinite(id) || seen.has(id)) continue
-      seen.add(id)
-      admin.push({ key: `a-${id}`, kind: "admin", productId: id, fallbackImage: slide.media?.image_url })
-    }
-    const withPhoto: PoolItem[] = []
-    const withoutPhoto: PoolItem[] = []
-    for (const item of [...(promoData ?? []), ...(newData ?? [])]) {
-      if (seen.has(item.id)) continue
-      seen.add(item.id)
-      const entry: PoolItem = { key: `p-${item.id}`, kind: "product", model: productModel(item, locale) as TileModel }
-      ;(item.image_url ? withPhoto : withoutPhoto).push(entry)
-    }
-    if (seed === null) return [...admin, ...withPhoto, ...withoutPhoto]
-    // Les produits avec photo passent d'abord ; l'ordre change à chaque visite.
-    const random = mulberry32(seed)
-    return [...shuffle([...admin, ...withPhoto], random), ...shuffle(withoutPhoto, random)]
-  }, [adminSlides, promoData, newData, locale, seed])
-
-  // Indices (dans `pool`) des produits affichés dans les 9 cases, et prochain produit à faire entrer.
+  // Index (in `pool`) of the product in each cell, plus a counter so a card restarts its 4 s when replaced.
   const [cells, setCells] = useState<number[]>([])
-  const nextIndex = useRef(CELLS)
-  const lastCell = useRef(-1)
+  const used = useRef(new Set<number>())
   useEffect(() => {
-    setCells(Array.from({ length: Math.min(CELLS, pool.length) }, (_, i) => i))
-    nextIndex.current = Math.min(CELLS, pool.length)
+    used.current = new Set()
+    const first: number[] = []
+    for (let cell = 0; cell < Math.min(CELLS, pool.length); cell++) {
+      const { index } = pickNext(pool, { shown: first, used: used.current, leaving: null })
+      if (index < 0) break
+      first.push(index)
+      used.current.add(index)
+    }
+    setCells(first)
   }, [pool])
 
   const [hovered, setHovered] = useState(false)
@@ -185,29 +155,29 @@ export function HeroProductGrid({ locale, adminSlides }: { locale: string; admin
   const canRotate = pool.length > CELLS
   const running = canRotate && !paused && !hovered && !reducedMotion
 
-  const cellsRef = useRef(cells)
-  useEffect(() => { cellsRef.current = cells }, [cells])
-  useEffect(() => {
-    if (!running) return
-    const timer = window.setInterval(() => {
-      const current = cellsRef.current
-      if (document.hidden || current.length < CELLS) return
-      const shown = new Set(current)
-      // Prochain produit du tirage qui n'est pas déjà dans la grille.
-      let candidate = nextIndex.current % pool.length
-      for (let tries = 0; tries < pool.length && shown.has(candidate); tries++) candidate = (candidate + 1) % pool.length
-      if (shown.has(candidate)) return
-      nextIndex.current = candidate + 1
-      // Case au hasard, jamais deux fois de suite la même.
-      let cell = Math.floor(Math.random() * CELLS)
-      if (cell === lastCell.current) cell = (cell + 1 + Math.floor(Math.random() * (CELLS - 1))) % CELLS
-      lastCell.current = cell
+  const replace = useCallback((cell: number) => {
+    setCells((current) => {
+      if (!canRotate || current.length < CELLS) return current
+      const { index, resetRound } = pickNext(pool, { shown: current, used: used.current, leaving: current[cell] })
+      if (index < 0) return current
+      if (resetRound) used.current = new Set(current)
+      used.current.add(index)
       const next = current.slice()
-      next[cell] = candidate
-      setCells(next)
-    }, SWAP_EVERY)
-    return () => window.clearInterval(timer)
-  }, [running, pool.length])
+      next[cell] = index
+      return next
+    })
+  }, [pool, canRotate])
+
+  // Cells change one after another: cell order shuffled once, each starts at its own point of the 4 s.
+  const stagger = useMemo(() => {
+    const order = shuffle(Array.from({ length: CELLS }, (_, i) => i), seededRandom((seed ?? 1) + 7))
+    const offsets: number[] = []
+    order.forEach((cell, rank) => { offsets[cell] = -Math.round(LIFETIME - ((rank + 1) * LIFETIME) / CELLS) })
+    return offsets
+  }, [seed])
+  // The stagger only applies to the first card of each cell; replacements start fresh.
+  const firstRound = useRef(new Set<number>())
+  useEffect(() => { firstRound.current = new Set(Array.from({ length: CELLS }, (_, i) => i)) }, [pool])
 
   const header = (
     <div className="mb-5 flex items-center justify-between gap-4">
@@ -227,7 +197,7 @@ export function HeroProductGrid({ locale, adminSlides }: { locale: string; admin
             {paused ? <Play className="size-3" aria-hidden="true" /> : <Pause className="size-3" aria-hidden="true" />}
           </button>
         ) : null}
-        <Link href={`/${locale}/shop`} className="group inline-flex items-center gap-1.5 text-xs font-semibold text-ink/70 hover:text-ink dark:text-white/70 dark:hover:text-white">
+        <Link href={`/${locale}/shop?min_price=550`} className="group inline-flex items-center gap-1.5 text-xs font-semibold text-ink/70 hover:text-ink dark:text-white/70 dark:hover:text-white">
           {t("seeAll")}
           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden="true" />
         </Link>
@@ -249,17 +219,23 @@ export function HeroProductGrid({ locale, adminSlides }: { locale: string; admin
         }}
       >
         {Array.from({ length: CELLS }, (_, cell) => {
-          const item = cells[cell] !== undefined ? pool[cells[cell]] : undefined
+          const product = cells[cell] !== undefined ? pool[cells[cell]] : undefined
+          const delay = firstRound.current.has(cell) ? stagger[cell] ?? 0 : 0
           return (
             <li key={cell} className="relative min-h-0 min-w-0">
-              {item ? (
-                // La clé change avec le produit : la nouvelle carte entre en fondu.
-                <div key={item.key} data-fade-ok className="size-full motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-90 motion-safe:duration-700">
-                  {item.kind === "product" ? (
-                    <Tile model={item.model} locale={locale} />
-                  ) : (
-                    <AdminTile productId={item.productId} fallbackImage={item.fallbackImage} locale={locale} />
-                  )}
+              {product ? (
+                // The key changes with the product: the new card comes in with a flip.
+                <div key={product.id} data-fade-ok className="size-full motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-90 motion-safe:slide-in-from-bottom-2 motion-safe:duration-700">
+                  <Tile
+                    product={product}
+                    locale={locale}
+                    delay={delay}
+                    running={running}
+                    onDone={() => {
+                      firstRound.current.delete(cell)
+                      replace(cell)
+                    }}
+                  />
                 </div>
               ) : (
                 <div className="size-full animate-pulse rounded-2xl bg-ink/5 dark:bg-white/10" aria-hidden="true" />

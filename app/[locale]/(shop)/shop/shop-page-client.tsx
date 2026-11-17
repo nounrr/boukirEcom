@@ -236,14 +236,20 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     })
   }, [hasMore, listKey, startPage])
 
-  // Extract metadata from API response
-  const categories = data?.filters?.categories || []
-  const brands = data?.filters?.brands || []
-  const availableColors = data?.filters?.colors || []
-  const availableUnits = data?.filters?.units || []
-  const availableUtilityTypes = data?.filters?.utility_types || []
-  const minPrice = data?.filters?.price_range?.min || 0
-  const maxPrice = data?.filters?.price_range?.max || 10000
+  // Filters panel content (categories, brands, prices…). While the next page or a new filter loads there is
+  // no answer yet: keep the last one, otherwise the panel empties, the page shrinks and jumps back to the top.
+  const [lastFilterMeta, setLastFilterMeta] = useState(data?.filters)
+  useEffect(() => {
+    if (data?.filters) setLastFilterMeta(data.filters)
+  }, [data?.filters])
+  const filterMeta = data?.filters ?? lastFilterMeta
+  const categories = filterMeta?.categories || []
+  const brands = filterMeta?.brands || []
+  const availableColors = filterMeta?.colors || []
+  const availableUnits = filterMeta?.units || []
+  const availableUtilityTypes = filterMeta?.utility_types || []
+  const minPrice = filterMeta?.price_range?.min || 0
+  const maxPrice = filterMeta?.price_range?.max || 10000
   const products = loadedProducts
   const pagination = lastPagination
 

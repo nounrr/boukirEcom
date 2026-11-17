@@ -8,31 +8,15 @@ import { useEffect, useMemo, useState } from "react"
 import { DragCarousel } from "@/components/ui/drag-carousel"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
-import { getLocalizedProductName } from "@/lib/localized-fields"
+import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
 import { productHref } from "@/lib/seo/product-url"
-import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
+import { useShowcaseProducts } from "@/components/home/use-showcase-products"
+import { interleaveByCategory, seededRandom } from "@/lib/home/product-rotation"
 import type { ProductListItem } from "@/types/api/products"
 
-const POOL = 30
-const SHOWN = 18
+/** Products in the strip (all at 550 DH and more, neighbours from different categories). */
+const SHOWN = 40
 const SLIDE = "basis-[44%] min-[480px]:basis-[31%] md:basis-[22%] lg:basis-[16.66%] xl:basis-[14.28%]"
-
-function shuffle<T>(items: T[], seed: number) {
-  let state = seed >>> 0
-  const random = () => {
-    state = (state + 0x6d2b79f5) >>> 0
-    let t = state
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-  const out = items.slice()
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    ;[out[i], out[j]] = [out[j], out[i]]
-  }
-  return out
-}
 
 /** Petite carte produit : photo, nom, prix ; toute la carte ouvre la fiche. */
 function MiniProductCard({ product, locale }: { product: ProductListItem; locale: string }) {
@@ -40,7 +24,10 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
   const name = getLocalizedProductName(product as never, locale) || product.designation
   const price = product.prix_promo && product.prix_promo < product.prix_vente ? product.prix_promo : product.prix_vente
   const discounted = Boolean(product.prix_promo && product.prix_promo < product.prix_vente)
-  const formatted = new Intl.NumberFormat(locale === "ar" ? "ar-MA" : "fr-MA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(price) || 0)
+  const number = new Intl.NumberFormat(locale === "ar" ? "ar-MA" : "fr-MA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const formatted = number.format(Number(price) || 0)
+  const category = product.categorie ? getLocalizedCategoryName(product.categorie as never, locale) : ""
+  const inStock = product.in_stock ?? Number(product.quantite_disponible) > 0
 
   return (
     <Link
@@ -54,11 +41,20 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
         ) : null}
         {discounted && product.pourcentage_promo > 0 ? (
           <span className="absolute start-2 top-2 rounded-full bg-gold px-2 py-0.5 text-[10px] font-extrabold text-ink">-{product.pourcentage_promo}%</span>
+        ) : product.brand?.nom ? (
+          <span className="absolute start-2 top-2 max-w-[70%] truncate rounded-full border border-gold/60 bg-white/95 px-2 py-0.5 text-[9px] font-extrabold uppercase text-[#9a6b00]">{product.brand.nom}</span>
         ) : null}
+        <span className={`absolute bottom-2 end-2 flex items-center gap-1 rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-semibold ${inStock ? "text-emerald-700" : "text-neutral-500"}`}>
+          <span className={`size-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-neutral-400"}`} aria-hidden="true" />
+        </span>
       </span>
       <span className="flex flex-1 flex-col gap-1.5 p-3">
+        {category ? <span className="truncate text-[9.5px] font-bold uppercase tracking-wide text-accent-text">{category}</span> : null}
         <span className="line-clamp-2 min-h-[2.4em] text-[12.5px] font-semibold leading-snug text-foreground/90 group-hover:text-accent-text">{name}</span>
-        <span className="mt-auto text-sm font-extrabold tabular text-foreground">{formatted} <span className="text-[10px] font-bold text-accent-text">MAD</span></span>
+        <span className="mt-auto flex items-baseline gap-1.5">
+          <span className="text-sm font-extrabold tabular text-foreground">{formatted} <span className="text-[10px] font-bold text-accent-text">MAD</span></span>
+          {discounted ? <span className="text-[10px] font-semibold text-muted-foreground line-through tabular">{number.format(Number(product.prix_vente))}</span> : null}
+        </span>
       </span>
     </Link>
   )
@@ -71,25 +67,17 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
 export function RandomProductsCarousel() {
   const locale = useLocale()
   const t = useTranslations("storePage.randomProducts")
-  const { data: promo, isLoading: loadingPromo } = useGetFeaturedPromoQuery(POOL)
-  const { data: fresh, isLoading: loadingNew } = useGetNewArrivalsQuery(POOL)
+  const { products: showcase, ready } = useShowcaseProducts()
   const [seed, setSeed] = useState<number | null>(null)
   useEffect(() => setSeed(Math.floor(Math.random() * 2 ** 31)), [])
 
-  const products = useMemo(() => {
-    const seen = new Set<number>()
-    const pool: ProductListItem[] = []
-    for (const product of [...(promo ?? []), ...(fresh ?? [])]) {
-      // Seulement des produits présentables : avec photo et avec un prix.
-      const price = Number(product.prix_promo || product.prix_vente)
-      if (seen.has(product.id) || !product.image_url || !(price > 0)) continue
-      seen.add(product.id)
-      pool.push(product)
-    }
-    return (seed === null ? pool : shuffle(pool, seed)).slice(0, SHOWN)
-  }, [promo, fresh, seed])
+  // 550 DH and more, with a photo, each once; neighbours from different categories; new draw each visit.
+  const products = useMemo(
+    () => (seed === null || !ready ? [] : interleaveByCategory(showcase, seededRandom(seed)).slice(0, SHOWN)),
+    [showcase, seed, ready],
+  )
 
-  const loading = (loadingPromo || loadingNew) && products.length === 0
+  const loading = !ready || seed === null
 
   return (
     <section className="border-y border-border/60 bg-surface-2/40 py-10 lg:py-12" aria-labelledby="random-products-title">
@@ -101,7 +89,7 @@ export function RandomProductsCarousel() {
             </p>
             <h2 id="random-products-title" className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{t("title")}</h2>
           </div>
-          <Link href={`/${locale}/shop`} className="group inline-flex items-center gap-2 text-sm font-semibold">
+          <Link href={`/${locale}/shop?min_price=550`} className="group inline-flex items-center gap-2 text-sm font-semibold">
             <span className="link-underline">{t("seeAll")}</span>
             <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
           </Link>
