@@ -12,6 +12,8 @@ import { KineticHeading } from '@/components/motion/kinetic-heading'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { catalogHref, categories as catalogCategories } from '@/lib/catalog/registry'
 import { CONTACT, whatsappHref } from '@/lib/contact'
+import { useAppSelector } from '@/state/hooks'
+import { maalemAccountEntry } from '@/lib/maalem-account-access'
 import { cn } from '@/lib/utils'
 import { FooterEstimator } from './footer-estimator'
 
@@ -81,6 +83,8 @@ export function Footer({
 }) {
   const locale = useLocale()
   const pathname = usePathname()
+  const { user, isAuthenticated } = useAppSelector((state) => state.user)
+  const maalemEntry = isAuthenticated ? maalemAccountEntry(user) : null
   const t = useTranslations('xp.footer')
   const tf = useTranslations('footer')
   const tc = useTranslations('xp.calc')
@@ -283,7 +287,7 @@ export function Footer({
                 <FooterLink href={`/${locale}/services`}>{t('services')}</FooterLink>
                 <FooterLink href={`/${locale}/maalems`}>{t('maalems')}</FooterLink>
                 <FooterLink href={`/${locale}/services/request/quick`}>{t('quickRequest')}</FooterLink>
-                <FooterLink href={`/${locale}/register`}>{t('becomeMaalem')}</FooterLink>
+                <FooterLink href={maalemEntry === 'workspace' ? `/${locale}/profile/maalem/missions` : maalemEntry === 'application' ? `/${locale}/profile/maalem` : `/${locale}/register`}>{t(maalemEntry === 'workspace' ? 'maalemWorkspace' : maalemEntry === 'application' ? 'maalemApplication' : 'becomeMaalem')}</FooterLink>
               </FooterColumn>
               <FooterColumn title={t('colTools')}>
                 {(['carrelage', 'peinture', 'beton', 'etancheite'] as const).map((slug) => (

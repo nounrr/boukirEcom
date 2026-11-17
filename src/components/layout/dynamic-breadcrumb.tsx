@@ -44,6 +44,7 @@ export function DynamicBreadcrumb() {
   const requestText = useTranslations('serviceRequests')
   const tx = useTranslations('xp')
   const th = useTranslations('header')
+  const accountText = useTranslations('accountSidebar')
 
   const supportedLocales = getSupportedLocales()
 
@@ -89,6 +90,15 @@ export function DynamicBreadcrumb() {
       return [
         { title: t('shop'), href: `/${locale}/shop`, active: false, icon: iconMap.shop },
         ...(page ? [{ title: catalogText(page, locale).name, href: pathname, active: true, icon: iconMap.category }] : []),
+      ]
+    }
+
+    if (filteredParts[0] === 'profile' && filteredParts[1] === 'maalem' && filteredParts[2] === 'missions') {
+      const isDetail = Boolean(filteredParts[3])
+      return [
+        { title: t('profile'), href: `/${locale}/profile`, active: false, icon: iconMap.profile },
+        { title: accountText('maalemWorkspace'), href: `/${locale}/profile/maalem/missions`, active: !isDetail, icon: HardHat },
+        ...(isDetail ? [{ title: t('maalemMission'), href: pathname, active: true, icon: HardHat }] : []),
       ]
     }
 
@@ -210,7 +220,7 @@ export function DynamicBreadcrumb() {
         icon: iconMap[part]
       }
     })
-  }, [pathname, searchParams, t, tx, th, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
+  }, [pathname, searchParams, t, tx, th, accountText, requestText, productData, orderData?.orderNumber, locale, supportedLocales])
 
   const [maxItems, setMaxItems] = React.useState(3)
   const visibleItems = segments.slice(-maxItems)

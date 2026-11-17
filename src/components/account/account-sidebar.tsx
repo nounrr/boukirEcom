@@ -5,6 +5,7 @@ import { useAppSelector } from "@/state/hooks"
 import { BriefcaseBusiness, ClipboardList, Heart, Package, UserCircle2, Wallet } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
+import { maalemAccountEntry } from "@/lib/maalem-account-access"
 import { API_CONFIG } from "@/lib/api-config"
 
 interface AccountSidebarProps {
@@ -17,11 +18,7 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
   const { user, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
   const canUseSolde = user?.is_solde === true || String(user?.is_solde) === "1"
-  const canApplyAsMaalem = Boolean(
-    (user?.type_compte && ['Artisan', 'Promoteur', 'Artisan/Promoteur'].includes(user.type_compte))
-    || user?.artisan_approuve
-    || (user?.demande_artisan && user?.maalem_profile)
-  )
+  const maalemEntry = maalemAccountEntry(user)
 
   return (
     <aside className="lg:col-span-1">
@@ -66,13 +63,13 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
             <UserCircle2 className="w-4 h-4" />
             {t("profile")}
           </Link>
-          {canApplyAsMaalem && (
+          {maalemEntry && (
             <Link
-              href={`/${locale}/profile/maalem`}
+              href={`/${locale}/profile/maalem${maalemEntry === "workspace" ? "/missions" : ""}`}
               className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active === "maalem" ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/50"}`}
             >
               <BriefcaseBusiness className="w-4 h-4" />
-              {t("maalemApplication")}
+              {t(maalemEntry === "workspace" ? "maalemWorkspace" : "maalemApplication")}
             </Link>
           )}
           <Link

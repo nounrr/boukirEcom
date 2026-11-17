@@ -1179,6 +1179,8 @@
     "activeAccount": "Compte actif",
     "profile": "Mon profil",
     "maalemApplication": "Dossier Maalem",
+    "maalemWorkspace": "Mon espace maâlem",
+    "openingWorkspace": "Ouverture de votre espace…",
     "orders": "Mes commandes",
     "serviceRequests": "Mes demandes de service",
     "soldeHistory": "Mon solde",
@@ -1279,6 +1281,8 @@
     "services": "Services",
     "maalems": "Nos Maalems",
     "maalem": "Devenir Maalem",
+    "maalemWorkspace": "Mon espace maâlem",
+    "maalemApplication": "Dossier Maalem",
     "products": "Produits",
     "searchPlaceholder": "Rechercher des produits...",
     "profile": "Mon profil",
@@ -1311,6 +1315,7 @@
     "brand": "Marque"
   },
   "breadcrumb": {
+    "maalemMission": "Mission",
     "home": "Accueil",
     "shop": "Boutique",
     "products": "Produits",
@@ -1852,6 +1857,8 @@
       "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter votre montant gagné.",
       "requestAction": "Demander le statut Artisan",
       "maalemAction": "Consulter mon dossier Maalem",
+      "maalemWorkspaceAction": "Mon espace maâlem",
+      "maalemWorkspaceDesc": "Accédez à vos missions, votre planning et au suivi de vos interventions.",
       "maalemJoinAction": "Devenir Maalem / Rejoindre notre équipe",
       "maalemOpeningAction": "Ouverture du dossier…"
     },

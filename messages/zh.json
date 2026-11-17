@@ -465,6 +465,8 @@
       "requestHint": "申请工匠/专业身份以获得更多权益并提高已赚取金额。",
       "requestAction": "申请工匠状态",
       "maalemAction": "查看我的 Maalem 申请",
+      "maalemWorkspaceAction": "我的师傅工作区",
+      "maalemWorkspaceDesc": "查看您的任务、日程和服务进度。",
       "maalemJoinAction": "成为 Maalem / 加入我们的团队",
       "maalemOpeningAction": "正在打开申请…"
     },
@@ -1316,6 +1318,8 @@
     "activeAccount": "账号已激活",
     "profile": "我的资料",
     "maalemApplication": "Maalem 申请",
+    "maalemWorkspace": "我的师傅工作区",
+    "openingWorkspace": "正在打开工作区…",
     "orders": "我的订单",
     "serviceRequests": "我的服务请求",
     "soldeHistory": "我的余额",
@@ -1416,6 +1420,8 @@
     "services": "服务",
     "maalems": "我们的 Maalem",
     "maalem": "成为 Maalem",
+    "maalemWorkspace": "我的师傅工作区",
+    "maalemApplication": "师傅申请资料",
     "products": "产品",
     "searchPlaceholder": "搜索产品...",
     "profile": "我的资料",
@@ -1448,6 +1454,7 @@
     "brand": "品牌"
   },
   "breadcrumb": {
+    "maalemMission": "任务",
     "home": "首页",
     "shop": "商店",
     "products": "产品",

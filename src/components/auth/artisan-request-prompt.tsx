@@ -10,6 +10,7 @@ import { useRequestArtisanMutation } from "@/state/api/auth-api-slice"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { isApprovedMaalem } from "@/lib/maalem-account-access"
 import { RemiseBalance } from "@/components/ui/remise-balance"
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -56,7 +57,7 @@ export function ArtisanRequestPrompt() {
   }, [user])
 
   const canRun = useMemo(() => {
-    return shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)
+    return !isApprovedMaalem(user) && shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)
   }, [pathname, user, isAuthenticated])
 
   const closeAndRepeatLater = useCallback(() => {
@@ -68,7 +69,7 @@ export function ArtisanRequestPrompt() {
 
     timersRef.current.repeatTimer = setTimeout(() => {
       if (!mountedRef.current) return
-      if (!shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)) return
+      if (isApprovedMaalem(user) || !shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)) return
 
       const showCount = incrementSessionShowCount(user.id)
       if (showCount > ARTISAN_REQUEST_PROMPT_CONFIG.MAX_SHOWS_PER_SESSION) return
@@ -90,7 +91,7 @@ export function ArtisanRequestPrompt() {
 
     timersRef.current.showTimer = setTimeout(() => {
       if (!mountedRef.current) return
-      if (!shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)) return
+      if (isApprovedMaalem(user) || !shouldShowArtisanRequestPrompt(pathname, user, isAuthenticated)) return
 
       const showCount = incrementSessionShowCount(user.id)
       if (showCount > ARTISAN_REQUEST_PROMPT_CONFIG.MAX_SHOWS_PER_SESSION) return
@@ -139,7 +140,7 @@ export function ArtisanRequestPrompt() {
   }, [user])
 
   const onRequest = useCallback(async () => {
-    if (!user) return
+    if (!user || isApprovedMaalem(user)) return
 
     try {
       const result = await requestArtisan()

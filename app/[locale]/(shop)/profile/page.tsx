@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RemiseBalance } from "@/components/ui/remise-balance"
 import { useAppDispatch, useAppSelector } from "@/state/hooks"
 import { useJoinMaalemProgramMutation, useRequestArtisanMutation, useUpdateProfileMutation } from "@/state/api/auth-api-slice"
+import { maalemAccountEntry } from "@/lib/maalem-account-access"
 import { setUser } from "@/state/slices/user-slice"
 import { toast } from "@/hooks/use-toast"
 import { Calendar, Mail, MapPin, Phone, Package, UserCircle2, LogIn, Building2, Hash, Globe, Save, X, Edit2, CheckCircle2, Settings, ShieldCheck, Clock, BadgePercent, BriefcaseBusiness, Loader2 } from "lucide-react"
@@ -49,6 +50,7 @@ export default function ProfilePage() {
   const dispatch = useAppDispatch()
   const { user, isAuthenticated, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
+  const maalemEntry = maalemAccountEntry(user)
   
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
   const [requestArtisan, { isLoading: isRequestingArtisan }] = useRequestArtisanMutation()
@@ -250,6 +252,10 @@ export default function ProfilePage() {
 
   const handleJoinMaalem = async () => {
     if (!user) return
+    const entry = maalemAccountEntry(user)
+    if (entry === 'workspace') { router.push(`/${locale}/profile/maalem/missions`); return }
+    if (entry === 'application') { router.push(`/${locale}/profile/maalem`); return }
+    if (entry !== 'join') return
     try {
       const result = await joinMaalemProgram().unwrap()
       dispatch(setUser({ ...user, maalem_profile: result.profile }))
@@ -365,16 +371,20 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">{t('artisan.title')}</p>
-                    {(user.artisan_approuve || user.type_compte === "Artisan/Promoteur") && (
+                    <p className="text-sm font-semibold text-foreground">{t(maalemEntry === 'workspace' ? 'artisan.maalemWorkspaceAction' : 'artisan.title')}</p>
+                    {(maalemEntry === "workspace" || user.artisan_approuve || user.type_compte === "Artisan/Promoteur") && (
                       <Badge variant="secondary" className="text-[10px]">{t('artisan.badges.approved')}</Badge>
                     )}
-                    {!!user.demande_artisan && !user.artisan_approuve && user.type_compte !== "Artisan/Promoteur" && (
+                    {maalemEntry !== "workspace" && !!user.demande_artisan && !user.artisan_approuve && user.type_compte !== "Artisan/Promoteur" && (
                       <Badge variant="secondary" className="text-[10px]">{t('artisan.badges.pending')}</Badge>
                     )}
                   </div>
 
-                  {(user.artisan_approuve || user.type_compte === "Artisan/Promoteur") ? (
+                  {maalemEntry === 'workspace' ? (
+                    <div className="mt-3 space-y-3"><p className="text-sm leading-6 text-muted-foreground">{t('artisan.maalemWorkspaceDesc')}</p><Button asChild size="lg" className="min-h-12 w-full gap-2 font-semibold sm:w-auto"><Link href={`/${locale}/profile/maalem/missions`}><BriefcaseBusiness className="size-5" />{t('artisan.maalemWorkspaceAction')}</Link></Button></div>
+                  ) : maalemEntry === 'application' ? (
+                    <Button asChild className="mt-3 min-h-11 gap-2"><Link href={`/${locale}/profile/maalem`}><BriefcaseBusiness className="size-4" />{t('artisan.maalemAction')}</Link></Button>
+                  ) : (user.artisan_approuve || user.type_compte === "Artisan/Promoteur" || maalemEntry === 'join') ? (
                     <div className="mt-2 flex items-start gap-2 text-sm">
                       <ShieldCheck className="w-4 h-4 text-green-600 mt-0.5" />
                       <div>

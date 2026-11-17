@@ -24,6 +24,7 @@ import {
   uploadMaalemRealizations,
 } from '@/lib/maalem-documents'
 import {
+  authApi,
   useGetActiveMaalemCategoriesQuery,
   useGetMaalemProfileQuery,
   useGetMaalemNotificationsQuery,
@@ -32,7 +33,8 @@ import {
   useSaveMaalemDraftMutation,
   useSubmitMaalemProfileMutation,
 } from '@/state/api/auth-api-slice'
-import { useAppSelector } from '@/state/hooks'
+import { useAppDispatch, useAppSelector } from '@/state/hooks'
+import { setUser } from '@/state/slices/user-slice'
 import type {
   MaalemAvailability,
   MaalemProfessionalData,
@@ -62,6 +64,9 @@ import {
   Wrench,
   X,
 } from 'lucide-react'
+import { isApprovedMaalem, maalemAccountEntry } from '@/lib/maalem-account-access'
+import { useMaalemAccess } from '@/hooks/use-maalem-access'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
@@ -232,17 +237,49 @@ function SectionHeading({
 export default function MaalemApplicationPage() {
   const locale = useLocale()
   const t = useTranslations('maalemApplication')
+  const workspaceText = useTranslations('accountSidebar')
+  const router = useRouter()
+  const dispatch = useAppDispatch()
+  const liveAccess = useMaalemAccess()
   const { user, accessToken, isAuthenticated } = useAppSelector((state) => state.user)
-  const canApply = Boolean(
-    user && (user.type_compte === 'Artisan/Promoteur' || user.artisan_approuve)
-  )
-  const queryOptions = { skip: !canApply || !accessToken }
+  const knownApproved = isApprovedMaalem(user)
+  const canApply = Boolean(maalemAccountEntry(user))
+  const queryOptions = { skip: !canApply || !accessToken || knownApproved, refetchOnMountOrArgChange: true, refetchOnFocus: true, pollingInterval: 30_000 }
   const {
     data: profile,
     isLoading: isProfileLoading,
+    isFetching: isProfileFetching,
     isError: isProfileError,
     refetch: refetchProfile,
   } = useGetMaalemProfileQuery(undefined, queryOptions)
+  const [approvalCheckFailed, setApprovalCheckFailed] = useState(false)
+  useEffect(() => { setApprovalCheckFailed(false) }, [user?.id])
+  const matchingApprovedProfile = profile?.contact_id === user?.id && isApprovedMaalem({ maalem_profile: profile }) ? profile : null
+  const approvedProfile = knownApproved || Boolean(matchingApprovedProfile) || (!approvalCheckFailed && isApprovedMaalem({ maalem_profile: liveAccess.access?.status ? { status: liveAccess.access.status } : null }))
+  useEffect(() => {
+    if (!isAuthenticated || !user || !approvedProfile) return
+    const workspace = `/${locale}/profile/maalem/missions`
+    if (matchingApprovedProfile && !knownApproved) {
+      dispatch(setUser({ ...user, maalem_profile: matchingApprovedProfile }))
+      router.replace(workspace)
+      return
+    }
+    if (knownApproved) { router.replace(workspace); return }
+    // Approval can arrive through the live access check before the dossier query.
+    const request = dispatch(authApi.endpoints.getCurrentUser.initiate(undefined, { forceRefetch: true }))
+    let active = true
+    void request.unwrap().then((updated) => {
+      if (!active) return
+      if (updated.id !== user.id || !isApprovedMaalem(updated)) {
+        setApprovalCheckFailed(true)
+        if (updated.id === user.id) dispatch(setUser(updated))
+        return
+      }
+      dispatch(setUser(updated))
+      router.replace(workspace)
+    }).catch(() => { if (active) setApprovalCheckFailed(true) })
+    return () => { active = false; request.unsubscribe() }
+  }, [isAuthenticated, approvedProfile, matchingApprovedProfile, knownApproved, user, locale, router, dispatch])
   const { data: notifications = [] } = useGetMaalemNotificationsQuery(undefined, queryOptions)
   const [markNotificationRead] = useMarkMaalemNotificationReadMutation()
   const {
@@ -269,9 +306,13 @@ export default function MaalemApplicationPage() {
 
   useEffect(() => {
     if (
-      !canApply
+      approvalCheckFailed
+      || approvedProfile
+      || Boolean(user?.maalem_profile)
+      || !canApply
       || !accessToken
       || isProfileLoading
+      || isProfileFetching
       || isProfileError
       || profile
       || joinAttempted.current
@@ -284,6 +325,10 @@ export default function MaalemApplicationPage() {
       .catch(() => undefined)
   }, [
     accessToken,
+    approvalCheckFailed,
+    approvedProfile,
+    user?.maalem_profile,
+    isProfileFetching,
     canApply,
     isProfileError,
     isProfileLoading,
@@ -513,6 +558,23 @@ export default function MaalemApplicationPage() {
       setDownloadingId(null)
     }
   }
+
+  if (isAuthenticated && approvalCheckFailed && !knownApproved && !matchingApprovedProfile) return (
+    <ShopPageLayout title={t('title')} showHeader={false}>
+      <div className="mx-auto max-w-xl py-12 text-center">
+        <AlertCircle className="mx-auto size-10 text-destructive" />
+        <h1 className="mt-4 text-lg font-semibold">{t('errorState.title')}</h1>
+        <p role="alert" className="mt-2 text-sm text-muted-foreground">{t('errorState.description')}</p>
+        <Button className="mt-6 min-h-11 rounded-md" onClick={() => {
+          setApprovalCheckFailed(false)
+          void liveAccess.refetch()
+          if (!queryOptions.skip) void refetchProfile()
+        }}>{t('errorState.action')}</Button>
+      </div>
+    </ShopPageLayout>
+  )
+
+  if (isAuthenticated && approvedProfile) return <ShopPageLayout title={workspaceText('maalemWorkspace')} showHeader={false}><p role="status" className="py-16 text-center text-sm text-muted-foreground">{workspaceText('openingWorkspace')}</p></ShopPageLayout>
 
   if (!isAuthenticated && !accessToken) {
     return (

@@ -465,6 +465,8 @@
       "requestHint": "اطلب صفة حرفي/مهني للاستفادة من مزايا أكثر وزيادة المبلغ المكتسب.",
       "requestAction": "طلب حالة الحرفي",
       "maalemAction": "عرض ملف المعلم",
+      "maalemWorkspaceAction": "فضائي كمعلم",
+      "maalemWorkspaceDesc": "اطّلع على مهامك ومواعيدك وتتبع تدخلاتك.",
       "maalemJoinAction": "أصبح معلماً / انضم إلى فريقنا",
       "maalemOpeningAction": "جارٍ فتح الملف…"
     },
@@ -1316,6 +1318,8 @@
     "activeAccount": "حساب نشط",
     "profile": "ملفي الشخصي",
     "maalemApplication": "ملف المعلم",
+    "maalemWorkspace": "فضائي كمعلم",
+    "openingWorkspace": "جارٍ فتح فضائك…",
     "orders": "طلباتي",
     "serviceRequests": "طلبات خدماتي",
     "soldeHistory": "رصيدي",
@@ -1416,6 +1420,8 @@
     "services": "الخدمات",
     "maalems": "معلمونا",
     "maalem": "انضم كمعلم",
+    "maalemWorkspace": "فضائي كمعلم",
+    "maalemApplication": "ملف المعلم",
     "products": "المنتجات",
     "searchPlaceholder": "البحث عن منتجات...",
     "profile": "ملفي الشخصي",
@@ -1448,6 +1454,7 @@
     "brand": "العلامة"
   },
   "breadcrumb": {
+    "maalemMission": "مهمة",
     "home": "الرئيسية",
     "shop": "المتجر",
     "products": "المنتجات",

@@ -49,6 +49,7 @@ import {
   setPreferredLocale,
   type SupportedLocale,
 } from "@/components/i18n/locale-preference-initializer"
+import { maalemAccountEntry } from "@/lib/maalem-account-access"
 import { API_CONFIG } from "@/lib/api-config"
 
 const languageMeta: Record<SupportedLocale, { label: string; short: string }> = {
@@ -174,7 +175,10 @@ export function Header() {
     }
   }
 
-  const maalemHref = isAuthenticated ? `/${locale}/profile/maalem` : `/${locale}/register`
+  const maalemEntry = isAuthenticated ? maalemAccountEntry(user) : null
+  const hasMaalemWorkspace = maalemEntry === "workspace"
+  const maalemHref = isAuthenticated ? `/${locale}/profile/maalem${hasMaalemWorkspace ? "/missions" : ""}` : `/${locale}/register`
+  const maalemLabel = t(hasMaalemWorkspace ? "maalemWorkspace" : maalemEntry === "application" ? "maalemApplication" : "maalem")
 
   const primaryLinks = [
     { href: `/${locale}/shop`, label: t("shop"), icon: Store },
@@ -241,6 +245,7 @@ export function Header() {
               <div className="hidden sm:block">
                 <WishlistIcon tone="onPrimary" size="sm" />
               </div>
+              {hasMaalemWorkspace && <Link href={maalemHref} className="me-2 hidden min-h-10 items-center gap-2 rounded-xl border border-brand-orange/40 bg-brand-orange/10 px-3 text-xs font-semibold text-brand-yellow transition-colors hover:bg-brand-orange hover:text-ink 2xl:inline-flex"><HardHat className="size-4 shrink-0" />{maalemLabel}</Link>}
               <CartPopover ref={cartRef} tone="onPrimary" size="sm" />
 
               <span className="mx-1.5 hidden h-6 w-px bg-white/15 lg:block" aria-hidden="true" />
@@ -321,7 +326,7 @@ export function Header() {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href={maalemHref} className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2">
-                        <HardHat className="size-4 text-muted-foreground" /> {t("maalem")}
+                        <HardHat className="size-4 text-muted-foreground" /> {maalemLabel}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -459,7 +464,7 @@ export function Header() {
                 ...primaryLinks,
                 { href: `/${locale}/studio`, label: tx("studio"), icon: Ruler },
                 { href: `/${locale}/projet`, label: tx("planner"), icon: Calculator },
-                { href: maalemHref, label: t("maalem"), icon: HardHat },
+                { href: maalemHref, label: maalemLabel, icon: HardHat },
                 ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t("orders"), icon: Package }] : []),
                 { href: `/${locale}/wishlist`, label: tx("favorites"), icon: Heart },
                 { href: `/${locale}/contact`, label: t("contactUs"), icon: Mail },

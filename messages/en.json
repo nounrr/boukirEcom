@@ -465,6 +465,8 @@
       "requestHint": "Apply for Artisan/Pro status for more benefits and a higher earned amount.",
       "requestAction": "Request Artisan status",
       "maalemAction": "View my Maalem application",
+      "maalemWorkspaceAction": "My maâlem workspace",
+      "maalemWorkspaceDesc": "Access your missions, schedule and intervention updates.",
       "maalemJoinAction": "Become a Maalem / Join our team",
       "maalemOpeningAction": "Opening application…"
     },
@@ -1316,6 +1318,8 @@
     "activeAccount": "Active account",
     "profile": "My profile",
     "maalemApplication": "Maalem application",
+    "maalemWorkspace": "My maâlem workspace",
+    "openingWorkspace": "Opening your workspace…",
     "orders": "My orders",
     "serviceRequests": "My service requests",
     "soldeHistory": "My balance",
@@ -1416,6 +1420,8 @@
     "services": "Services",
     "maalems": "Our Maalems",
     "maalem": "Become a Maalem",
+    "maalemWorkspace": "My maâlem workspace",
+    "maalemApplication": "Maalem application",
     "products": "Products",
     "searchPlaceholder": "Search products...",
     "profile": "My profile",
@@ -1448,6 +1454,7 @@
     "brand": "Brand"
   },
   "breadcrumb": {
+    "maalemMission": "Mission",
     "home": "Home",
     "shop": "Shop",
     "products": "Products",
