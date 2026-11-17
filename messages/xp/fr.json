@@ -128,7 +128,9 @@
       "badgeNew": "Nouveau",
       "ourProducts": "Nos produits",
       "seeAll": "Toute la boutique",
-      "nextProduct": "Produit suivant"
+      "nextProduct": "Produit suivant",
+      "pauseProducts": "Mettre en pause le défilement des produits",
+      "playProducts": "Relancer le défilement des produits"
     },
     "campaigns": {
       "kicker": "01 · À la une",

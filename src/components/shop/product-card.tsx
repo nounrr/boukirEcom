@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { productHref } from '@/lib/seo/product-url'
 import { resolveCardPrice, resolveCardVariant } from '@/lib/product-card-price'
-import { Heart, Eye, Package, Check, Ruler, Box, Plus, Share2, Flame, Sparkles } from 'lucide-react'
+import { Heart, Eye, Package, Check, Ruler, Box, Plus, Share2, Flame, Sparkles, LayoutGrid, BadgeCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
@@ -447,6 +447,24 @@ export function ProductCard({
     </button>
   )
 
+  // Badges catégorie et marque (une seule ligne : chacun se tronque si la place manque).
+  const metaBadges = (className?: string) => localizedCategoryName || product.brand ? (
+    <div className={cn('flex min-w-0 items-center gap-1 overflow-hidden', className)}>
+      {localizedCategoryName ? (
+        <span title={localizedCategoryName} className="inline-flex min-w-0 shrink items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground/75">
+          <LayoutGrid className="size-2.5 shrink-0" aria-hidden="true" />
+          <span className="truncate">{localizedCategoryName}</span>
+        </span>
+      ) : null}
+      {product.brand ? (
+        <span title={product.brand} className="inline-flex min-w-0 max-w-[60%] shrink-0 items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-text">
+          <BadgeCheck className="size-2.5 shrink-0" aria-hidden="true" />
+          <span className="truncate">{product.brand}</span>
+        </span>
+      ) : null}
+    </div>
+  ) : null
+
   const actionButton =
     'grid size-9 place-items-center rounded-full border border-black/5 bg-white/95 text-ink shadow-[0_8px_18px_-10px_rgba(13,13,13,0.45)] backdrop-blur transition-[transform,translate,rotate,scale,background-color,color] duration-[500ms] ease-hover hover:scale-[1.08]'
 
@@ -479,8 +497,8 @@ export function ProductCard({
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-text">{product.brand || localizedCategoryName}</p>
-                <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug">{displayName}</h3>
+                {metaBadges()}
+                <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug">{displayName}</h3>
               </div>
               <div className="flex shrink-0 items-center gap-1" onClick={stop}>
                 <button type="button" onClick={handleShare} className="grid size-8 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" title={tx('share')} aria-label={tx('share')}>
@@ -571,6 +589,11 @@ export function ProductCard({
           ) : null}
         </div>
 
+        <span className="pointer-events-none absolute bottom-2.5 end-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 shadow-sm backdrop-blur">
+          <span className="size-1.5 rounded-full bg-current" />
+          {t('inStock')}
+        </span>
+
         {/* Floating actions: always visible on touch, slide in on hover with a mouse */}
         <div className="absolute end-3 top-3 z-10 flex flex-col gap-2 transition-all duration-[800ms] ease-[var(--ease-slow)] [@media(hover:hover)]:translate-x-3 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-focus-within:translate-x-0 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:group-hover:translate-x-0 [@media(hover:hover)]:group-hover:opacity-100 rtl:[@media(hover:hover)]:-translate-x-3">
           <button
@@ -601,13 +624,7 @@ export function ProductCard({
 
       {/* Content */}
       <Link href={href} className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
-        <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-text">{product.brand || localizedCategoryName}</p>
-          <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
-            <span className="size-1.5 rounded-full bg-current" />
-            {t('inStock')}
-          </span>
-        </div>
+        {metaBadges()}
         <h3 className="line-clamp-2 min-h-[2.5rem] text-[14px] font-semibold leading-snug transition-colors group-hover:text-accent-text">{displayName}</h3>
 
         {hasVariants ? (

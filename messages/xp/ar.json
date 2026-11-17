@@ -128,7 +128,9 @@
       "badgeNew": "جديد",
       "ourProducts": "منتجاتنا",
       "seeAll": "المتجر كاملاً",
-      "nextProduct": "المنتج التالي"
+      "nextProduct": "المنتج التالي",
+      "pauseProducts": "إيقاف تبديل المنتجات مؤقتًا",
+      "playProducts": "استئناف تبديل المنتجات"
     },
     "campaigns": {
       "kicker": "01 · في الواجهة",

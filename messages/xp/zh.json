@@ -128,7 +128,9 @@
       "badgeNew": "新品",
       "ourProducts": "我们的产品",
       "seeAll": "全部商品",
-      "nextProduct": "下一个产品"
+      "nextProduct": "下一个产品",
+      "pauseProducts": "暂停产品轮播",
+      "playProducts": "继续产品轮播"
     },
     "campaigns": {
       "kicker": "01 · 精选",

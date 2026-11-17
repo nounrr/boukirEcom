@@ -128,7 +128,9 @@
       "badgeNew": "New",
       "ourProducts": "Our products",
       "seeAll": "Whole shop",
-      "nextProduct": "Next product"
+      "nextProduct": "Next product",
+      "pauseProducts": "Pause the product rotation",
+      "playProducts": "Resume the product rotation"
     },
     "campaigns": {
       "kicker": "01 · Featured",

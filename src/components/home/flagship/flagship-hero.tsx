@@ -11,7 +11,7 @@ import { Magnetic } from "@/components/motion/primitives"
 import { API_CONFIG } from "@/lib/api-config"
 import { catalogHref } from "@/lib/catalog/registry"
 import { cn } from "@/lib/utils"
-import { HeroProductDeck } from "./hero-product-deck"
+import { HeroProductGrid } from "./hero-product-grid"
 import { useGetHeroSlidesQuery } from "@/state/api/hero-slides-api-slice"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
 
@@ -337,7 +337,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
 
         {/* Our products: real product cards (back-office hero slides first) */}
         <div className="relative hidden lg:block">
-          <HeroProductDeck locale={locale} active={active} adminSlides={adminData} />
+          <HeroProductGrid locale={locale} adminSlides={adminData} />
         </div>
       </div>
 
