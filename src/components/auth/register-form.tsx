@@ -20,6 +20,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
+import { localizedCategoryName } from '@/lib/service-catalog'
 
 interface RegisterFormProps {
   onSubmit?: (data: any) => Promise<void>
@@ -473,7 +474,7 @@ export function RegisterForm({ onSubmit: customOnSubmit, onSuccess, skipRedirect
                       <SelectItem value="later">{t('completeCategoryLater')}</SelectItem>
                       {maalemCategories.map((category) => (
                         <SelectItem key={category.id} value={String(category.id)}>
-                          {isArabic && category.nom_ar?.trim() ? category.nom_ar : category.nom}
+                          {localizedCategoryName(category, locale)}
                         </SelectItem>
                       ))}
                     </SelectContent>

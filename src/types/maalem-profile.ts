@@ -10,6 +10,8 @@ export interface MaalemProfileCategory {
   id: number
   nom: string
   nom_ar: string
+  nom_en?: string | null
+  nom_zh?: string | null
   is_active: boolean
   description?: string | null
 }

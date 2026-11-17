@@ -1,20 +1,64 @@
-import type { PublicService, PublicServiceCategory } from '@/types/service-request'
+import type { PublicService } from '@/types/service-request'
 
 export type ServiceCatalogueLocale = 'fr' | 'ar' | 'en' | 'zh'
 
+type LocalizedValues = { fr?: string | null; ar?: string | null; en?: string | null; zh?: string | null }
+
+/**
+ * Texte dans la langue du visiteur, sinon en français, sinon dans la première langue saisie.
+ * Les traductions anglaise et chinoise sont facultatives dans le back-office.
+ */
+export function pickLocalizedText(values: LocalizedValues, locale: string): string | null {
+  const key: ServiceCatalogueLocale = locale === 'ar' || locale === 'en' || locale === 'zh' ? locale : 'fr'
+  for (const candidate of [values[key], values.fr, values.ar, values.en, values.zh]) {
+    if (typeof candidate === 'string' && candidate.trim()) return candidate
+  }
+  return null
+}
+
 export function localizedServiceText(
-  item: Pick<PublicService, 'nom' | 'nom_ar' | 'description' | 'description_ar'>,
+  item: Pick<PublicService, 'nom' | 'nom_ar' | 'description' | 'description_ar'>
+    & Partial<Pick<PublicService, 'nom_en' | 'nom_zh' | 'description_en' | 'description_zh'>>,
   locale: string,
 ) {
-  const arabic = locale === 'ar'
   return {
-    name: (arabic ? item.nom_ar : item.nom) || item.nom || item.nom_ar,
-    description: (arabic ? item.description_ar : item.description) || item.description || item.description_ar,
+    name: pickLocalizedText({ fr: item.nom, ar: item.nom_ar, en: item.nom_en, zh: item.nom_zh }, locale) || item.nom,
+    description: pickLocalizedText(
+      { fr: item.description, ar: item.description_ar, en: item.description_en, zh: item.description_zh },
+      locale,
+    ),
   }
 }
 
-export function localizedCategoryName(category: PublicServiceCategory, locale: string) {
-  return (locale === 'ar' ? category.nom_ar : category.nom) || category.nom || category.nom_ar
+/** Nom d'une catégorie Maalem ou d'un service (champs nom, nom_ar, nom_en, nom_zh). */
+export function localizedCategoryName(
+  category: { id?: number; nom: string; nom_ar?: string | null; nom_en?: string | null; nom_zh?: string | null },
+  locale: string,
+) {
+  return pickLocalizedText({ fr: category.nom, ar: category.nom_ar, en: category.nom_en, zh: category.nom_zh }, locale) || category.nom
+}
+
+/** Catégorie d'un Maalem dans les fiches publiques (champs name, name_ar, name_en, name_zh). */
+export function localizedMaalemCategoryName(
+  category: { name: string | null; name_ar: string | null; name_en?: string | null; name_zh?: string | null } | null | undefined,
+  locale: string,
+) {
+  if (!category) return ''
+  return pickLocalizedText({ fr: category.name, ar: category.name_ar, en: category.name_en, zh: category.name_zh }, locale) || ''
+}
+
+/** Service ou catégorie d'une demande d'intervention, dans la langue du visiteur. */
+export function localizedRequestNames(
+  request: {
+    service_name?: string | null; service_name_ar?: string | null; service_name_en?: string | null; service_name_zh?: string | null
+    category_name?: string | null; category_name_ar?: string | null; category_name_en?: string | null; category_name_zh?: string | null
+  },
+  locale: string,
+) {
+  return {
+    service: pickLocalizedText({ fr: request.service_name, ar: request.service_name_ar, en: request.service_name_en, zh: request.service_name_zh }, locale),
+    category: pickLocalizedText({ fr: request.category_name, ar: request.category_name_ar, en: request.category_name_en, zh: request.category_name_zh }, locale),
+  }
 }
 
 export function serviceDetailHref(locale: string, serviceId: number) {

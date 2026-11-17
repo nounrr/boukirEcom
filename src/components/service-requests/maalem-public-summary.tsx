@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { resolvePublicMaalemPhoto } from '@/lib/service-requests'
 import { cn } from '@/lib/utils'
 import type { PublicMaalemSummary } from '@/types/service-request'
+import { localizedMaalemCategoryName } from '@/lib/service-catalog'
 
 interface MaalemPublicSummaryProps {
   maalem: PublicMaalemSummary
@@ -36,9 +37,7 @@ export function MaalemPublicSummary({
   labels,
 }: MaalemPublicSummaryProps) {
   const photoUrl = resolvePublicMaalemPhoto(maalem.photo_url)
-  const categoryName = locale === 'ar'
-    ? maalem.category.name_ar || maalem.category.name
-    : maalem.category.name || maalem.category.name_ar
+  const categoryName = localizedMaalemCategoryName(maalem.category, locale)
 
   return (
     <article className={cn(

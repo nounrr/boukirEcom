@@ -25,6 +25,7 @@ import { getMyServiceRequestNotifications, getMyServiceRequests, markServiceRequ
 import { cn } from '@/lib/utils'
 import { useAppSelector } from '@/state/hooks'
 import type { OperationalNotification, ServiceRequest } from '@/types/service-request'
+import { localizedRequestNames } from '@/lib/service-catalog'
 
 function formatDate(locale: string, value?: string | null, includeTime = false) {
   if (!value) return null
@@ -84,12 +85,7 @@ export default function MyServiceRequestsPage() {
   const sourceLabel = (source: ServiceRequest['request_source']) => t(`source.${source}`)
 
   const requestTitle = (request: ServiceRequest) => {
-    const localizedService = isArabic
-      ? request.service_name_ar || request.service_name
-      : request.service_name || request.service_name_ar
-    const localizedCategory = isArabic
-      ? request.category_name_ar || request.category_name
-      : request.category_name || request.category_name_ar
+    const { service: localizedService, category: localizedCategory } = localizedRequestNames(request, locale)
 
     if (request.title) return request.title
     if (localizedService) return localizedService

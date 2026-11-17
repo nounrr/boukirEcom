@@ -7,6 +7,7 @@ import { serviceMaalemRequestHref } from '@/lib/service-catalog'
 import type { CompatibleServiceMaalem } from '@/types/service-request'
 import { PublicRating } from '@/components/maalems/public-rating'
 import { PublicMaalemPortrait } from '@/components/services/public-maalem-portrait'
+import { localizedMaalemCategoryName } from '@/lib/service-catalog'
 
 export function CompatibleMaalemCard({ maalem, locale, serviceId, labels }: {
   maalem: CompatibleServiceMaalem
@@ -15,7 +16,7 @@ export function CompatibleMaalemCard({ maalem, locale, serviceId, labels }: {
   labels: { verified: string; city: string; areas: string; missions: string; profile: string; choose: string; rating: string; verifiedReviews: string; noReviews: string }
 }) {
   const photo = resolvePublicMaalemPhoto(maalem.photo_url)
-  const category = locale === 'ar' ? maalem.category.name_ar || maalem.category.name : maalem.category.name || maalem.category.name_ar
+  const category = localizedMaalemCategoryName(maalem.category, locale)
   return <article className="flex min-h-full min-w-0 flex-col rounded-[1.5rem] border border-emerald-100 bg-white p-5 shadow-[0_14px_30px_-26px_rgba(4,90,64,.55)] transition-colors duration-150 hover:border-emerald-400 focus-within:border-emerald-400 motion-reduce:transition-none dark:border-emerald-900 dark:bg-card dark:hover:border-emerald-500">
     <div className="flex min-w-0 items-start gap-4">
       <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-emerald-950 max-[380px]:size-16">

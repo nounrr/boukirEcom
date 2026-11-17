@@ -13,6 +13,7 @@ import { quickServiceRequestHref } from '@/lib/service-catalog'
 import { getPublicMaalem, getPublicMaalemReviews, resolvePublicMaalemPhoto } from '@/lib/service-requests'
 import { buildPageMetadata, localizedUrl, seoImageUrl } from '@/lib/seo/metadata'
 import { buildMaalemProfileJsonLd } from '@/lib/seo/maalem-profile-json-ld'
+import { localizedMaalemCategoryName } from '@/lib/service-catalog'
 
 type Props = { params: Promise<{ locale: string; id: string }>; searchParams: Promise<{ reviews_page?: string | string[] }> }
 const positiveId = (value: string) => { const id = Number(value); return Number.isSafeInteger(id) && id > 0 ? id : null }
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Pick<Props, 'params'>): Promi
   if (!id) return {}
   const [maalem, t] = await Promise.all([getPublicMaalem(id), getTranslations({ locale, namespace: 'maalemDetailPage' })])
   if (!maalem) return {}
-  const category = locale === 'ar' ? maalem.category.name_ar || maalem.category.name : maalem.category.name || maalem.category.name_ar
+  const category = localizedMaalemCategoryName(maalem.category, locale)
   const description = (maalem.professional_summary || t('metadataFallback')).slice(0, 180)
   return buildPageMetadata({ locale, title: `${maalem.public_name} — ${category || t('verified')}`, description, path: `/maalems/${id}`, imageUrl: resolvePublicMaalemPhoto(maalem.photo_url), openGraphType: 'profile' })
 }
@@ -49,7 +50,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
   ])
   if (!maalem) notFound()
 
-  const category = locale === 'ar' ? maalem.category.name_ar || maalem.category.name : maalem.category.name || maalem.category.name_ar
+  const category = localizedMaalemCategoryName(maalem.category, locale)
   const photo = resolvePublicMaalemPhoto(maalem.photo_url)
   const requestHref = `/${locale}/service-requests/maalem/${maalem.id}`
   const closed = maalem.statistics.closed_interventions

@@ -149,6 +149,8 @@ function toPublicMaalemSummary(value: unknown): PublicMaalemSummary | null {
       id: Number(category.id),
       name: nullableString(category.name),
       name_ar: nullableString(category.name_ar),
+      name_en: nullableString(category.name_en),
+      name_zh: nullableString(category.name_zh),
     },
     city: nullableString(source.city),
     intervention_areas: stringList(source.intervention_areas),
@@ -198,9 +200,9 @@ export async function getPublicMaalem(id: number): Promise<PublicMaalemDetail | 
       const categories = Array.isArray(row.categories) ? row.categories.flatMap((entry) => {
         if (!entry || typeof entry !== 'object') return []
         const category = entry as Record<string, unknown>
-        return Number.isSafeInteger(category.id) && nullableString(category.nom) ? [{ id: Number(category.id), nom: nullableString(category.nom)!, nom_ar: nullableString(category.nom_ar) || '' }] : []
+        return Number.isSafeInteger(category.id) && nullableString(category.nom) ? [{ id: Number(category.id), nom: nullableString(category.nom)!, nom_ar: nullableString(category.nom_ar) || '', nom_en: nullableString(category.nom_en), nom_zh: nullableString(category.nom_zh) }] : []
       }) : []
-      return [{ id: Number(row.id), nom: nullableString(row.nom)!, nom_ar: nullableString(row.nom_ar) || '', description: nullableString(row.description), description_ar: nullableString(row.description_ar), image_url: nullableString(row.image_url), categories }]
+      return [{ id: Number(row.id), nom: nullableString(row.nom)!, nom_ar: nullableString(row.nom_ar) || '', nom_en: nullableString(row.nom_en), nom_zh: nullableString(row.nom_zh), description: nullableString(row.description), description_ar: nullableString(row.description_ar), description_en: nullableString(row.description_en), description_zh: nullableString(row.description_zh), image_url: nullableString(row.image_url), categories }]
     }) : []
     const distributionSource = statistics.rating_distribution && typeof statistics.rating_distribution === 'object'
       ? statistics.rating_distribution as Record<string, unknown>

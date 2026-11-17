@@ -5,6 +5,7 @@ import { getMaalemInitials } from '@/components/service-requests/maalem-public-s
 import { resolvePublicMaalemPhoto } from '@/lib/service-requests'
 import type { PublicMaalemSummary as Maalem } from '@/types/service-request'
 import { MaalemCardPortrait } from './maalem-card-portrait'
+import { localizedMaalemCategoryName } from '@/lib/service-catalog'
 
 /**
  * Directory profile card — photo stage with category / verified / rating
@@ -19,7 +20,7 @@ export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0 }
   index?: number
 }) {
   const photoUrl = resolvePublicMaalemPhoto(maalem.photo_url)
-  const categoryName = locale === 'ar' ? maalem.category.name_ar || maalem.category.name : maalem.category.name || maalem.category.name_ar
+  const categoryName = localizedMaalemCategoryName(maalem.category, locale)
   const profileHref = `/${locale}/maalems/${maalem.id}`
   const hasRating = stats.average_rating != null && stats.review_count > 0
   const ratingValue = hasRating ? new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.min(5, Math.max(1, stats.average_rating as number))) : null

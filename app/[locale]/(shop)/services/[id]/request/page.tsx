@@ -10,6 +10,7 @@ import { ServiceSummary } from '@/components/service-requests/service-summary'
 import { Button } from '@/components/ui/button'
 import { getActiveService } from '@/lib/service-requests'
 import type { PublicService } from '@/types/service-request'
+import { localizedServiceText } from '@/lib/service-catalog'
 
 export default function SelectedServiceRequestPage() {
   const locale = useLocale()
@@ -51,7 +52,7 @@ export default function SelectedServiceRequestPage() {
     return <div className="flex min-h-72 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
   }
 
-  const serviceName = (locale === 'ar' ? service.nom_ar : service.nom) || service.nom
+  const serviceName = localizedServiceText(service, locale).name
   return (
     <ServiceRequestForm
       context={{ mode: 'selected_service', serviceId: service.id, serviceName }}

@@ -2,6 +2,7 @@ import { ImageIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import type { PublicService } from '@/types/service-request'
+import { localizedCategoryName, localizedServiceText } from '@/lib/service-catalog'
 
 interface Props {
   service: PublicService
@@ -11,8 +12,7 @@ interface Props {
 export function ServiceSummary({ service, locale }: Props) {
   const t = useTranslations('serviceRequests.form')
   const isArabic = locale === 'ar'
-  const name = (isArabic ? service.nom_ar : service.nom) || service.nom
-  const description = (isArabic ? service.description_ar : service.description) || service.description
+  const { name, description } = localizedServiceText(service, locale)
   const imageUrl = toAbsoluteImageUrl(service.image_url)
 
   return (
@@ -33,7 +33,7 @@ export function ServiceSummary({ service, locale }: Props) {
             <div className="mt-4 hidden flex-wrap gap-2 lg:flex">
               {service.categories.map((category) => (
                 <span key={category.id} className="border-s border-border ps-2 text-xs leading-5 text-muted-foreground">
-                  {(isArabic ? category.nom_ar : category.nom) || category.nom}
+                  {localizedCategoryName(category, locale)}
                 </span>
               ))}
             </div>

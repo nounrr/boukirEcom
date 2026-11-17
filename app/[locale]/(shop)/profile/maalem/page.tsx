@@ -65,6 +65,7 @@ import {
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { localizedCategoryName } from '@/lib/service-catalog'
 
 const EMPTY_PROFESSIONAL_DATA: MaalemProfessionalData = {
   skills: [],
@@ -735,7 +736,7 @@ export default function MaalemApplicationPage() {
                   <SelectContent position="popper" className="max-h-72">
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={String(category.id)}>
-                        {locale === 'ar' ? category.nom_ar : category.nom}
+                        {localizedCategoryName(category, locale)}
                       </SelectItem>
                     ))}
                   </SelectContent>

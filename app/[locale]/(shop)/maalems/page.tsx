@@ -9,7 +9,7 @@ import { MaalemCardPortrait } from '@/components/maalems/maalem-card-portrait'
 import { MaalemDirectoryCard } from '@/components/maalems/maalem-directory-card'
 import { getMaalemInitials } from '@/components/service-requests/maalem-public-summary'
 import { normalizeLocale } from '@/i18n/locale'
-import { localizedCategoryName, quickServiceRequestHref } from '@/lib/service-catalog'
+import { localizedCategoryName, localizedMaalemCategoryName, quickServiceRequestHref } from '@/lib/service-catalog'
 import { getPublicMaalems, resolvePublicMaalemPhoto } from '@/lib/service-requests'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import { breadcrumbJsonLd, jsonLdScript } from '@/lib/seo/site-json-ld'
@@ -83,7 +83,7 @@ export default async function MaalemsPage({ params, searchParams }: { params: Pr
 
   // The first recommended profile with a public photo, shown beside the hero.
   const spotlight = data?.maalems.find((maalem) => resolvePublicMaalemPhoto(maalem.photo_url))
-  const spotlightCategory = spotlight ? (locale === 'ar' ? spotlight.category.name_ar || spotlight.category.name : spotlight.category.name || spotlight.category.name_ar) : ''
+  const spotlightCategory = spotlight ? localizedMaalemCategoryName(spotlight.category, locale) : ''
   const spotlightRating = spotlight && spotlight.statistics.average_rating != null && spotlight.statistics.review_count > 0
     ? new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.min(5, Math.max(1, spotlight.statistics.average_rating)))
     : null

@@ -41,6 +41,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAppSelector } from '@/state/hooks'
 import type { ServiceRequest, ServiceRequestAttachment, ServiceRequestDetails } from '@/types/service-request'
+import { localizedRequestNames } from '@/lib/service-catalog'
 
 type ErrorKey = 'notFound' | 'loadError' | null
 
@@ -186,14 +187,11 @@ export default function ServiceRequestTrackingPage() {
     }
   }
 
-  const getLocalizedValue = (primary?: string | null, arabic?: string | null) =>
-    (isArabic ? arabic || primary : primary || arabic) || null
-
   const getRequestTitle = (value: ServiceRequest) =>
     value.title
-    || getLocalizedValue(value.service_name, value.service_name_ar)
+    || localizedRequestNames(value, locale).service
     || (value.maalem_name ? t('maalemRequestTitle', { name: value.maalem_name }) : null)
-    || getLocalizedValue(value.category_name, value.category_name_ar)
+    || localizedRequestNames(value, locale).category
     || t('requestFallback')
 
   const BackIcon = isArabic ? ArrowRight : ArrowLeft
@@ -325,12 +323,12 @@ export default function ServiceRequestTrackingPage() {
 
                 <SectionCard icon={Wrench} title={t('serviceSection')}>
                   <dl className="grid gap-4 sm:grid-cols-2">
-                    <DetailField label={t('serviceLabel')} value={getLocalizedValue(request.service_name, request.service_name_ar) || t('notProvided')} />
+                    <DetailField label={t('serviceLabel')} value={localizedRequestNames(request, locale).service || t('notProvided')} />
                     <DetailField
                       label={t('maalemLabel')}
                       value={request.maalem_name || (request.requested_maalem_id ? t('idFallback', { id: request.requested_maalem_id }) : t('notProvided'))}
                     />
-                    <DetailField label={t('categoryLabel')} value={getLocalizedValue(request.category_name, request.category_name_ar) || t('notProvided')} />
+                    <DetailField label={t('categoryLabel')} value={localizedRequestNames(request, locale).category || t('notProvided')} />
                     <DetailField label={t('sourceLabel')} value={t(`source.${request.request_source}`)} />
                   </dl>
                 </SectionCard>

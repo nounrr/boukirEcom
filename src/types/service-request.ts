@@ -21,8 +21,12 @@ export interface ServiceRequest {
   request_channel?: string | null
   service_name?: string | null
   service_name_ar?: string | null
+  service_name_en?: string | null
+  service_name_zh?: string | null
   category_name?: string | null
   category_name_ar?: string | null
+  category_name_en?: string | null
+  category_name_zh?: string | null
   maalem_name?: string | null
   created_at?: string
   updated_at?: string
@@ -70,6 +74,8 @@ export interface PublicMaalemSummary {
     id: number
     name: string | null
     name_ar: string | null
+    name_en?: string | null
+    name_zh?: string | null
   }
   city: string | null
   intervention_areas: string[]
@@ -99,13 +105,15 @@ export interface PublicMaalemDetail extends PublicMaalemSummary {
 export interface PublicMaalemsResponse {
   maalems: Array<PublicMaalemSummary & { statistics: { closed_interventions: number; last_closed_intervention_at: string | null; average_rating: number | null; review_count: number } }>
   pagination: PublicServicesResponse['pagination']
-  filters: { categories: PublicServiceCategory[]; services: Array<Pick<PublicService, 'id' | 'nom' | 'nom_ar'>>; rating_sort_min_reviews: number }
+  filters: { categories: PublicServiceCategory[]; services: Array<Pick<PublicService, 'id' | 'nom' | 'nom_ar' | 'nom_en' | 'nom_zh'>>; rating_sort_min_reviews: number }
 }
 
 export interface PublicServiceCategory {
   id: number
   nom: string
   nom_ar: string
+  nom_en?: string | null
+  nom_zh?: string | null
   description?: string | null
 }
 
@@ -113,8 +121,12 @@ export interface PublicService {
   id: number
   nom: string
   nom_ar: string
+  nom_en?: string | null
+  nom_zh?: string | null
   description: string | null
   description_ar: string | null
+  description_en?: string | null
+  description_zh?: string | null
   image_url: string | null
   categories: PublicServiceCategory[]
 }

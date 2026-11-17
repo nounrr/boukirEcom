@@ -4,7 +4,10 @@ import assert from 'node:assert/strict'
 import {
   catalogueHref,
   localizedCategoryName,
+  localizedMaalemCategoryName,
+  localizedRequestNames,
   localizedServiceText,
+  pickLocalizedText,
   quickServiceRequestHref,
   quickServiceRequestReturnHref,
   serviceDetailHref,
@@ -24,6 +27,22 @@ test('sélectionne correctement les contenus français et arabes avec repli', ()
   assert.deepEqual(localizedServiceText(service, 'ar'), { name: 'السباكة', description: 'إصلاح تسرب' })
   assert.equal(localizedServiceText({ ...service, description_ar: null }, 'ar').description, 'Réparer une fuite')
   assert.equal(localizedCategoryName({ id: 1, nom: 'Plombier', nom_ar: 'سباك' }, 'ar'), 'سباك')
+})
+
+test('affiche l’anglais et le chinois quand ils sont saisis, sinon le français', () => {
+  const translated = { ...service, nom_en: 'Plumbing', nom_zh: '水管维修', description_en: 'Fix a leak', description_zh: null }
+  assert.deepEqual(localizedServiceText(translated, 'en'), { name: 'Plumbing', description: 'Fix a leak' })
+  assert.deepEqual(localizedServiceText(translated, 'zh'), { name: '水管维修', description: 'Réparer une fuite' })
+  assert.deepEqual(localizedServiceText(service, 'en'), { name: 'Plomberie', description: 'Réparer une fuite' })
+  assert.equal(localizedCategoryName({ nom: 'Plombier', nom_ar: 'سباك', nom_en: 'Plumber', nom_zh: '  ' }, 'en'), 'Plumber')
+  assert.equal(localizedCategoryName({ nom: 'Plombier', nom_ar: 'سباك', nom_en: 'Plumber', nom_zh: '  ' }, 'zh'), 'Plombier')
+  assert.equal(localizedMaalemCategoryName({ name: 'Électricien', name_ar: 'كهربائي', name_zh: '电工' }, 'zh'), '电工')
+  assert.equal(localizedMaalemCategoryName({ name: 'Électricien', name_ar: 'كهربائي' }, 'en'), 'Électricien')
+  assert.deepEqual(
+    localizedRequestNames({ service_name: 'Fuite', service_name_en: 'Leak', category_name: 'Plombier', category_name_ar: 'سباك' }, 'en'),
+    { service: 'Leak', category: 'Plombier' },
+  )
+  assert.equal(pickLocalizedText({ fr: null, ar: 'سباك' }, 'zh'), 'سباك')
 })
 
 test('produit les URLs exactes KAN-25, KAN-15 et KAN-16', () => {
