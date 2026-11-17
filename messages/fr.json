@@ -568,10 +568,10 @@
       "unknown": "{method}"
     },
     "payment": {
-      "remiseInline": "Remise: -{amount}",
+      "remiseInline": "Montant gagné : -{amount}",
       "toPayWithSoldeInline": "À payer en solde: {amount} {currency}",
       "toPayInline": "À payer: {amount} {currency}",
-      "remisePlus": "Remise + {method}"
+      "remisePlus": "Montant gagné + {method}"
     }
   },
   "orderDetailsPage": {
@@ -687,14 +687,14 @@
       "discount": "Remise",
       "total": "Total",
       "mixedPayment": "Paiement mixte",
-      "discountBalanceUsed": "Solde remise utilisé",
+      "discountBalanceUsed": "Montant gagné utilisé",
       "remainingToPay": "Reste à payer"
     },
     "payment": {
       "title": "Paiement",
-      "discountChip": "Remise",
+      "discountChip": "Montant gagné",
       "statusLabel": "Statut",
-      "discountUsed": "Remise utilisée",
+      "discountUsed": "Montant gagné utilisé",
       "toPay": "À payer ({method})",
       "note": "Note: {note}"
     },
@@ -766,7 +766,7 @@
       "shipping": "Livraison:",
       "tax": "TVA:",
       "promoDiscount": "Promo / réduction:",
-      "remiseUsed": "Remise utilisée:",
+      "remiseUsed": "Montant gagné utilisé:",
       "amountToPay": "Montant à payer:",
       "payment": "Paiement:",
       "delivery": "Livraison:"
@@ -1174,7 +1174,7 @@
     "maalemApplication": "Dossier Maalem",
     "orders": "Mes commandes",
     "serviceRequests": "Mes demandes de service",
-    "soldeHistory": "Solde historique",
+    "soldeHistory": "Mon solde",
     "wishlist": "Favoris",
     "settings": "Paramètres"
   },
@@ -1199,8 +1199,8 @@
       "securePaymentDesc": "Plusieurs options de paiement sécurisé.",
       "supportTitle": "Service client",
       "supportDesc": "Nous sommes disponibles tous les jours.",
-      "remiseTitle": "Remise & solde",
-      "remiseDesc": "Gagnez des remises et suivez votre solde."
+      "remiseTitle": "Montant gagné et solde",
+      "remiseDesc": "Cumulez un montant gagné et suivez votre solde."
     },
     "heroCardSubtitle": "Sélection, prix et disponibilité",
     "heroCard1Title": "Catégories essentielles",
@@ -1628,20 +1628,20 @@
         }
       },
       "remise": {
-        "title": "Solde remise",
-        "subtitle": "Utilisez votre remise pour payer tout ou une partie",
-        "loginToUse": "Connectez-vous pour utiliser votre solde remise.",
+        "title": "Montant gagné",
+        "subtitle": "Utilisez le montant gagné pour régler vos prochaines commandes.",
+        "loginToUse": "Connectez-vous pour utiliser votre montant gagné.",
         "availableLabel": "Disponible:",
         "maxLabel": "Max: {amount} {currency}",
-        "useMyRemise": "Utiliser ma remise",
+        "useMyRemise": "Utiliser mon montant gagné",
         "coversAll": "Couvre tout",
         "deductUpTo": "Déduire jusqu'à {amount} {currency}",
         "amountToUse": "Montant à utiliser",
         "maxButton": "Max",
         "total": "Total",
-        "discount": "Remise",
+        "discount": "Montant gagné",
         "remaining": "Reste",
-        "coveredByRemise": "Couvert par remise",
+        "coveredByRemise": "Payé avec le montant gagné",
         "insufficient": "Solde insuffisant pour ce panier."
       },
       "solde": {
@@ -1842,15 +1842,15 @@
       "approvedDesc": "Votre compte bénéficie des avantages Artisan/Pro.",
       "pendingTitle": "Demande en cours de validation.",
       "pendingDesc": "Un administrateur validera votre demande bientôt.",
-      "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter vos gains de remise.",
+      "requestHint": "Demandez le statut Artisan/Pro pour accéder à plus d’avantages et augmenter votre montant gagné.",
       "requestAction": "Demander le statut Artisan",
       "maalemAction": "Consulter mon dossier Maalem",
       "maalemJoinAction": "Devenir Maalem / Rejoindre notre équipe",
       "maalemOpeningAction": "Ouverture du dossier…"
     },
     "remise": {
-      "title": "Votre solde remise",
-      "desc": "Utilisez ce solde lors de vos prochaines commandes"
+      "title": "Montant gagné",
+      "desc": "Utilisez le montant gagné pour régler vos prochaines commandes."
     },
     "sections": {
       "personal": {
@@ -2073,5 +2073,70 @@
     "noSelection": "Aucun univers à afficher.",
     "resetFilters": "Réinitialiser",
     "empty": "Le catalogue est momentanément indisponible. Réessayez dans un instant."
+  },
+  "balancePayment": {
+    "title": "Mon solde",
+    "subtitle": "Consultez votre relevé et réglez tout ou partie du montant dû.",
+    "historyEndBalance": "Fin des mouvements affichés",
+    "amountDue": "Montant à payer",
+    "paymentHint": "Réglez la totalité ou une partie de votre solde par carte bancaire.",
+    "nothingDue": "Aucun montant à payer.",
+    "checking": "Vérification du montant à payer…",
+    "payBalance": "Payer mon solde",
+    "amountLabel": "Montant à payer",
+    "amountRange": "De {min} à {max}. Vous pouvez effectuer un paiement total ou partiel.",
+    "secureHint": "Vos coordonnées bancaires seront saisies uniquement sur la page sécurisée CMI.",
+    "continuePayment": "Continuer vers le paiement sécurisé",
+    "cancel": "Annuler",
+    "redirecting": "Redirection vers le paiement…",
+    "loginRequired": "Connectez-vous pour consulter et payer votre solde.",
+    "notEligible": "Le paiement du solde est réservé aux comptes autorisés à commander à crédit.",
+    "unavailable": "Le paiement par carte est temporairement indisponible. Réessayez plus tard.",
+    "balanceChanged": "Le montant disponible a pu changer. Actualisez le solde et vérifiez le montant saisi.",
+    "paymentError": "Impossible de préparer le paiement. Aucun paiement n’a été confirmé. Réessayez.",
+    "loadError": "Impossible de vérifier le montant à payer. Le paiement est désactivé.",
+    "historyError": "Le relevé ne peut pas être actualisé. Les informations affichées peuvent être anciennes.",
+    "refresh": "Actualiser",
+    "reference": "Référence du paiement",
+    "backToBalance": "Retour à Mon solde",
+    "signInToVerify": "Se connecter pour vérifier",
+    "verifyAgain": "Vérifier à nouveau",
+    "result": {
+      "paid": {
+        "title": "Paiement confirmé",
+        "description": "Votre paiement a été vérifié et enregistré. Votre solde a été actualisé."
+      },
+      "pending": {
+        "title": "Vérification en cours",
+        "description": "Le paiement n’est pas encore confirmé. La confirmation bancaire peut prendre quelques instants. Vous pouvez vérifier à nouveau avant de tenter un autre paiement."
+      },
+      "checking": {
+        "title": "Vérification de votre session",
+        "description": "Nous préparons la vérification sécurisée de votre paiement."
+      },
+      "loginRequired": {
+        "title": "Connectez-vous pour vérifier",
+        "description": "Connectez-vous pour consulter le résultat de votre paiement."
+      },
+      "verificationError": {
+        "title": "Confirmation indisponible",
+        "description": "Nous ne pouvons pas vérifier ce paiement. Vérifiez votre connexion et votre compte, puis réessayez. Aucun succès n’est confirmé ici."
+      },
+      "declined": {
+        "title": "Paiement refusé",
+        "description": "La banque n’a pas validé ce paiement. Revenez à Mon solde pour vérifier le montant dû et choisir de réessayer."
+      },
+      "failed": {
+        "title": "Paiement non confirmé",
+        "description": "Une erreur a empêché la confirmation du paiement. Consultez Mon solde avant de lancer une nouvelle tentative."
+      },
+      "cancelled": {
+        "title": "Paiement interrompu",
+        "description": "Vous avez quitté le paiement. Aucun règlement n’est confirmé pour le moment. Consultez votre solde avant de réessayer."
+      }
+    }
+  },
+  "rewardWallet": {
+    "title": "Montant gagné"
   }
 }

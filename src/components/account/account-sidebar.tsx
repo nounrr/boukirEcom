@@ -16,7 +16,7 @@ export function AccountSidebar({ active = "profile" }: AccountSidebarProps) {
   const t = useTranslations("accountSidebar")
   const { user, accessToken } = useAppSelector((state) => state.user)
   const isAuthLoading = !!accessToken && !user
-  const canUseSolde = user?.is_solde === 1 || user?.is_solde === true
+  const canUseSolde = user?.is_solde === true || String(user?.is_solde) === "1"
   const canApplyAsMaalem = Boolean(
     (user?.type_compte && ['Artisan', 'Promoteur', 'Artisan/Promoteur'].includes(user.type_compte))
     || user?.artisan_approuve

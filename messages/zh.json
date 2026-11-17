@@ -462,15 +462,15 @@
       "approvedDesc": "你的账户享有工匠/专业权益。",
       "pendingTitle": "申请审核中。",
       "pendingDesc": "管理员将很快审核你的申请。",
-      "requestHint": "申请工匠/专业状态以获得更多权益并提升折扣收益。",
+      "requestHint": "申请工匠/专业身份以获得更多权益并提高已赚取金额。",
       "requestAction": "申请工匠状态",
       "maalemAction": "查看我的 Maalem 申请",
       "maalemJoinAction": "成为 Maalem / 加入我们的团队",
       "maalemOpeningAction": "正在打开申请…"
     },
     "remise": {
-      "title": "你的折扣余额",
-      "desc": "在下一次订单中使用该余额"
+      "title": "已赚取金额",
+      "desc": "使用已赚取金额支付今后的订单。"
     },
     "sections": {
       "personal": {
@@ -705,10 +705,10 @@
       "unknown": "{method}"
     },
     "payment": {
-      "remiseInline": "折扣：-{amount}",
+      "remiseInline": "已赚取金额：-{amount}",
       "toPayWithSoldeInline": "余额支付：{amount} {currency}",
       "toPayInline": "需支付：{amount} {currency}",
-      "remisePlus": "折扣 + {method}"
+      "remisePlus": "已赚取金额 + {method}"
     }
   },
   "orderDetailsPage": {
@@ -824,14 +824,14 @@
       "discount": "折扣",
       "total": "合计",
       "mixedPayment": "混合支付",
-      "discountBalanceUsed": "已使用折扣余额",
+      "discountBalanceUsed": "已使用赚取金额",
       "remainingToPay": "待支付"
     },
     "payment": {
       "title": "支付",
-      "discountChip": "折扣",
+      "discountChip": "已赚取金额",
       "statusLabel": "状态",
-      "discountUsed": "已使用折扣",
+      "discountUsed": "已使用赚取金额",
       "toPay": "待支付（{method}）",
       "note": "备注：{note}"
     },
@@ -903,7 +903,7 @@
       "shipping": "运费：",
       "tax": "税费：",
       "promoDiscount": "优惠/折扣：",
-      "remiseUsed": "已用折扣：",
+      "remiseUsed": "已使用赚取金额:",
       "amountToPay": "应付金额：",
       "payment": "支付：",
       "delivery": "配送："
@@ -1311,7 +1311,7 @@
     "maalemApplication": "Maalem 申请",
     "orders": "我的订单",
     "serviceRequests": "我的服务请求",
-    "soldeHistory": "余额记录",
+    "soldeHistory": "我的余额",
     "wishlist": "心愿单",
     "settings": "设置"
   },
@@ -1336,8 +1336,8 @@
       "securePaymentDesc": "多种安全支付方式。",
       "supportTitle": "客服支持",
       "supportDesc": "每天为你提供帮助。",
-      "remiseTitle": "折扣与余额",
-      "remiseDesc": "获取折扣并随时查看余额。"
+      "remiseTitle": "收益与余额",
+      "remiseDesc": "累积收益并跟踪账户余额。"
     },
     "heroCardSubtitle": "精选、价格与库存",
     "heroCard1Title": "核心分类",
@@ -1765,20 +1765,20 @@
         }
       },
       "remise": {
-        "title": "折扣余额",
-        "subtitle": "使用折扣余额支付全部或部分订单",
-        "loginToUse": "登录后可使用折扣余额。",
+        "title": "已赚取金额",
+        "subtitle": "使用已赚取金额支付今后的订单。",
+        "loginToUse": "登录以使用已赚取金额。",
         "availableLabel": "可用：",
         "maxLabel": "最高：{amount} {currency}",
-        "useMyRemise": "使用折扣余额",
+        "useMyRemise": "使用已赚取金额",
         "coversAll": "可覆盖全部",
         "deductUpTo": "最多抵扣 {amount} {currency}",
         "amountToUse": "使用金额",
         "maxButton": "最大",
         "total": "合计",
-        "discount": "折扣",
+        "discount": "已赚取金额",
         "remaining": "待支付",
-        "coveredByRemise": "已由折扣余额覆盖",
+        "coveredByRemise": "已由赚取金额支付",
         "insufficient": "余额不足以覆盖该购物车。"
       },
       "solde": {
@@ -2073,5 +2073,70 @@
     "noSelection": "没有可显示的门类。",
     "resetFilters": "重置",
     "empty": "目录暂时无法访问，请稍后再试。"
+  },
+  "balancePayment": {
+    "title": "我的余额",
+    "subtitle": "查看账单并支付全部或部分应付金额。",
+    "historyEndBalance": "所示交易的期末余额",
+    "amountDue": "应付金额",
+    "paymentHint": "使用银行卡支付全部或部分欠款。",
+    "nothingDue": "目前没有需要支付的金额。",
+    "checking": "正在核实应付金额…",
+    "payBalance": "支付欠款",
+    "amountLabel": "支付金额",
+    "amountRange": "金额范围：{min} 至 {max}。您可以全额或部分付款。",
+    "secureHint": "请仅在 CMI 安全支付页面输入银行卡信息。",
+    "continuePayment": "前往安全支付",
+    "cancel": "取消",
+    "redirecting": "正在跳转至支付页面…",
+    "loginRequired": "请登录以查看和支付欠款。",
+    "notEligible": "仅已开通信贷购物功能的账户可以支付欠款。",
+    "unavailable": "银行卡支付暂时不可用，请稍后重试。",
+    "balanceChanged": "余额可能已变更。请刷新并核实支付金额。",
+    "paymentError": "无法创建支付。尚未确认任何付款，请重试。",
+    "loadError": "无法核实应付金额，支付功能已停用。",
+    "historyError": "无法刷新账单，显示的信息可能已过时。",
+    "refresh": "刷新",
+    "reference": "付款参考号",
+    "backToBalance": "返回我的余额",
+    "signInToVerify": "登录以核实",
+    "verifyAgain": "再次核实",
+    "result": {
+      "paid": {
+        "title": "付款已确认",
+        "description": "您的付款已核实并入账，余额已更新。"
+      },
+      "pending": {
+        "title": "正在核实付款",
+        "description": "付款尚未确认。银行确认可能需要一些时间，请再次核实后再尝试其他付款。"
+      },
+      "checking": {
+        "title": "正在检查登录状态",
+        "description": "我们正在准备安全核实您的付款。"
+      },
+      "loginRequired": {
+        "title": "请登录以核实",
+        "description": "请登录查看付款结果。"
+      },
+      "verificationError": {
+        "title": "暂时无法确认",
+        "description": "无法核实此次付款。请检查网络连接和账户后重试。此处尚未确认付款成功。"
+      },
+      "declined": {
+        "title": "付款被拒绝",
+        "description": "银行未批准此次付款。请返回我的余额核实应付金额，再决定是否重试。"
+      },
+      "failed": {
+        "title": "付款未确认",
+        "description": "发生错误，无法确认付款。开始新付款前请先查看我的余额。"
+      },
+      "cancelled": {
+        "title": "付款已中断",
+        "description": "您已离开支付流程，目前尚未确认付款。重试前请检查余额。"
+      }
+    }
+  },
+  "rewardWallet": {
+    "title": "已赚取金额"
   }
 }

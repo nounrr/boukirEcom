@@ -462,15 +462,15 @@
       "approvedDesc": "Your account benefits from Artisan/Pro advantages.",
       "pendingTitle": "Request under review.",
       "pendingDesc": "An admin will review your request soon.",
-      "requestHint": "Request Artisan/Pro status to access more benefits and increase your discount earnings.",
+      "requestHint": "Apply for Artisan/Pro status for more benefits and a higher earned amount.",
       "requestAction": "Request Artisan status",
       "maalemAction": "View my Maalem application",
       "maalemJoinAction": "Become a Maalem / Join our team",
       "maalemOpeningAction": "Opening application…"
     },
     "remise": {
-      "title": "Your discount balance",
-      "desc": "Use this balance on your next orders"
+      "title": "Earned amount",
+      "desc": "Use your earned amount to pay for future orders."
     },
     "sections": {
       "personal": {
@@ -705,10 +705,10 @@
       "unknown": "{method}"
     },
     "payment": {
-      "remiseInline": "Discount: -{amount}",
+      "remiseInline": "Earned amount: -{amount}",
       "toPayWithSoldeInline": "To pay on balance: {amount} {currency}",
       "toPayInline": "To pay: {amount} {currency}",
-      "remisePlus": "Discount + {method}"
+      "remisePlus": "Earned amount + {method}"
     }
   },
   "orderDetailsPage": {
@@ -824,14 +824,14 @@
       "discount": "Discount",
       "total": "Total",
       "mixedPayment": "Mixed payment",
-      "discountBalanceUsed": "Discount balance used",
+      "discountBalanceUsed": "Earned amount used",
       "remainingToPay": "Remaining to pay"
     },
     "payment": {
       "title": "Payment",
-      "discountChip": "Discount",
+      "discountChip": "Earned amount",
       "statusLabel": "Status",
-      "discountUsed": "Discount used",
+      "discountUsed": "Earned amount used",
       "toPay": "To pay ({method})",
       "note": "Note: {note}"
     },
@@ -903,7 +903,7 @@
       "shipping": "Shipping:",
       "tax": "Tax:",
       "promoDiscount": "Promo / discount:",
-      "remiseUsed": "Discount used:",
+      "remiseUsed": "Earned amount used:",
       "amountToPay": "Amount to pay:",
       "payment": "Payment:",
       "delivery": "Delivery:"
@@ -1311,7 +1311,7 @@
     "maalemApplication": "Maalem application",
     "orders": "My orders",
     "serviceRequests": "My service requests",
-    "soldeHistory": "Balance history",
+    "soldeHistory": "My balance",
     "wishlist": "Wishlist",
     "settings": "Settings"
   },
@@ -1336,8 +1336,8 @@
       "securePaymentDesc": "Multiple secure payment options.",
       "supportTitle": "Customer support",
       "supportDesc": "We’re here to help every day.",
-      "remiseTitle": "Remise & balance",
-      "remiseDesc": "Earn discounts and track your balance."
+      "remiseTitle": "Earnings and balance",
+      "remiseDesc": "Earn rewards and keep track of your balance."
     },
     "heroCardSubtitle": "Selection, price and availability",
     "heroCard1Title": "Essential categories",
@@ -1765,20 +1765,20 @@
         }
       },
       "remise": {
-        "title": "Discount balance",
-        "subtitle": "Use your discount to pay all or part of your order",
-        "loginToUse": "Log in to use your discount balance.",
+        "title": "Earned amount",
+        "subtitle": "Use your earned amount to pay for future orders.",
+        "loginToUse": "Sign in to use your earned amount.",
         "availableLabel": "Available:",
         "maxLabel": "Max: {amount} {currency}",
-        "useMyRemise": "Use my discount",
+        "useMyRemise": "Use my earned amount",
         "coversAll": "Covers all",
         "deductUpTo": "Deduct up to {amount} {currency}",
         "amountToUse": "Amount to use",
         "maxButton": "Max",
         "total": "Total",
-        "discount": "Discount",
+        "discount": "Earned amount",
         "remaining": "Remaining",
-        "coveredByRemise": "Covered by discount",
+        "coveredByRemise": "Paid with earned amount",
         "insufficient": "Insufficient balance for this cart."
       },
       "solde": {
@@ -2073,5 +2073,70 @@
     "noSelection": "No department to show.",
     "resetFilters": "Reset",
     "empty": "The catalogue is temporarily unavailable. Please try again shortly."
+  },
+  "balancePayment": {
+    "title": "My balance",
+    "subtitle": "View your statement and pay all or part of the amount due.",
+    "historyEndBalance": "End of displayed movements",
+    "amountDue": "Amount due",
+    "paymentHint": "Pay all or part of your outstanding balance by bank card.",
+    "nothingDue": "There is no amount to pay.",
+    "checking": "Checking the amount due…",
+    "payBalance": "Pay my balance",
+    "amountLabel": "Payment amount",
+    "amountRange": "From {min} to {max}. You can make a full or partial payment.",
+    "secureHint": "Enter your card details only on the secure CMI payment page.",
+    "continuePayment": "Continue to secure payment",
+    "cancel": "Cancel",
+    "redirecting": "Redirecting to payment…",
+    "loginRequired": "Sign in to view and pay your balance.",
+    "notEligible": "Balance payments are available only to accounts enabled for credit purchases.",
+    "unavailable": "Card payments are temporarily unavailable. Please try again later.",
+    "balanceChanged": "Your balance may have changed. Refresh it and check the payment amount.",
+    "paymentError": "We could not prepare the payment. No payment has been confirmed. Please try again.",
+    "loadError": "We could not verify the amount due. Payment is disabled.",
+    "historyError": "The statement could not be refreshed. Displayed information may be out of date.",
+    "refresh": "Refresh",
+    "reference": "Payment reference",
+    "backToBalance": "Back to My balance",
+    "signInToVerify": "Sign in to verify",
+    "verifyAgain": "Check again",
+    "result": {
+      "paid": {
+        "title": "Payment confirmed",
+        "description": "Your payment has been verified and recorded. Your balance has been updated."
+      },
+      "pending": {
+        "title": "Checking your payment",
+        "description": "Payment has not yet been confirmed. Bank confirmation can take a moment. Check again before attempting another payment."
+      },
+      "checking": {
+        "title": "Checking your session",
+        "description": "We are preparing the secure verification of your payment."
+      },
+      "loginRequired": {
+        "title": "Sign in to verify",
+        "description": "Sign in to view the result of your payment."
+      },
+      "verificationError": {
+        "title": "Confirmation unavailable",
+        "description": "We cannot verify this payment. Check your connection and account, then try again. No successful payment is confirmed here."
+      },
+      "declined": {
+        "title": "Payment declined",
+        "description": "The bank did not approve this payment. Return to My balance to check the amount due and choose whether to retry."
+      },
+      "failed": {
+        "title": "Payment not confirmed",
+        "description": "An error prevented payment confirmation. Check My balance before starting another attempt."
+      },
+      "cancelled": {
+        "title": "Payment interrupted",
+        "description": "You left the payment process. No payment is confirmed yet. Check your balance before trying again."
+      }
+    }
+  },
+  "rewardWallet": {
+    "title": "Earned amount"
   }
 }

@@ -462,15 +462,15 @@
       "approvedDesc": "حسابك يستفيد من مزايا الحرفي/المحترف.",
       "pendingTitle": "الطلب قيد التحقق.",
       "pendingDesc": "سيتم التحقق من طلبك قريباً من طرف مسؤول.",
-      "requestHint": "اطلب حالة الحرفي/المحترف للوصول إلى مزايا أكثر وزيادة مكاسب الخصم.",
+      "requestHint": "اطلب صفة حرفي/مهني للاستفادة من مزايا أكثر وزيادة المبلغ المكتسب.",
       "requestAction": "طلب حالة الحرفي",
       "maalemAction": "عرض ملف المعلم",
       "maalemJoinAction": "أصبح معلماً / انضم إلى فريقنا",
       "maalemOpeningAction": "جارٍ فتح الملف…"
     },
     "remise": {
-      "title": "رصيد الخصم",
-      "desc": "استخدم هذا الرصيد في طلباتك القادمة"
+      "title": "المبلغ المكتسب",
+      "desc": "استخدم المبلغ المكتسب لتسديد طلباتك القادمة."
     },
     "sections": {
       "personal": {
@@ -705,10 +705,10 @@
       "unknown": "{method}"
     },
     "payment": {
-      "remiseInline": "خصم: -{amount}",
+      "remiseInline": "المبلغ المكتسب: -{amount}",
       "toPayWithSoldeInline": "المتبقي على الرصيد: {amount} {currency}",
       "toPayInline": "المتبقي للدفع: {amount} {currency}",
-      "remisePlus": "خصم + {method}"
+      "remisePlus": "المبلغ المكتسب + {method}"
     }
   },
   "orderDetailsPage": {
@@ -824,14 +824,14 @@
       "discount": "الخصم",
       "total": "الإجمالي",
       "mixedPayment": "دفع مختلط",
-      "discountBalanceUsed": "رصيد الخصم المستخدم",
+      "discountBalanceUsed": "المبلغ المكتسب المستخدم",
       "remainingToPay": "المتبقي للدفع"
     },
     "payment": {
       "title": "الدفع",
-      "discountChip": "خصم",
+      "discountChip": "المبلغ المكتسب",
       "statusLabel": "الحالة",
-      "discountUsed": "الخصم المستخدم",
+      "discountUsed": "المبلغ المكتسب المستخدم",
       "toPay": "المتبقي ({method})",
       "note": "ملاحظة: {note}"
     },
@@ -903,7 +903,7 @@
       "shipping": "Livraison:",
       "tax": "TVA:",
       "promoDiscount": "Promo / réduction:",
-      "remiseUsed": "Remise utilisée:",
+      "remiseUsed": "المبلغ المكتسب المستخدم:",
       "amountToPay": "Montant à payer:",
       "payment": "Paiement:",
       "delivery": "Livraison:"
@@ -1311,7 +1311,7 @@
     "maalemApplication": "ملف المعلم",
     "orders": "طلباتي",
     "serviceRequests": "طلبات خدماتي",
-    "soldeHistory": "سجل الرصيد",
+    "soldeHistory": "رصيدي",
     "wishlist": "المفضلة",
     "settings": "الإعدادات"
   },
@@ -1336,8 +1336,8 @@
       "securePaymentDesc": "خيارات دفع آمنة ومتعددة.",
       "supportTitle": "خدمة العملاء",
       "supportDesc": "نحن هنا لمساعدتك كل يوم.",
-      "remiseTitle": "الخصم والرصيد",
-      "remiseDesc": "اكسب خصومات وتابع رصيدك بسهولة."
+      "remiseTitle": "المكاسب والرصيد",
+      "remiseDesc": "اجمع مبلغاً مكتسباً وتابع رصيدك."
     },
     "heroCardSubtitle": "اختيار واسع وأسعار مناسبة",
     "heroCard1Title": "فئات أساسية",
@@ -1765,20 +1765,20 @@
         }
       },
       "remise": {
-        "title": "رصيد الخصم",
-        "subtitle": "استخدم خصمك لدفع كل الطلب أو جزء منه",
-        "loginToUse": "سجّل الدخول لاستخدام رصيد الخصم.",
+        "title": "المبلغ المكتسب",
+        "subtitle": "استخدم المبلغ المكتسب لتسديد طلباتك القادمة.",
+        "loginToUse": "سجّل الدخول لاستخدام المبلغ المكتسب.",
         "availableLabel": "المتاح:",
         "maxLabel": "الحد الأقصى: {amount} {currency}",
-        "useMyRemise": "استخدام الخصم",
+        "useMyRemise": "استخدام المبلغ المكتسب",
         "coversAll": "يغطي الكل",
         "deductUpTo": "خصم حتى {amount} {currency}",
         "amountToUse": "المبلغ المستخدم",
         "maxButton": "الحد الأقصى",
         "total": "الإجمالي",
-        "discount": "الخصم",
+        "discount": "المبلغ المكتسب",
         "remaining": "المتبقي",
-        "coveredByRemise": "مغطى بالخصم",
+        "coveredByRemise": "مدفوع من المبلغ المكتسب",
         "insufficient": "الرصيد غير كافٍ لهذه السلة."
       },
       "solde": {
@@ -2073,5 +2073,70 @@
     "noSelection": "لا يوجد قسم للعرض.",
     "resetFilters": "إعادة التعيين",
     "empty": "الكتالوج غير متاح حالياً. حاول مرة أخرى بعد قليل."
+  },
+  "balancePayment": {
+    "title": "رصيدي",
+    "subtitle": "اطّلع على كشف الحساب وسدّد المبلغ المستحق كاملاً أو جزئياً.",
+    "historyEndBalance": "الرصيد في نهاية الحركات المعروضة",
+    "amountDue": "المبلغ المستحق",
+    "paymentHint": "سدّد رصيدك المستحق كاملاً أو جزئياً بالبطاقة البنكية.",
+    "nothingDue": "لا يوجد مبلغ مستحق للدفع.",
+    "checking": "جارٍ التحقق من المبلغ المستحق…",
+    "payBalance": "تسديد رصيدي",
+    "amountLabel": "مبلغ الدفع",
+    "amountRange": "من {min} إلى {max}. يمكنك السداد كاملاً أو جزئياً.",
+    "secureHint": "أدخل بيانات بطاقتك البنكية فقط في صفحة الدفع الآمنة CMI.",
+    "continuePayment": "المتابعة إلى الدفع الآمن",
+    "cancel": "إلغاء",
+    "redirecting": "جارٍ الانتقال إلى الدفع…",
+    "loginRequired": "سجّل الدخول للاطّلاع على رصيدك وتسديده.",
+    "notEligible": "تسديد الرصيد متاح فقط للحسابات المسموح لها بالشراء بالأجل.",
+    "unavailable": "الدفع بالبطاقة غير متاح مؤقتاً. حاول لاحقاً.",
+    "balanceChanged": "ربما تغيّر رصيدك. حدّثه وتحقق من مبلغ الدفع.",
+    "paymentError": "تعذّر تجهيز الدفع. لم يتم تأكيد أي دفع. حاول مجدداً.",
+    "loadError": "تعذّر التحقق من المبلغ المستحق. الدفع غير مفعّل.",
+    "historyError": "تعذّر تحديث كشف الحساب. قد تكون المعلومات المعروضة قديمة.",
+    "refresh": "تحديث",
+    "reference": "مرجع الدفع",
+    "backToBalance": "العودة إلى رصيدي",
+    "signInToVerify": "تسجيل الدخول للتحقق",
+    "verifyAgain": "التحقق مجدداً",
+    "result": {
+      "paid": {
+        "title": "تم تأكيد الدفع",
+        "description": "تم التحقق من دفعك وتسجيله. تم تحديث رصيدك."
+      },
+      "pending": {
+        "title": "جارٍ التحقق من الدفع",
+        "description": "لم يتم تأكيد الدفع بعد. قد يستغرق تأكيد البنك بعض الوقت. تحقق مجدداً قبل محاولة دفع أخرى."
+      },
+      "checking": {
+        "title": "جارٍ التحقق من جلستك",
+        "description": "نجهّز التحقق الآمن من عملية الدفع."
+      },
+      "loginRequired": {
+        "title": "سجّل الدخول للتحقق",
+        "description": "سجّل الدخول للاطّلاع على نتيجة الدفع."
+      },
+      "verificationError": {
+        "title": "التأكيد غير متاح",
+        "description": "تعذّر التحقق من هذا الدفع. تحقق من اتصالك وحسابك ثم حاول مجدداً. لا نؤكد نجاح أي دفع هنا."
+      },
+      "declined": {
+        "title": "تم رفض الدفع",
+        "description": "لم يوافق البنك على الدفع. عد إلى رصيدي للتحقق من المبلغ المستحق قبل إعادة المحاولة."
+      },
+      "failed": {
+        "title": "لم يتم تأكيد الدفع",
+        "description": "حال خطأ دون تأكيد الدفع. تحقق من رصيدي قبل بدء محاولة جديدة."
+      },
+      "cancelled": {
+        "title": "تم إيقاف عملية الدفع",
+        "description": "لقد غادرت عملية الدفع. لم يتم تأكيد أي سداد حتى الآن. تحقق من رصيدك قبل إعادة المحاولة."
+      }
+    }
+  },
+  "rewardWallet": {
+    "title": "المبلغ المكتسب"
   }
 }

@@ -198,6 +198,21 @@ export interface CmiPaymentForm {
   token?: string
 }
 
+export interface SoldePaymentInitiation {
+  cmi_payment: CmiPaymentForm
+  oid: string
+  amount: number
+  owed: number
+}
+
+export interface SoldePaymentAttempt {
+  oid: string
+  amount: number
+  status: 'initiated' | 'approved' | 'declined' | 'error'
+  paid: boolean
+  updated_at: string | null
+}
+
 // GET /api/ecommerce/payments/cmi/orders/:orderNumber
 export interface CmiPaymentStatus {
   order: {

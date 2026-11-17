@@ -1,4 +1,5 @@
 import PaymentResultClient from "./payment-result-client"
+import SoldePaymentResultClient from "./solde-payment-result-client"
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -10,6 +11,7 @@ const first = (value: string | string[] | undefined) => (Array.isArray(value) ? 
 // Le backend y redirige le client après okUrl / failUrl (statut vérifié par le HASH CMI).
 export default async function PaymentResultPage({ searchParams }: Props) {
   const params = await searchParams
+  if (first(params.solde) === "1") return <SoldePaymentResultClient oid={first(params.oid)} returnStatus={first(params.status)} />
   return (
     <PaymentResultClient
       status={first(params.status)}
