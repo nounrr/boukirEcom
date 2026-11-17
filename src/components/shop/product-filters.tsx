@@ -62,14 +62,15 @@ export function ProductFilters({
   const [categorySearch, setCategorySearch] = useState('')
   const debouncedCategorySearch = useDebounce(categorySearch, 300)
   const [visibleCategoryCount, setVisibleCategoryCount] = useState(8)
-  const [expandedSections, setExpandedSections] = useState({
-    categories: true,
-    brands: true,
-    utilityTypes: true,
-    price: true,
-    colors: false,
-    units: false
-  })
+  // Toutes les sections sont fermées au départ ; seules celles qui ont déjà un filtre actif s'ouvrent.
+  const [expandedSections, setExpandedSections] = useState(() => ({
+    categories: (initialFilters?.categories?.length ?? 0) > 0,
+    brands: (initialFilters?.brands?.length ?? 0) > 0,
+    utilityTypes: (initialFilters?.utilityTypes?.length ?? 0) > 0,
+    price: Boolean(initialFilters?.priceRange && (initialFilters.priceRange[0] > 0 || initialFilters.priceRange[1] < 10000)),
+    colors: (initialFilters?.colors?.length ?? 0) > 0,
+    units: (initialFilters?.units?.length ?? 0) > 0,
+  }))
 
   const isPriceFilterActive = useCallback((range: [number, number]) => {
     return range[0] > 0 || range[1] < 10000

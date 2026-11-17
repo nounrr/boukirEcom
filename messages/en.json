@@ -956,8 +956,10 @@
     "viewToggle": {
       "label": "View",
       "aria": "Display mode",
-      "gridAria": "Compact grid",
-      "listAria": "List"
+      "gridAria": "Grid",
+      "listAria": "List",
+      "largeAria": "Large cards",
+      "denseAria": "Small cards"
     },
     "loadError": "Error while loading",
     "showing": "Showing",

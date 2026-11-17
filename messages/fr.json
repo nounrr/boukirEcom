@@ -817,8 +817,10 @@
     "viewToggle": {
       "label": "Vue",
       "aria": "Mode d'affichage",
-      "gridAria": "Grille compacte",
-      "listAria": "Liste"
+      "gridAria": "Grille",
+      "listAria": "Liste",
+      "largeAria": "Grandes cartes",
+      "denseAria": "Petites cartes"
     },
     "loadError": "Erreur lors du chargement",
     "showing": "Affichage",

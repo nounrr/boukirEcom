@@ -7,7 +7,9 @@ import { useGetProductsQuery } from "@/state/api/products-api-slice"
 import { filterStateToApiRequest, type FilterState, type ProductsListResponse } from "@/types/api/products"
 import { sameFilterState, shopPageHref } from '@/lib/seo/shop-url'
 import type { ProductBrand, ProductCategory, ProductListItem } from "@/types/api/products"
-import { Grid3x3, LayoutGrid, Package, Search, SlidersHorizontal, X } from "lucide-react"
+import { Columns4, Grid2x2, Grid3x3, List, Package, Search, SlidersHorizontal, X } from "lucide-react"
+import Image from "next/image"
+import type { ShopViewMode } from "@/components/shop/products-list"
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -113,7 +115,18 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
 
   const [filterState, setFilterState] = useState<FilterState>(() => urlFilters)
 
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  // Affichage choisi : retenu sur cet appareil pour la prochaine visite.
+  const [viewMode, setViewModeState] = useState<ShopViewMode>("grid")
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("shop.viewMode")
+      if (saved === "large" || saved === "grid" || saved === "dense" || saved === "list") setViewModeState(saved)
+    } catch { /* stockage indisponible */ }
+  }, [])
+  const setViewMode = useCallback((mode: ShopViewMode) => {
+    setViewModeState(mode)
+    try { localStorage.setItem("shop.viewMode", mode) } catch { /* stockage indisponible */ }
+  }, [])
   const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false)
 
   // Keep state aligned when user uses browser back/forward or manual URL edits
@@ -201,7 +214,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   // Range chaque page reçue à sa place (les pages déjà chargées restent affichées).
   useEffect(() => {
     if (!data) return
-    const page = data.pagination?.current_page ?? activeLoad.lastPage
+    const page = activeLoad.lastPage
     setLoadState((prev) => {
       const base = prev.key === listKey ? prev : { key: listKey, lastPage: startPage, pages: {} }
       if (base.pages[page] === data.products && base.pagination === data.pagination) return base
@@ -223,15 +236,17 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   }, [activeLoad, startPage, data])
 
   const isLoading = loadedProducts.length === 0 && (queryLoading || isFetching) && !canUseInitialData
-  const isLoadingMore = activeLoad.lastPage > startPage && !activeLoad.pages[activeLoad.lastPage]
+  const isLoadingMore = activeLoad.lastPage > startPage && !activeLoad.pages[activeLoad.lastPage] && !error
   // Dernière pagination connue (reste affichée pendant le chargement de la suite).
   const lastPagination = data?.pagination ?? activeLoad.pagination
-  const hasMore = Boolean(lastPagination?.has_next) && !isLoadingMore && lastPagination?.current_page === activeLoad.lastPage
+  const hasMore = Boolean(lastPagination?.has_next) && !isLoadingMore
 
   const loadMore = useCallback(() => {
     if (!hasMore) return
     setLoadState((prev) => {
       const base = prev.key === listKey ? prev : { key: listKey, lastPage: startPage, pages: {} }
+      // Une seule page à la fois : tant que la précédente n'est pas arrivée, un 2e clic ne fait rien.
+      if (!base.pages[base.lastPage]) return base
       return { ...base, lastPage: base.lastPage + 1 }
     })
   }, [hasMore, listKey, startPage])
@@ -332,31 +347,30 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
         {t("viewToggle.label", { defaultValue: "Vue" })}
       </span>
       <div
+        role="group"
         className="flex items-center gap-1"
-        aria-label={t("viewToggle.aria", { defaultValue: "Mode d'affichage" })}
+        aria-label={t("viewToggle.aria")}
       >
-        <Button
-          type="button"
-          variant={viewMode === "grid" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("grid")}
-          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
-          aria-pressed={viewMode === "grid"}
-          aria-label={t("viewToggle.gridAria", { defaultValue: "Grille compacte" })}
-        >
-          <Grid3x3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant={viewMode === "list" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("list")}
-          className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
-          aria-pressed={viewMode === "list"}
-          aria-label={t("viewToggle.listAria", { defaultValue: "Liste" })}
-        >
-          <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </Button>
+        {([
+          { mode: "large", icon: Grid2x2, label: t("viewToggle.largeAria") },
+          { mode: "grid", icon: Grid3x3, label: t("viewToggle.gridAria") },
+          { mode: "dense", icon: Columns4, label: t("viewToggle.denseAria") },
+          { mode: "list", icon: List, label: t("viewToggle.listAria") },
+        ] as const).map(({ mode, icon: Icon, label }) => (
+          <Button
+            key={mode}
+            type="button"
+            variant={viewMode === mode ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode(mode)}
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full"
+            aria-pressed={viewMode === mode}
+            aria-label={label}
+            title={label}
+          >
+            <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          </Button>
+        ))}
       </div>
     </div>
   )
@@ -364,9 +378,15 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
-        <header className="mb-6 max-w-4xl">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{heading}</h1>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
+        {/* En-tête : photo du magasin très atténuée derrière le titre */}
+        <header className="relative isolate -mx-6 -mt-6 mb-6 overflow-hidden px-6 pb-8 pt-8 sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16 lg:pb-10 lg:pt-10">
+          <Image src="/store/photos/magasin-01.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover opacity-[0.12] dark:opacity-[0.16]" />
+          <div className="absolute inset-0 -z-10 bg-linear-to-r from-background via-background/70 to-background/20 rtl:bg-linear-to-l" aria-hidden="true" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-16 bg-linear-to-t from-background to-transparent" aria-hidden="true" />
+          <div className="max-w-4xl">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{heading}</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
+          </div>
         </header>
         {/* Barre de recherche : centrée, reste collée sous le menu pendant le défilement */}
         <div className="sticky top-[var(--site-header-h,64px)] z-30 -mx-6 mb-5 border-b border-border/50 bg-background/85 px-6 py-3 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16">
@@ -376,7 +396,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
               event.preventDefault()
               applySearch(searchInput.trim())
             }}
-            className="relative mx-auto w-full max-w-2xl"
+            className="relative w-full"
           >
             <label htmlFor="shop-search" className="sr-only">{t("searchBarPlaceholder")}</label>
             <Search className="pointer-events-none absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />

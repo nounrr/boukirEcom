@@ -5,11 +5,14 @@ import { ProductCardRow } from "@/components/shop/product-card-row"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Loader2, Package, Tag, Store } from "lucide-react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo } from "react"
 import type { ProductListItem } from "@/types/api/products"
 import { useLocale, useTranslations } from "next-intl"
 import Link from 'next/link'
 import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
+
+/** large : grandes cartes · grid : grille · dense : petites cartes, plus de colonnes · list : une ligne par produit */
+export type ShopViewMode = 'large' | 'grid' | 'dense' | 'list'
 
 interface ProductsListProps {
   products: ProductListItem[]
@@ -38,7 +41,7 @@ interface ProductsListProps {
   onAddToCart: (productId: number, variantId?: number) => void
   onToggleWishlist: (productId: number) => void
   onQuickView: (productId: number) => void
-  viewMode: 'grid' | 'list'
+  viewMode: ShopViewMode
   isFiltersCollapsed: boolean
 }
 
@@ -64,47 +67,16 @@ export function ProductsList({
   const locale = useLocale()
   const t = useTranslations('productsList')
 
-  const isListView = viewMode === 'list'
-  const [isMobile, setIsMobile] = useState(false)
+  const isRows = viewMode === 'list'
 
-  // Défilement infini : quand le bas de la liste approche de l'écran, on charge la suite.
-  const sentinelRef = useRef<HTMLDivElement | null>(null)
-  const loadMoreRef = useRef(onLoadMore)
-  loadMoreRef.current = onLoadMore
-  useEffect(() => {
-    const element = sentinelRef.current
-    if (!element || !hasMore || typeof IntersectionObserver === 'undefined') return
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) loadMoreRef.current()
-    }, { rootMargin: '900px 0px' })
-    observer.observe(element)
-    return () => observer.disconnect()
-    // Ré-armé après chaque chargement : si le bas de la liste est encore visible, la suite arrive aussi.
-  }, [hasMore, isLoadingMore, products.length])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const media = window.matchMedia('(max-width: 640px)')
-    const update = () => setIsMobile(media.matches)
-    update()
-    media.addEventListener?.('change', update)
-    return () => media.removeEventListener?.('change', update)
-  }, [])
-
-  // Dynamic grid columns based on filter state and view mode
-  const gridColumns = (() => {
-    // Compact grid
-    return isFiltersCollapsed
-      ? 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
-      : 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3'
-  })()
-
-  const gridColumnsLarge = (() => {
-    // Comfortable/large view for desktop/tablet
-    return isFiltersCollapsed
-      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3'
-      : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-2'
-  })()
+  // Colonnes selon l'affichage choisi et l'état du panneau de filtres.
+  const columns = {
+    large: isFiltersCollapsed ? 'grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2',
+    grid: isFiltersCollapsed ? 'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' : 'grid-cols-2 xl:grid-cols-3',
+    dense: isFiltersCollapsed ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 xl:grid-cols-4',
+    list: 'grid-cols-1 xl:grid-cols-2',
+  }[viewMode]
+  const gap = viewMode === 'dense' ? 'gap-3' : viewMode === 'large' ? 'gap-6' : viewMode === 'list' ? 'gap-3' : 'gap-5'
 
   const getLocalizedDesignation = (product: ProductListItem): string => {
     const fallback = String((product as any)?.designation ?? (product as any)?.name ?? '')
@@ -203,7 +175,7 @@ export function ProductsList({
 
       {/* Products Grid */}
       {isLoading ? (
-        <div className={`grid gap-5 ${isListView && isMobile ? 'grid-cols-1' : isListView ? gridColumnsLarge : gridColumns}`}>
+        <div className={`grid ${gap} ${columns}`}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-card rounded-lg border border-border/40 overflow-hidden">
               <div className="aspect-square bg-muted animate-pulse" />
@@ -243,9 +215,9 @@ export function ProductsList({
           </p>
         </div>
       ) : (
-              isListView && isMobile ? (
-                <div className="space-y-3">
-                  {transformedProducts.map((product) => (
+              <div className={`grid ${gap} ${columns}`}>
+                {transformedProducts.map((product) =>
+                  isRows ? (
                     <ProductCardRow
                       key={product.id}
                       product={product}
@@ -255,45 +227,27 @@ export function ProductsList({
                       onToggleWishlist={onToggleWishlist}
                       onQuickView={onQuickView}
                     />
-                  ))}
-                </div>
-              ) : isListView ? (
-                <div className={`grid gap-6 ${gridColumnsLarge}`}>
-                  {transformedProducts.map((product) => (
+                  ) : (
                     <ProductCardTile
                       key={product.id}
                       product={product}
                       viewMode="grid"
-                      isWide
+                      isWide={viewMode !== 'grid' || isFiltersCollapsed}
                       onAddToCart={onAddToCart}
                       onToggleWishlist={onToggleWishlist}
                       onQuickView={onQuickView}
                     />
-                  ))}
-                </div>
-              ) : (
-                <div className={`grid gap-5 ${gridColumns}`}>
-                  {transformedProducts.map((product) => (
-                    <ProductCardTile
-                      key={product.id}
-                      product={product}
-                      viewMode="grid"
-                      isWide={isFiltersCollapsed}
-                      onAddToCart={onAddToCart}
-                      onToggleWishlist={onToggleWishlist}
-                      onQuickView={onQuickView}
-                    />
-                  ))}
-                    </div>
                   )
+                )}
+              </div>
       )}
 
-      {/* Suite de la liste : chargement automatique au défilement + bouton « Voir plus » */}
+      {/* Suite de la liste : bouton « Voir plus », une page de produits par clic */}
       {!isLoading && !error && transformedProducts.length > 0 ? (
         <div className="mt-8 flex flex-col items-center gap-3">
           {isLoadingMore ? (
-            <div className={`grid w-full gap-5 ${isListView && isMobile ? 'grid-cols-1' : isListView ? gridColumnsLarge : gridColumns}`} aria-hidden="true">
-              {Array.from({ length: isMobile ? 2 : 3 }).map((_, i) => (
+            <div className={`grid w-full ${gap} ${columns}`} aria-hidden="true">
+              {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="overflow-hidden rounded-[1.4rem] border border-border/40 bg-card">
                   <div className="aspect-square animate-pulse bg-muted" />
                   <div className="space-y-3 p-4">
@@ -304,8 +258,7 @@ export function ProductsList({
               ))}
             </div>
           ) : null}
-          <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />
-          {hasMore ? (
+          {hasMore || isLoadingMore ? (
             <Button asChild size="lg" variant="outline" className="h-12 rounded-full px-7 text-sm font-semibold">
               <Link
                 href={nextHref ?? '#'}

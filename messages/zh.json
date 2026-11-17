@@ -956,8 +956,10 @@
     "viewToggle": {
       "label": "视图",
       "aria": "显示模式",
-      "gridAria": "紧凑网格",
-      "listAria": "列表"
+      "gridAria": "网格",
+      "listAria": "列表",
+      "largeAria": "大卡片",
+      "denseAria": "小卡片"
     },
     "loadError": "加载时出错",
     "showing": "显示",

@@ -956,8 +956,10 @@
     "viewToggle": {
       "label": "العرض",
       "aria": "وضع العرض",
-      "gridAria": "شبكة مدمجة",
-      "listAria": "قائمة"
+      "gridAria": "شبكة",
+      "listAria": "قائمة",
+      "largeAria": "بطاقات كبيرة",
+      "denseAria": "بطاقات صغيرة"
     },
     "loadError": "حدث خطأ أثناء التحميل",
     "showing": "عرض",
