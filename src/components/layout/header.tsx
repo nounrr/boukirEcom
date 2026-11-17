@@ -39,7 +39,6 @@ import { useCart } from "./cart-context-provider"
 import { CartPopover } from "./cart-popover"
 import { HeaderSearch } from "./header-search"
 import { WishlistIcon } from "./wishlist-icon"
-import { CategoriesMegaMenu } from "./categories-mega-menu"
 import { CategoriesMobileMenu } from "./categories-mobile-menu"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { BrandLockup } from "@/components/brand/brand-lockup"
@@ -363,20 +362,21 @@ export function Header() {
         {/* Row 2 — catalogue navigation (desktop) */}
         <div className={cn("hidden border-t lg:block", overlay ? "border-white/10" : "border-white/[0.06]")}>
           <div className="mx-auto flex h-12 max-w-[1440px] items-center gap-2 px-10">
-            <CategoriesMegaMenu tone="onPrimary" />
-            {/* Page « Toutes les catégories » : grandes cartes par univers, filtres, photos */}
+            {/* « Catégories » : simple bouton vers la page de toutes les catégories (plus de menu au survol) */}
             <Link
               href={`/${locale}/categories`}
               aria-current={pathname === `/${locale}/categories` ? "page" : undefined}
               className={cn(
-                "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-xl border px-3 text-[13px] font-semibold transition-[background-color,border-color,color] duration-500 ease-hover",
+                "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-xl border ps-1.5 pe-3.5 text-sm font-bold transition-[background-color,border-color,color] duration-500 ease-hover",
                 pathname === `/${locale}/categories`
                   ? "border-brand-orange bg-brand-orange text-ink"
-                  : "border-brand-orange/40 bg-brand-orange/10 text-brand-yellow hover:border-brand-orange hover:bg-brand-orange hover:text-ink"
+                  : "border-white/15 bg-white/5 text-white/95 hover:border-brand-orange hover:bg-brand-orange hover:text-ink"
               )}
             >
-              <LayoutGrid className="size-4" aria-hidden="true" />
-              {t("allCategories")}
+              <span className="grid size-7 place-items-center rounded-lg border border-current/20 bg-black/10" aria-hidden="true">
+                <LayoutGrid className="size-4" />
+              </span>
+              {t("categories")}
             </Link>
             <span className="mx-2 h-5 w-px bg-white/15" aria-hidden="true" />
             <nav aria-label={tx("mainNavigation")} className="flex min-w-0 items-center gap-0.5">

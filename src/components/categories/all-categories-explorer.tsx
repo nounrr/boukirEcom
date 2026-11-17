@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -17,8 +17,6 @@ import { CategoryThumb, useCategoryCovers, type CategoryCover } from '@/componen
 import { SubcategoryCard } from '@/components/layout/categories-mega-menu'
 
 type ChildrenMap = Map<number, Category[]>
-
-const PREVIEW_COUNT = 6
 
 function normalize(value: string) {
   return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
@@ -73,12 +71,6 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
     return memo
   }, [needle, categories, childrenMap])
 
-  // Univers déjà passés près de l'écran : leurs vignettes vont chercher leur photo (une seule fois).
-  const [seen, setSeen] = useState<Set<number>>(() => new Set())
-  const markSeen = useCallback((id: number) => {
-    setSeen((prev) => (prev.has(id) ? prev : new Set(prev).add(id)))
-  }, [])
-
   const visibleRoots = roots.filter((root) => (selected.size === 0 || selected.has(root.id)) && (!matches || matches.get(root.id)))
   const isOpen = (id: number) => opened.has(id) || Boolean(matches)
 
@@ -88,14 +80,13 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
     for (const root of roots) {
       const children = childrenMap.get(root.id) ?? []
       if (opened.has(root.id) || matches?.get(root.id)) list.push(...children)
-      else if (seen.has(root.id)) list.push(...children.slice(0, PREVIEW_COUNT))
     }
     return list
-  }, [roots, opened, matches, seen, childrenMap])
+  }, [roots, opened, matches, childrenMap])
   const coverOf = useCategoryCovers(coverTargets, childrenMap, true)
 
   const subcategoriesTotal = Math.max(0, categories.length - roots.length)
-  const collage = roots.filter((root) => root.image_url).slice(0, 5)
+  const slides = roots.filter((root) => root.image_url)
 
   const toggleSelected = (id: number) => setSelected((prev) => {
     const next = new Set(prev)
@@ -118,7 +109,7 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
       <section className="relative overflow-hidden bg-ink text-white">
         <div className="pointer-events-none absolute -end-24 -top-24 size-[28rem] rounded-full bg-brand-orange/20 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-32 start-1/3 size-80 rounded-full bg-brand-yellow/10 blur-3xl" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-[1440px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:px-10 lg:py-16">
+        <div className="relative mx-auto grid max-w-[1440px] grid-cols-[minmax(0,1fr)] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,500px)] lg:items-center lg:px-10 lg:py-14">
           <div className="min-w-0">
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
               <Sparkles className="size-3.5" aria-hidden="true" />{t('eyebrow')}
@@ -129,31 +120,16 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
             </p>
           </div>
 
-          {/* Mosaïque des univers */}
-          {collage.length > 0 ? (
-            <div className="relative hidden h-72 lg:block" aria-hidden="true">
-              {collage.map((root, index) => {
-                const positions = [
-                  'start-0 top-6 w-44 rotate-[-6deg]',
-                  'start-32 top-0 w-48 rotate-[4deg]',
-                  'end-0 top-10 w-44 rotate-[8deg]',
-                  'start-12 bottom-0 w-40 rotate-[3deg]',
-                  'end-16 bottom-2 w-44 rotate-[-4deg]',
-                ]
-                return (
-                  <div key={root.id} className={cn('absolute aspect-[4/3] overflow-hidden rounded-2xl border-4 border-white/10 shadow-2xl shadow-black/50 animate-in fade-in-0 zoom-in-95 duration-700 motion-reduce:animate-none', positions[index])} style={{ animationDelay: `${index * 90}ms`, animationFillMode: 'both' }}>
-                    <CategoryThumb category={root} label={label(root)} cover={coverOf(root)} rounded="rounded-none" className="size-full ring-0" />
-                  </div>
-                )
-              })}
-            </div>
+          {/* Slider automatique des univers */}
+          {slides.length > 0 ? (
+            <HeroCategorySlider slides={slides} label={label} coverOf={coverOf} locale={locale} />
           ) : null}
         </div>
       </section>
 
       {/* Barre de recherche : reste collée sous le menu pendant le défilement */}
       <div className="sticky top-[var(--site-header-h,64px)] z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:flex-nowrap lg:px-10">
+        <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-3 sm:px-6 lg:px-10">
           <label className="relative min-w-0 flex-1 lg:max-w-2xl">
             <span className="sr-only">{t('searchPlaceholder')}</span>
             <Search className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -170,17 +146,18 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
               </button>
             ) : null}
           </label>
-          <p className="text-sm text-muted-foreground lg:ms-auto" aria-live="polite">
+          <p className="hidden text-sm text-muted-foreground sm:block lg:ms-auto" aria-live="polite">
             {t('resultsCount', { count: visibleRoots.length })}
           </p>
           <button
             type="button"
             onClick={toggleAll}
             disabled={Boolean(matches) || visibleRoots.length === 0}
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold transition-colors hover:border-brand-orange/50 hover:bg-muted/60 disabled:opacity-40"
+            aria-label={allOpen ? t('collapseAll') : t('expandAll')}
+            className="inline-flex h-12 shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3.5 text-sm font-semibold transition-colors hover:border-brand-orange/50 hover:bg-muted/60 disabled:opacity-40 sm:h-10 sm:rounded-full sm:px-4"
           >
             {allOpen ? <ChevronsDownUp className="size-4" aria-hidden="true" /> : <ChevronsUpDown className="size-4" aria-hidden="true" />}
-            {allOpen ? t('collapseAll') : t('expandAll')}
+            <span className="hidden sm:inline">{allOpen ? t('collapseAll') : t('expandAll')}</span>
           </button>
         </div>
       </div>
@@ -259,7 +236,6 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
                   onToggle={() => toggleOpen(root.id)}
                   matches={matches}
                   locale={locale}
-                  onSeen={markSeen}
                 />
               ))}
             </ol>
@@ -271,7 +247,7 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
 }
 
 function UniverseCard({
-  root, index, order, label, childrenMap, coverOf, open, onToggle, matches, locale, onSeen,
+  root, index, order, label, childrenMap, coverOf, open, onToggle, matches, locale,
 }: {
   root: Category
   index: number
@@ -283,26 +259,8 @@ function UniverseCard({
   onToggle: () => void
   matches: Map<number, boolean> | null
   locale: string
-  onSeen: (id: number) => void
 }) {
   const t = useTranslations('categoriesPage')
-  const itemRef = useRef<HTMLLIElement | null>(null)
-
-  useEffect(() => {
-    const element = itemRef.current
-    if (!element || typeof IntersectionObserver === 'undefined') {
-      onSeen(root.id)
-      return
-    }
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        onSeen(root.id)
-        observer.disconnect()
-      }
-    }, { rootMargin: '400px 0px' })
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [onSeen, root.id])
 
   const allChildren = childrenMap.get(root.id) ?? []
   // En recherche : seulement les sous-catégories qui correspondent (toutes si seul l'univers correspond).
@@ -316,7 +274,6 @@ function UniverseCard({
 
   return (
     <li
-      ref={itemRef}
       id={`cat-${root.id}`}
       className="scroll-mt-[calc(var(--site-header-h,112px)+6rem)] animate-in fade-in-0 slide-in-from-bottom-3 duration-700 motion-reduce:animate-none"
       style={{ animationDelay: `${Math.min(order, 8) * 60}ms`, animationFillMode: 'both' } as CSSProperties}
@@ -325,9 +282,9 @@ function UniverseCard({
         'group/universe overflow-hidden rounded-[1.75rem] border bg-card shadow-[0_18px_50px_-40px_rgba(13,13,13,0.6)] transition-[border-color,box-shadow] duration-700 ease-hover',
         open ? 'border-brand-orange/40 shadow-[0_30px_70px_-45px_rgba(242,159,4,0.55)]' : 'border-border hover:border-brand-orange/30'
       )}>
-        <div className="grid md:grid-cols-[minmax(240px,32%)_minmax(0,1fr)]">
+        <div className="grid md:grid-cols-[minmax(200px,24%)_minmax(0,1fr)]">
           {/* Grande photo de l'univers */}
-          <Link href={href} className="group/photo relative block min-h-52 overflow-hidden md:min-h-full" aria-label={label(root)}>
+          <Link href={href} className="group/photo relative block min-h-36 overflow-hidden md:min-h-[136px]" aria-label={label(root)}>
             <CategoryThumb
               category={root}
               label={label(root)}
@@ -337,20 +294,20 @@ function UniverseCard({
               imgClassName="duration-[1400ms] ease-hover group-hover/photo:scale-105"
             />
             <span className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent md:bg-linear-to-r md:from-black/10 md:via-transparent md:to-transparent" aria-hidden="true" />
-            <span className="absolute start-4 top-4 rounded-full bg-black/55 px-3 py-1 text-xs font-bold tracking-[0.18em] text-brand-yellow backdrop-blur" aria-hidden="true">{number}</span>
-            <span className="absolute bottom-4 end-4 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-neutral-900 shadow-lg transition-colors duration-500 group-hover/photo:bg-gold">
+            <span className="absolute start-3 top-3 rounded-full bg-black/55 px-2.5 py-0.5 text-[11px] font-bold tracking-[0.18em] text-brand-yellow backdrop-blur" aria-hidden="true">{number}</span>
+            <span className="absolute bottom-3 end-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-neutral-900 shadow-lg transition-colors duration-500 group-hover/photo:bg-gold">
               {t('viewAll')}<ArrowUpRight className="size-3.5 rtl:-scale-x-100" aria-hidden="true" />
             </span>
           </Link>
 
-          <div className="min-w-0 p-5 sm:p-6">
+          <div className="flex min-w-0 flex-col justify-center p-4 sm:px-6 sm:py-5">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent-text">{t('universeLabel', { index: number })}</p>
-                <h2 className="mt-1 text-2xl font-extrabold leading-tight tracking-tight sm:text-[1.7rem]">
+                <h2 className="mt-1 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl">
                   <Link href={href} className="transition-colors duration-500 hover:text-accent-text">{label(root)}</Link>
                 </h2>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5"><Layers className="size-4" aria-hidden="true" />{t('subCount', { count: allChildren.length })}</span>
                   {leavesTotal > 0 ? <span>· {t('leavesCount', { count: leavesTotal })}</span> : null}
                 </p>
@@ -373,38 +330,11 @@ function UniverseCard({
               ) : null}
             </div>
 
-            {/* Fermé : aperçu des sous-catégories (déjà cliquables) */}
-            {allChildren.length > 0 ? (
-              <div className={cn('grid transition-[grid-template-rows,opacity] duration-700 ease-hover', open ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100')} aria-hidden={open}>
-                <div className="min-h-0 overflow-hidden">
-                  <ul className="flex flex-wrap gap-2 pt-4">
-                    {allChildren.slice(0, PREVIEW_COUNT).map((child) => (
-                      <li key={child.id}>
-                        <Link
-                          href={catalogHref(locale, 'categories', child.id)}
-                          tabIndex={open ? -1 : undefined}
-                          className="inline-flex max-w-[16rem] items-center gap-2 rounded-full border border-border bg-background py-1 pe-3 ps-1 text-[13px] font-medium transition-[border-color,background-color] duration-500 hover:border-brand-orange/50 hover:bg-brand-orange/5"
-                        >
-                          <CategoryThumb category={child} label={label(child)} cover={coverOf(child)} rounded="rounded-full" className="size-7 text-[10px]" />
-                          <span className="truncate">{label(child)}</span>
-                        </Link>
-                      </li>
-                    ))}
-                    {allChildren.length > PREVIEW_COUNT ? (
-                      <li>
-                        <button type="button" onClick={onToggle} tabIndex={open ? -1 : undefined} className="inline-flex h-9 items-center rounded-full bg-muted px-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
-                          +{allChildren.length - PREVIEW_COUNT}
-                        </button>
-                      </li>
-                    ) : null}
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <Link href={href} className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-gold px-5 text-sm font-bold text-ink">
+            {allChildren.length === 0 ? (
+              <Link href={href} className="mt-4 inline-flex h-10 items-center gap-2 rounded-full bg-gold px-5 text-sm font-bold text-ink">
                 {t('viewProducts')}<ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Link>
-            )}
+            ) : null}
 
             {/* Ouvert : toutes les sous-catégories en cartes photo */}
             {allChildren.length > 0 ? (
@@ -432,5 +362,106 @@ function UniverseCard({
         </div>
       </article>
     </li>
+  )
+}
+
+const SLIDE_INTERVAL = 3800
+
+/** Photos des univers qui défilent seules (pause au survol, et si le mouvement réduit est demandé). */
+function HeroCategorySlider({
+  slides, label, coverOf, locale,
+}: {
+  slides: Category[]
+  label: (category: Category) => string
+  coverOf: (category: Category) => CategoryCover | null
+  locale: string
+}) {
+  const t = useTranslations('categoriesPage')
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const count = slides.length
+
+  useEffect(() => {
+    if (count < 2 || paused) return
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') setIndex((value) => (value + 1) % count)
+    }, SLIDE_INTERVAL)
+    return () => window.clearInterval(timer)
+  }, [count, paused])
+
+  const current = slides[index % count]
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      <div className="relative h-56 sm:h-64 lg:h-72">
+        {slides.map((slide, slideIndex) => {
+          const offset = (slideIndex - index + count) % count
+          const pose =
+            offset === 0
+              ? 'z-30 opacity-100 translate-x-0 rotate-0 scale-100'
+              : offset === 1
+                ? 'z-20 opacity-70 translate-x-[7%] rotate-[4deg] scale-[0.92]'
+                : offset === 2
+                  ? 'z-10 opacity-40 translate-x-[13%] rotate-[8deg] scale-[0.85]'
+                  : 'z-0 opacity-0 translate-x-[18%] rotate-[10deg] scale-[0.8]'
+          return (
+            <Link
+              key={slide.id}
+              href={catalogHref(locale, 'categories', slide.id)}
+              tabIndex={offset === 0 ? 0 : -1}
+              aria-hidden={offset !== 0}
+              className={cn(
+                'group/slide absolute inset-0 overflow-hidden rounded-[1.75rem] border-4 border-white/10 bg-ink shadow-2xl shadow-black/60 transition-[translate,rotate,scale,opacity] duration-[900ms] ease-hover will-change-transform motion-reduce:transition-none',
+                pose,
+                offset !== 0 && 'pointer-events-none'
+              )}
+            >
+              <CategoryThumb
+                category={slide}
+                label={label(slide)}
+                cover={coverOf(slide)}
+                rounded="rounded-none"
+                className="size-full ring-0"
+                imgClassName={cn('duration-[4000ms] ease-linear', offset === 0 ? 'scale-110' : 'scale-100')}
+              />
+              <span className={cn('absolute inset-0 bg-linear-to-t from-black/80 via-black/15 to-transparent transition-opacity duration-700', offset === 0 ? 'opacity-100' : 'opacity-0')} aria-hidden="true" />
+              {/* Légende : seulement sur la carte de devant (pas de textes superposés) */}
+              <span className={cn('absolute inset-x-5 bottom-4 flex items-end justify-between gap-3 transition-[opacity,translate] duration-700 ease-hover', offset === 0 ? 'translate-y-0 opacity-100 delay-200' : 'translate-y-2 opacity-0')}>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-brand-yellow">
+                    {t('universeLabel', { index: String(slideIndex + 1).padStart(2, '0') })}
+                  </span>
+                  <span className="mt-1 line-clamp-2 text-lg font-extrabold leading-tight text-white">{label(slide)}</span>
+                </span>
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-neutral-900 transition-colors duration-500 group-hover/slide:bg-gold">
+                  <ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+                </span>
+              </span>
+            </Link>
+          )
+        })}
+      </div>
+      <div className="mx-auto mt-5 flex max-w-full flex-wrap items-center justify-center gap-x-1 gap-y-1.5" aria-label={current ? label(current) : undefined}>
+        {slides.map((slide, slideIndex) => (
+          <button
+            key={slide.id}
+            type="button"
+            onClick={() => setIndex(slideIndex)}
+            aria-label={label(slide)}
+            aria-current={slideIndex === index ? 'true' : undefined}
+            className="grid h-4 place-items-center px-0.5"
+          >
+            <span className={cn('block h-1 rounded-full transition-all duration-500', slideIndex === index ? 'w-6 bg-brand-orange' : 'w-1.5 bg-white/25 hover:bg-white/50')} />
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }
