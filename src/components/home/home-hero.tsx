@@ -27,6 +27,7 @@ import {
   useCarouselRuntimeState,
 } from '@/hooks/use-carousel-playback'
 
+import { canOptimize } from '@/lib/image-optimize'
 type HeroSlideType = 'category' | 'brand' | 'campaign' | 'product'
 
 const DEFAULT_BRAND_ID = 1
@@ -444,7 +445,7 @@ export function HomeHero({
                                     alt={s.secondaryImageAlt || s.imageAlt}
                                     fill
                                     priority={idx === 0}
-                                    unoptimized={/^https?:\/\//i.test((s.secondaryImageSrc || s.imageSrc) ?? '')}
+                                    unoptimized={!canOptimize(s.secondaryImageSrc || s.imageSrc)}
                                     sizes="(min-width: 1024px) 440px, (min-width: 640px) 380px, 80vw"
                                     className="object-cover object-center transition-transform duration-600 group-hover:scale-[1.03]"
                                   />

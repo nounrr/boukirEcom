@@ -14,6 +14,7 @@ import { API_CONFIG } from '@/lib/api-config'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
+import { canOptimize } from '@/lib/image-optimize'
 
 function getCategoryLabel(category: Category, locale: string) {
   return getLocalizedCategoryName(category, locale)
@@ -67,7 +68,7 @@ function FeaturedCategoryCard({
           alt={label}
           fill
           sizes="(min-width: 1024px) 42vw, 100vw"
-          unoptimized={/^https?:\/\//i.test(imageSrc)}
+          unoptimized={!canOptimize(imageSrc)}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
@@ -116,7 +117,7 @@ function GridCategoryCard({
           alt={label}
           fill
           sizes="(min-width: 1024px) 20vw, 50vw"
-          unoptimized={/^https?:\/\//i.test(imageSrc)}
+          unoptimized={!canOptimize(imageSrc)}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (

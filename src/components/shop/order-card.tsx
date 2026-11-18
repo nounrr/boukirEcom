@@ -13,6 +13,7 @@ import { useGetOrderQuery } from "@/state/api/orders-api-slice"
 import { useTranslations } from "next-intl"
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 
+import { canOptimize } from "@/lib/image-optimize"
 interface OrderCardProps {
   order: Order
   locale: string
@@ -388,7 +389,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
                       alt={getLocalizedOrderItemName(item)}
                       fill
                       className="object-cover"
-                      unoptimized={item.imageUrl.includes('picsum') || item.imageUrl.includes('unsplash')}
+                      unoptimized={!canOptimize(item.imageUrl)}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

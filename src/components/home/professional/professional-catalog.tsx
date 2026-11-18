@@ -28,6 +28,7 @@ import { useGetBrandsQuery } from '@/state/api/brands-api-slice'
 import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from '@/state/api/products-api-slice'
 import type { Brand } from '@/types/brand'
 import type { ProductListItem } from '@/types/api/products'
+import { canOptimize } from '@/lib/image-optimize'
 
 const MATERIAL_FALLBACKS = [
   '/product-fallbacks/mineral.webp',
@@ -257,7 +258,7 @@ function BrandLogo({ brand }: { brand: Brand }) {
   const image = absoluteImageUrl(brand.image_url)
   const [failed, setFailed] = useState(false)
   if (!image || failed) return <span className="max-w-full truncate text-center text-sm font-black uppercase tracking-[0.08em] text-foreground/76">{brand.nom}</span>
-  return <Image src={image} alt={brand.nom} fill sizes="180px" unoptimized={/^https?:\/\//i.test(image)} className="object-contain p-4 grayscale transition-[filter,opacity,transform,translate,scale,rotate] duration-600 group-hover:scale-[1.03] group-hover:grayscale-0" onError={() => setFailed(true)} />
+  return <Image src={image} alt={brand.nom} fill sizes="180px" unoptimized={!canOptimize(image)} className="object-contain p-4 grayscale transition-[filter,opacity,transform,translate,scale,rotate] duration-600 group-hover:scale-[1.03] group-hover:grayscale-0" onError={() => setFailed(true)} />
 }
 
 function BrandsSection({ locale }: { locale: string }) {

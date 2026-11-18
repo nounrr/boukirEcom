@@ -24,6 +24,7 @@ import { normalizeLocale } from '@/i18n/locale'
 import { useGetBrandsQuery } from '@/state/api/brands-api-slice'
 import type { Brand } from '@/types/brand'
 import { useCarouselRuntimeState } from '@/hooks/use-carousel-playback'
+import { canOptimize } from '@/lib/image-optimize'
 
 type BrandShape = 'rounded' | 'circle'
 
@@ -72,7 +73,7 @@ function BrandCard({
               alt={brand.nom}
               fill
               sizes="(min-width: 1024px) 96px, (min-width: 768px) 88px, 80px"
-              unoptimized={/^https?:\/\//i.test(imageSrc)}
+              unoptimized={!canOptimize(imageSrc)}
               className="object-cover transition-transform duration-600 group-hover:scale-125"
             />
           ) : (

@@ -14,6 +14,7 @@ import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 import { compareCategoryOrder } from '@/lib/category-order'
 import { CategoryThumb, useCategoryCovers, type CategoryCover } from './category-thumb'
+import { optimizedImageProps } from '@/lib/image-optimize'
 
 type CategoryByParent = Map<number, Category[]>
 
@@ -79,7 +80,7 @@ function ParentBanner({
       {scene ? (
         // eslint-disable-next-line @next/next/no-img-element -- photo servie par l'API
         <img
-          src={scene}
+          {...optimizedImageProps(scene, 640)}
           alt=""
           loading="lazy"
           decoding="async"
@@ -141,6 +142,7 @@ export function SubcategoryCard({
             cover={cover}
             rounded="rounded-none"
             className="aspect-4/3 w-full text-3xl ring-0"
+            displayWidth={240}
             imgClassName="group-hover/card:scale-105"
           />
           {leaves.length > 0 ? (

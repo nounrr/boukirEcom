@@ -227,6 +227,7 @@ export function CategoriesMobileMenu({
                               cover={coverOf(child)}
                               rounded="rounded-none"
                               className="aspect-4/3 w-full text-xl ring-0"
+                              displayWidth={200}
                               imgClassName="group-hover:scale-105"
                             />
                             <span className="block px-2 py-1.5">

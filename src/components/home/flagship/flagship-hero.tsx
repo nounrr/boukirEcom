@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { HeroProductGrid } from "./hero-product-grid"
 import { useGetHeroSlidesQuery } from "@/state/api/hero-slides-api-slice"
 import type { HeroSlideApi } from "@/types/api/hero-slides"
+import { canOptimize } from "@/lib/image-optimize"
 
 const INTERVAL = 7000
 
@@ -247,7 +248,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
               alt=""
               fill
               priority={index === 0}
-              unoptimized={slide.remote}
+              unoptimized={!canOptimize(slide.image)}
               sizes="100vw"
               draggable={false}
               className={cn(

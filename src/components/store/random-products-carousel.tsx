@@ -13,6 +13,7 @@ import { productHref } from "@/lib/seo/product-url"
 import { useShowcaseProducts } from "@/components/home/use-showcase-products"
 import { interleaveByCategory, seededRandom } from "@/lib/home/product-rotation"
 import type { ProductListItem } from "@/types/api/products"
+import { optimizedImageProps } from "@/lib/image-optimize"
 
 /** Products in the three rows (all at 550 DH and more, neighbours from different categories). */
 const SHOWN = 48
@@ -38,7 +39,7 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
       <span className="relative block aspect-square overflow-hidden bg-white">
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element -- images servies par l'API
-          <img src={image} alt="" loading="lazy" decoding="async" className="size-full object-contain p-3 transition-[scale] duration-700 ease-hover group-hover:scale-105" />
+          <img {...optimizedImageProps(image, 180)} alt="" loading="lazy" decoding="async" className="size-full object-contain p-3 transition-[scale] duration-700 ease-hover group-hover:scale-105" />
         ) : null}
         {discounted && product.pourcentage_promo > 0 ? (
           <span className="absolute start-2 top-2 rounded-full bg-gold px-2 py-0.5 text-[10px] font-extrabold text-ink">-{product.pourcentage_promo}%</span>

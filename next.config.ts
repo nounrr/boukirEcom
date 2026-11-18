@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    // Optimized photos kept 30 days on the server (upload file names never change, so no stale image).
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: 'http',

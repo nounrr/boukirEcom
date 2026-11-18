@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { DragCarousel } from "@/components/ui/drag-carousel"
 import { SectionHeading } from "./section-heading"
+import { canOptimize } from "@/lib/image-optimize"
 
 export type Universe = {
   slug: string
@@ -44,7 +45,7 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
 
   const visual = (u: Universe, className?: string, sizes = "50vw") =>
     u.image || u.fallback ? (
-      <Image src={(u.image ?? u.fallback)!} alt="" fill sizes={sizes} unoptimized={Boolean(u.image && /^https?:/.test(u.image))} className={cn("object-cover", className)} />
+      <Image src={(u.image ?? u.fallback)!} alt="" fill sizes={sizes} unoptimized={!canOptimize(u.image ?? u.fallback)} className={cn("object-cover", className)} />
     ) : (
       <div className={cn("bd-grid absolute inset-0 grid place-items-center bg-ink-2 [--grid-color:rgba(255,255,255,0.06)]", className)}>
         <Droplets className="size-24 text-brand-orange/40" strokeWidth={0.8} />

@@ -30,6 +30,7 @@ import { API_CONFIG } from '@/lib/api-config'
 import { cn } from '@/lib/utils'
 import { useGetHeroSlidesQuery } from '@/state/api/hero-slides-api-slice'
 import type { HeroSlideApi, HeroSlideTypeApi } from '@/types/api/hero-slides'
+import { canOptimize } from '@/lib/image-optimize'
 
 type EditorialSlide = {
   id: string
@@ -108,7 +109,7 @@ function HeroImage({ src, alt, priority }: { src: string; alt: string; priority:
       alt={alt}
       fill
       priority={priority}
-      unoptimized={/^https?:\/\//i.test(image)}
+      unoptimized={!canOptimize(image)}
       sizes="(min-width: 1024px) 55vw, 100vw"
       className="object-cover transition-transform duration-500 motion-safe:group-hover/hero:scale-[1.025]"
       onError={() => setFailed(true)}

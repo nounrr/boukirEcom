@@ -295,6 +295,7 @@ function UniverseCard({
               cover={rootCover}
               rounded="rounded-none"
               className="absolute inset-0 size-full text-6xl ring-0"
+              displayWidth={320}
               imgClassName="duration-[1400ms] ease-hover group-hover/photo:scale-105"
             />
             <span className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent md:bg-linear-to-r md:from-black/10 md:via-transparent md:to-transparent" aria-hidden="true" />
@@ -462,6 +463,7 @@ function HeroCategorySlider({
                 cover={coverOf(slide)}
                 rounded="rounded-none"
                 className="size-full ring-0"
+                displayWidth={480}
                 imgClassName={cn('duration-[4000ms] ease-linear', offset === 0 ? 'scale-110' : 'scale-100')}
               />
               <span className={cn('absolute inset-0 bg-linear-to-t from-black/80 via-black/15 to-transparent transition-opacity duration-700', offset === 0 ? 'opacity-100' : 'opacity-0')} aria-hidden="true" />

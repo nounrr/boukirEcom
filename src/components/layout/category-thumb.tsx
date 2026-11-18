@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { API_CONFIG } from '@/lib/api-config'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import type { Category } from '@/types/category'
+import { optimizedImageProps } from '@/lib/image-optimize'
 
 // Teintes de secours (catégorie sans aucune photo) : choisies d'après l'id pour rester stables.
 const FALLBACK_TONES = [
@@ -120,6 +121,7 @@ export function CategoryThumb({
   className,
   imgClassName,
   rounded = 'rounded-xl',
+  displayWidth = 96,
 }: {
   category: Category
   label: string
@@ -128,6 +130,8 @@ export function CategoryThumb({
   className?: string
   imgClassName?: string
   rounded?: string
+  /** Approximate width shown on screen (CSS px): the photo is downloaded at that size (and 2x). */
+  displayWidth?: number
 }) {
   const resolved: CategoryCover | null =
     cover !== undefined ? cover : (() => {
@@ -152,7 +156,7 @@ export function CategoryThumb({
       {showImage ? (
         // eslint-disable-next-line @next/next/no-img-element -- photos servies par l'API, chargées à la demande
         <img
-          src={resolved.src}
+          {...optimizedImageProps(resolved.src, displayWidth)}
           alt=""
           loading="lazy"
           decoding="async"

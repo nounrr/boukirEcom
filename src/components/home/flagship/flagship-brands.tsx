@@ -14,6 +14,7 @@ import { BRAND_LOGOS } from "@/lib/catalog/brand-logos"
 import { catalogHref } from "@/lib/catalog/registry"
 import { useGetBrandsQuery } from "@/state/api/brands-api-slice"
 import { SectionHeading } from "./section-heading"
+import { canOptimize } from "@/lib/image-optimize"
 
 type LogoBrand = { id: number; name: string; src: string; remote: boolean }
 
@@ -40,7 +41,7 @@ function LogoTile({ brand, locale }: { brand: LogoBrand; locale: string }) {
         alt={brand.name}
         width={170}
         height={90}
-        unoptimized={brand.remote}
+        unoptimized={!canOptimize(src)}
         draggable={false}
         className="pointer-events-none h-[72%] w-auto max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
         onError={() => {

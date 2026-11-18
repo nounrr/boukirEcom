@@ -28,6 +28,7 @@ import { toAbsoluteImageUrl } from "@/lib/image-url"
 import { formatCommercialUnit, formatUnitRate } from '@/lib/commercial-unit'
 import { forwardRef, useCallback, useImperativeHandle, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { canOptimize } from "@/lib/image-optimize"
 
 const CART_STORAGE_KEY = 'boukir_guest_cart'
 
@@ -361,11 +362,6 @@ export const CartPopover = forwardRef<
                       ...item,
                       name: getLocalizedCartItemBaseName(item as any, locale),
                     })
-                    const shouldBypassOptimization =
-                      typeof imageSrc === 'string' &&
-                      /^http:\/\//i.test(imageSrc) &&
-                      !/^http:\/\/localhost(?::\d+)?\//i.test(imageSrc) &&
-                      !/^http:\/\/127\.0\.0\.1(?::\d+)?\//i.test(imageSrc)
 
                     return (
                   <div
@@ -381,7 +377,7 @@ export const CartPopover = forwardRef<
                           fill
                               sizes="64px"
                           className="object-cover"
-                              unoptimized={shouldBypassOptimization}
+                              unoptimized={typeof imageSrc !== "string" || !canOptimize(imageSrc)}
                               onError={() => {
                                 setFailedImages((prev) => ({ ...prev, [itemKey]: true }))
                               }}

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import type { PublicService } from '@/types/service-request'
 import { localizedCategoryName, localizedServiceText } from '@/lib/service-catalog'
+import { optimizedImageProps } from '@/lib/image-optimize'
 
 interface Props {
   service: PublicService
@@ -20,7 +21,7 @@ export function ServiceSummary({ service, locale }: Props) {
       <div className="flex items-center gap-4 p-4 lg:block lg:p-0">
         <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted lg:aspect-[16/10] lg:h-auto lg:w-full lg:rounded-none">
           {imageUrl ? (
-            <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
+            <img {...optimizedImageProps(imageUrl, 320)} alt={name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
           ) : (
             <ImageIcon className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
           )}
