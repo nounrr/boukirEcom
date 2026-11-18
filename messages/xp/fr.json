@@ -46,6 +46,10 @@
     },
     "top": {
       "label": "Retour en haut"
+    },
+    "assistant": {
+      "label": "Assistant Boukir",
+      "hint": "Posez votre question, réponse immédiate"
     }
   },
   "footer": {
@@ -1020,5 +1024,22 @@
     "statServices": "Services",
     "ctaTitle": "Un projet en tête ? <accent>Parlons-en.</accent>",
     "ctaServices": "Voir les services"
+  },
+  "assistant": {
+    "title": "Assistant Boukir",
+    "subtitle": "Produits, conseils, prix · réponse immédiate",
+    "welcome": "Bonjour ! Je vous aide à trouver le bon produit, comparer les prix ou choisir le matériel pour vos travaux. Que cherchez-vous ?",
+    "suggest1": "Quelle perceuse pour du béton ?",
+    "suggest2": "J'ai une fuite sous l'évier, que faut-il ?",
+    "suggest3": "Où retirer ma commande ?",
+    "placeholder": "Écrivez votre question…",
+    "send": "Envoyer",
+    "close": "Fermer l'assistant",
+    "reset": "Nouvelle conversation",
+    "thinking": "L'assistant cherche…",
+    "error": "L'assistant ne peut pas répondre pour le moment. Réessayez ou écrivez-nous sur WhatsApp.",
+    "errorBusy": "Trop de messages, réessayez dans quelques minutes.",
+    "outOfStock": "Rupture",
+    "disclaimer": "Réponses générées par IA : vérifiez le prix et le stock sur la fiche produit."
   }
 }
