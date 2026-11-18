@@ -1032,7 +1032,7 @@
     "suggest1": "Which drill for concrete?",
     "suggest2": "My sink is leaking, what do I need?",
     "suggest3": "Where can I pick up my order?",
-    "placeholder": "Type your question…",
+    "placeholder": "Type or send a voice message…",
     "send": "Send",
     "close": "Close the assistant",
     "reset": "New conversation",
@@ -1040,6 +1040,14 @@
     "error": "The assistant can't answer right now. Try again or message us on WhatsApp.",
     "errorBusy": "Too many messages, try again in a few minutes.",
     "outOfStock": "Out of stock",
-    "disclaimer": "AI-generated answers: check price and stock on the product page."
+    "disclaimer": "AI-generated answers: check price and stock on the product page.",
+    "voiceStart": "Record a voice message",
+    "voiceRecording": "Speak, then tap send",
+    "voiceSend": "Send voice message",
+    "voiceCancel": "Cancel voice message",
+    "voiceTranscribing": "Listening to your message…",
+    "voiceError": "Your voice message couldn't be understood. Try again or type your question.",
+    "voiceEmpty": "I couldn't hear anything. Speak a little louder or closer to the mic.",
+    "voiceDenied": "Microphone blocked. Allow the microphone in your browser to send a voice message."
   }
 }
