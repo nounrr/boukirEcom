@@ -138,10 +138,13 @@ export function CategoryThumb({
       const src = categoryImageSrc(category)
       return src ? { src, kind: 'category' as const } : null
     })()
-  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  // 1st error: the optimized version failed (optimizer busy or restarting) -> the original file.
+  // 2nd error: the file itself is missing -> coloured initial.
+  const [failure, setFailure] = useState<{ src: string; stage: 'optimized' | 'original' } | null>(null)
   const initial = (label || category.nom || 'C').trim().charAt(0).toUpperCase()
   const tone = FALLBACK_TONES[Math.abs(Number(category.id) || 0) % FALLBACK_TONES.length]
-  const showImage = resolved && resolved.src !== failedSrc
+  const failedFor = failure && resolved && failure.src === resolved.src ? failure.stage : null
+  const showImage = resolved && failedFor !== 'original'
 
   return (
     <span
@@ -156,11 +159,12 @@ export function CategoryThumb({
       {showImage ? (
         // eslint-disable-next-line @next/next/no-img-element -- photos servies par l'API, chargées à la demande
         <img
-          {...optimizedImageProps(resolved.src, displayWidth)}
+          key={failedFor ?? 'optimized'}
+          {...(failedFor === 'optimized' ? { src: resolved.src } : optimizedImageProps(resolved.src, displayWidth))}
           alt=""
           loading="lazy"
           decoding="async"
-          onError={() => setFailedSrc(resolved.src)}
+          onError={() => setFailure({ src: resolved.src, stage: failedFor === 'optimized' ? 'original' : 'optimized' })}
           className={cn(
             'h-full w-full transition-transform duration-500',
             resolved.kind === 'product' ? 'object-contain p-[8%]' : 'object-cover',
