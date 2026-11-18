@@ -118,6 +118,8 @@ export default async function HomePage({
         <RandomProductsCarousel />
         {/* Rayons de la boutique sur deux lignes qui défilent */}
         <CategoriesRail />
+        {/* Marques en rayon, juste après les rayons */}
+        <FlagshipBrands locale={locale} />
         {/* Application mobile : App Store et Google Play */}
         <AppDownloadSection locale={locale} />
         <FlagshipPromotions locale={locale} />
@@ -125,7 +127,6 @@ export default async function HomePage({
         {/* 2 · Univers matériaux, juste après « De l'idée à la réalité » */}<FlagshipUniverses locale={locale} universes={universes} />
         {/* 5 */}<FlagshipNewArrivals locale={locale} />
         <FlagshipJourneys locale={locale} />
-        {/* 6 */}<FlagshipBrands locale={locale} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
         {/* 8 */}<FlagshipPlanner locale={locale} />
         {/* Notre magasin : photos, vidéo, réseaux */}

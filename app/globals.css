@@ -184,6 +184,8 @@
   }
   html {
     -webkit-tap-highlight-color: transparent;
+    /* scroll-linked animations (framer-motion useScroll) measure targets against the page root */
+    position: relative;
   }
   body {
     @apply bg-background text-foreground;

@@ -19,8 +19,8 @@ const SHOWN = 32
 
 /**
  * Section « Explorez par catégorie » : les rayons de la boutique sur deux lignes qui défilent
- * en continu, la 1re de droite à gauche, la 2e de gauche à droite. Survol, focus ou bouton
- * pause : les deux lignes s'arrêtent. Chaque carte ouvre le rayon.
+ * en continu, la 1re de droite à gauche, la 2e de gauche à droite. Seul le bouton pause
+ * les arrête. Chaque carte ouvre le rayon.
  */
 export function CategoriesRail() {
   const locale = useLocale()
@@ -50,9 +50,8 @@ export function CategoriesRail() {
   const coverOf = useCategoryCovers(shown, childrenMap, shown.length > 0)
 
   const [userPaused, setUserPaused] = useState(false)
-  const [hovered, setHovered] = useState(false)
-  const [focused, setFocused] = useState(false)
-  const paused = userPaused || hovered || focused
+  // Only the pause button stops the rows (hover and focus leave them moving).
+  const paused = userPaused
 
   const rows = useMemo(() => [shown.filter((_, i) => i % 2 === 0), shown.filter((_, i) => i % 2 === 1)], [shown])
 
@@ -69,9 +68,11 @@ export function CategoriesRail() {
             <h2 id="categories-rail-title" className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{t("title")}</h2>
           </div>
           <div className="flex items-center gap-3">
-            <Link href={`/${locale}/categories`} className="group inline-flex items-center gap-2 text-sm font-semibold">
-              <span className="link-underline">{t("seeAll")}</span>
-              <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+            <Link href={`/${locale}/categories`} className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-gold ps-5 pe-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.75)] ring-1 ring-black/5 transition-[translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(242,183,5,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+              <span>{t("seeAll")}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-ink text-brand-yellow transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+                <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+              </span>
             </Link>
             <button
               type="button"
@@ -98,10 +99,6 @@ export function CategoriesRail() {
         ) : (
           <div
             className="-mx-5 flex flex-col gap-3 sm:-mx-8 lg:mx-0"
-            onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true) }}
-            onPointerLeave={() => setHovered(false)}
-            onFocus={() => setFocused(true)}
-            onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false) }}
           >
             {rows.map((row, index) => (
               <MarqueeRow

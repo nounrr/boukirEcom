@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
  * and the track slides by half its width, so the loop has no seam.
  *
  * - `reverse`: false moves right to left, true moves left to right (on screen, whatever the language).
- * - `paused`: freezes the row (hover, focus or the pause button of the section).
+ * - `paused`: freezes the row (the pause button of the section).
  * - `secondsPerItem`: speed; the row lasts `items × secondsPerItem` seconds per loop.
  * - Reduced motion: no movement, the row scrolls by hand instead.
  */
@@ -43,7 +43,6 @@ export function MarqueeRow({
       aria-label={label}
       className={cn(
         "relative overflow-hidden motion-reduce:overflow-x-auto",
-        "[mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]",
         className
       )}
     >

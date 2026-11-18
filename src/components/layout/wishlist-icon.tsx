@@ -47,16 +47,16 @@ export function WishlistIcon({
   }, [itemCount, prevCount])
 
   return (
-    <Link href={`/${locale}/wishlist`} className="group">
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className={cn(
-          "relative transition-all duration-200 h-9 w-9",
-          tone === "onPrimary" ? "hover:bg-white/10" : "hover:bg-muted/50",
-        )}
-        aria-label={tCommon('wishlist')}
-      >
+    <Button
+      asChild
+      variant="ghost"
+      size="icon"
+      className={cn(
+        "group relative transition-all duration-200 h-9 w-9",
+        tone === "onPrimary" ? "hover:bg-white/10" : "hover:bg-muted/50",
+      )}
+    >
+      <Link href={`/${locale}/wishlist`} aria-label={itemCount > 0 ? `${tCommon('wishlist')} (${itemCount})` : tCommon('wishlist')}>
         <Heart
           className={cn(
             iconClassName,
@@ -78,7 +78,7 @@ export function WishlistIcon({
             {itemCount}
           </Badge>
         )}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   )
 }

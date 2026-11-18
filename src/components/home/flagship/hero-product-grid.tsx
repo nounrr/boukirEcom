@@ -62,6 +62,7 @@ function Tile({
           alt=""
           fill
           sizes="190px"
+          loading="eager"
           className="object-contain p-3 drop-shadow-[0_10px_12px_rgba(13,13,13,0.18)] transition-[scale,rotate] duration-[1200ms] ease-[var(--ease-slow)] group-hover/tile:-rotate-2 group-hover/tile:scale-[1.09]"
           onError={() => setSrc(FALLBACK_IMAGE)}
         />
