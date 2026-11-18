@@ -374,7 +374,9 @@
         "rating": "Choisissez une note entre 1 et 5 étoiles.",
         "commentTooShort": "Le commentaire doit contenir au moins {count} caractères.",
         "commentTooLong": "Le commentaire ne peut pas dépasser {count} caractères."
-      }
+      },
+      "pendingDescription": "Votre note sera publiée sur le profil du Maalem après la clôture par l’équipe.",
+      "hiddenDescription": "Votre avis n’est pas publié."
     },
     "reviewInvitation": {
       "authTitle": "Connectez-vous pour donner votre avis",
@@ -2425,6 +2427,10 @@
     "send": "Envoyer",
     "validatedDone": "Vous avez validé le travail. Merci !",
     "complaintDone": "Votre réclamation est envoyée : l’équipe vous recontacte.",
-    "error": "Envoi impossible. Réessayez."
+    "error": "Envoi impossible. Réessayez.",
+    "rateLabel": "Votre note pour le Maalem",
+    "rateOptional": "Votre note pour le Maalem (facultatif)",
+    "rateHint": "Publiée sur son profil après la clôture par l’équipe.",
+    "rateNeeded": "Choisissez une note de 1 à 5 étoiles."
   }
 }

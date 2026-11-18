@@ -374,7 +374,9 @@
         "rating": "Choose a rating between 1 and 5 stars.",
         "commentTooShort": "The comment must contain at least {count} characters.",
         "commentTooLong": "The comment cannot exceed {count} characters."
-      }
+      },
+      "pendingDescription": "Your rating will appear on the Maalem’s profile once the team closes the job.",
+      "hiddenDescription": "Your review is not published."
     },
     "reviewInvitation": {
       "authTitle": "Sign in to leave your review",
@@ -2425,6 +2427,10 @@
     "send": "Send",
     "validatedDone": "You validated the work. Thank you!",
     "complaintDone": "Your complaint was sent: the team will contact you.",
-    "error": "Could not send. Try again."
+    "error": "Could not send. Try again.",
+    "rateLabel": "Your rating for the Maalem",
+    "rateOptional": "Your rating for the Maalem (optional)",
+    "rateHint": "Shown on their profile once the team closes the job.",
+    "rateNeeded": "Choose a rating from 1 to 5 stars."
   }
 }

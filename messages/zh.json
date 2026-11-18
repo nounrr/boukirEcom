@@ -374,7 +374,9 @@
         "rating": "请选择 1 至 5 星评分。",
         "commentTooShort": "评论至少需要 {count} 个字符。",
         "commentTooLong": "评论不能超过 {count} 个字符。"
-      }
+      },
+      "pendingDescription": "团队结单后，您的评分会显示在师傅主页。",
+      "hiddenDescription": "您的评价未公开。"
     },
     "reviewInvitation": {
       "authTitle": "登录后提交评价",
@@ -2425,6 +2427,10 @@
     "send": "发送",
     "validatedDone": "您已确认工作，谢谢！",
     "complaintDone": "您的投诉已发送，团队会联系您。",
-    "error": "发送失败，请重试。"
+    "error": "发送失败，请重试。",
+    "rateLabel": "您给师傅的评分",
+    "rateOptional": "您给师傅的评分（可选）",
+    "rateHint": "团队结单后显示在师傅主页。",
+    "rateNeeded": "请选择 1 到 5 颗星。"
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { BadgeCheck, Loader2, Send, ThumbsUp, TriangleAlert } from 'lucide-react'
+import { BadgeCheck, Loader2, Send, Star, ThumbsUp, TriangleAlert } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,13 +13,15 @@ import type { ServiceRequestDetails } from '@/types/service-request'
 type Kind = 'validated' | 'complaint'
 
 /**
- * Once the Maalem has finished, the client validates the work or files a complaint, with a comment the team reads
- * (same as the app). After that, the card just shows what they said.
+ * Once the Maalem has finished, the client validates the work (with 1–5 stars) or files a complaint, with a comment the
+ * team reads (same as the app). The stars go public on the Maalem's profile when the team closes the mission.
+ * After that, the card just shows what they said (the review form below shows the stars).
  */
 export function ClientFeedbackCard({ details, accessToken, onSent }: { details: ServiceRequestDetails; accessToken: string; onSent: () => void }) {
   const t = useTranslations('clientFeedback')
   const [kind, setKind] = useState<Kind>('validated')
   const [comment, setComment] = useState('')
+  const [rating, setRating] = useState(0)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState<Kind | null>(null)
@@ -39,12 +41,13 @@ export function ClientFeedbackCard({ details, accessToken, onSent }: { details: 
   const submit = async () => {
     const text = comment.trim()
     if (kind === 'complaint' && !text) return setError(t('complaintNeedsText'))
+    if (kind === 'validated' && !rating) return setError(t('rateNeeded'))
     setBusy(true); setError('')
     try {
       const response = await fetch(`${API_CONFIG.BASE_URL}/api/service-requests/${details.request.id}/client-feedback`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json', Platform: 'web' },
-        body: JSON.stringify({ kind, comment: text || undefined }),
+        body: JSON.stringify({ kind, comment: text || undefined, rating: rating || undefined }),
       })
       if (!response.ok) throw new Error((await response.json().catch(() => ({}))).message || t('error'))
       setSent(kind)
@@ -70,6 +73,19 @@ export function ClientFeedbackCard({ details, accessToken, onSent }: { details: 
           <TriangleAlert className="size-4" />{t('complaint')}
         </button>
       </div>
+      <fieldset className="mt-4">
+        <legend className="text-sm font-semibold">{kind === 'validated' ? t('rateLabel') : t('rateOptional')}</legend>
+        <div className="mt-2 flex w-fit gap-1" role="radiogroup" aria-label={t('rateLabel')}>
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button key={value} type="button" role="radio" aria-checked={rating === value} aria-label={`${value}/5`}
+              onClick={() => { setRating(value); setError('') }}
+              className="flex size-11 items-center justify-center rounded-md outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
+              <Star className={cn('size-7', value <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/35')} />
+            </button>
+          ))}
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">{t('rateHint')}</p>
+      </fieldset>
       <Textarea className="mt-3" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder={kind === 'complaint' ? t('complaintPh') : t('commentPh')} />
       {error && <p role="alert" className="mt-2 text-sm text-destructive">{error}</p>}
       <Button type="button" disabled={busy} variant={kind === 'complaint' ? 'destructive' : 'default'} className="mt-3 min-h-11 w-full gap-2 rounded-xl" onClick={() => void submit()}>

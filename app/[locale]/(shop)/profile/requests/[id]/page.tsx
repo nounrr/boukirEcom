@@ -317,7 +317,10 @@ export default function ServiceRequestTrackingPage() {
 
               <ServicePaymentCard requestId={request.id} accessToken={accessToken!} />
 
-              <MaalemReviewForm requestId={request.id} accessToken={accessToken!} />
+              {/* Before the verdict, the stars are asked in the card above; after it, this shows them (or takes them). */}
+              {(details.client_feedback || !details.can_give_feedback) && (
+                <MaalemReviewForm key={details.client_feedback?.at ?? 'none'} requestId={request.id} accessToken={accessToken!} />
+              )}
 
               <div className="grid gap-5 xl:grid-cols-2">
                 <SectionCard icon={ClipboardList} title={t('needSection')} className="xl:col-span-2">

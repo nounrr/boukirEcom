@@ -80,7 +80,9 @@ export function MaalemReviewForm({ requestId, accessToken }: MaalemReviewFormPro
           </span>
           <div className="min-w-0">
             <h2 className="font-semibold text-foreground">{t('successTitle')}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t('successDescription')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {review.status === 'pending' ? t('pendingDescription') : review.status === 'published' ? t('successDescription') : t('hiddenDescription')}
+            </p>
             <div className="mt-4 flex gap-1" aria-label={t('yourRating', { rating: review.rating })}>
               {[1, 2, 3, 4, 5].map((value) => (
                 <Star key={value} className={cn('size-5', value <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/35')} />
