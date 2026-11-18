@@ -1577,7 +1577,22 @@
     "image": "Search with a photo",
     "imageAnalyzing": "Analysing the photo…",
     "imageError": "This product could not be recognised. Try another photo or type its name.",
-    "imageNothing": "No product recognised in this photo."
+    "imageNothing": "No product recognised in this photo.",
+    "voiceBlocked": "Microphone blocked. Click the padlock left of the site address, allow the microphone, then try again.",
+    "voiceNoMic": "No microphone found. Plug one in or check that another app is not using it.",
+    "voiceNetwork": "The browser's speech recognition cannot be reached. Check your connection and try again.",
+    "imageTitle": "Search with a photo",
+    "imageDesc": "Take a photo of the product, paste an image or choose one: we find the products that look like it.",
+    "imageDrop": "Drop an image here",
+    "pasteHint": "Or paste an image with Ctrl+V (⌘+V on Mac).",
+    "pasteEmpty": "The clipboard has no image.",
+    "imageChoose": "Upload",
+    "imagePaste": "Paste",
+    "cameraOpen": "Camera",
+    "cameraCapture": "Take the photo",
+    "cameraStop": "Close the camera",
+    "cameraBlocked": "Camera blocked. Click the padlock left of the site address and allow the camera.",
+    "cameraError": "The camera could not be opened. Choose or paste an image instead."
   },
   "breadcrumb": {
     "maalemMission": "Mission",

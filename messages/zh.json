@@ -1577,7 +1577,22 @@
     "image": "以图搜索",
     "imageAnalyzing": "正在分析照片…",
     "imageError": "无法识别该商品。请换一张照片或输入名称。",
-    "imageNothing": "照片中未识别到商品。"
+    "imageNothing": "照片中未识别到商品。",
+    "voiceBlocked": "麦克风已被阻止。请点击网址左侧的锁形图标，允许麦克风后重试。",
+    "voiceNoMic": "未找到麦克风。请连接麦克风，或确认没有其他应用在使用它。",
+    "voiceNetwork": "无法连接浏览器的语音识别服务。请检查网络后重试。",
+    "imageTitle": "以图搜索",
+    "imageDesc": "拍摄商品、粘贴或选择一张图片，我们为您找到相似的商品。",
+    "imageDrop": "将图片拖放到这里",
+    "pasteHint": "或使用 Ctrl+V（Mac 上为 ⌘+V）粘贴图片。",
+    "pasteEmpty": "剪贴板中没有图片。",
+    "imageChoose": "上传",
+    "imagePaste": "粘贴",
+    "cameraOpen": "相机",
+    "cameraCapture": "拍照",
+    "cameraStop": "关闭相机",
+    "cameraBlocked": "相机已被阻止。请点击网址左侧的锁形图标并允许使用相机。",
+    "cameraError": "无法打开相机。请改为选择或粘贴图片。"
   },
   "breadcrumb": {
     "maalemMission": "任务",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { useDragScroll } from '@/hooks/use-drag-scroll'
 import { shopCategoryHref } from '@/lib/catalog/shop-href'
 import { compareCategoryOrder } from '@/lib/category-order'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
@@ -51,6 +52,9 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
   const label = (category: Category) => getLocalizedCategoryName(category, locale) || category.nom
 
   const [selected, setSelected] = useState<Set<number>>(() => new Set())
+  // Univers strip: dragged with the mouse like a finger on a phone.
+  const universStripRef = useRef<HTMLDivElement>(null)
+  useDragScroll(universStripRef)
   const [opened, setOpened] = useState<Set<number>>(() => new Set(roots[0] ? [roots[0].id] : []))
   const [query, setQuery] = useState('')
   const needle = normalize(query)
@@ -178,7 +182,7 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
           <p className="mt-1 text-xs text-muted-foreground">
             {selected.size > 0 ? t('selectedCount', { count: selected.size }) : t('filtersHint')}
           </p>
-          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] lg:mx-0 lg:max-h-[calc(100vh-var(--site-header-h,112px)-11rem)] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overflow-x-visible lg:px-0 lg:pe-1">
+          <div ref={universStripRef} className="no-scrollbar -mx-4 mt-3 flex cursor-grab snap-x snap-proximity gap-2 overflow-x-auto overscroll-x-contain px-4 pb-2 data-[dragging=true]:cursor-grabbing data-[dragging=true]:snap-none lg:mx-0 lg:cursor-auto lg:snap-none lg:max-h-[calc(100vh-var(--site-header-h,112px)-11rem)] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overflow-x-visible lg:px-0 lg:pe-1">
             {roots.map((root) => {
               const active = selected.has(root.id)
               const count = childrenMap.get(root.id)?.length ?? 0
@@ -392,13 +396,42 @@ function HeroCategorySlider({
 
   const current = slides[index % count]
 
+  // Swipe (finger or mouse) to the next / previous univers; a swipe does not open the card.
+  const swipeRef = useRef<{ x: number; y: number; id: number } | null>(null)
+  const swipedRef = useRef(false)
+  const isRtl = () => typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
+
   return (
     <div
-      className="relative"
+      className="relative touch-pan-y select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      onPointerDown={(event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return
+        swipeRef.current = { x: event.clientX, y: event.clientY, id: event.pointerId }
+      }}
+      onPointerUp={(event) => {
+        const start = swipeRef.current
+        swipeRef.current = null
+        if (!start || start.id !== event.pointerId || count < 2) return
+        const dx = event.clientX - start.x
+        const dy = event.clientY - start.y
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.3) return
+        swipedRef.current = true
+        window.setTimeout(() => { swipedRef.current = false }, 80)
+        const forward = isRtl() ? dx > 0 : dx < 0
+        setIndex((value) => (value + (forward ? 1 : count - 1)) % count)
+      }}
+      onPointerCancel={() => { swipeRef.current = null }}
+      onClickCapture={(event) => {
+        if (!swipedRef.current) return
+        swipedRef.current = false
+        event.preventDefault()
+        event.stopPropagation()
+      }}
+      onDragStart={(event) => event.preventDefault()}
     >
       <div className="relative h-56 sm:h-64 lg:h-72">
         {slides.map((slide, slideIndex) => {

@@ -11,8 +11,9 @@ const SECURITY_HEADERS = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-  // Camera/microphone are never used; geolocation stays allowed (checkout location picker).
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), browsing-topics=()' },
+  // Camera and microphone for this site only (search by photo and by voice), never for embedded frames;
+  // geolocation stays allowed (checkout location picker).
+  { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), browsing-topics=()' },
   ...(process.env.NODE_ENV === 'production' && siteUrl.protocol === 'https:'
     ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000' }]
     : []),

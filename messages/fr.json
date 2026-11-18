@@ -1438,7 +1438,22 @@
     "image": "Rechercher avec une photo",
     "imageAnalyzing": "Analyse de la photo…",
     "imageError": "Impossible de reconnaître ce produit. Essayez une autre photo ou tapez sa désignation.",
-    "imageNothing": "Aucun produit reconnu sur cette photo."
+    "imageNothing": "Aucun produit reconnu sur cette photo.",
+    "voiceBlocked": "Micro bloqué. Cliquez sur le cadenas à gauche de l'adresse du site, autorisez le micro, puis réessayez.",
+    "voiceNoMic": "Aucun micro trouvé. Branchez un micro ou vérifiez qu'une autre application ne l'utilise pas.",
+    "voiceNetwork": "La reconnaissance vocale du navigateur est injoignable. Vérifiez votre connexion et réessayez.",
+    "imageTitle": "Rechercher avec une photo",
+    "imageDesc": "Prenez le produit en photo, collez une image ou choisissez-en une : nous trouvons les produits qui lui ressemblent.",
+    "imageDrop": "Déposez une image ici",
+    "pasteHint": "Ou collez une image avec Ctrl+V (⌘+V sur Mac).",
+    "pasteEmpty": "Le presse-papiers ne contient pas d'image.",
+    "imageChoose": "Importer",
+    "imagePaste": "Coller",
+    "cameraOpen": "Appareil photo",
+    "cameraCapture": "Prendre la photo",
+    "cameraStop": "Fermer l'appareil photo",
+    "cameraBlocked": "Appareil photo bloqué. Cliquez sur le cadenas à gauche de l'adresse du site et autorisez la caméra.",
+    "cameraError": "Impossible d'ouvrir l'appareil photo. Choisissez ou collez une image à la place."
   },
   "breadcrumb": {
     "maalemMission": "Mission",
