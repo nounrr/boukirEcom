@@ -1,6 +1,6 @@
 "use client"
 
-import { Bot, Loader2, RotateCcw, Send, X } from "lucide-react"
+import { Bot, Loader2, Mic, RotateCcw, Send, Trash2, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -37,6 +37,18 @@ type ChatMessage = {
 
 const STORAGE_KEY = "boukir-assistant-v1"
 const MAX_INPUT = 1000
+const MAX_VOICE_SECONDS = 60
+const VOICE_TYPES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus", "audio/ogg"]
+
+/** First audio format this browser can record (Chrome/Firefox: webm, Safari/iPhone: mp4), or null. */
+function pickVoiceType(): string | null {
+  if (typeof window === "undefined" || typeof MediaRecorder === "undefined" || !navigator.mediaDevices?.getUserMedia) return null
+  return VOICE_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) ?? ""
+}
+
+function formatSeconds(total: number) {
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`
+}
 
 function loadHistory(): ChatMessage[] {
   try {
@@ -78,6 +90,20 @@ export function ShopAssistant() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const pendingPrompt = useRef<string | null>(null)
 
+  // Voice message: record → server transcribes (OpenAI) → the text is sent like a typed message.
+  const [voiceType, setVoiceType] = useState<string | null>(null)
+  const [recording, setRecording] = useState(false)
+  const [seconds, setSeconds] = useState(0)
+  const [transcribing, setTranscribing] = useState(false)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const chunksRef = useRef<Blob[]>([])
+  const timerRef = useRef<number | null>(null)
+  const discardRef = useRef(false)
+
+  useEffect(() => setVoiceType(pickVoiceType()), [])
+
   useEffect(() => setMessages(loadHistory()), [])
   useEffect(() => saveHistory(messages), [messages])
 
@@ -89,6 +115,7 @@ export function ShopAssistant() {
     async (text: string) => {
       const content = text.trim().slice(0, MAX_INPUT)
       if (!content || loading) return
+      setVoiceError(null)
       const next: ChatMessage[] = [...messages.filter((m) => !m.error), { role: "user", content }]
       setMessages(next)
       setInput("")
@@ -120,6 +147,86 @@ export function ShopAssistant() {
     },
     [loading, locale, messages, t]
   )
+
+  const releaseMic = useCallback(() => {
+    if (timerRef.current != null) window.clearInterval(timerRef.current)
+    timerRef.current = null
+    streamRef.current?.getTracks().forEach((track) => track.stop())
+    streamRef.current = null
+    recorderRef.current = null
+    setRecording(false)
+  }, [])
+
+  const transcribe = useCallback(
+    async (blob: Blob) => {
+      setTranscribing(true)
+      try {
+        const form = new FormData()
+        const ext = blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm"
+        form.append("audio", blob, `vocal.${ext}`)
+        const res = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/chat/transcribe`, { method: "POST", body: form })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(res.status === 429 ? t("errorBusy") : t("voiceError"))
+        const text = String(data.text || "").trim()
+        if (!text) throw new Error(t("voiceEmpty"))
+        await send(text)
+      } catch (error) {
+        setVoiceError(error instanceof Error && error.message ? error.message : t("voiceError"))
+      } finally {
+        setTranscribing(false)
+      }
+    },
+    [send, t]
+  )
+
+  const startRecording = useCallback(async () => {
+    if (voiceType == null || recording || transcribing || loading) return
+    setVoiceError(null)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = voiceType ? new MediaRecorder(stream, { mimeType: voiceType }) : new MediaRecorder(stream)
+      streamRef.current = stream
+      recorderRef.current = recorder
+      chunksRef.current = []
+      discardRef.current = false
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data)
+      }
+      recorder.onstop = () => {
+        const type = recorder.mimeType || voiceType || "audio/webm"
+        const blob = new Blob(chunksRef.current, { type })
+        releaseMic()
+        if (!discardRef.current && blob.size > 1000) void transcribe(blob)
+      }
+      recorder.start()
+      setSeconds(0)
+      setRecording(true)
+      timerRef.current = window.setInterval(() => {
+        setSeconds((value) => {
+          if (value + 1 >= MAX_VOICE_SECONDS && recorderRef.current?.state === "recording") recorderRef.current.stop()
+          return value + 1
+        })
+      }, 1000)
+    } catch {
+      releaseMic()
+      setVoiceError(t("voiceDenied"))
+    }
+  }, [loading, recording, releaseMic, transcribe, transcribing, t, voiceType])
+
+  const stopRecording = useCallback((discard: boolean) => {
+    discardRef.current = discard
+    if (recorderRef.current?.state === "recording") recorderRef.current.stop()
+  }, [])
+
+  // Closing the panel or leaving the page never leaves the microphone on.
+  useEffect(() => {
+    if (!open && recorderRef.current) stopRecording(true)
+  }, [open, stopRecording])
+  useEffect(() => () => {
+    discardRef.current = true
+    if (recorderRef.current?.state === "recording") recorderRef.current.stop()
+    streamRef.current?.getTracks().forEach((track) => track.stop())
+  }, [])
 
   useEffect(() => {
     const onOpen = (event: Event) => {
@@ -276,6 +383,48 @@ export function ShopAssistant() {
         ) : null}
       </div>
 
+      {voiceError ? (
+        <p role="alert" className="border-t border-black/10 px-4 pt-2 text-xs text-red-600 dark:border-white/10 dark:text-red-400">
+          {voiceError}
+        </p>
+      ) : null}
+      {recording || transcribing ? (
+        <div className="flex items-center gap-2 border-t border-black/10 p-3 dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => stopRecording(true)}
+            disabled={transcribing}
+            aria-label={t("voiceCancel")}
+            title={t("voiceCancel")}
+            className="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted disabled:opacity-40"
+          >
+            <Trash2 className="size-5" aria-hidden="true" />
+          </button>
+          <div className="flex min-h-11 flex-1 items-center gap-2 rounded-2xl bg-muted px-3.5 text-sm" aria-live="polite">
+            {transcribing ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                {t("voiceTranscribing")}
+              </>
+            ) : (
+              <>
+                <span className="size-2.5 rounded-full bg-red-500 motion-safe:animate-pulse" aria-hidden="true" />
+                <span className="font-medium tabular-nums">{formatSeconds(seconds)}</span>
+                <span className="truncate text-muted-foreground">{t("voiceRecording")}</span>
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => stopRecording(false)}
+            disabled={transcribing}
+            aria-label={t("voiceSend")}
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-orange text-ink disabled:opacity-40"
+          >
+            <Send className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+          </button>
+        </div>
+      ) : (
       <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-black/10 p-3 dark:border-white/10">
         <textarea
           ref={inputRef}
@@ -292,15 +441,29 @@ export function ShopAssistant() {
           aria-label={t("placeholder")}
           className="max-h-28 min-h-11 flex-1 resize-none rounded-2xl border border-black/15 bg-background px-3.5 py-2.5 text-base outline-none focus:border-brand-orange sm:text-sm dark:border-white/15"
         />
-        <button
-          type="submit"
-          disabled={loading || !input.trim()}
-          aria-label={t("send")}
-          className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-orange text-ink transition-opacity disabled:opacity-40"
-        >
-          <Send className="size-4 rtl:-scale-x-100" aria-hidden="true" />
-        </button>
+        {!input.trim() && voiceType != null ? (
+          <button
+            type="button"
+            onClick={() => void startRecording()}
+            disabled={loading}
+            aria-label={t("voiceStart")}
+            title={t("voiceStart")}
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-orange text-ink transition-opacity disabled:opacity-40"
+          >
+            <Mic className="size-5" aria-hidden="true" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={loading || !input.trim()}
+            aria-label={t("send")}
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-orange text-ink transition-opacity disabled:opacity-40"
+          >
+            <Send className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+          </button>
+        )}
       </form>
+      )}
       <p className="px-4 pb-2 text-center text-[10px] text-muted-foreground">{t("disclaimer")}</p>
     </section>
   )

@@ -1032,7 +1032,7 @@
     "suggest1": "钻混凝土用哪种电钻？",
     "suggest2": "水槽下面漏水，需要什么？",
     "suggest3": "在哪里自提订单？",
-    "placeholder": "输入您的问题…",
+    "placeholder": "输入文字或发送语音…",
     "send": "发送",
     "close": "关闭助手",
     "reset": "新对话",
@@ -1040,6 +1040,14 @@
     "error": "助手暂时无法回答。请重试或通过 WhatsApp 联系我们。",
     "errorBusy": "消息过多，请几分钟后再试。",
     "outOfStock": "缺货",
-    "disclaimer": "AI 生成的回答：请在产品页面核实价格和库存。"
+    "disclaimer": "AI 生成的回答：请在产品页面核实价格和库存。",
+    "voiceStart": "录制语音消息",
+    "voiceRecording": "请说话，然后点击发送",
+    "voiceSend": "发送语音",
+    "voiceCancel": "取消语音",
+    "voiceTranscribing": "正在识别语音…",
+    "voiceError": "无法识别语音，请重试或输入文字。",
+    "voiceEmpty": "没有听到声音，请大声一点或靠近麦克风。",
+    "voiceDenied": "麦克风未授权。请在浏览器中允许使用麦克风。"
   }
 }

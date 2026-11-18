@@ -1032,7 +1032,7 @@
     "suggest1": "Quelle perceuse pour du béton ?",
     "suggest2": "J'ai une fuite sous l'évier, que faut-il ?",
     "suggest3": "Où retirer ma commande ?",
-    "placeholder": "Écrivez votre question…",
+    "placeholder": "Écrivez ou envoyez un vocal…",
     "send": "Envoyer",
     "close": "Fermer l'assistant",
     "reset": "Nouvelle conversation",
@@ -1040,6 +1040,14 @@
     "error": "L'assistant ne peut pas répondre pour le moment. Réessayez ou écrivez-nous sur WhatsApp.",
     "errorBusy": "Trop de messages, réessayez dans quelques minutes.",
     "outOfStock": "Rupture",
-    "disclaimer": "Réponses générées par IA : vérifiez le prix et le stock sur la fiche produit."
+    "disclaimer": "Réponses générées par IA : vérifiez le prix et le stock sur la fiche produit.",
+    "voiceStart": "Enregistrer un message vocal",
+    "voiceRecording": "Parlez, puis appuyez sur envoyer",
+    "voiceSend": "Envoyer le vocal",
+    "voiceCancel": "Annuler le vocal",
+    "voiceTranscribing": "Écoute du vocal…",
+    "voiceError": "Le vocal n'a pas pu être compris. Réessayez ou écrivez votre question.",
+    "voiceEmpty": "Je n'ai rien entendu. Parlez un peu plus fort ou plus près du micro.",
+    "voiceDenied": "Micro non autorisé. Autorisez le micro dans votre navigateur pour envoyer un vocal."
   }
 }
