@@ -46,6 +46,10 @@
     },
     "top": {
       "label": "Back to top"
+    },
+    "assistant": {
+      "label": "Boukir Assistant",
+      "hint": "Ask a question, instant answer"
     }
   },
   "footer": {
@@ -1020,5 +1024,22 @@
     "statServices": "Services",
     "ctaTitle": "Got a project in mind? <accent>Let's talk.</accent>",
     "ctaServices": "See the services"
+  },
+  "assistant": {
+    "title": "Boukir Assistant",
+    "subtitle": "Products, advice, prices · instant answer",
+    "welcome": "Hello! I can help you find the right product, compare prices or pick the right materials for your project. What are you looking for?",
+    "suggest1": "Which drill for concrete?",
+    "suggest2": "My sink is leaking, what do I need?",
+    "suggest3": "Where can I pick up my order?",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "close": "Close the assistant",
+    "reset": "New conversation",
+    "thinking": "The assistant is searching…",
+    "error": "The assistant can't answer right now. Try again or message us on WhatsApp.",
+    "errorBusy": "Too many messages, try again in a few minutes.",
+    "outOfStock": "Out of stock",
+    "disclaimer": "AI-generated answers: check price and stock on the product page."
   }
 }

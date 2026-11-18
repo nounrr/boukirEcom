@@ -1,12 +1,13 @@
 "use client"
 
-import { ArrowUp, ClipboardList, HardHat, Headset, Mail, MessageCircle, X } from "lucide-react"
+import { ArrowUp, Bot, ClipboardList, HardHat, Headset, Mail, MessageCircle, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { whatsappHref } from "@/lib/contact"
+import { openShopAssistant } from "@/components/layout/shop-assistant"
 
 /**
  * Premium multifunction launcher (replaces the single WhatsApp bubble).
@@ -119,6 +120,26 @@ export function SmartFab() {
       >
         <p className="px-3 pb-2 pt-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">{t("title")}</p>
         <ul className="space-y-0.5">
+          <li role="none">
+            <button
+              type="button"
+              role="menuitem"
+              data-fab-item
+              onClick={() => {
+                close(false)
+                openShopAssistant()
+              }}
+              className="group flex w-full items-center gap-3 rounded-2xl px-2.5 py-2.5 text-start outline-none transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.08] focus-visible:ring-1 focus-visible:ring-brand-orange"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-orange text-ink">
+                <Bot className="size-[18px]" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{t("assistant.label")}</span>
+                <span className="block truncate text-xs text-white/55">{t("assistant.hint")}</span>
+              </span>
+            </button>
+          </li>
           {items.map((item) => (
             <li key={item.key} role="none">
               <Link

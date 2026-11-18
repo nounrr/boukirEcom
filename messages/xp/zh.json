@@ -46,6 +46,10 @@
     },
     "top": {
       "label": "返回顶部"
+    },
+    "assistant": {
+      "label": "Boukir 助手",
+      "hint": "提问即可立即获得回答"
     }
   },
   "footer": {
@@ -1020,5 +1024,22 @@
     "statServices": "服务",
     "ctaTitle": "有项目想法？<accent>我们聊聊。</accent>",
     "ctaServices": "查看服务"
+  },
+  "assistant": {
+    "title": "Boukir 助手",
+    "subtitle": "产品、建议、价格 · 即时回答",
+    "welcome": "您好！我可以帮您找到合适的产品、比较价格或为您的工程挑选材料。您在找什么？",
+    "suggest1": "钻混凝土用哪种电钻？",
+    "suggest2": "水槽下面漏水，需要什么？",
+    "suggest3": "在哪里自提订单？",
+    "placeholder": "输入您的问题…",
+    "send": "发送",
+    "close": "关闭助手",
+    "reset": "新对话",
+    "thinking": "助手正在搜索…",
+    "error": "助手暂时无法回答。请重试或通过 WhatsApp 联系我们。",
+    "errorBusy": "消息过多，请几分钟后再试。",
+    "outOfStock": "缺货",
+    "disclaimer": "AI 生成的回答：请在产品页面核实价格和库存。"
   }
 }
