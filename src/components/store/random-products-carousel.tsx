@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Shuffle } from "lucide-react"
+import { ArrowRight, Pause, Play, Shuffle } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 
-import { DragCarousel } from "@/components/ui/drag-carousel"
+import { MarqueeRow } from "@/components/ui/marquee-row"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toAbsoluteImageUrl } from "@/lib/image-url"
 import { getLocalizedCategoryName, getLocalizedProductName } from "@/lib/localized-fields"
@@ -14,9 +14,10 @@ import { useShowcaseProducts } from "@/components/home/use-showcase-products"
 import { interleaveByCategory, seededRandom } from "@/lib/home/product-rotation"
 import type { ProductListItem } from "@/types/api/products"
 
-/** Products in the strip (all at 550 DH and more, neighbours from different categories). */
-const SHOWN = 40
-const SLIDE = "basis-[44%] min-[480px]:basis-[31%] md:basis-[22%] lg:basis-[16.66%] xl:basis-[14.28%]"
+/** Products in the three rows (all at 550 DH and more, neighbours from different categories). */
+const SHOWN = 48
+const ROWS = 3
+const CARD = "w-[140px] sm:w-[156px] lg:w-[170px]"
 
 /** Petite carte produit : photo, nom, prix ; toute la carte ouvre la fiche. */
 function MiniProductCard({ product, locale }: { product: ProductListItem; locale: string }) {
@@ -61,8 +62,9 @@ function MiniProductCard({ product, locale }: { product: ProductListItem; locale
 }
 
 /**
- * Deuxième section de l'accueil : petites cartes produits tirées au hasard à chaque visite
- * (promotions et nouveautés), qui défilent en continu (pause au survol) ; glisser pour parcourir.
+ * Deuxième section de l'accueil : petites cartes produits tirées au hasard à chaque visite,
+ * sur trois lignes qui défilent en continu, la 1re et la 3e de droite à gauche, la 2e de gauche
+ * à droite. Survol, focus clavier ou bouton pause : les trois lignes s'arrêtent.
  */
 export function RandomProductsCarousel() {
   const locale = useLocale()
@@ -78,6 +80,17 @@ export function RandomProductsCarousel() {
   )
 
   const loading = !ready || seed === null
+  const [userPaused, setUserPaused] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const paused = userPaused || hovered || focused
+  const tHero = useTranslations("xp.home.hero")
+
+  // Card i goes to row i % 3: each row keeps the category mix.
+  const rows = useMemo(
+    () => Array.from({ length: ROWS }, (_, row) => products.filter((_, index) => index % ROWS === row)),
+    [products],
+  )
 
   return (
     <section className="border-y border-border/60 bg-surface-2/40 py-10 lg:py-12" aria-labelledby="random-products-title">
@@ -104,11 +117,41 @@ export function RandomProductsCarousel() {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <DragCarousel label={t("title")} glide={0.6} slideClassName={SLIDE} controls="bottom" options={{ align: "start" }}>
-            {products.map((product) => (
-              <MiniProductCard key={product.id} product={product} locale={locale} />
-            ))}
-          </DragCarousel>
+          <>
+            <div
+              className="-mx-5 flex flex-col gap-3 sm:-mx-8 lg:mx-0"
+              onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true) }}
+              onPointerLeave={() => setHovered(false)}
+              onFocus={() => setFocused(true)}
+              onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false) }}
+            >
+              {rows.map((row, index) => (
+                <MarqueeRow
+                  key={index}
+                  label={t("rowLabel", { row: index + 1 })}
+                  reverse={index % 2 === 1}
+                  paused={paused}
+                  secondsPerItem={4.6 + index * 0.4}
+                  itemDir={locale === "ar" ? "rtl" : "ltr"}
+                  itemClassName={CARD}
+                  items={row.map((product) => (
+                    <MiniProductCard key={product.id} product={product} locale={locale} />
+                  ))}
+                />
+              ))}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setUserPaused((value) => !value)}
+                aria-pressed={userPaused}
+                aria-label={userPaused ? tHero("playProducts") : tHero("pauseProducts")}
+                className="grid size-10 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-primary/50 hover:text-accent-text motion-reduce:hidden"
+              >
+                {userPaused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
+              </button>
+            </div>
+          </>
         ) : null}
       </div>
     </section>

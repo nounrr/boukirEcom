@@ -13,6 +13,7 @@ import { GoogleOneTapWrapper } from "@/components/auth/google-one-tap-wrapper"
 import { ArtisanRequestPromptWrapper } from "@/components/auth/artisan-request-prompt-wrapper"
 import { CartContextProvider } from "@/components/layout/cart-context-provider"
 import { SmartFab } from "@/components/layout/smart-fab"
+import { ShopFab } from "@/components/layout/shop-fab"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { RevealObserver } from "@/components/motion/reveal-observer"
 import { revealInitScript, themeInitScript } from "@/lib/init-scripts"
@@ -88,6 +89,7 @@ export default async function RootLayout({
             <AuthDebugPanel />
             <GoogleOneTapWrapper />
             <SmartFab />
+            <ShopFab />
             <RevealObserver />
             <ArtisanRequestPromptWrapper />
             <CartContextProvider>

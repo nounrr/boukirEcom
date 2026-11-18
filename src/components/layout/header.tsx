@@ -25,7 +25,6 @@ import {
   Menu,
   Package,
   Percent,
-  Ruler,
   Store,
   UserCircle2,
   Wrench,
@@ -401,20 +400,7 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href={`/${locale}/calculateurs`}
-                aria-current={pathname.startsWith(`/${locale}/calculateurs`) ? "page" : undefined}
-                className="group ms-2 inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-brand-orange/40 bg-brand-orange/10 px-3.5 py-1.5 text-[13px] font-semibold text-brand-yellow transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-ink"
-              >
-                <Calculator className="size-3.5" aria-hidden="true" />
-                {tx("calculators")}
-              </Link>
-              <Link
-                href={`/${locale}/studio`}
-                className="whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5"
-              >
-                {tx("studio")}
-              </Link>
+              {/* Calculateurs et Visual Studio masqués du menu (pages toujours en ligne). */}
             </nav>
             <Link
               href={`/${locale}/contact`}
@@ -449,24 +435,11 @@ export function Header() {
           </div>
 
           <div className="flex-1 overflow-y-auto px-5 pb-8 pt-4">
-            <Link
-              href={`/${locale}/calculateurs`}
-              className="mb-4 flex items-center gap-3 rounded-2xl border border-brand-orange/30 bg-brand-orange/10 p-4"
-            >
-              <span className="grid size-10 place-items-center rounded-xl bg-gold text-ink">
-                <Ruler className="size-5" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold text-white">{tx("calculators")}</span>
-                <span className="block text-xs text-white/60">{tx("calculatorsHint")}</span>
-              </span>
-            </Link>
 
             <nav aria-label={tx("mainNavigation")} className="flex flex-col">
               {[
                 { href: `/${locale}`, label: t("home"), icon: LayoutGrid },
                 ...primaryLinks,
-                { href: `/${locale}/studio`, label: tx("studio"), icon: Ruler },
                 { href: `/${locale}/projet`, label: tx("planner"), icon: Calculator },
                 { href: maalemHref, label: maalemLabel, icon: HardHat },
                 ...(isAuthenticated ? [{ href: `/${locale}/orders`, label: t("orders"), icon: Package }] : []),

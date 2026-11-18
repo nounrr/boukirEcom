@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, ClipboardList, PencilRuler } from "lucide-react"
+import { ArrowRight, ClipboardList } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { SectionHeading } from "./section-heading"
 
@@ -25,10 +25,6 @@ export function FlagshipPlanner({ locale }: { locale: string }) {
               <Link href={`/${locale}/projet`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink">
                 <ClipboardList className="size-4" aria-hidden="true" />
                 {t("cta")}
-              </Link>
-              <Link href={`/${locale}/studio`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border px-6 text-sm font-semibold hover:border-foreground/40">
-                <PencilRuler className="size-4" aria-hidden="true" />
-                {t("cta2")}
               </Link>
             </div>
           }

@@ -1569,7 +1569,15 @@
     "recent": "Recent",
     "noResults": "No product results",
     "category": "Category",
-    "brand": "Brand"
+    "brand": "Brand",
+    "voice": "Search by voice",
+    "voiceListening": "Speak, I am listening…",
+    "voiceStop": "Stop listening",
+    "voiceError": "The microphone is not available. Check the browser permission.",
+    "image": "Search with a photo",
+    "imageAnalyzing": "Analysing the photo…",
+    "imageError": "This product could not be recognised. Try another photo or type its name.",
+    "imageNothing": "No product recognised in this photo."
   },
   "breadcrumb": {
     "maalemMission": "Mission",
@@ -2349,7 +2357,16 @@
     "randomProducts": {
       "kicker": "From the catalogue",
       "title": "Discover today",
-      "seeAll": "The whole shop"
+      "seeAll": "The whole shop",
+      "rowLabel": "Product row {row}"
+    },
+    "categoriesRail": {
+      "kicker": "Our departments",
+      "title": "Explore by category",
+      "seeAll": "All categories",
+      "rowLabel": "Category row {row}",
+      "pause": "Pause the categories scrolling",
+      "play": "Resume the categories scrolling"
     }
   },
   "servicePayment": {
@@ -2432,5 +2449,9 @@
     "rateOptional": "Your rating for the Maalem (optional)",
     "rateHint": "Shown on their profile once the team closes the job.",
     "rateNeeded": "Choose a rating from 1 to 5 stars."
+  },
+  "shopFab": {
+    "label": "Shop",
+    "aria": "Open the shop"
   }
 }

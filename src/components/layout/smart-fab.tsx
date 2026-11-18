@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUp, Calculator, ClipboardList, HardHat, Headset, Mail, MessageCircle, X } from "lucide-react"
+import { ArrowUp, ClipboardList, HardHat, Headset, Mail, MessageCircle, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -92,7 +92,6 @@ export function SmartFab() {
 
   const items = [
     ...(wa ? [{ key: "whatsapp", href: wa, external: true, icon: MessageCircle, accent: "bg-[#1f9d55] text-white" }] : []),
-    { key: "calculator", href: `/${locale}/calculateurs`, icon: Calculator, accent: "bg-gold text-ink" },
     { key: "project", href: `/${locale}/projet`, icon: ClipboardList, accent: "bg-white/10 text-brand-yellow" },
     { key: "maalem", href: `/${locale}/services`, icon: HardHat, accent: "bg-white/10 text-brand-yellow" },
     { key: "contact", href: `/${locale}/contact`, icon: Mail, accent: "bg-white/10 text-brand-yellow" },

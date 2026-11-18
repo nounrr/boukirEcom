@@ -1569,7 +1569,15 @@
     "recent": "最近",
     "noResults": "没有找到相关商品",
     "category": "分类",
-    "brand": "品牌"
+    "brand": "品牌",
+    "voice": "语音搜索",
+    "voiceListening": "请说话，我在听…",
+    "voiceStop": "停止聆听",
+    "voiceError": "麦克风不可用。请检查浏览器权限。",
+    "image": "以图搜索",
+    "imageAnalyzing": "正在分析照片…",
+    "imageError": "无法识别该商品。请换一张照片或输入名称。",
+    "imageNothing": "照片中未识别到商品。"
   },
   "breadcrumb": {
     "maalemMission": "任务",
@@ -2349,7 +2357,16 @@
     "randomProducts": {
       "kicker": "目录精选",
       "title": "今日推荐",
-      "seeAll": "全部商品"
+      "seeAll": "全部商品",
+      "rowLabel": "第 {row} 行商品"
+    },
+    "categoriesRail": {
+      "kicker": "我们的分类",
+      "title": "按类别浏览",
+      "seeAll": "全部类别",
+      "rowLabel": "第 {row} 行类别",
+      "pause": "暂停类别滚动",
+      "play": "继续类别滚动"
     }
   },
   "servicePayment": {
@@ -2432,5 +2449,9 @@
     "rateOptional": "您给师傅的评分（可选）",
     "rateHint": "团队结单后显示在师傅主页。",
     "rateNeeded": "请选择 1 到 5 颗星。"
+  },
+  "shopFab": {
+    "label": "商店",
+    "aria": "打开商店"
   }
 }

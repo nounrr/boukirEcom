@@ -131,7 +131,6 @@ export function FlagshipHero({ locale }: { locale: string }) {
         lead: t("lead"),
         image: "/utility-types/professional-workshop.webp",
         primary: { href: `/${locale}/shop`, label: t("ctaShop") },
-        secondary: { href: `/${locale}/calculateurs`, label: t("ctaCalc") },
         tertiary: { href: `/${locale}/maalems`, label: t("ctaMaalem") },
         mosaic: true,
       },
@@ -144,15 +143,6 @@ export function FlagshipHero({ locale }: { locale: string }) {
         position: "object-[60%_center]",
         primary: { href: "#construction", label: ts("villa.cta") },
         secondary: { href: `/${locale}/projet`, label: ts("villa.cta2") },
-      },
-      {
-        id: "tools",
-        kicker: ts("tools.kicker"),
-        title: ts("tools.title"),
-        lead: ts("tools.lead"),
-        image: "/videos/villa/poster-start.webp",
-        primary: { href: `/${locale}/calculateurs`, label: ts("tools.cta") },
-        secondary: { href: `/${locale}/studio`, label: ts("tools.cta2") },
       },
       {
         id: "services",

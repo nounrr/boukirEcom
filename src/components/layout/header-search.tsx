@@ -11,6 +11,7 @@ import { useLocale, useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { SearchMediaButtons } from './search-media-buttons'
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
 import { getLocalizedCategoryName, getLocalizedProductName } from '@/lib/localized-fields'
@@ -213,6 +214,7 @@ function SearchField({
   inputRef,
   appearance = 'header',
   className,
+  actions,
 }: {
   value: string
   placeholder: string
@@ -224,6 +226,8 @@ function SearchField({
   inputRef: React.RefObject<HTMLInputElement | null>
     appearance?: 'header' | 'panel'
   className?: string
+  /** micro and camera buttons, at the end of the field */
+  actions?: React.ReactNode
 }) {
   const hasValue = !!value
   const isPanel = appearance === 'panel'
@@ -249,7 +253,8 @@ function SearchField({
           isPanel
             ? 'h-11 w-full rounded-full border border-border/50 bg-background text-foreground'
             : 'h-12 md:h-11 w-full rounded-full border border-white/20 bg-white/10 text-white',
-          'ltr:pl-10 rtl:pr-10 sm:ltr:pl-11 sm:rtl:pr-11 ltr:pr-10 rtl:pl-10 sm:ltr:pr-11 sm:rtl:pl-11',
+          'ltr:pl-10 rtl:pr-10 sm:ltr:pl-11 sm:rtl:pr-11',
+          actions ? 'ltr:pr-[7.5rem] rtl:pl-[7.5rem]' : 'ltr:pr-10 rtl:pl-10 sm:ltr:pr-11 sm:rtl:pl-11',
           isPanel ? 'placeholder:text-muted-foreground' : 'placeholder:text-white/60',
           isPanel ? 'text-sm' : 'text-base md:text-sm',
           'outline-none ring-0',
@@ -265,7 +270,7 @@ function SearchField({
           onClick={onClear}
           className={cn(
             'absolute top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full outline-none',
-            'ltr:right-2 rtl:left-2 sm:ltr:right-2.5 sm:rtl:left-2.5',
+            actions ? 'ltr:right-[4.75rem] rtl:left-[4.75rem]' : 'ltr:right-2 rtl:left-2 sm:ltr:right-2.5 sm:rtl:left-2.5',
             isPanel
               ? 'hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30'
               : 'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/20'
@@ -275,6 +280,7 @@ function SearchField({
           <X className={cn('h-4 w-4', isPanel ? 'text-muted-foreground' : 'text-white/75')} />
         </button>
       ) : null}
+      {actions ? <span className="absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2">{actions}</span> : null}
     </div>
   )
 }
@@ -765,8 +771,20 @@ export function HeaderSearch({
     [activeIndex, applyRecentToInput, close, open, pickProduct, query, submitSearch, suggestions]
   )
 
+  const mediaActions = (appearance: 'header' | 'panel') => (
+    <SearchMediaButtons
+      tone={appearance}
+      onInterim={(text) => {
+        setQuery(text)
+        setActiveIndex(-1)
+      }}
+      onQuery={(text) => submitSearch(text)}
+    />
+  )
+
   const inputEl = (
     <SearchField
+      actions={mediaActions('header')}
       value={query}
       placeholder={placeholder ?? t('placeholder')}
       inputRef={inputRef}
@@ -788,6 +806,7 @@ export function HeaderSearch({
 
   const panelInputEl = (
     <SearchField
+      actions={mediaActions('panel')}
       value={query}
       placeholder={placeholder ?? t('placeholder')}
       inputRef={inputRef}

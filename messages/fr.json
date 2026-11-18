@@ -1430,7 +1430,15 @@
     "recent": "Récent",
     "noResults": "Aucun résultat produit",
     "category": "Catégorie",
-    "brand": "Marque"
+    "brand": "Marque",
+    "voice": "Rechercher à la voix",
+    "voiceListening": "Parlez, je vous écoute…",
+    "voiceStop": "Arrêter l'écoute",
+    "voiceError": "Le micro n'est pas disponible. Vérifiez l'autorisation du navigateur.",
+    "image": "Rechercher avec une photo",
+    "imageAnalyzing": "Analyse de la photo…",
+    "imageError": "Impossible de reconnaître ce produit. Essayez une autre photo ou tapez sa désignation.",
+    "imageNothing": "Aucun produit reconnu sur cette photo."
   },
   "breadcrumb": {
     "maalemMission": "Mission",
@@ -2349,7 +2357,16 @@
     "randomProducts": {
       "kicker": "Au hasard du catalogue",
       "title": "À découvrir aujourd’hui",
-      "seeAll": "Toute la boutique"
+      "seeAll": "Toute la boutique",
+      "rowLabel": "Ligne {row} de produits"
+    },
+    "categoriesRail": {
+      "kicker": "Nos rayons",
+      "title": "Explorez par catégorie",
+      "seeAll": "Toutes les catégories",
+      "rowLabel": "Ligne {row} de catégories",
+      "pause": "Mettre en pause le défilement des catégories",
+      "play": "Relancer le défilement des catégories"
     }
   },
   "servicePayment": {
@@ -2432,5 +2449,9 @@
     "rateOptional": "Votre note pour le Maalem (facultatif)",
     "rateHint": "Publiée sur son profil après la clôture par l’équipe.",
     "rateNeeded": "Choisissez une note de 1 à 5 étoiles."
+  },
+  "shopFab": {
+    "label": "Boutique",
+    "aria": "Ouvrir la boutique"
   }
 }
