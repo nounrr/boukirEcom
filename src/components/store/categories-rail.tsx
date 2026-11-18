@@ -9,7 +9,7 @@ import { CategoryThumb, useCategoryCovers } from "@/components/layout/category-t
 import { MarqueeRow } from "@/components/ui/marquee-row"
 import { Skeleton } from "@/components/ui/skeleton"
 import { compareCategoryOrder } from "@/lib/category-order"
-import { catalogHref } from "@/lib/catalog/registry"
+import { shopCategoryHref } from "@/lib/catalog/shop-href"
 import { getLocalizedCategoryName } from "@/lib/localized-fields"
 import { useGetCategoriesQuery } from "@/state/api/categories-api-slice"
 import type { Category } from "@/types/category"
@@ -114,7 +114,7 @@ export function CategoriesRail() {
                   return (
                     <Link
                       key={category.id}
-                      href={catalogHref(locale, "categories", category.id)}
+                      href={shopCategoryHref(locale, category.id)}
                       className="group flex h-[76px] items-center gap-3 rounded-2xl border border-border bg-card p-2.5 pe-4 transition-[border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-[0_14px_30px_-24px_rgba(13,13,13,0.55)]"
                     >
                       <CategoryThumb category={category} label={name} cover={coverOf(category)} className="size-14" imgClassName="group-hover:scale-105" />

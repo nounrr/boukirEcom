@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { catalogHref } from '@/lib/catalog/registry'
+import { shopCategoryHref } from '@/lib/catalog/shop-href'
 import { compareCategoryOrder } from '@/lib/category-order'
 import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
@@ -267,7 +267,7 @@ function UniverseCard({
   const matchingChildren = matches ? allChildren.filter((child) => matches.get(child.id)) : allChildren
   const children = matches && matchingChildren.length > 0 ? matchingChildren : allChildren
   const leavesTotal = allChildren.reduce((sum, child) => sum + (childrenMap.get(child.id)?.length ?? 0), 0)
-  const href = catalogHref(locale, 'categories', root.id)
+  const href = shopCategoryHref(locale, root.id)
   const rootCover = coverOf(root)
   const number = String(index + 1).padStart(2, '0')
   const bodyId = `universe-${root.id}`
@@ -348,7 +348,7 @@ function UniverseCard({
                           category={child}
                           label={label(child)}
                           cover={coverOf(child)}
-                          href={catalogHref(locale, 'categories', child.id)}
+                          href={shopCategoryHref(locale, child.id)}
                           leaves={childrenMap.get(child.id) ?? []}
                           locale={locale}
                           onNavigate={() => {}}
@@ -414,7 +414,7 @@ function HeroCategorySlider({
           return (
             <Link
               key={slide.id}
-              href={catalogHref(locale, 'categories', slide.id)}
+              href={shopCategoryHref(locale, slide.id)}
               tabIndex={offset === 0 ? 0 : -1}
               aria-hidden={offset !== 0}
               className={cn(

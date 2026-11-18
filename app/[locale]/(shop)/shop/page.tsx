@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { normalizeLocale } from '@/i18n/locale'
 import { API_CONFIG } from '@/lib/api-config'
-import { catalogHref } from '@/lib/catalog/registry'
 import { shopBrandPage } from '@/lib/catalog/shop-brand'
 import { catalogCopy, catalogText } from '@/lib/catalog/i18n'
 import { constructionCopy } from '@/lib/seo/construction-copy'
@@ -14,21 +13,7 @@ import { publicProductsResponse } from '@/lib/catalog/public-products'
 import ShopPageClient from './shop-page-client'
 
 type Props = { params: Promise<{ locale?: string }>; searchParams: Promise<ShopSearchParams> }
-const TRACKING = /^(utm_[a-z0-9_]+|gclid|fbclid|msclkid)$/i
 function withQuery(path: string, query: URLSearchParams) { return `${path}${query.size ? `?${query}` : ''}` }
-function appendTracking(target: URLSearchParams, source: ShopSearchParams) {
-  for (const [key, raw] of Object.entries(source)) if (TRACKING.test(key)) for (const value of Array.isArray(raw) ? raw : [raw]) if (value) target.append(key, value)
-}
-function editorialTarget(locale: string, normalized: ReturnType<typeof normalizeShopParams>, source: ShopSearchParams) {
-  const active = Object.entries(normalized.normalized).filter(([, value]) => Boolean(value)).map(([key]) => key)
-  let path: string | null = null
-  if (active.length === 1 && active[0] === 'category_id' && normalized.categoryIds.length === 1) path = catalogHref(locale, 'categories', normalized.categoryIds[0])
-  if (!path || path.includes('/shop?')) return null
-  const query = new URLSearchParams()
-  if (normalized.page > 1) query.set('page', String(normalized.page))
-  appendTracking(query, source)
-  return withQuery(path, query)
-}
 function apiUrl(request: ReturnType<typeof shopApiRequest>) {
   const query = new URLSearchParams()
   for (const [key, value] of Object.entries(request)) if (value !== undefined) query.set(key, Array.isArray(value) ? value.join(',') : String(value))
@@ -38,8 +23,7 @@ const resolveShop = cache(async (props: Props) => {
   const [{ locale: rawLocale }, source] = await Promise.all([props.params, props.searchParams])
   const locale = normalizeLocale(rawLocale)
   const normalized = normalizeShopParams(source)
-  const editorial = editorialTarget(locale, normalized, source)
-  if (editorial) permanentRedirect(editorial)
+  // A shop link filtered on one category stays on the shop (it used to jump to the category page).
   if (normalized.changed) permanentRedirect(withQuery(`/${locale}/shop`, normalized.navigation))
   const response = await fetch(apiUrl(shopApiRequest(normalized)), { next: { revalidate: 120 }, headers: { Platform: 'web' }, signal: AbortSignal.timeout(15000) })
   if (!response.ok) throw new Error(`Catalogue products API HTTP ${response.status}`)
