@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import { Provider } from 'react-redux';
 import { makeStore, AppStore } from './store';
 
@@ -9,11 +9,8 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storeRef = useRef<AppStore | null>(null);
-  
-  if (!storeRef.current) {
-    storeRef.current = makeStore();
-  }
+  // One store per browser tab (and per server request), created on first render only.
+  const [store] = useState<AppStore>(makeStore);
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return <Provider store={store}>{children}</Provider>;
 }

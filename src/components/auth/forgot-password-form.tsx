@@ -88,7 +88,7 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
       </div>
 
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Entrez l'adresse email associée à votre compte. Nous vous enverrons un lien sécurisé pour réinitialiser votre
+        Entrez l’adresse email associée à votre compte. Nous vous enverrons un lien sécurisé pour réinitialiser votre
         mot de passe.
       </p>
 

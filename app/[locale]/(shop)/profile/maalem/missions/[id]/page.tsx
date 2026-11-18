@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft, BadgeCheck, Camera, Check, CheckCircle2, Hammer, ImagePlus, Loader2, MapPin, MessageSquare, Pencil,
   Phone, Play, Send, TriangleAlert, Wallet, X,
@@ -38,17 +38,15 @@ function message(error: unknown) {
 
 /** Photos picked in the browser, shown as small thumbnails before they are sent. */
 function PhotoPicker({ files, onChange, label }: { files: File[]; onChange: (files: File[]) => void; label: string }) {
-  const urls = useRef(new Map<File, string>())
-  const urlOf = (file: File) => {
-    if (!urls.current.has(file)) urls.current.set(file, URL.createObjectURL(file))
-    return urls.current.get(file)!
-  }
+  // Preview URLs of the chosen photos, released when the list changes or the picker closes.
+  const urls = useMemo(() => files.map((file) => URL.createObjectURL(file)), [files])
+  useEffect(() => () => urls.forEach((url) => URL.revokeObjectURL(url)), [urls])
   return (
     <div className="flex flex-wrap gap-2">
       {files.map((file, i) => (
         <span key={i} className="relative size-16 overflow-hidden rounded-lg border border-border">
           {/* eslint-disable-next-line @next/next/no-img-element -- local preview */}
-          <img src={urlOf(file)} alt="" className="size-full object-cover" />
+          <img src={urls[i]} alt="" className="size-full object-cover" />
           <button type="button" aria-label="Retirer la photo" onClick={() => onChange(files.filter((_, j) => j !== i))} className="absolute end-0.5 top-0.5 grid size-5 place-items-center rounded-full bg-black/70 text-white"><X className="size-3" /></button>
         </span>
       ))}
