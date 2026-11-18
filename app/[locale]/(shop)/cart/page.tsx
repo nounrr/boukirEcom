@@ -225,7 +225,7 @@ export default function CartPage() {
               return (
                 <div
                   key={item.id || getCartItemKey(item as LocalCartItem)}
-                  className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
+                  className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow duration-600"
                 >
                 <div className="flex gap-4">
                   {/* Product Image */}

@@ -109,7 +109,7 @@ export function VariantSwatches({ variants, selectedId, onSelect, max = 5, style
               key={variant.id}
               onClick={() => onSelect(variant)}
               className={cn(
-                "flex w-10 h-10 sm:w-11 sm:h-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[9px] sm:text-[10px] font-semibold leading-tight break-all transition-all duration-200 hover:scale-110 relative",
+                "flex w-10 h-10 sm:w-11 sm:h-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 p-1 text-center text-[9px] sm:text-[10px] font-semibold leading-tight break-all transition-all duration-600 hover:scale-110 relative",
                 selectedId === variant.id ? "border-primary scale-110 shadow-md" : "border-border hover:border-border/60 hover:scale-105",
               )}
               style={{ backgroundColor: colorHex, color: fg }}

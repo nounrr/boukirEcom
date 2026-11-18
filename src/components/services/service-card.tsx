@@ -92,7 +92,7 @@ export function ServiceCard({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col px-2 pb-1 pt-4 sm:px-3">
-        <h2 className="flex min-w-0 items-start gap-1.5 break-words text-[17px] font-semibold leading-snug text-foreground transition-colors duration-150 group-hover:text-emerald-900 dark:group-hover:text-emerald-300 sm:text-lg">
+        <h2 className="flex min-w-0 items-start gap-1.5 break-words text-[17px] font-semibold leading-snug text-foreground transition-colors duration-600 group-hover:text-emerald-900 dark:group-hover:text-emerald-300 sm:text-lg">
           <Link
             href={serviceDetailHref(locale, service.id)}
             aria-label={`${name} — ${viewLabel}`}
@@ -107,18 +107,18 @@ export function ServiceCard({
           />
         </h2>
 
-        <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground transition-colors duration-150 group-hover:text-foreground/70">
+        <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground transition-colors duration-600 group-hover:text-foreground/70">
           {description}
         </p>
 
         <div className="mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3 pt-5">
           {/* Repris du lien etire du titre : decoratif, deja annonce par aria-label. */}
           <span
-            className="inline-flex min-w-0 items-center gap-1.5 truncate text-xs font-medium text-muted-foreground transition-colors duration-150 group-hover:text-emerald-900 dark:group-hover:text-emerald-300"
+            className="inline-flex min-w-0 items-center gap-1.5 truncate text-xs font-medium text-muted-foreground transition-colors duration-600 group-hover:text-emerald-900 dark:group-hover:text-emerald-300"
             aria-hidden="true"
           >
             {viewLabel}
-            <ArrowRight className="size-3.5 shrink-0 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transform-none rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+            <ArrowRight className="size-3.5 shrink-0 transition-transform duration-600 group-hover:translate-x-0.5 motion-reduce:transform-none rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
           </span>
 
           <Button

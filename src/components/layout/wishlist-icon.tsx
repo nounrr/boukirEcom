@@ -67,7 +67,7 @@ export function WishlistIcon({
         {itemCount > 0 && (
           <Badge
             className={cn(
-              "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+              "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-600",
               badgeClassName,
               tone === "onPrimary"
                 ? "bg-white text-primary border border-white/70 shadow-black/10 hover:bg-white/90 hover:border-white/90 hover:shadow-black/20 group-hover:bg-white/90 group-hover:border-white/90 group-hover:shadow-black/20"

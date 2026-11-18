@@ -13,9 +13,15 @@ export { THEME_STORAGE_KEY }
 type ThemeContextValue = {
   preference: ThemePreference
   resolved: ResolvedTheme
-  setPreference: (next: ThemePreference) => void
-  toggle: () => void
+  setPreference: (next: ThemePreference, origin?: ThemeOrigin) => void
+  /** `origin`: screen point the new theme grows from (the button that was clicked) */
+  toggle: (origin?: ThemeOrigin) => void
 }
+
+/** Screen point (px) where the theme animation starts. */
+export type ThemeOrigin = { x: number; y: number }
+
+type ViewTransitionDocument = Document & { startViewTransition?: (update: () => void) => { finished: Promise<void> } }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
@@ -33,16 +39,46 @@ function systemTheme(): ResolvedTheme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
-function applyTheme(theme: ResolvedTheme, animate: boolean) {
+function paintTheme(theme: ResolvedTheme) {
   const root = document.documentElement
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  if (animate && !reduce) {
-    root.classList.add("theme-switching")
-    window.setTimeout(() => root.classList.remove("theme-switching"), 480)
-  }
   root.classList.toggle("dark", theme === "dark")
   root.style.colorScheme = theme
   root.dataset.theme = theme
+}
+
+/**
+ * Applies the theme. Animated switch: a circle of the new theme grows from `origin`
+ * (View Transitions API), or a slow cross-fade of the colors where it is missing.
+ * No animation when reduced motion is asked.
+ */
+function applyTheme(theme: ResolvedTheme, animate: boolean, origin?: ThemeOrigin) {
+  const root = document.documentElement
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  if (!animate || reduce || root.dataset.theme === theme) {
+    paintTheme(theme)
+    return
+  }
+  const doc = document as ViewTransitionDocument
+  if (typeof doc.startViewTransition === "function") {
+    const x = origin?.x ?? window.innerWidth / 2
+    const y = origin?.y ?? 0
+    // Radius reaching the farthest corner from the origin.
+    const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+    root.style.setProperty("--theme-x", `${x}px`)
+    root.style.setProperty("--theme-y", `${y}px`)
+    root.style.setProperty("--theme-r", `${Math.ceil(r)}px`)
+    root.classList.add("theme-vt")
+    try {
+      const transition = doc.startViewTransition(() => paintTheme(theme))
+      void transition.finished.finally(() => root.classList.remove("theme-vt"))
+      return
+    } catch {
+      root.classList.remove("theme-vt")
+    }
+  }
+  root.classList.add("theme-switching")
+  paintTheme(theme)
+  window.setTimeout(() => root.classList.remove("theme-switching"), 850)
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -69,7 +105,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => media.removeEventListener("change", onChange)
   }, [preference])
 
-  const setPreference = useCallback((next: ThemePreference) => {
+  const setPreference = useCallback((next: ThemePreference, origin?: ThemeOrigin) => {
     setPreferenceState(next)
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, next)
@@ -78,12 +114,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
     const theme = next === "system" ? systemTheme() : next
     setResolved(theme)
-    applyTheme(theme, true)
+    applyTheme(theme, true, origin)
   }, [])
 
-  const toggle = useCallback(() => {
-    setPreference(resolved === "dark" ? "light" : "dark")
-  }, [resolved, setPreference])
+  const toggle = useCallback(
+    (origin?: ThemeOrigin) => {
+      setPreference(resolved === "dark" ? "light" : "dark", origin)
+    },
+    [resolved, setPreference]
+  )
 
   const value = useMemo(() => ({ preference, resolved, setPreference, toggle }), [preference, resolved, setPreference, toggle])
 

@@ -74,7 +74,7 @@ export function FooterStoreSection({
                 {phone ? (
                   <a
                     href={`tel:${phone.replace(/\s+/g, '')}`}
-                    className="flex items-center gap-2 text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
+                    className="flex items-center gap-2 text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-600"
                   >
                     <Phone className="h-4 w-4" />
                     <span className="text-white/70">{labelPhone}</span>
@@ -85,7 +85,7 @@ export function FooterStoreSection({
                 {email ? (
                   <a
                     href={`mailto:${email}`}
-                    className="flex items-center gap-2 text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-200"
+                    className="flex items-center gap-2 text-white/85 hover:text-white hover:underline underline-offset-4 transition-colors duration-600"
                   >
                     <Mail className="h-4 w-4" />
                     <span className="text-white/70">{labelEmail}</span>

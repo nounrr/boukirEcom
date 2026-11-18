@@ -854,7 +854,7 @@ export function HeaderSearch({
             type="button"
             variant="ghost"
             size="icon"
-            className={cn('hover:bg-white/10 transition-all duration-200', className)}
+            className={cn('hover:bg-white/10 transition-all duration-600', className)}
             onClick={() => {
               setOpen(true)
               window.setTimeout(() => inputRef.current?.focus(), 0)

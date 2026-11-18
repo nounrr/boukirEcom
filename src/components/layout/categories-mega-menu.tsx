@@ -132,7 +132,7 @@ export function SubcategoryCard({
 }) {
   const shown = leaves.slice(0, 4)
   return (
-    <div className="group/card flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl hover:shadow-black/10 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+    <div className="group/card flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-600 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl hover:shadow-black/10 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <Link href={href} onClick={onNavigate} className="block">
         <span className="relative block">
           <CategoryThumb

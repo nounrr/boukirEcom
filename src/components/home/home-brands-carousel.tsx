@@ -73,7 +73,7 @@ function BrandCard({
               fill
               sizes="(min-width: 1024px) 96px, (min-width: 768px) 88px, 80px"
               unoptimized={/^https?:\/\//i.test(imageSrc)}
-              className="object-cover transition-transform duration-300 group-hover:scale-125"
+              className="object-cover transition-transform duration-600 group-hover:scale-125"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20">
@@ -87,7 +87,7 @@ function BrandCard({
 
       {/* Brand name */}
       <div className="mt-2 text-center">
-        <p className="text-xs font-medium text-foreground line-clamp-2 transition-all duration-300 group-hover:text-primary group-hover:scale-105 group-hover:font-bold">
+        <p className="text-xs font-medium text-foreground line-clamp-2 transition-all duration-600 group-hover:text-primary group-hover:scale-105 group-hover:font-bold">
           {brand.nom}
         </p>
       </div>

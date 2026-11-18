@@ -149,7 +149,7 @@ export default function WishlistPage() {
           return (
             <div
               key={item.id}
-              className="group bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-primary/40 transition-all duration-300"
+              className="group bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-primary/40 transition-all duration-600"
             >
               <div className="flex flex-col sm:flex-row gap-0 sm:gap-6 p-5">
                 {/* Product Image - Larger and more prominent */}
@@ -160,7 +160,7 @@ export default function WishlistPage() {
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-cover transition-all duration-300 group-hover:scale-105"
+                        className="object-cover transition-all duration-600 group-hover:scale-105"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

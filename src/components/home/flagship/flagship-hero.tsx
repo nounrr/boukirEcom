@@ -299,7 +299,7 @@ export function FlagshipHero({ locale }: { locale: string }) {
                     <Link
                       href={slide.primary.href}
                       draggable={false}
-                      className="group inline-flex h-14 w-full items-center justify-center gap-3 rounded-full bg-gold px-7 text-[15px] font-semibold text-ink shadow-[0_22px_50px_-18px_rgba(242,159,4,0.95)] transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto"
+                      className="group inline-flex h-14 w-full items-center justify-center gap-3 rounded-full bg-gold px-7 text-[15px] font-semibold text-ink shadow-[0_22px_50px_-18px_rgba(242,159,4,0.95)] transition-transform duration-600 hover:-translate-y-0.5 sm:w-auto"
                     >
                       {slide.primary.label}
                       <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden="true" />

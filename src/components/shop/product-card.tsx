@@ -509,7 +509,7 @@ export function ProductCard({
                   onClick={handleToggleWishlist}
                   disabled={isWishlistLoading}
                   aria-pressed={isWishlisted}
-                  className={cn('grid size-8 place-items-center rounded-full transition-all duration-300', isWishlisted ? 'bg-[#e0303a] text-white' : 'text-muted-foreground hover:bg-muted hover:text-[#e0303a]', isWishlistLoading && 'opacity-50')}
+                  className={cn('grid size-8 place-items-center rounded-full transition-all duration-600', isWishlisted ? 'bg-[#e0303a] text-white' : 'text-muted-foreground hover:bg-muted hover:text-[#e0303a]', isWishlistLoading && 'opacity-50')}
                   title={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
                   aria-label={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
                 >

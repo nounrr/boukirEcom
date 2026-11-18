@@ -114,7 +114,7 @@ export function HomeUtilityTypeSelector({
                   className={cn(
                     'absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full',
                     'border border-white/45 bg-primary text-primary-foreground shadow-[0_8px_30px_-10px_rgba(245,158,11,0.9)]',
-                    'motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 sm:right-5 sm:h-12 sm:w-12'
+                    'motion-safe:transition-transform motion-safe:duration-600 motion-safe:ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 sm:right-5 sm:h-12 sm:w-12'
                   )}
                 >
                   <ArrowRight className="h-5 w-5" strokeWidth={2.25} />

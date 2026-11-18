@@ -39,7 +39,7 @@ export function FlagshipPlanner({ locale }: { locale: string }) {
                 <span className="text-4xl font-extrabold text-foreground/10 tabular transition-colors duration-500 group-hover:text-accent-text">{String(index + 1).padStart(2, "0")}</span>
                 <span className="mt-8 flex items-center justify-between gap-2 text-sm font-semibold">
                   {tp(`steps.${step}`)}
-                  <ArrowRight className="size-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 rtl:rotate-180" aria-hidden="true" />
+                  <ArrowRight className="size-4 -translate-x-1 opacity-0 transition-all duration-600 group-hover:translate-x-0 group-hover:opacity-100 rtl:rotate-180" aria-hidden="true" />
                 </span>
                 <span className="absolute inset-x-5 bottom-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right" aria-hidden="true" />
               </Link>

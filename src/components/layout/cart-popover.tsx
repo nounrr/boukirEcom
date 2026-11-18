@@ -291,7 +291,7 @@ export const CartPopover = forwardRef<
           {itemCount > 0 && (
             <Badge
               className={cn(
-                "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-200",
+                "pointer-events-none absolute -top-0.5 ltr:-right-0.5 rtl:-left-0.5 flex items-center justify-center p-0 font-semibold shadow-md group-hover:scale-105 transition-all duration-600",
                 badgeClassName,
                 tone === "onPrimary"
                   ? "bg-white text-primary border border-white/70 shadow-black/10 hover:bg-white/90 hover:border-white/90 hover:shadow-black/20 group-hover:bg-white/90 group-hover:border-white/90 group-hover:shadow-black/20"
@@ -370,7 +370,7 @@ export const CartPopover = forwardRef<
                     return (
                   <div
                         key={itemKey}
-                    className="group flex items-start gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200"
+                    className="group flex items-start gap-3 p-2 sm:p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-600"
                   >
                     {/* Product Image */}
                     <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-muted/30 ring-1 ring-border/20">
@@ -469,12 +469,12 @@ export const CartPopover = forwardRef<
 
               <div className="grid grid-cols-2 gap-2">
                   <Link href={`/${locale}/cart`} className="w-full" onClick={closePopover}>
-                  <Button variant="outline" className="w-full border-border/60 hover:bg-muted/50 transition-all duration-200">
+                  <Button variant="outline" className="w-full border-border/60 hover:bg-muted/50 transition-all duration-600">
                       {t('viewCart')}
                   </Button>
                 </Link>
                   <Link href={`/${locale}/checkout`} className="w-full" onClick={closePopover}>
-                    <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200">
+                    <Button className="w-full bg-linear-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary hover:to-primary shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-all duration-600">
                       {tCommon('checkout')}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>

@@ -131,7 +131,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
             <Button asChild size="lg" className="mt-5 hidden h-auto min-h-12 w-full whitespace-normal rounded-xl bg-white px-4 py-3 text-center font-semibold text-emerald-950 hover:bg-stone-100 lg:inline-flex">
               <Link href={requestHref}>{t('cta')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link>
             </Button>
-            <Link href={quickServiceRequestHref(locale, returnTo)} className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-white/30 px-4 py-2 text-center text-sm font-medium text-white transition-colors duration-150 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 motion-reduce:transition-none">{t('quick')}</Link>
+            <Link href={quickServiceRequestHref(locale, returnTo)} className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-white/30 px-4 py-2 text-center text-sm font-medium text-white transition-colors duration-600 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 motion-reduce:transition-none">{t('quick')}</Link>
             <p className="mt-4 flex items-start gap-2 border-t border-white/20 pt-4 text-xs leading-5 text-emerald-100"><Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />{t('privacy')}</p>
           </div>
         </aside>
@@ -157,7 +157,7 @@ export default async function PublicMaalemPage({ params, searchParams }: Props) 
 
           <nav className="border-b border-stone-200 dark:border-white/10" aria-label={t('about')}>
             <ul className="flex flex-wrap gap-x-6">
-              {sectionLinks.map((link) => <li key={link.href}><a href={link.href} className="inline-flex min-h-11 items-center border-b-2 border-transparent text-sm font-medium text-stone-600 transition-colors duration-150 hover:border-emerald-800 hover:text-emerald-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 motion-reduce:transition-none dark:text-stone-300 dark:hover:text-white">{link.label}</a></li>)}
+              {sectionLinks.map((link) => <li key={link.href}><a href={link.href} className="inline-flex min-h-11 items-center border-b-2 border-transparent text-sm font-medium text-stone-600 transition-colors duration-600 hover:border-emerald-800 hover:text-emerald-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 motion-reduce:transition-none dark:text-stone-300 dark:hover:text-white">{link.label}</a></li>)}
             </ul>
           </nav>
           <dl className="grid grid-cols-2 gap-x-5 gap-y-5 border-y border-stone-300 py-6 sm:grid-cols-3 xl:grid-cols-5 dark:border-white/15" aria-label={t('quickStats')}>

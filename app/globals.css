@@ -31,7 +31,7 @@
 
   /* Survol en douceur : durée et courbe par défaut de toutes les classes transition-*
      (entrée et sortie identiques, symétriques). */
-  --default-transition-duration: 450ms;
+  --default-transition-duration: 600ms;
   --default-transition-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
 
   --animate-draw: bd-draw 1.4s var(--ease-premium) both;
@@ -233,12 +233,48 @@
 }
 
 /* Smooth colour interpolation only while the theme is being switched. */
+/* Light / dark switch, fallback (browsers without View Transitions): a slow cross-fade of every color. */
 html.theme-switching,
 html.theme-switching *,
 html.theme-switching *::before,
 html.theme-switching *::after {
-  transition: background-color 0.45s var(--ease-premium), color 0.45s var(--ease-premium),
-    border-color 0.45s var(--ease-premium), fill 0.45s var(--ease-premium), stroke 0.45s var(--ease-premium) !important;
+  transition: background-color 0.8s var(--ease-slow), color 0.8s var(--ease-slow),
+    border-color 0.8s var(--ease-slow), fill 0.8s var(--ease-slow), stroke 0.8s var(--ease-slow) !important;
+}
+
+/* Light / dark switch with View Transitions: the new theme grows as a circle from the button,
+   with a soft glowing edge, while the old page sinks back slightly. */
+html.theme-vt::view-transition-old(root),
+html.theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-vt::view-transition-old(root) {
+  z-index: 1;
+  animation: bd-theme-sink 1.1s var(--ease-slow) both;
+}
+html.theme-vt::view-transition-new(root) {
+  z-index: 2;
+  animation: bd-theme-reveal 1.1s var(--ease-expo) both;
+}
+@keyframes bd-theme-reveal {
+  from {
+    clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 0%));
+    filter: brightness(1.25) saturate(1.2);
+  }
+  60% {
+    filter: brightness(1.05) saturate(1.05);
+  }
+  to {
+    clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 0%));
+    filter: none;
+  }
+}
+@keyframes bd-theme-sink {
+  to {
+    transform: scale(0.985);
+    filter: blur(2px) brightness(0.85);
+  }
 }
 
 @layer utilities {
@@ -349,7 +385,7 @@ html.theme-switching *::after {
     background-size: 0% 1px;
     background-repeat: no-repeat;
     background-position: left 100%;
-    transition: background-size 0.35s var(--ease-premium), color 0.2s ease;
+    transition: background-size 0.6s var(--ease-hover), color 0.6s var(--ease-hover);
   }
   [dir="rtl"] .link-underline {
     background-position: right 100%;

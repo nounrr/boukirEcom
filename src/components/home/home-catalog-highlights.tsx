@@ -33,7 +33,7 @@ function toAbsoluteImageUrl(imageUrl?: string | null): string | null {
 
 function CategoryArrowButton({ isRtl }: { isRtl?: boolean }) {
   return (
-    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-foreground shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-foreground shadow-md transition-transform duration-600 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
       <ArrowUpRight className={cn('h-4 w-4', isRtl && '-scale-x-100')} />
     </span>
   )

@@ -206,7 +206,7 @@ export function OrderCard({ order, locale, onBuyAgain, statusConfig, paymentStat
   const paymentMethodConfig = getPaymentMethodConfig()
 
   return (
-    <div className="bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200">
+    <div className="bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-600">
       <Collapsible open={open} onOpenChange={setOpen}>
         {/* Header */}
         <div className="bg-muted/30 px-4 sm:px-5 py-3 border-b border-border/40">

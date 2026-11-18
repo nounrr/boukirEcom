@@ -393,7 +393,7 @@ export function Header() {
                   aria-current={isActive(link.href) ? "page" : undefined}
                   className={cn(
                     "relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-medium tracking-wide text-white/75 transition-colors hover:text-white xl:px-3.5",
-                    "after:absolute after:inset-x-3.5 after:-bottom-[9px] after:h-px after:origin-center after:scale-x-0 after:bg-brand-orange after:transition-transform after:duration-300 hover:after:scale-x-100",
+                    "after:absolute after:inset-x-3.5 after:-bottom-[9px] after:h-px after:origin-center after:scale-x-0 after:bg-brand-orange after:transition-transform after:duration-600 hover:after:scale-x-100",
                     isActive(link.href) && "text-white after:scale-x-100"
                   )}
                 >

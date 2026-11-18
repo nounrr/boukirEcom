@@ -168,7 +168,7 @@ export function SmartFab() {
         aria-label={open ? t("close") : t("open")}
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          "group relative grid size-14 place-items-center rounded-full text-ink outline-none transition-transform duration-300 ease-[var(--ease-premium)] hover:scale-105 active:scale-95",
+          "group relative grid size-14 place-items-center rounded-full text-ink outline-none transition-transform duration-600 ease-[var(--ease-premium)] hover:scale-105 active:scale-95",
           "bg-gold shadow-[0_18px_40px_-12px_rgba(242,159,4,0.75),0_0_0_1px_rgba(255,255,255,0.25)_inset] focus-visible:ring-4 focus-visible:ring-brand-orange/40"
         )}
       >

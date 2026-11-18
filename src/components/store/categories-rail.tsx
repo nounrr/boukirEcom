@@ -68,9 +68,9 @@ export function CategoriesRail() {
             <h2 id="categories-rail-title" className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{t("title")}</h2>
           </div>
           <div className="flex items-center gap-3">
-            <Link href={`/${locale}/categories`} className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-gold ps-5 pe-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.75)] ring-1 ring-black/5 transition-[translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(242,183,5,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+            <Link href={`/${locale}/categories`} className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-gold ps-5 pe-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.75)] ring-1 ring-black/5 transition-[translate,box-shadow] duration-600 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(242,183,5,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               <span>{t("seeAll")}</span>
-              <span className="grid size-8 place-items-center rounded-full bg-ink text-brand-yellow transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+              <span className="grid size-8 place-items-center rounded-full bg-ink text-brand-yellow transition-transform duration-600 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
                 <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
               </span>
             </Link>
@@ -115,7 +115,7 @@ export function CategoriesRail() {
                     <Link
                       key={category.id}
                       href={shopCategoryHref(locale, category.id)}
-                      className="group flex h-[76px] items-center gap-3 rounded-2xl border border-border bg-card p-2.5 pe-4 transition-[border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-[0_14px_30px_-24px_rgba(13,13,13,0.55)]"
+                      className="group flex h-[76px] items-center gap-3 rounded-2xl border border-border bg-card p-2.5 pe-4 transition-[border-color,box-shadow] duration-600 hover:border-primary/50 hover:shadow-[0_14px_30px_-24px_rgba(13,13,13,0.55)]"
                     >
                       <CategoryThumb category={category} label={name} cover={coverOf(category)} className="size-14" imgClassName="group-hover:scale-105" />
                       <span className="line-clamp-2 min-w-0 flex-1 text-[13px] font-semibold leading-snug text-foreground/90 group-hover:text-accent-text">{name}</span>

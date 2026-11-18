@@ -60,7 +60,7 @@ export function FlagshipJourneys({ locale }: { locale: string }) {
                   <h3 className="text-4xl font-extrabold tracking-tight sm:text-5xl">{panel.title}</h3>
                   <p className="mt-3 max-w-md text-[15px] leading-relaxed text-white/75">{panel.desc}</p>
                   <span className="mt-6 inline-flex items-center gap-3 text-sm font-semibold">
-                    <span className="grid size-11 place-items-center rounded-full border border-white/30 transition-colors duration-300 group-hover:border-brand-orange group-hover:bg-brand-orange group-hover:text-ink">
+                    <span className="grid size-11 place-items-center rounded-full border border-white/30 transition-colors duration-600 group-hover:border-brand-orange group-hover:bg-brand-orange group-hover:text-ink">
                       <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
                     </span>
                   </span>

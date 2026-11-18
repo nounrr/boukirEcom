@@ -424,9 +424,9 @@ export function ProfessionalJourneys({ locale }: { locale: string }) {
                     {item.description}
                   </p>
                   <span className={cn('mt-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-white sm:mt-4', index === 1 && !isRtl && 'justify-end')}>
-                    <span className="h-px w-8 bg-white/55 transition-[width,background-color] duration-300 group-hover:w-12 group-hover:bg-primary group-focus-visible:w-12 group-focus-visible:bg-primary motion-reduce:transition-none" aria-hidden="true" />
-                    <span className="flex size-10 items-center justify-center border border-white/55 bg-black/15 transition-[transform,translate,scale,rotate,background-color,border-color] duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground motion-reduce:transition-none">
-                      <ArrowRight className={cn('size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5 motion-reduce:transition-none', isRtl && 'rotate-180 group-hover:-translate-x-0.5 group-focus-visible:-translate-x-0.5')} />
+                    <span className="h-px w-8 bg-white/55 transition-[width,background-color] duration-600 group-hover:w-12 group-hover:bg-primary group-focus-visible:w-12 group-focus-visible:bg-primary motion-reduce:transition-none" aria-hidden="true" />
+                    <span className="flex size-10 items-center justify-center border border-white/55 bg-black/15 transition-[transform,translate,scale,rotate,background-color,border-color] duration-600 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground motion-reduce:transition-none">
+                      <ArrowRight className={cn('size-4 transition-transform duration-600 group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5 motion-reduce:transition-none', isRtl && 'rotate-180 group-hover:-translate-x-0.5 group-focus-visible:-translate-x-0.5')} />
                     </span>
                   </span>
                 </div>

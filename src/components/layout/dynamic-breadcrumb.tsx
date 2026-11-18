@@ -264,9 +264,9 @@ export function DynamicBreadcrumb() {
             <BreadcrumbItem>
               <BreadcrumbLink 
                 href={`/${locale}`} 
-                className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-600 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               >
-                <Home className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-200" />
+                <Home className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-600" />
                 <span className="hidden md:inline text-sm font-medium">{t('home')}</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -278,7 +278,7 @@ export function DynamicBreadcrumb() {
                 </BreadcrumbSeparator>
                 <BreadcrumbItem>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-1 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <DropdownMenuTrigger className="flex items-center gap-1 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-600 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                       <BreadcrumbEllipsis className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       <span className="sr-only">{t('showMore')}</span>
                     </DropdownMenuTrigger>
@@ -318,9 +318,9 @@ export function DynamicBreadcrumb() {
                     ) : (
                       <BreadcrumbLink 
                         href={item.href} 
-                          className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                          className="group flex items-center gap-1 px-2 py-1 rounded-md text-[11px] sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-600 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                       >
-                          {Icon && <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-200 shrink-0" />}
+                          {Icon && <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 group-hover:scale-110 transition-transform duration-600 shrink-0" />}
                           <span className="font-medium">{item.title}</span>
                         {item.filter && (
                             <span className="ml-1 text-[10px] sm:text-xs text-muted-foreground/70 italic">

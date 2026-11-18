@@ -446,7 +446,7 @@ export function HomeHero({
                                     priority={idx === 0}
                                     unoptimized={/^https?:\/\//i.test((s.secondaryImageSrc || s.imageSrc) ?? '')}
                                     sizes="(min-width: 1024px) 440px, (min-width: 640px) 380px, 80vw"
-                                    className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
+                                    className="object-cover object-center transition-transform duration-600 group-hover:scale-[1.03]"
                                   />
                                   <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-background/15 via-transparent to-transparent" />
                                 </div>
