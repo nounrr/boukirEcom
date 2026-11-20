@@ -15,8 +15,8 @@ export type Universe = {
   slug: string
   href: string
   title: string
-  /** real product photo from that category when available */
-  image: string | null
+  /** up to four real product photos from that category (empty when it has none) */
+  images: string[]
   fallback: string | null
 }
 
@@ -43,14 +43,30 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
     return () => io.disconnect()
   }, [universes.length])
 
-  const visual = (u: Universe, className?: string, sizes = "50vw") =>
-    u.image || u.fallback ? (
-      <Image src={(u.image ?? u.fallback)!} alt="" fill sizes={sizes} unoptimized={!canOptimize(u.image ?? u.fallback)} className={cn("object-cover", className)} />
+  // Several product photos: a collage of white tiles (2 side by side, 3 = one large + two,
+  // 4 = a 2×2 grid). One photo or none: the photo, or the category's fallback picture.
+  const visual = (u: Universe, className?: string, sizes = "50vw", captionSpace = "pb-24") => {
+    const photos = u.images
+    if (photos.length >= 2) {
+      return (
+        <div className={cn("absolute inset-0 grid gap-2 bg-ink-2 p-2", captionSpace, photos.length === 2 ? "grid-cols-2" : "grid-cols-2 grid-rows-2", className)}>
+          {photos.map((src, i) => (
+            <div key={src} className={cn("relative overflow-hidden rounded-2xl bg-white", photos.length === 3 && i === 0 && "row-span-2")}>
+              <Image src={src} alt="" fill sizes={sizes === "45vw" ? "22vw" : "40vw"} unoptimized={!canOptimize(src)} className="object-contain p-[8%] transition-transform duration-700 group-hover:scale-105" />
+            </div>
+          ))}
+        </div>
+      )
+    }
+    const single = photos[0] ?? u.fallback
+    return single ? (
+      <Image src={single} alt="" fill sizes={sizes} unoptimized={!canOptimize(single)} className={cn("object-cover", className)} />
     ) : (
       <div className={cn("bd-grid absolute inset-0 grid place-items-center bg-ink-2 [--grid-color:rgba(255,255,255,0.06)]", className)}>
         <Droplets className="size-24 text-brand-orange/40" strokeWidth={0.8} />
       </div>
     )
+  }
 
   return (
     <section id="scene-universes" className="relative bg-background py-20 lg:py-32" aria-labelledby="universes-title">
@@ -73,7 +89,7 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
           <DragCarousel label={t("kicker")} autoplay={5500} controls="bottom" slideClassName="basis-[80%] sm:basis-[46%]">
             {universes.map((u) => (
               <Link key={u.slug} href={u.href} draggable={false} className="group relative block aspect-[4/5] overflow-hidden rounded-3xl bg-ink">
-                {visual(u, "transition-transform duration-700 group-hover:scale-105", "80vw")}
+                {visual(u, "transition-transform duration-700 group-hover:scale-105", "80vw", "pb-28")}
                 <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                   <h3 className="text-xl font-bold leading-tight">{u.title}</h3>
@@ -97,7 +113,7 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
                   )}
                   aria-hidden={index !== active}
                 >
-                  {visual(u, "", "45vw")}
+                  {visual(u, "", "45vw", "pb-28")}
                 </div>
               ))}
               <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />

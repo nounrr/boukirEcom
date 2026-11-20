@@ -51,6 +51,9 @@ const nextConfig: NextConfig = {
   images: {
     // Optimized photos kept 30 days on the server (upload file names never change, so no stale image).
     minimumCacheTTL: 2592000,
+    // Next 16 refuses to optimize photos from a local address (localhost API in development).
+    // Allowed only in development; production photos come from the public domain.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [
       {
         protocol: 'http',

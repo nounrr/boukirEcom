@@ -52,19 +52,19 @@ function absoluteImage(src?: string | null) {
   return `${API_CONFIG.BASE_URL}${value.startsWith('/') ? value : `/${value}`}`
 }
 
-/** First real product photo of a category, if the catalogue has one. */
-async function categoryImage(categoryId: number): Promise<string | null> {
+/** Up to four distinct real product photos of a category (empty when it has none). */
+async function categoryImages(categoryId: number): Promise<string[]> {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/products?category_id=${categoryId}&per_page=12&in_stock_only=false`, {
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/products?category_id=${categoryId}&per_page=24&in_stock_only=false`, {
       headers: { Platform: 'web' },
       next: { revalidate: 900 },
     })
-    if (!res.ok) return null
+    if (!res.ok) return []
     const data = await res.json()
-    const product = (data?.products ?? []).find((p: { image_url?: string | null }) => absoluteImage(p.image_url))
-    return product ? absoluteImage(product.image_url) : null
+    const urls = (data?.products ?? []).map((p: { image_url?: string | null }) => absoluteImage(p.image_url))
+    return [...new Set(urls.filter(Boolean) as string[])].slice(0, 4)
   } catch {
-    return null
+    return []
   }
 }
 
@@ -90,7 +90,7 @@ export default async function HomePage({
     Promise.all(
       UNIVERSES.map(async ({ slug }) => {
         const page = catalogCategories.find((c) => c.slug === slug)
-        return page ? categoryImage(page.id) : null
+        return page ? categoryImages(page.id) : []
       })
     ),
   ])
@@ -102,7 +102,7 @@ export default async function HomePage({
       slug,
       href: catalogHref(locale, 'categories', page.id),
       title: (page as unknown as Record<string, string>)[locale] ?? page.fr,
-      image: images[index],
+      images: images[index],
       fallback,
     }]
   })
