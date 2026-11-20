@@ -58,17 +58,19 @@ function GuidanceCard({ locale, returnTo, title, description, action }: {
   action: string
 }) {
   return (
-    <aside className="grid gap-5 rounded-2xl border border-emerald-900/20 bg-emerald-950 p-6 text-white shadow-[0_16px_36px_-24px_rgba(6,78,59,.5)] sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10 sm:p-8">
+    <aside className="relative isolate grid gap-5 overflow-hidden rounded-[2rem] bg-ink p-6 text-white shadow-premium sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10 sm:p-10">
+      <div className="bd-grid absolute inset-0 -z-10 opacity-60 [--grid-color:rgba(255,255,255,0.04)]" aria-hidden="true" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(55%_90%_at_100%_0%,rgba(242,159,4,0.28),transparent_70%)]" aria-hidden="true" />
       <div className="max-w-2xl">
-        <h2 className="flex items-center gap-3 text-xl font-semibold tracking-tight sm:text-2xl"><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-300/15 text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>{title}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">{description}</p>
+        <h2 className="flex items-center gap-3 text-xl font-extrabold tracking-tight sm:text-3xl"><span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-yellow text-ink shadow-[0_14px_30px_-12px_rgba(242,183,5,0.8)]"><Compass className="size-5" aria-hidden="true" /></span>{title}</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70 sm:text-base">{description}</p>
       </div>
-      <Button asChild className="min-h-11 rounded-md bg-amber-400 px-5 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300">
-        <Link href={quickServiceRequestHref(locale, returnTo)}>
-          {action}
+      <Link href={quickServiceRequestHref(locale, returnTo)} className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-gold ps-6 pe-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.8)] transition-transform duration-500 hover:-translate-y-0.5">
+        {action}
+        <span className="grid size-9 place-items-center rounded-full bg-ink text-brand-yellow transition-transform duration-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
           <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-        </Link>
-      </Button>
+        </span>
+      </Link>
     </aside>
   )
 }
@@ -101,31 +103,40 @@ export default async function ServicesPage({
   const returnTo = catalogueHref(locale, { q, category_id: categoryId, page })
 
   return (
-    <div className="min-h-[70vh] bg-[#fbf8ef] dark:bg-background py-9 sm:py-14 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="grid items-end gap-6 pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:pb-12">
+    <div className="min-h-[70vh] bg-background pb-16 lg:pb-24">
+      {/* Hero: ink background, grid and gold glow, like the home page sections. */}
+      <header className="relative isolate overflow-hidden bg-ink pb-28 pt-12 text-white sm:pt-16 lg:pb-36 lg:pt-20">
+        <div className="bd-grid absolute inset-0 -z-10 opacity-70 [--grid-color:rgba(255,255,255,0.04)]" aria-hidden="true" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_70%_at_8%_0%,rgba(242,159,4,0.30),transparent_70%),radial-gradient(35%_60%_at_100%_100%,rgba(242,183,5,0.14),transparent_70%)]" aria-hidden="true" />
+        <Wrench className="pointer-events-none absolute -end-10 top-1/2 -z-10 size-[22rem] -translate-y-1/2 -rotate-12 text-white/[0.035] lg:size-[30rem]" strokeWidth={0.8} aria-hidden="true" />
+        <div className="mx-auto grid max-w-7xl items-end gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:px-8">
           <div className="max-w-3xl">
-            <p className="flex items-center gap-3 text-sm font-semibold text-emerald-800 dark:text-emerald-300"><span className="flex size-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"><Wrench className="size-5" aria-hidden="true" /></span>
+            <p className="kicker flex items-center gap-3 !text-brand-yellow">
+              <span className="h-px w-8 bg-brand-yellow" aria-hidden="true" />
               {t('eyebrow')}
             </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">{t('title')}</h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">{t('description')}</p>
-            <div className="mt-5"><QuickRequestLink locale={locale} returnTo={returnTo} /></div>
+            <h1 className="display-lg mt-4 text-[2.3rem] text-white sm:text-5xl lg:text-[4rem]">{t('title')}</h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/65">{t('description')}</p>
+            <div className="mt-7"><QuickRequestLink locale={locale} returnTo={returnTo} /></div>
           </div>
           {pagination && (
-            <p className="w-fit rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300" aria-live="polite">
+            <p className="flex w-fit items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.06] px-6 py-5 text-sm font-semibold text-white/85 backdrop-blur-md" aria-live="polite">
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-yellow text-ink"><Wrench className="size-5" aria-hidden="true" /></span>
               {t('resultCount', { count: pagination.total_items })}
             </p>
           )}
-        </header>
+        </div>
+      </header>
 
-        <section className="rounded-2xl border border-amber-900/10 bg-card p-5 shadow-[0_12px_30px_-22px_rgba(83,60,19,.3)] sm:p-6 dark:border-border" aria-labelledby="services-filters-title">
+      <div className="relative mx-auto -mt-16 max-w-7xl px-4 sm:px-6 lg:-mt-20 lg:px-8">
+        {/* Search: a floating card overlapping the hero. */}
+        <section className="rounded-[1.75rem] border border-border bg-card/95 p-5 shadow-premium backdrop-blur-xl sm:p-6" aria-labelledby="services-filters-title">
           <h2 id="services-filters-title" className="sr-only">{t('filters.title')}</h2>
           <form action={`/${locale}/services`} method="get" className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.45fr)_auto] lg:items-end">
-            <label className="grid min-w-0 gap-2 text-xs font-medium text-foreground">
+            <label className="grid min-w-0 gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               {t('filters.searchLabel')}
               <span className="relative">
-                <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-amber-700" aria-hidden="true" />
+                <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-accent-text" aria-hidden="true" />
                 <input
                   suppressHydrationWarning
                   type="search"
@@ -133,13 +144,13 @@ export default async function ServicesPage({
                   defaultValue={q}
                   maxLength={100}
                   placeholder={t('filters.searchPlaceholder')}
-                  className="h-11 w-full rounded-[6px] border border-input bg-background px-10 text-sm outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15"
+                  className="h-12 w-full rounded-full border border-border bg-background ps-11 pe-4 text-sm font-normal normal-case tracking-normal text-foreground outline-none transition focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
                 />
               </span>
             </label>
-            <label className="grid min-w-0 gap-2 text-xs font-medium text-foreground">
+            <label className="grid min-w-0 gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               {t('filters.categoryLabel')}
-              <select name="category_id" defaultValue={categoryId || ''} className="h-11 w-full rounded-[6px] border border-input bg-background px-3 text-sm outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/15">
+              <select name="category_id" defaultValue={categoryId || ''} className="h-12 w-full rounded-full border border-border bg-background px-4 text-sm font-normal normal-case tracking-normal text-foreground outline-none transition focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]">
                 <option value="">{t('filters.allCategories')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>{localizedCategoryName(category, locale)}</option>
@@ -147,21 +158,23 @@ export default async function ServicesPage({
               </select>
             </label>
             <div className="flex flex-wrap gap-2">
-              <Button type="submit" className="h-11 rounded-md bg-amber-400 px-6 text-emerald-950 hover:bg-amber-300 dark:bg-amber-400 dark:text-emerald-950 dark:hover:bg-amber-300">{t('filters.submit')}</Button>
-              {hasFilters && <Button asChild variant="outline" className="h-11"><Link href={`/${locale}/services`}>{t('filters.reset')}</Link></Button>}
+              <button type="submit" className="inline-flex h-12 items-center gap-2 rounded-full bg-gold px-7 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.8)] transition-transform duration-500 hover:-translate-y-0.5">
+                <Search className="size-4" aria-hidden="true" />{t('filters.submit')}
+              </button>
+              {hasFilters && <Link href={`/${locale}/services`} className="inline-flex h-12 items-center rounded-full border border-border px-5 text-sm font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-accent-text">{t('filters.reset')}</Link>}
             </div>
           </form>
         </section>
 
         {!catalogue ? (
-          <section className="mt-8 rounded-lg border border-border bg-card p-5  sm:flex sm:items-center sm:gap-5 sm:p-6 dark:border-border" role="alert">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-[8px] bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"><Compass className="size-5" aria-hidden="true" /></span>
+          <section className="mt-8 rounded-3xl border border-border bg-card p-5 sm:flex sm:items-center sm:gap-5 sm:p-6" role="alert">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-brand-yellow text-ink"><Compass className="size-5" aria-hidden="true" /></span>
             <div className="mt-4 min-w-0 flex-1 sm:mt-0"><h2 className="text-lg font-semibold text-foreground">{t('error.title')}</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{t('error.description')}</p></div>
-            <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-[6px]"><Link href={returnTo}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-[6px]"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
+            <div className="mt-5 flex flex-wrap gap-2 sm:mt-0 sm:shrink-0"><Button asChild variant="outline" className="min-h-11 rounded-full"><Link href={returnTo}>{t('error.retry')}</Link></Button><Button asChild className="min-h-11 rounded-full"><Link href={quickServiceRequestHref(locale, returnTo)}>{t('guidance.action')}<ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link></Button></div>
           </section>
         ) : services.length === 0 ? (
-          <section className="mt-10 border-y border-border bg-muted/20 p-8 text-center sm:p-12">
-            <Search className="mx-auto size-9 text-primary" aria-hidden="true" />
+          <section className="mt-10 rounded-[2rem] border border-dashed border-border bg-card p-8 text-center sm:p-12">
+            <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-brand-yellow text-ink"><Search className="size-6" aria-hidden="true" /></span>
             <h2 className="mt-4 text-xl font-semibold text-foreground">{t('empty.title')}</h2>
             <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">{t(hasFilters ? 'empty.filteredDescription' : 'empty.description')}</p>
             {hasFilters && <Button asChild variant="outline" className="mt-5"><Link href={`/${locale}/services`}>{t('filters.reset')}</Link></Button>}

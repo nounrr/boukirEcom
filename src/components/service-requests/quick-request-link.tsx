@@ -13,10 +13,12 @@ export async function QuickRequestLink({ locale, returnTo, className = '' }: {
   return (
     <Link
       href={quickServiceRequestHref(locale, returnTo)}
-      className={`inline-flex min-h-11 max-w-full items-center gap-2 rounded-full border border-emerald-800/20 bg-white px-4 py-2 text-sm font-medium text-emerald-900 transition hover:border-emerald-800/40 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700/40 dark:border-emerald-400/30 dark:bg-transparent dark:text-emerald-300 dark:hover:bg-emerald-950/40 ${className}`}
+      className={`group inline-flex min-h-12 max-w-full items-center gap-2.5 rounded-full bg-gold ps-6 pe-1.5 py-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.8)] transition-transform duration-500 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink ${className}`}
     >
       <span>{t('label')}</span>
-      <ArrowRight className="size-4 shrink-0 rtl:rotate-180" aria-hidden="true" />
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-brand-yellow transition-transform duration-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+        <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+      </span>
     </Link>
   )
 }
