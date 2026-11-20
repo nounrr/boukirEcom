@@ -123,8 +123,7 @@ export default async function HomePage({
         {/* Application mobile : App Store et Google Play */}
         <AppDownloadSection locale={locale} />
         <FlagshipPromotions locale={locale} />
-        {/* 3 */}<ConstructionSequence locale={locale} />
-        {/* 2 · Univers matériaux, juste après « De l'idée à la réalité » */}<FlagshipUniverses locale={locale} universes={universes} />
+        {/* Univers matériaux */}<FlagshipUniverses locale={locale} universes={universes} />
         {/* 5 */}<FlagshipNewArrivals locale={locale} />
         <FlagshipJourneys locale={locale} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
@@ -132,6 +131,8 @@ export default async function HomePage({
         {/* Notre magasin : photos, vidéo, réseaux */}
         <StoreTeaser locale={locale} />
         <FlagshipStore />
+        {/* « De l'idée à la réalité » : les 8 étapes, juste avant le pied de page */}
+        <ConstructionSequence locale={locale} />
       </main>
       <Footer cta="home" />
     </>
