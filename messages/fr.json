@@ -1430,6 +1430,10 @@
     "ourStore": "Notre magasin"
   },
   "headerSearch": {
+    "similarTitle": "Produits qui ressemblent à votre photo",
+    "similarDesc": "Du plus ressemblant au moins ressemblant. Touchez un produit pour l’ouvrir.",
+    "byName": "Chercher par nom",
+    "newPhoto": "Autre photo",
     "placeholder": "Rechercher un produit, une marque…",
     "openSearch": "Ouvrir la recherche",
     "recentSearches": "Recherches récentes",

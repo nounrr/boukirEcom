@@ -1569,6 +1569,10 @@
     "ourStore": "我们的门店"
   },
   "headerSearch": {
+    "similarTitle": "与您的照片相似的商品",
+    "similarDesc": "按相似度从高到低排列。点击商品即可打开。",
+    "byName": "按名称搜索",
+    "newPhoto": "换一张照片",
     "placeholder": "搜索商品、品牌…",
     "openSearch": "打开搜索",
     "recentSearches": "最近搜索",

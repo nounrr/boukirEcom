@@ -1569,6 +1569,10 @@
     "ourStore": "Our store"
   },
   "headerSearch": {
+    "similarTitle": "Products that look like your photo",
+    "similarDesc": "Most similar first. Tap a product to open it.",
+    "byName": "Search by name",
+    "newPhoto": "Another photo",
     "placeholder": "Search a product, a brand…",
     "openSearch": "Open search",
     "recentSearches": "Recent searches",

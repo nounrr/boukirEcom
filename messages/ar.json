@@ -1569,6 +1569,10 @@
     "ourStore": "متجرنا"
   },
   "headerSearch": {
+    "similarTitle": "منتجات تشبه صورتك",
+    "similarDesc": "من الأكثر شبهاً إلى الأقل. اضغط على منتج لفتحه.",
+    "byName": "البحث بالاسم",
+    "newPhoto": "صورة أخرى",
     "placeholder": "ابحث عن منتج أو علامة…",
     "openSearch": "فتح البحث",
     "recentSearches": "عمليات البحث الأخيرة",
