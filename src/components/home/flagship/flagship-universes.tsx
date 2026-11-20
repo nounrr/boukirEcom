@@ -15,7 +15,7 @@ export type Universe = {
   slug: string
   href: string
   title: string
-  /** up to four real product photos from that category (empty when it has none) */
+  /** up to twelve real product photos from that category (four are shown, at random); empty when none */
   images: string[]
   fallback: string | null
 }
@@ -28,6 +28,19 @@ export type Universe = {
 export function FlagshipUniverses({ locale, universes }: { locale: string; universes: Universe[] }) {
   const t = useTranslations("xp.home.universes")
   const [active, setActive] = useState(0)
+  // Four photos per universe, picked at random on every visit. The first render keeps the
+  // server order (same HTML on server and client); the draw happens once mounted.
+  const [seed, setSeed] = useState<number | null>(null)
+  useEffect(() => setSeed(Math.random()), [])
+  const pick = (images: string[]) => {
+    if (seed === null || images.length <= 4) return images.slice(0, 4)
+    const score = (src: string) => {
+      let h = Math.floor(seed * 2147483647)
+      for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0
+      return h
+    }
+    return [...images].sort((a, b) => score(a) - score(b)).slice(0, 4)
+  }
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
 
   useEffect(() => {
@@ -46,7 +59,7 @@ export function FlagshipUniverses({ locale, universes }: { locale: string; unive
   // Several product photos: a collage of white tiles (2 side by side, 3 = one large + two,
   // 4 = a 2×2 grid). One photo or none: the photo, or the category's fallback picture.
   const visual = (u: Universe, className?: string, sizes = "50vw", captionSpace = "pb-24") => {
-    const photos = u.images
+    const photos = pick(u.images)
     if (photos.length >= 2) {
       return (
         <div className={cn("absolute inset-0 grid gap-2 bg-ink-2 p-2", captionSpace, photos.length === 2 ? "grid-cols-2" : "grid-cols-2 grid-rows-2", className)}>

@@ -25,12 +25,14 @@ const resolveShop = cache(async (props: Props) => {
   const normalized = normalizeShopParams(source)
   // A shop link filtered on one category stays on the shop (it used to jump to the category page).
   if (normalized.changed) permanentRedirect(withQuery(`/${locale}/shop`, normalized.navigation))
-  const response = await fetch(apiUrl(shopApiRequest(normalized)), { next: { revalidate: 120 }, headers: { Platform: 'web' }, signal: AbortSignal.timeout(15000) })
+  // New random order on every visit; a small seed range lets the API cache be reused.
+  const seed = Math.floor(Math.random() * 1000) + 1
+  const response = await fetch(apiUrl(shopApiRequest(normalized, seed)), { next: { revalidate: 120 }, headers: { Platform: 'web' }, signal: AbortSignal.timeout(15000) })
   if (!response.ok) throw new Error(`Catalogue products API HTTP ${response.status}`)
   const data = await response.json() as ProductsListResponse
   if (!Array.isArray(data.products) || !data.pagination || !Number.isSafeInteger(data.pagination.total_pages)) throw new Error('Catalogue products API response is invalid')
   if (normalized.page > 1 && (data.pagination.total_pages === 0 || normalized.page > data.pagination.total_pages)) notFound()
-  return { locale, normalized, data: publicProductsResponse(data) }
+  return { locale, normalized, seed, data: publicProductsResponse(data) }
 })
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { locale, normalized, data } = await resolveShop(props)
@@ -46,9 +48,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return metadata
 }
 export default async function ShopPage(props: Props) {
-  const { locale, normalized, data } = await resolveShop(props)
+  const { locale, normalized, seed, data } = await resolveShop(props)
   const copy = constructionCopy[locale]
   const brand = shopBrandPage(normalized)
   const text = brand ? catalogText(brand, locale) : undefined
-  return <ShopPageClient initialData={data} initialFilters={shopFilterState(normalized)} heading={text ? `${text.name} ${catalogCopy(locale).location}` : copy.shopTitle} description={text?.advice || copy.description} />
+  return <ShopPageClient seed={seed} initialData={data} initialFilters={shopFilterState(normalized)} heading={text ? `${text.name} ${catalogCopy(locale).location}` : copy.shopTitle} description={text?.advice || copy.description} />
 }

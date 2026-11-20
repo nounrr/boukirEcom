@@ -1187,6 +1187,7 @@
     "units": "Units",
     "inStockOnly": "In stock only",
     "sort": {
+      "random": "Random (new on every visit)",
       "category": "Category, brand, price high to low",
       "newest": "Newest",
       "priceAsc": "Price: low to high",

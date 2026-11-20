@@ -62,6 +62,7 @@ export const productsApi = createApi({
         if (filters.min_price !== undefined) params.min_price = filters.min_price;
         if (filters.max_price !== undefined) params.max_price = filters.max_price;
         if (filters.sort) params.sort = filters.sort;
+        if (filters.seed) params.seed = filters.seed;
 
         return {
           url: API_CONFIG.ENDPOINTS.PRODUCTS,

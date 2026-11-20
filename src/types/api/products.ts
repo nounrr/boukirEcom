@@ -7,7 +7,7 @@
 // Request Types
 // ============================================================================
 
-export type SortOption = 'category' | 'newest' | 'price_asc' | 'price_desc' | 'promo' | 'popular';
+export type SortOption = 'random' | 'category' | 'newest' | 'price_asc' | 'price_desc' | 'promo' | 'popular';
 
 export interface ProductFiltersRequest {
   // Pagination
@@ -33,6 +33,8 @@ export interface ProductFiltersRequest {
   max_price?: number;
   in_stock_only?: boolean;
   sort?: SortOption;
+  /** sort=random: same seed = same order (pages never repeat a product). */
+  seed?: number;
 }
 
 // ============================================================================

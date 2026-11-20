@@ -20,19 +20,21 @@ require.cache[clientPath] = { id: clientPath, filename: clientPath, loaded: true
 const { default: ShopPage, generateMetadata } = require('../app/[locale]/(shop)/shop/page.tsx')
 
 function props(query = {}, locale = 'fr') { return { params: Promise.resolve({ locale }), searchParams: Promise.resolve(query) } }
-test('shop defaults to categories across API, filters and pagination, retaining explicit sorts', () => {
+test('shop defaults to a seeded random order, retaining explicit sorts (category included)', () => {
   const defaults = normalizeShopParams({ page: '2' })
-  assert.equal(shopApiRequest(defaults).sort, 'category')
-  assert.equal(shopFilterState(defaults).sort, 'category')
+  assert.equal(shopApiRequest(defaults).sort, 'random')
+  assert.equal(shopApiRequest(defaults, 42).seed, 42)
+  assert.equal(shopFilterState(defaults).sort, 'random')
   assert.equal(defaults.canonical.toString(), 'page=2')
-  assert.equal(normalizeShopParams({ sort: 'category' }).canonical.toString(), '')
+  assert.equal(normalizeShopParams({ sort: 'random' }).canonical.toString(), '')
   const legacy = normalizeShopParams({ sort: 'newest' })
   assert.equal(legacy.changed, true)
   assert.equal(legacy.canonical.toString(), '')
-  assert.equal(shopApiRequest(legacy).sort, 'category')
-  for (const sort of ['price_asc', 'price_desc', 'promo', 'popular']) {
+  assert.equal(shopApiRequest(legacy).sort, 'random')
+  for (const sort of ['category', 'price_asc', 'price_desc', 'promo', 'popular']) {
     const selected = normalizeShopParams({ sort, page: '3' })
     assert.equal(shopApiRequest(selected).sort, sort)
+    assert.equal(shopApiRequest(selected, 42).seed, undefined)
     assert.equal(shopFilterState(selected).sort, sort)
     assert.equal(selected.canonical.get('sort'), sort)
   }

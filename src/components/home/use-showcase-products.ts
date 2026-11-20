@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import { MIN_SHOWCASE_PRICE, showcaseProducts } from "@/lib/home/product-rotation"
 import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery, useGetProductsQuery } from "@/state/api/products-api-slice"
@@ -14,7 +14,9 @@ const CATALOGUE_POOL = 150
  * plus promotions and new arrivals at the same level, each once, all with a photo.
  */
 export function useShowcaseProducts() {
-  const catalogue = useGetProductsQuery({ min_price: MIN_SHOWCASE_PRICE, per_page: CATALOGUE_POOL, page: 1, sort: "popular" })
+  // A random slice of the whole catalogue, different on every visit (not always the newest ones).
+  const [seed] = useState(() => Math.floor(Math.random() * 1000) + 1)
+  const catalogue = useGetProductsQuery({ min_price: MIN_SHOWCASE_PRICE, per_page: CATALOGUE_POOL, page: 1, sort: "random", seed })
   const promo = useGetFeaturedPromoQuery(40)
   const fresh = useGetNewArrivalsQuery(40)
   const products = useMemo<ProductListItem[]>(

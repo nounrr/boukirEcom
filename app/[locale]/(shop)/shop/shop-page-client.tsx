@@ -34,7 +34,7 @@ function flattenCategories(categories: ProductCategory[]): ProductCategory[] {
   return out
 }
 
-export default function ShopPageClient({ initialData, initialFilters, heading, description }: { initialData: ProductsListResponse; initialFilters: FilterState; heading: string; description: string }) {
+export default function ShopPageClient({ seed, initialData, initialFilters, heading, description }: { seed: number; initialData: ProductsListResponse; initialFilters: FilterState; heading: string; description: string }) {
   const t = useTranslations("shop")
   const locale = useLocale()
 
@@ -70,6 +70,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
 
     const sortRaw = searchParams.get("sort")
     const allowedSort: Array<FilterState["sort"]> = [
+      "random",
       "category",
       "price_asc",
       "price_desc",
@@ -78,7 +79,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     ]
     const sort = (allowedSort as readonly string[]).includes(sortRaw ?? "")
       ? (sortRaw as FilterState["sort"])
-      : "category"
+      : "random"
 
     const inStock = false
 
@@ -173,7 +174,7 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
       if (filterState.brands.length > 0) next.set("brand_id", filterState.brands.join(","))
       if (filterState.search) next.set("search", filterState.search)
 
-      if (filterState.sort && filterState.sort !== "category") next.set("sort", filterState.sort)
+      if (filterState.sort && filterState.sort !== "random") next.set("sort", filterState.sort)
       if (filterState.page && filterState.page !== 1) next.set("page", String(filterState.page))
       if (filterState.per_page && filterState.per_page !== 20) {
         next.set("per_page", String(filterState.per_page))
@@ -205,7 +206,11 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   }, [filterState, pathname, router, searchParams])
 
   // Convert filter state to API request
-  const apiFilters = useMemo(() => filterStateToApiRequest(filterState), [filterState])
+  // Random order: the visit's seed keeps the next pages in the same order (no product twice).
+  const apiFilters = useMemo(() => {
+    const request = filterStateToApiRequest(filterState)
+    return request.sort === "random" ? { ...request, seed } : request
+  }, [filterState, seed])
 
   // Chargement continu : pour les mêmes filtres, les pages suivantes s'ajoutent sous la liste
   // (défilement ou bouton « Voir plus »). Changer un filtre repart de la page de départ.

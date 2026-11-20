@@ -34,7 +34,8 @@ export function normalizeShopParams(input: ShopSearchParams) {
   const normalized: Record<string, string> = {
     category_id: cleanList(source.category_id, true), brand_id: cleanList(source.brand_id, true),
     search: (source.search || '').trim().replace(/\s+/g, ' ').slice(0, 100),
-    sort: source.sort && SORTS.has(source.sort) && source.sort !== 'category' ? source.sort : '',
+    // No sort in the URL = random order (new on every visit); « category » is now an explicit choice.
+    sort: source.sort && SORTS.has(source.sort) ? source.sort : '',
     min_price: cleanNumber(source.min_price), max_price: cleanNumber(source.max_price),
     colors: cleanList(source.colors), units: cleanList(source.units), utility_type: cleanList(source.utility_type),
   }
@@ -56,10 +57,11 @@ export function normalizeShopParams(input: ShopSearchParams) {
   return { page, canonical, navigation, normalized, hasFilters, categoryIds, brandIds, changed }
 }
 
-export function shopApiRequest(result: ReturnType<typeof normalizeShopParams>): ProductFiltersRequest {
+export function shopApiRequest(result: ReturnType<typeof normalizeShopParams>, seed?: number): ProductFiltersRequest {
   const n = result.normalized
   return {
-    page: result.page, per_page: 20, sort: (n.sort || 'category') as ProductFiltersRequest['sort'], in_stock_only: false,
+    page: result.page, per_page: 20, sort: (n.sort || 'random') as ProductFiltersRequest['sort'], in_stock_only: false,
+    ...(!n.sort && seed ? { seed } : {}),
     ...(n.category_id ? { category_id: n.category_id } : {}), ...(n.brand_id ? { brand_id: n.brand_id } : {}),
     ...(n.search ? { search: n.search } : {}), ...(n.min_price ? { min_price: Number(n.min_price) } : {}),
     ...(n.max_price ? { max_price: Number(n.max_price) } : {}), ...(n.colors ? { color: n.colors } : {}),
@@ -72,7 +74,7 @@ export function shopFilterState(result: ReturnType<typeof normalizeShopParams>):
     priceRange: [n.min_price ? Number(n.min_price) : 0, n.max_price ? Number(n.max_price) : 10000],
     colors: n.colors ? n.colors.split(',') : [], units: n.units ? n.units.split(',') : [],
     utilityTypes: n.utility_type ? n.utility_type.split(',') : [], search: n.search || '', inStock: false,
-    sort: (n.sort || 'category') as FilterState['sort'], page: result.page, per_page: 20 }
+    sort: (n.sort || 'random') as FilterState['sort'], page: result.page, per_page: 20 }
 }
 export function shopPageHref(pathname: string, params: URLSearchParams, page: number) {
   const next = new URLSearchParams(params)

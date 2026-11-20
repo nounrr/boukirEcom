@@ -79,7 +79,7 @@ export function ProductFilters({
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
     inStock: false,
-    sort: initialFilters?.sort ?? 'category',
+    sort: initialFilters?.sort ?? 'random',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
   }))
@@ -99,6 +99,7 @@ export function ProductFilters({
 
   // Sort options with labels
   const sortOptions: Array<{ value: SortOption; label: string }> = [
+    { value: 'random', label: t('sort.random') },
     { value: 'category', label: t('sort.category') },
     { value: 'price_asc', label: t('sort.priceAsc') },
     { value: 'price_desc', label: t('sort.priceDesc') },
@@ -136,7 +137,7 @@ export function ProductFilters({
     utilityTypes: initialFilters?.utilityTypes ?? [],
     search: initialFilters?.search ?? '',
     inStock: false,
-    sort: (initialFilters?.sort as SortOption | undefined) ?? 'category',
+    sort: (initialFilters?.sort as SortOption | undefined) ?? 'random',
     page: initialFilters?.page ?? 1,
     per_page: initialFilters?.per_page ?? 20,
   }), [initialFilters])
@@ -349,7 +350,7 @@ export function ProductFilters({
       utilityTypes: [],
       search: '',
       inStock: false,
-      sort: 'category',
+      sort: 'random',
       page: 1,
       per_page: 20
     }

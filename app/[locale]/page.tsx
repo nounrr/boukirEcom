@@ -52,7 +52,7 @@ function absoluteImage(src?: string | null) {
   return `${API_CONFIG.BASE_URL}${value.startsWith('/') ? value : `/${value}`}`
 }
 
-/** Up to four distinct real product photos of a category (empty when it has none). */
+/** Up to twelve distinct real product photos of a category; the page shows four, picked at random per visit. */
 async function categoryImages(categoryId: number): Promise<string[]> {
   try {
     const res = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/products?category_id=${categoryId}&per_page=24&in_stock_only=false`, {
@@ -62,7 +62,7 @@ async function categoryImages(categoryId: number): Promise<string[]> {
     if (!res.ok) return []
     const data = await res.json()
     const urls = (data?.products ?? []).map((p: { image_url?: string | null }) => absoluteImage(p.image_url))
-    return [...new Set(urls.filter(Boolean) as string[])].slice(0, 4)
+    return [...new Set(urls.filter(Boolean) as string[])].slice(0, 12)
   } catch {
     return []
   }

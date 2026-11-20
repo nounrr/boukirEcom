@@ -1187,6 +1187,7 @@
     "units": "单位",
     "inStockOnly": "仅显示有货",
     "sort": {
+      "random": "随机（每次访问都不同）",
       "category": "类别、品牌、价格从高到低",
       "newest": "最新",
       "priceAsc": "价格从低到高",
