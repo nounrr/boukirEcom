@@ -31,10 +31,11 @@ test('shop defaults to a seeded random order, retaining explicit sorts (category
   assert.equal(legacy.changed, true)
   assert.equal(legacy.canonical.toString(), '')
   assert.equal(shopApiRequest(legacy).sort, 'random')
+  assert.equal(shopApiRequest(normalizeShopParams({ sort: 'promo' }), 42).seed, 42)
   for (const sort of ['category', 'price_asc', 'price_desc', 'promo', 'popular']) {
     const selected = normalizeShopParams({ sort, page: '3' })
     assert.equal(shopApiRequest(selected).sort, sort)
-    assert.equal(shopApiRequest(selected, 42).seed, undefined)
+    assert.equal(shopApiRequest(selected, 42).seed, sort === 'promo' ? 42 : undefined)
     assert.equal(shopFilterState(selected).sort, sort)
     assert.equal(selected.canonical.get('sort'), sort)
   }

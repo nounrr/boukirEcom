@@ -61,7 +61,8 @@ export function shopApiRequest(result: ReturnType<typeof normalizeShopParams>, s
   const n = result.normalized
   return {
     page: result.page, per_page: 20, sort: (n.sort || 'random') as ProductFiltersRequest['sort'], in_stock_only: false,
-    ...(!n.sort && seed ? { seed } : {}),
+    // Random order and « promotions » (promos first, at random) use the visit's seed.
+    ...((!n.sort || n.sort === 'promo') && seed ? { seed } : {}),
     ...(n.category_id ? { category_id: n.category_id } : {}), ...(n.brand_id ? { brand_id: n.brand_id } : {}),
     ...(n.search ? { search: n.search } : {}), ...(n.min_price ? { min_price: Number(n.min_price) } : {}),
     ...(n.max_price ? { max_price: Number(n.max_price) } : {}), ...(n.colors ? { color: n.colors } : {}),

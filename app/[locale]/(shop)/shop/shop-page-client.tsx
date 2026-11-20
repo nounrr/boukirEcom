@@ -209,7 +209,7 @@ export default function ShopPageClient({ seed, initialData, initialFilters, head
   // Random order: the visit's seed keeps the next pages in the same order (no product twice).
   const apiFilters = useMemo(() => {
     const request = filterStateToApiRequest(filterState)
-    return request.sort === "random" ? { ...request, seed } : request
+    return request.sort === "random" || request.sort === "promo" ? { ...request, seed } : request
   }, [filterState, seed])
 
   // Chargement continu : pour les mêmes filtres, les pages suivantes s'ajoutent sous la liste
