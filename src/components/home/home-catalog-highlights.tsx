@@ -53,7 +53,7 @@ function FeaturedCategoryCard({
   saleLabel: string
   discountLabel: string
 }) {
-  const href = catalogHref(locale, 'categories', category.id)
+  const href = catalogHref(locale, 'categories', category.id, category.nom)
   const imageSrc = toAbsoluteImageUrl(category.image_url)
   const label = getCategoryLabel(category, locale)
 
@@ -101,7 +101,7 @@ function GridCategoryCard({
   locale: string
   isRtl: boolean
 }) {
-  const href = catalogHref(locale, 'categories', category.id)
+  const href = catalogHref(locale, 'categories', category.id, category.nom)
   const imageSrc = toAbsoluteImageUrl(category.image_url)
   const label = getCategoryLabel(category, locale)
   const categoryInitial = label?.[0]?.toUpperCase() ?? 'C'

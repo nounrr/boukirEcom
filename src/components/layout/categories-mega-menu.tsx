@@ -164,7 +164,7 @@ export function SubcategoryCard({
           {shown.map((leaf) => (
             <li key={leaf.id} className="max-w-full">
               <Link
-                href={catalogHref(locale, 'categories', leaf.id)}
+                href={catalogHref(locale, 'categories', leaf.id, leaf.nom)}
                 onClick={onNavigate}
                 className="block max-w-full truncate rounded-full bg-muted/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
               >
@@ -402,7 +402,7 @@ export function CategoriesMegaMenu({
                       return (
                         <Link
                           key={c.id}
-                          href={catalogHref(locale, 'categories', c.id)}
+                          href={catalogHref(locale, 'categories', c.id, c.nom)}
                           onMouseEnter={() => setActiveParentId(c.id)}
                           onFocus={() => setActiveParentId(c.id)}
                           onClick={close}
@@ -468,7 +468,7 @@ export function CategoriesMegaMenu({
                       cover={coverOf(activeParent)}
                       label={getCategoryLabel(activeParent, locale)}
                       count={level1.length}
-                      href={catalogHref(locale, 'categories', activeParent.id)}
+                      href={catalogHref(locale, 'categories', activeParent.id, activeParent.nom)}
                       eyebrow={t('exploreCategory')}
                       countLabel={t('subcategoriesCount', { count: level1.length })}
                       cta={t('viewAllIn')}
@@ -483,7 +483,7 @@ export function CategoriesMegaMenu({
                             category={child}
                             label={getCategoryLabel(child, locale)}
                             cover={coverOf(child)}
-                            href={catalogHref(locale, 'categories', child.id)}
+                            href={catalogHref(locale, 'categories', child.id, child.nom)}
                             leaves={childrenMap.get(child.id) ?? []}
                             locale={locale}
                             onNavigate={close}

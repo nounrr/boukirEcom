@@ -147,7 +147,7 @@ export function CategoriesMobileMenu({
                 >
                   <div className="flex items-center gap-1 p-1.5">
                     <Link
-                      href={catalogHref(locale, 'categories', c.id)}
+                      href={catalogHref(locale, 'categories', c.id, c.nom)}
                       onClick={() => {
                         onNavigate?.()
                         setOpen(false)
@@ -209,7 +209,7 @@ export function CategoriesMobileMenu({
                         return (
                           <Link
                             key={child.id}
-                            href={catalogHref(locale, 'categories', child.id)}
+                            href={catalogHref(locale, 'categories', child.id, child.nom)}
                             onClick={() => {
                               onNavigate?.()
                               setOpen(false)

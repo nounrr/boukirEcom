@@ -43,7 +43,10 @@ test('stable slugs, scoped links and strict page numbers', () => {
   assert.equal(catalogHref('ar', 'marques', 37), '/ar/shop?brand_id=37');
   assert.equal(catalogHref('en', 'marques', 37), '/en/shop?brand_id=37');
   assert.equal(catalogHref('zh', 'categories', 75), '/zh/categories/75-etancheite-bitume');
-  assert.match(catalogHref('fr', 'categories', 999), /shop\?category_id=999/);
+  // Every other category has its own page: « {id}-{French name} », id-only when the name is unknown.
+  assert.equal(catalogHref('fr', 'categories', 999), '/fr/categories/999');
+  assert.equal(catalogHref('ar', 'categories', 83, 'ÉCHELLES'), '/ar/categories/83-echelles');
+  assert.equal(catalogHref('fr', 'categories', 156, 'CIMENTS ET LIANTS'), '/fr/categories/156-ciments-et-liants');
   assert.equal(catalogPage('categories', '75-fake-slug'), undefined);
   assert.equal(new Set(categories.map(x => x.slug)).size, categories.length);
   assert.equal(new Set(brands.map(x => x.slug)).size, brands.length);
@@ -63,7 +66,9 @@ test('real server route emits product links and localized metadata before hydrat
     assert.equal(metadata.robots.index, true);
     fs.writeFileSync(path.join(root, '../docs/seo-2026-09-08', `correction-04-ssr-${locale}.html`), '<!doctype html><meta charset="utf-8">' + html);
   }
-  await assert.rejects(catalogRoute('categories', props('fr', '75-unknown')), e => e.digest?.includes('404'));
+  // A wrong slug after a known id moves to the real page (like product URLs); an unknown id is a 404.
+  await assert.rejects(catalogRoute('categories', props('fr', '75-unknown')), e => e.digest?.includes('308') && e.digest.includes('/fr/categories/75-etancheite-bitume'));
+  await assert.rejects(catalogRoute('categories', props('fr', '999999-nothing')), e => e.digest?.includes('404'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { page: '1' })), e => e.digest?.includes('308') && e.digest.includes('/fr/categories/75-etancheite-bitume'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { page: '2' })), e => e.digest?.includes('404'));
   await assert.rejects(catalogRoute('categories', props('fr', '75-etancheite-bitume', { brand_id: '37' })), e => e.digest?.includes('/fr/shop?brand_id=37&category_id=75'));

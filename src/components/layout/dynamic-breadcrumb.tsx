@@ -12,6 +12,7 @@ import { useGetOrderQuery } from '@/state/api/orders-api-slice'
 import { getSupportedLocales } from '@/components/i18n/locale-preference-initializer'
 import { catalogPage } from '@/lib/catalog/registry'
 import { catalogText } from '@/lib/catalog/i18n'
+import { nameFromSlug } from '@/lib/catalog/category-slug'
 import { BackButton } from '@/components/layout/back-button'
 
 const cgvBreadcrumbLabels: Record<string, string> = {
@@ -98,7 +99,12 @@ export function DynamicBreadcrumb() {
       const page = catalogPage(filteredParts[0], filteredParts[1])
       return [
         { title: t('shop'), href: `/${locale}/shop`, active: false, icon: iconMap.shop },
-        ...(page ? [{ title: catalogText(page, locale).name, href: pathname, active: true, icon: iconMap.category }] : []),
+        // Hand-written page: its name; generated category page: the readable name in its URL.
+        ...(page
+          ? [{ title: catalogText(page, locale).name, href: pathname, active: true, icon: iconMap.category }]
+          : filteredParts[0] === 'categories' && filteredParts[1] && nameFromSlug(filteredParts[1], locale)
+            ? [{ title: nameFromSlug(filteredParts[1], locale), href: pathname, active: true, icon: iconMap.category }]
+            : []),
       ]
     }
 

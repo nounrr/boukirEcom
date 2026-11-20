@@ -1,6 +1,7 @@
 import brands from './brands.json'
 import { categoryTranslations } from './translations'
 import { isCatalogLocale } from './i18n'
+import { categorySlug } from './category-slug'
 
 export type CatalogKind = 'categories' | 'marques'
 export type CatalogPage = { id: number; slug: string; fr: string; ar: string; en: string; zh: string; adviceFr: string; adviceAr: string; adviceEn: string; adviceZh: string; search?: string }
@@ -38,9 +39,16 @@ export function catalogPage(kind: CatalogKind, slug: string): CatalogPage | unde
     adviceAr: `قارن منتجات ${brand.name} الموجودة في كتالوجنا حسب الاستعمال والمقاسات والتعبئة والملحقات المتوافقة. راجع كل منتج لمعرفة خصائصه وسعره المعروض.` }
 }
 
-export function catalogHref(locale: string, kind: CatalogKind, id: number | string) {
+/**
+ * Link to a brand or category page. A category with a hand-written page keeps its slug; every
+ * other category has its own page at « {id}-{name} » (give the French name to link straight to it;
+ * without it the id-only URL redirects there).
+ */
+export function catalogHref(locale: string, kind: CatalogKind, id: number | string, name?: string | null) {
   if (kind === 'marques') return `/${locale}/shop?brand_id=${encodeURIComponent(String(id))}`
-  const page = categories.find(c => c.id === Number(id) && !c.search)
-  return page && isCatalogLocale(locale) ? `/${locale}/categories/${page.slug}` : `/${locale}/shop?category_id=${encodeURIComponent(String(id))}`
+  const numeric = Number(id)
+  if (!isCatalogLocale(locale) || !Number.isSafeInteger(numeric) || numeric <= 0) return `/${locale}/shop?category_id=${encodeURIComponent(String(id))}`
+  const page = categories.find(c => c.id === numeric && !c.search)
+  return `/${locale}/categories/${page ? page.slug : categorySlug(numeric, name)}`
 }
 export { brands }
