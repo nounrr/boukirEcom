@@ -1,17 +1,20 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { Flame, Package, Pause, Play, Tag } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 
 import { productModel } from "@/components/home/professional/professional-catalog"
-import { ProductCard } from "@/components/shop/product-card"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { MarqueeRow } from "@/components/ui/marquee-row"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
 import type { ProductListItem } from "@/types/api/products"
+import { canOptimize } from "@/lib/image-optimize"
+import { getLocalizedProductName } from "@/lib/localized-fields"
+import { productHref } from "@/lib/seo/product-url"
 import { SectionHeading } from "./section-heading"
 
 /**
@@ -89,7 +92,7 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
             <div className="flex flex-col gap-4">
               {[0, 1].map((row) => (
                 <div key={row} className="flex gap-4 overflow-hidden">
-                  {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className={compact ? "h-[150px] w-[320px] shrink-0 rounded-2xl" : "h-[420px] w-[270px] shrink-0 rounded-2xl"} />)}
+                  {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className={compact ? "h-[84px] w-[280px] shrink-0 rounded-2xl" : "h-[420px] w-[270px] shrink-0 rounded-2xl"} />)}
                 </div>
               ))}
             </div>
@@ -99,7 +102,7 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
               <p className="mt-3 text-sm text-muted-foreground">{isError ? t("loadError") : t("noProducts")}</p>
             </div>
           ) : (
-            <div className={compact ? "-mx-6 flex flex-col gap-4 sm:-mx-8 lg:-mx-16" : "-mx-5 flex flex-col gap-5 sm:-mx-8 lg:-mx-10"}>
+            <div className={compact ? "-mx-6 flex flex-col gap-3 sm:-mx-8 lg:-mx-16" : "-mx-5 flex flex-col gap-5 sm:-mx-8 lg:-mx-10"}>
               {rows.map((row, index) => row.length === 0 ? null : (
                 <MarqueeRow
                   key={index}
@@ -108,11 +111,11 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
                   paused={paused}
                   secondsPerItem={4}
                   itemDir={locale === "ar" ? "rtl" : "ltr"}
-                  // /shop: small horizontal cards (photo beside the name), so the rows stay low.
-                  itemClassName={compact ? "w-[320px] pr-3 sm:w-[380px] [&>div]:h-full" : "w-[250px] pr-4 sm:w-[280px] [&>div]:h-full"}
+                  // /shop: mini cards (small photo beside the name and price), so the rows stay low.
+                  itemClassName={compact ? "w-[260px] pr-3 sm:w-[290px]" : "w-[250px] pr-4 sm:w-[280px] [&>div]:h-full"}
                   items={row.map((product) =>
                     compact ? (
-                      <ProductCard key={product.id} product={product} layout="row" ribbon={tr("badge")} />
+                      <PromoMiniCard key={product.id} product={product} locale={locale} badge={tr("badge")} />
                     ) : (
                       <ProductCardTile key={product.id} product={product} viewMode="grid" isWide ribbon={tr("badge")} />
                     )
@@ -133,4 +136,46 @@ function shuffled<T extends { id: number }>(items: T[], seed: number) {
     return x - Math.floor(x)
   }
   return [...items].sort((a, b) => score(a.id) - score(b.id))
+}
+
+/**
+ * Mini promotion card for /shop (about 84 px tall): small photo, animated badge, name and price.
+ * The whole card opens the product.
+ */
+function PromoMiniCard({ product, locale, badge }: { product: ReturnType<typeof productModel>; locale: string; badge: string }) {
+  const name = getLocalizedProductName(product as never, locale) || product.name
+  const price = Number(product.price) || 0
+  const [imageFailed, setImageFailed] = useState(false)
+  const src = imageFailed ? product.fallbackImage : product.image
+  return (
+    <Link
+      href={productHref(product, locale)}
+      draggable={false}
+      className="group flex h-[84px] items-center gap-3 rounded-2xl border border-border bg-card p-2 pe-3 transition-[border-color,box-shadow] duration-500 hover:border-primary/50 hover:shadow-[0_14px_30px_-22px_rgba(13,13,13,0.6)]"
+    >
+      <span className="relative size-[68px] shrink-0 overflow-hidden rounded-xl bg-white">
+        {src ? (
+          <Image src={src} alt="" fill sizes="68px" unoptimized={!canOptimize(src)} onError={() => setImageFailed(true)} className="object-contain p-1.5 transition-transform duration-700 group-hover:scale-105" />
+        ) : null}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="relative inline-flex w-fit items-center gap-1 overflow-hidden whitespace-nowrap rounded-full bg-gradient-to-r from-[#e0303a] via-[#f25c05] to-gold px-1.5 py-px text-[8px] font-extrabold uppercase tracking-[0.08em] text-white">
+          <span className="relative flex size-1.5" aria-hidden="true">
+            <span className="absolute inline-flex size-full rounded-full bg-white opacity-75 motion-safe:animate-ping" />
+            <span className="relative inline-flex size-1.5 rounded-full bg-white" />
+          </span>
+          {badge}
+          <span className="absolute inset-y-0 start-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent motion-safe:animate-[bd-sheen_2.2s_ease-in-out_infinite]" aria-hidden="true" />
+        </span>
+        <span className="line-clamp-1 text-[13px] font-semibold leading-snug text-foreground/90 group-hover:text-accent-text">{name}</span>
+        <span className="flex items-baseline gap-1.5">
+          <span className="text-sm font-extrabold tabular-nums">{price.toLocaleString(locale === "ar" ? "ar-MA" : "fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span className="text-[9px] font-bold text-accent-text">MAD</span>
+          {product.originalPrice ? (
+            <span className="text-[11px] text-muted-foreground line-through tabular-nums">{Number(product.originalPrice).toLocaleString(locale === "ar" ? "ar-MA" : "fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          ) : null}
+        </span>
+      </span>
+    </Link>
+  )
 }
