@@ -1,13 +1,14 @@
 "use client"
 
 import { ProductFilters } from "@/components/shop/product-filters"
+import { FlagshipNewArrivals } from "@/components/home/flagship/flagship-products"
 import { ProductsList } from "@/components/shop/products-list"
 import { Button } from "@/components/ui/button"
 import { useGetProductsQuery } from "@/state/api/products-api-slice"
 import { filterStateToApiRequest, type FilterState, type ProductsListResponse } from "@/types/api/products"
 import { sameFilterState, shopPageHref } from '@/lib/seo/shop-url'
 import type { ProductBrand, ProductCategory, ProductListItem } from "@/types/api/products"
-import { Columns4, Grid2x2, Grid3x3, List, Package, Search, SlidersHorizontal, X } from "lucide-react"
+import { Columns4, Grid2x2, Grid3x3, List, Package, PanelLeftClose, Search, SlidersHorizontal, X } from "lucide-react"
 import Image from "next/image"
 import type { ShopViewMode } from "@/components/shop/products-list"
 import { useLocale, useTranslations } from "next-intl"
@@ -127,7 +128,20 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
     setViewModeState(mode)
     try { localStorage.setItem("shop.viewMode", mode) } catch { /* stockage indisponible */ }
   }, [])
-  const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false)
+  // Desktop filters panel shown or hidden; the visitor's choice is remembered.
+  const [isFiltersCollapsed, setIsFiltersCollapsedState] = useState(false)
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("shop.filtersHidden") === "1") setIsFiltersCollapsedState(true)
+    } catch { /* stockage indisponible */ }
+  }, [])
+  const setIsFiltersCollapsed = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
+    setIsFiltersCollapsedState((prev) => {
+      const next = typeof value === "function" ? value(prev) : value
+      try { localStorage.setItem("shop.filtersHidden", next ? "1" : "0") } catch { /* stockage indisponible */ }
+      return next
+    })
+  }, [])
 
   // Keep state aligned when user uses browser back/forward or manual URL edits
   useEffect(() => {
@@ -388,6 +402,8 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
             <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
           </div>
         </header>
+        {/* « Nos promotions » : deux lignes qui défilent, seulement sur la boutique sans filtre */}
+        {searchParams.toString() === "" ? <FlagshipNewArrivals locale={locale} variant="shop" /> : null}
         {/* Barre de recherche : centrée, reste collée sous le menu pendant le défilement */}
         <div className="sticky top-[var(--site-header-h,64px)] z-30 -mx-6 mb-5 border-b border-border/50 bg-background/85 px-6 py-3 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16">
           <form
@@ -433,9 +449,11 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
                 size="sm"
                 className="gap-2 rounded-full px-4 py-2 text-sm font-medium bg-primary text-white hover:bg-primary/90"
                 onClick={() => setIsFiltersCollapsed((prev) => !prev)}
+                aria-expanded={!isFiltersCollapsed}
+                aria-controls="shop-filters-panel"
               >
-                <SlidersHorizontal className="h-4 w-4" />
-                {t("filters", { defaultValue: "Filtres" })}
+                {isFiltersCollapsed ? <SlidersHorizontal className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4 rtl:-scale-x-100" />}
+                {isFiltersCollapsed ? t("showFilters") : t("hideFilters")}
               </Button>
             </div>
 

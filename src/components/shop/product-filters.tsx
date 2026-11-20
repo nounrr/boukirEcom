@@ -823,7 +823,7 @@ export function ProductFilters({
       </div>
 
       {/* Desktop Sidebar */}
-      <div className={cn("hidden lg:block relative", isCollapsed ? "shrink-0" : "shrink-0")}>
+      <div id="shop-filters-panel" className="relative hidden shrink-0 lg:block">
         <div
           className={cn(
             // Clean container: no border, no shadow

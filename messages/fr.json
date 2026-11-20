@@ -943,6 +943,8 @@
     "productsLabel": "produits",
     "tagline": "Livraison rapide • Retours faciles • Paiement sécurisé",
     "taglineShort": "Livraison rapide • Paiement sécurisé",
+    "hideFilters": "Masquer les filtres",
+    "showFilters": "Afficher les filtres",
     "featuredTitle": "Promotions du moment",
     "featuredDesc": "Nos meilleures offres sélectionnées pour vous",
     "newArrivalsTitle": "Nouveautés",

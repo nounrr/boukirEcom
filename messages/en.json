@@ -1082,6 +1082,8 @@
     "productsLabel": "products",
     "tagline": "Fast delivery • Easy returns • Secure payment",
     "taglineShort": "Fast delivery • Secure payment",
+    "hideFilters": "Hide filters",
+    "showFilters": "Show filters",
     "featuredTitle": "Current deals",
     "featuredDesc": "Our best offers selected for you",
     "newArrivalsTitle": "New arrivals",

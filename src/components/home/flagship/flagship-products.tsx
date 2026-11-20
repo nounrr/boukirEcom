@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Package, Pause, Play, Tag } from "lucide-react"
+import { Flame, Package, Pause, Play, Tag } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 
@@ -18,8 +18,9 @@ import { SectionHeading } from "./section-heading"
  * left, the second left to right), each card with an animated « Nos promotions » badge.
  * Promotional products first; while the catalogue has few of them, the latest products fill
  * the rows. Products without a price are left out. Pause button; rows can be dragged.
+ * `variant="shop"`: compact version at the top of /shop (smaller heading, full-width rows).
  */
-export function FlagshipNewArrivals({ locale }: { locale: string }) {
+export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: string; variant?: "home" | "shop" }) {
   const t = useTranslations("shop")
   const tr = useTranslations("xp.home.promoRail")
   const promo = useGetFeaturedPromoQuery(24)
@@ -40,16 +41,18 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
   const isLoading = promo.isLoading || arrivals.isLoading
   const isError = promo.isError && arrivals.isError
   const title = tr("sectionTitle")
+  const compact = variant === "shop"
+  const titleId = compact ? "shop-promos-title" : "arrivals-title"
 
   return (
-    <section className="overflow-hidden bg-surface-2/60 py-20 lg:py-28" aria-labelledby="arrivals-title" aria-busy={isLoading}>
-      <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
-        <SectionHeading
-          id="arrivals-title"
-          kicker={tr("kicker")}
-          title={title}
-          description={tr("sectionDesc")}
-          action={
+    <section
+      className={compact ? "-mx-6 mb-6 overflow-hidden sm:-mx-8 lg:-mx-16" : "overflow-hidden bg-surface-2/60 py-20 lg:py-28"}
+      aria-labelledby={titleId}
+      aria-busy={isLoading}
+    >
+      <div className={compact ? "px-6 sm:px-8 lg:px-16" : "mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10"}>
+        {(() => {
+          const actions = (
             <div className="flex items-center gap-3">
               <Link href={`/${locale}/shop?sort=promo`} className="inline-flex h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink">
                 <Tag className="size-4" aria-hidden="true" />
@@ -65,9 +68,22 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
                 {paused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
               </button>
             </div>
-          }
-        />
-        <div className="mt-10" data-reveal>
+          )
+          return compact ? (
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="kicker flex items-center gap-2 !text-[var(--accent-text)]">
+                  <Flame className="size-3.5 motion-safe:animate-pulse" aria-hidden="true" />{tr("kicker")}
+                </p>
+                <h2 id={titleId} className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
+              </div>
+              {actions}
+            </div>
+          ) : (
+            <SectionHeading id={titleId} kicker={tr("kicker")} title={title} description={tr("sectionDesc")} action={actions} />
+          )
+        })()}
+        <div className={compact ? "mt-5" : "mt-10"} data-reveal>
           {isLoading ? (
             <div className="flex flex-col gap-4">
               {[0, 1].map((row) => (
@@ -82,7 +98,7 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
               <p className="mt-3 text-sm text-muted-foreground">{isError ? t("loadError") : t("noProducts")}</p>
             </div>
           ) : (
-            <div className="-mx-5 flex flex-col gap-5 sm:-mx-8 lg:-mx-10">
+            <div className={compact ? "-mx-6 flex flex-col gap-4 sm:-mx-8 lg:-mx-16" : "-mx-5 flex flex-col gap-5 sm:-mx-8 lg:-mx-10"}>
               {rows.map((row, index) => row.length === 0 ? null : (
                 <MarqueeRow
                   key={index}

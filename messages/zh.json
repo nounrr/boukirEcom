@@ -1082,6 +1082,8 @@
     "productsLabel": "件商品",
     "tagline": "快速配送 • 轻松退换 • 安全支付",
     "taglineShort": "快速配送 • 安全支付",
+    "hideFilters": "隐藏筛选",
+    "showFilters": "显示筛选",
     "featuredTitle": "当前优惠",
     "featuredDesc": "为你精选的最佳优惠",
     "newArrivalsTitle": "新品上架",
