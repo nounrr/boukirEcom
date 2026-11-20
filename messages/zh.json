@@ -1569,6 +1569,12 @@
     "ourStore": "我们的门店"
   },
   "headerSearch": {
+    "lensDetecting": "正在识别物体…",
+    "lensDraw": "点击框选的物体，或在照片上画框，只搜索该物体。",
+    "lensWhole": "整张照片",
+    "lensWords": "添加文字：颜色、尺寸、品牌…",
+    "lensApply": "精确搜索",
+    "lensNoMatch": "没有相似的商品。请换一个框或其他文字。",
     "similarTitle": "与您的照片相似的商品",
     "similarDesc": "按相似度从高到低排列。点击商品即可打开。",
     "byName": "按名称搜索",

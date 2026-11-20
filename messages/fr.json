@@ -1430,6 +1430,12 @@
     "ourStore": "Notre magasin"
   },
   "headerSearch": {
+    "lensDetecting": "Recherche des objets…",
+    "lensDraw": "Touchez un objet encadré, ou tracez un cadre sur la photo, pour ne chercher que lui.",
+    "lensWhole": "Toute la photo",
+    "lensWords": "Ajouter des mots : couleur, taille, marque…",
+    "lensApply": "Affiner",
+    "lensNoMatch": "Aucun produit ressemblant. Essayez un autre cadre ou d’autres mots.",
     "similarTitle": "Produits qui ressemblent à votre photo",
     "similarDesc": "Du plus ressemblant au moins ressemblant. Touchez un produit pour l’ouvrir.",
     "byName": "Chercher par nom",

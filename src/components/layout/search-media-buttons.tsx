@@ -1,6 +1,6 @@
 "use client"
 
-import { Camera, ClipboardPaste, ImageUp, Loader2, Mic, MicOff, Search, X } from "lucide-react"
+import { Camera, ClipboardPaste, ImageUp, Loader2, Mic, MicOff, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useEffect, useRef, useState } from "react"
 
@@ -8,12 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { toast } from "@/hooks/use-toast"
 import { API_CONFIG } from "@/lib/api-config"
 import { cn } from "@/lib/utils"
-import { optimizedImageProps } from "@/lib/image-optimize"
-import { toAbsoluteImageUrl } from "@/lib/image-url"
-import { getLocalizedProductName } from "@/lib/localized-fields"
-import { productHref } from "@/lib/seo/product-url"
-import type { ProductListItem, ProductsListResponse } from "@/types/api/products"
-import Link from "next/link"
+import { visualMatches } from "@/lib/visual-search"
+import type { ProductListItem } from "@/types/api/products"
+import { LensResults } from "./lens-results"
 
 /* Web Speech API: not in the TypeScript DOM library, so the few members used here. */
 type RecognitionResult = { isFinal: boolean; 0: { transcript: string } }
@@ -73,25 +70,6 @@ async function toSmallJpeg(source: Blob | HTMLVideoElement): Promise<string> {
   draw(ctx, canvas.width, canvas.height)
   release()
   return canvas.toDataURL("image/jpeg", 0.8)
-}
-
-/** Products that look like the photo (visual search), most similar first; [] when unavailable. */
-async function visualMatches(image: string): Promise<ProductListItem[]> {
-  const res = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/search/visual`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ image, limit: 24 }),
-  })
-  if (!res.ok) return []
-  const data = (await res.json().catch(() => null)) as { results?: { id: number }[] } | null
-  const ids = (data?.results ?? []).map((r) => Number(r.id)).filter((id) => Number.isSafeInteger(id) && id > 0)
-  if (ids.length === 0) return []
-  const list = await fetch(`${API_CONFIG.BASE_URL}/api/ecommerce/products?ids=${ids.join(",")}&per_page=${ids.length}&in_stock_only=false`, {
-    headers: { Platform: "web" },
-  })
-  if (!list.ok) return []
-  const body = (await list.json().catch(() => null)) as ProductsListResponse | null
-  return body?.products ?? []
 }
 
 /** First image of a paste or a drop, if any. */
@@ -331,6 +309,12 @@ export function SearchMediaButtons({
             onPicture={searchPhoto}
             similar={similar}
             onByName={(image) => void searchSimilarByName(image)}
+            onSearchText={(text) => {
+              setSimilar(null)
+              setPhotoOpen(false)
+              onInterim(text)
+              onQuery(text)
+            }}
             onNewPhoto={() => setSimilar(null)}
           />
         </>
@@ -347,6 +331,7 @@ function PhotoSearchDialog({
   onPicture,
   similar,
   onByName,
+  onSearchText,
   onNewPhoto,
 }: {
   open: boolean
@@ -355,10 +340,10 @@ function PhotoSearchDialog({
   onPicture: (source: Blob | HTMLVideoElement) => Promise<void>
   similar: { image: string; products: ProductListItem[] } | null
   onByName: (image: string) => void
+  onSearchText: (text: string) => void
   onNewPhoto: () => void
 }) {
   const t = useTranslations("headerSearch")
-  const locale = useLocale()
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -437,12 +422,8 @@ function PhotoSearchDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg gap-4 p-5 sm:p-6">
+      <DialogContent className={cn("max-h-[92vh] gap-4 overflow-y-auto p-5 sm:p-6", similar ? "max-w-2xl" : "max-w-lg")}>
         <div className="flex items-start gap-3">
-          {similar ? (
-            // eslint-disable-next-line @next/next/no-img-element -- the customer's own photo (data URL)
-            <img src={similar.image} alt="" className="size-14 shrink-0 rounded-xl border border-border object-cover" />
-          ) : null}
           <div className="min-w-0">
             <DialogTitle className="text-lg font-extrabold">{similar ? t("similarTitle") : t("imageTitle")}</DialogTitle>
             <DialogDescription className="mt-1 text-sm text-muted-foreground">{similar ? t("similarDesc") : t("imageDesc")}</DialogDescription>
@@ -450,59 +431,15 @@ function PhotoSearchDialog({
         </div>
 
         {similar ? (
-          <>
-            <ul className="grid max-h-[55vh] grid-cols-2 gap-2.5 overflow-y-auto pe-1 sm:grid-cols-3">
-              {similar.products.map((product) => {
-                const src = toAbsoluteImageUrl(product.image_url)
-                const name = getLocalizedProductName(product as never, locale) || product.designation
-                const price = Number(product.prix_promo || product.prix_vente) || 0
-                return (
-                  <li key={product.id}>
-                    <Link
-                      href={productHref(product, locale)}
-                      onClick={() => onOpenChange(false)}
-                      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-[border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-[0_14px_30px_-22px_rgba(13,13,13,0.6)]"
-                    >
-                      <span className="grid aspect-square place-items-center bg-white">
-                        {src ? (
-                          // eslint-disable-next-line @next/next/no-img-element -- catalogue photos served by the API
-                          <img {...optimizedImageProps(src, 160)} alt="" loading="lazy" decoding="async" className="size-full object-contain p-2 transition-transform duration-500 group-hover:scale-105" />
-                        ) : null}
-                      </span>
-                      <span className="flex flex-1 flex-col gap-1 p-2.5">
-                        <span className="line-clamp-2 text-xs font-semibold leading-snug group-hover:text-accent-text">{name}</span>
-                        {price > 0 ? (
-                          <span className="mt-auto text-sm font-extrabold tabular-nums">
-                            {price.toLocaleString(locale === "ar" ? "ar-MA" : "fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{" "}
-                            <span className="text-[10px] font-bold text-accent-text">MAD</span>
-                          </span>
-                        ) : null}
-                      </span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => onByName(similar.image)}
-                disabled={analyzing}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-border px-4 text-sm font-semibold transition-colors hover:border-primary/50 disabled:opacity-60"
-              >
-                {analyzing ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Search className="size-4" aria-hidden="true" />}
-                {t("byName")}
-              </button>
-              <button
-                type="button"
-                onClick={onNewPhoto}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gold px-4 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5"
-              >
-                <Camera className="size-4" aria-hidden="true" />
-                {t("newPhoto")}
-              </button>
-            </div>
-          </>
+          <LensResults
+            key={similar.image}
+            photo={similar.image}
+            initialProducts={similar.products}
+            onByName={onByName}
+            onSearchText={onSearchText}
+            onNewPhoto={onNewPhoto}
+            onOpenProduct={() => onOpenChange(false)}
+          />
         ) : (
         <>
 

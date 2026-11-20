@@ -1569,6 +1569,12 @@
     "ourStore": "Our store"
   },
   "headerSearch": {
+    "lensDetecting": "Finding objects…",
+    "lensDraw": "Tap a framed object, or draw a frame on the photo, to search only that.",
+    "lensWhole": "Whole photo",
+    "lensWords": "Add words: colour, size, brand…",
+    "lensApply": "Refine",
+    "lensNoMatch": "No similar product. Try another frame or other words.",
     "similarTitle": "Products that look like your photo",
     "similarDesc": "Most similar first. Tap a product to open it.",
     "byName": "Search by name",
