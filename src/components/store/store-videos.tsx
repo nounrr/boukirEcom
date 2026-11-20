@@ -60,7 +60,7 @@ export function StoreVideoCard({ video, className, label }: { video: StoreVideo;
         type="button"
         onClick={toggle}
         aria-label={playing ? t("pause") : t("play")}
-        className="absolute bottom-3 end-3 grid size-10 place-items-center rounded-full bg-white/90 text-neutral-900 shadow-lg transition-colors duration-500 hover:bg-gold"
+        className="absolute bottom-3 end-3 grid size-10 place-items-center rounded-full bg-white/90 text-neutral-900 shadow-lg transition-colors duration-500 hover:bg-brand-yellow"
       >
         {playing ? <Pause className="size-4" /> : <Play className="size-4 translate-x-px" />}
       </button>

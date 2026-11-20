@@ -102,7 +102,7 @@ export default async function CalculatorsHubPage({ params }: { params: Promise<{
                       href={`/${locale}/calculateurs/${calc.slug}`}
                       className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface p-6 transition-[border-color,transform,translate,scale,rotate,box-shadow] duration-[700ms] ease-hover will-change-transform group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-premium"
                     >
-                      <span className="grid size-12 place-items-center rounded-2xl bg-muted text-foreground transition-colors duration-500 group-hover:bg-gold group-hover:text-ink">
+                      <span className="grid size-12 place-items-center rounded-2xl bg-muted text-foreground transition-colors duration-500 group-hover:bg-brand-yellow group-hover:text-ink">
                         <Icon className="size-6" strokeWidth={1.5} aria-hidden="true" />
                       </span>
                       <h3 className="mt-6 text-lg font-bold">{tc(`${calc.slug}.title`)}</h3>
