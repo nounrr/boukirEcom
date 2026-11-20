@@ -28,17 +28,27 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
   const t = useTranslations("shop")
   const tr = useTranslations("xp.home.promoRail")
   const promo = useGetFeaturedPromoQuery(24)
-  const arrivals = useGetNewArrivalsQuery(40)
+  const arrivals = useGetNewArrivalsQuery(60)
   const [seed] = useState(() => Math.random() * 1000)
   const [paused, setPaused] = useState(false)
 
   const products = useMemo(() => {
     const priced = (list: ProductListItem[] | undefined) => (list ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0)
     const promos = shuffled(priced(promo.data), seed)
-    const seen = new Set(promos.map((p) => p.id))
-    // Fill up to two full rows with the latest products when there are few promotions.
-    const fill = promos.length >= 16 ? [] : priced(arrivals.data).filter((p) => !seen.has(p.id))
-    return [...promos, ...fill].slice(0, 32).map((p) => productModel(p, locale))
+    // Fill up to two full rows with recent products when there are few promotions, also in a
+    // new random order on every visit.
+    const fill = promos.length >= 16 ? [] : shuffled(priced(arrivals.data), seed + 1)
+    // Each product once, and never two cards with the same photo (variants, sizes of one model).
+    const seenIds = new Set<number>()
+    const seenPhotos = new Set<string>()
+    const unique = [...promos, ...fill].filter((p) => {
+      const photo = String(p.image_url ?? "").trim()
+      if (seenIds.has(p.id) || (photo && seenPhotos.has(photo))) return false
+      seenIds.add(p.id)
+      if (photo) seenPhotos.add(photo)
+      return true
+    })
+    return unique.slice(0, 32).map((p) => productModel(p, locale))
   }, [promo.data, arrivals.data, locale, seed])
 
   const rows = useMemo(() => [products.filter((_, i) => i % 2 === 0), products.filter((_, i) => i % 2 === 1)], [products])

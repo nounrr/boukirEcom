@@ -1029,6 +1029,12 @@
   },
   "productFilters": {
     "title": "Filtres",
+    "brandSearch": "Rechercher une marque",
+    "showAllBrands": "Voir toutes les marques ({count})",
+    "showFewer": "Voir moins",
+    "subcategories": "{count} sous-catégories",
+    "noMatch": "Aucun résultat",
+    "expand": "Afficher les sous-catégories de {name}",
     "clear": "Effacer",
     "sortBy": "Trier par",
     "selectPlaceholder": "Sélectionner...",

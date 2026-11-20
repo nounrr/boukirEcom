@@ -1168,6 +1168,12 @@
   },
   "productFilters": {
     "title": "筛选",
+    "brandSearch": "搜索品牌",
+    "showAllBrands": "查看全部品牌（{count}）",
+    "showFewer": "收起",
+    "subcategories": "{count} 个子类别",
+    "noMatch": "没有结果",
+    "expand": "显示 {name} 的子类别",
     "clear": "清除",
     "sortBy": "排序",
     "selectPlaceholder": "请选择...",

@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { X, ChevronDown, ChevronRight, Tag, Package, DollarSign, Palette, Search, SlidersHorizontal, Ruler, ChevronLeft, ArrowUpDown, Store } from 'lucide-react'
+import { X, ChevronDown, Tag, Package, DollarSign, Palette, SlidersHorizontal, Ruler, ArrowUpDown, Store } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -12,14 +11,11 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { getVariantColor } from '@/lib/variant-color'
-import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { FilterState, SortOption, ProductCategory, ProductBrand } from '@/types/api/products'
 import { useTranslations } from 'next-intl'
-
-function getCategoryLabel(category: ProductCategory, locale: string) {
-  return getLocalizedCategoryName(category, locale)
-}
+import { FilterBrands } from '@/components/shop/filter-brands'
+import { FilterCategories } from '@/components/shop/filter-categories'
 
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterState) => void
@@ -58,10 +54,6 @@ export function ProductFilters({
   const [isOpen, setIsOpen] = useState(false)
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false)
   const isCollapsed = typeof controlledCollapsed === 'boolean' ? controlledCollapsed : uncontrolledCollapsed
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([])
-  const [categorySearch, setCategorySearch] = useState('')
-  const debouncedCategorySearch = useDebounce(categorySearch, 300)
-  const [visibleCategoryCount, setVisibleCategoryCount] = useState(8)
   // Toutes les sections sont fermées au départ ; seules celles qui ont déjà un filtre actif s'ouvrent.
   const [expandedSections, setExpandedSections] = useState(() => ({
     categories: (initialFilters?.categories?.length ?? 0) > 0,
@@ -248,14 +240,6 @@ export function ProductFilters({
     onCollapsedChange?.(value)
   }, [controlledCollapsed, onCollapsedChange])
 
-  const toggleCategory = useCallback((categoryId: number) => {
-    setExpandedCategories(prev =>
-      prev.includes(categoryId)
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    )
-  }, [])
-
   const toggleSection = useCallback((section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }, [])
@@ -386,117 +370,6 @@ export function ProductFilters({
     )
   }, [filters, isPriceFilterActive])
 
-  // Helper function to render category tree recursively
-  // Flatten categories to leaves for quick-pick grid
-  const flattenCategories = useCallback((nodes: ProductCategory[]): ProductCategory[] => {
-    // Depth-first, in the order sent by the API (backoffice drag & drop order)
-    const result: ProductCategory[] = []
-    const visit = (list: ProductCategory[]) => {
-      for (const node of list) {
-        if (node.children && node.children.length) visit(node.children)
-        else result.push(node)
-      }
-    }
-    visit(nodes)
-    return result
-  }, [])
-
-  const quickCategories = useMemo(() => {
-    const leaves = flattenCategories(categories)
-    const filtered = debouncedCategorySearch
-      ? leaves.filter((c) =>
-        getCategoryLabel(c, locale).toLowerCase().includes(debouncedCategorySearch.toLowerCase())
-      )
-      : leaves
-    return filtered.slice(0, visibleCategoryCount)
-  }, [categories, debouncedCategorySearch, visibleCategoryCount, flattenCategories, locale])
-
-  const renderCategoryTree = useCallback((category: ProductCategory) => {
-    const hasChildren = category.children && category.children.length > 0
-
-    return (
-      <div key={category.id} className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id={`category-${category.id}`}
-            checked={filters.categories.includes(category.id)}
-            onCheckedChange={() => handleCategoryChange(category.id)}
-            className="h-4 w-4"
-            disabled={isLoading}
-          />
-          <label
-            htmlFor={`category-${category.id}`}
-            className="flex-1 text-sm cursor-pointer hover:text-foreground transition-colors"
-          >
-            {getCategoryLabel(category, locale)}
-          </label>
-          {hasChildren && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => toggleCategory(category.id)}
-              className="h-6 w-6 p-0"
-              disabled={isLoading}
-            >
-              <ChevronRight
-                className={cn(
-                  "w-3.5 h-3.5 transition-transform duration-200",
-                  expandedCategories.includes(category.id) && "rotate-90"
-                )}
-              />
-            </Button>
-          )}
-        </div>
-        {hasChildren && expandedCategories.includes(category.id) && (
-          <div className="ml-6 space-y-2">
-            {category.children!.map((child) => renderCategoryTree(child))}
-          </div>
-        )}
-      </div>
-    )
-  }, [filters.categories, expandedCategories, handleCategoryChange, toggleCategory, isLoading, locale])
-
-  // Auto-expand parents so selected categories (e.g., 23/27) are visible & checked.
-  const autoExpanded = useMemo(() => {
-    if (!categories.length || filters.categories.length === 0) return [] as number[]
-
-    const findPath = (
-      nodes: ProductCategory[],
-      targetId: number,
-      path: number[]
-    ): number[] | null => {
-      for (const node of nodes) {
-        const nextPath = [...path, node.id]
-        if (node.id === targetId) return nextPath
-        if (node.children && node.children.length > 0) {
-          const found = findPath(node.children, targetId, nextPath)
-          if (found) return found
-        }
-      }
-      return null
-    }
-
-    const expanded = new Set<number>()
-    for (const selectedId of filters.categories) {
-      const path = findPath(categories, selectedId, [])
-      if (!path || path.length < 2) continue
-      // Expand all ancestors (exclude the selected leaf itself)
-      for (let i = 0; i < path.length - 1; i += 1) {
-        expanded.add(path[i])
-      }
-    }
-    return Array.from(expanded)
-  }, [categories, filters.categories])
-
-  useEffect(() => {
-    if (autoExpanded.length === 0) return
-    setExpandedCategories((prev) => {
-      const merged = new Set(prev)
-      for (const id of autoExpanded) merged.add(id)
-      return Array.from(merged)
-    })
-  }, [autoExpanded])
-
   // Render as a function so React keeps the same input node across filter updates.
   const renderFiltersContent = () => (
     <div className="h-full flex flex-col">
@@ -569,11 +442,14 @@ export function ProductFilters({
               />
             </button>
             {expandedSections.categories && (
-              <div className="space-y-2 pt-1">
-                {categories.map((category) => (
-                  <div key={category.id}>{renderCategoryTree(category)}</div>
-                ))}
-              </div>
+              <FilterCategories
+                categories={categories}
+                selected={filters.categories}
+                onToggle={handleCategoryChange}
+                disabled={isLoading}
+                locale={locale}
+                labels={{ subcategories: (count) => t('subcategories', { count }), expand: (name) => t('expand', { name }) }}
+              />
             )}
           </div>
         )}
@@ -598,25 +474,13 @@ export function ProductFilters({
               />
             </button>
             {expandedSections.brands && (
-              <div className="space-y-2 pt-1">
-                {brands.map((brand) => (
-                  <div key={brand.id} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`brand-${brand.id}`}
-                      checked={filters.brands.includes(brand.id)}
-                      onCheckedChange={() => handleBrandChange(brand.id)}
-                      disabled={isLoading}
-                      className="h-4 w-4"
-                    />
-                    <label
-                      htmlFor={`brand-${brand.id}`}
-                      className="text-sm cursor-pointer hover:text-foreground transition-colors"
-                    >
-                      {brand.nom}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <FilterBrands
+                brands={brands}
+                selected={filters.brands}
+                onToggle={handleBrandChange}
+                disabled={isLoading}
+                labels={{ search: t('brandSearch'), showAll: (count) => t('showAllBrands', { count }), showFewer: t('showFewer'), noMatch: t('noMatch') }}
+              />
             )}
           </div>
         )}

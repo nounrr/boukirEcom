@@ -9,7 +9,6 @@ import { filterStateToApiRequest, type FilterState, type ProductsListResponse } 
 import { sameFilterState, shopPageHref } from '@/lib/seo/shop-url'
 import type { ProductBrand, ProductCategory, ProductListItem } from "@/types/api/products"
 import { Columns4, Grid2x2, Grid3x3, List, Package, PanelLeftClose, Search, SlidersHorizontal, X } from "lucide-react"
-import Image from "next/image"
 import type { ShopViewMode } from "@/components/shop/products-list"
 import { useLocale, useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -392,15 +391,10 @@ export default function ShopPageClient({ initialData, initialFilters, heading, d
   return (
     <div className="bg-background">
       <div className="container mx-auto px-6 sm:px-8 lg:px-16 py-6">
-        {/* En-tête : photo du magasin très atténuée derrière le titre */}
-        <header className="relative isolate -mx-6 -mt-6 mb-6 overflow-hidden px-6 pb-8 pt-8 sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16 lg:pb-10 lg:pt-10">
-          <Image src="/store/photos/magasin-01.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover opacity-[0.12] dark:opacity-[0.16]" />
-          <div className="absolute inset-0 -z-10 bg-linear-to-r from-background via-background/70 to-background/20 rtl:bg-linear-to-l" aria-hidden="true" />
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-16 bg-linear-to-t from-background to-transparent" aria-hidden="true" />
-          <div className="max-w-4xl">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{heading}</h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
-          </div>
+        {/* Title and description kept for search engines and screen readers, not shown. */}
+        <header className="sr-only">
+          <h1>{heading}</h1>
+          <p>{description}</p>
         </header>
         {/* « Nos promotions » : deux lignes qui défilent, seulement sur la boutique sans filtre */}
         {searchParams.toString() === "" ? <FlagshipNewArrivals locale={locale} variant="shop" /> : null}

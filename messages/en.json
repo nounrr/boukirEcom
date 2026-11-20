@@ -1168,6 +1168,12 @@
   },
   "productFilters": {
     "title": "Filters",
+    "brandSearch": "Search a brand",
+    "showAllBrands": "See all brands ({count})",
+    "showFewer": "See fewer",
+    "subcategories": "{count} subcategories",
+    "noMatch": "No results",
+    "expand": "Show the subcategories of {name}",
     "clear": "Clear",
     "sortBy": "Sort by",
     "selectPlaceholder": "Select...",

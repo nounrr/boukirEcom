@@ -1168,6 +1168,12 @@
   },
   "productFilters": {
     "title": "الفلاتر",
+    "brandSearch": "ابحث عن علامة تجارية",
+    "showAllBrands": "عرض كل العلامات ({count})",
+    "showFewer": "عرض أقل",
+    "subcategories": "{count} فئات فرعية",
+    "noMatch": "لا توجد نتائج",
+    "expand": "عرض الفئات الفرعية لـ {name}",
     "clear": "مسح",
     "sortBy": "ترتيب حسب",
     "selectPlaceholder": "اختر...",
