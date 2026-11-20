@@ -159,7 +159,10 @@
       }
     },
     "journeys": {
-      "kicker": "Par usage"
+      "kicker": "Par usage",
+      "count": "{count} produits",
+      "explore": "Explorer",
+      "picks": "Quelques produits"
     },
     "showcase": {
       "kicker": "04 · Boukir Smart Calculators",

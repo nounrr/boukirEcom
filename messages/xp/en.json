@@ -159,7 +159,10 @@
       }
     },
     "journeys": {
-      "kicker": "By use"
+      "kicker": "By use",
+      "count": "{count} products",
+      "explore": "Explore",
+      "picks": "A few products"
     },
     "arrivals": {
       "kicker": "Freshly arrived in store"

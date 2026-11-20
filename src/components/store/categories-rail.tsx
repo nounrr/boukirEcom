@@ -58,14 +58,14 @@ export function CategoriesRail() {
   if (!isLoading && shown.length === 0) return null
 
   return (
-    <section className="py-10 lg:py-12" aria-labelledby="categories-rail-title">
+    <section className="py-14 lg:py-20" aria-labelledby="categories-rail-title">
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="kicker flex items-center gap-2 !text-[var(--accent-text)]">
               <LayoutGrid className="size-3.5" aria-hidden="true" />{t("kicker")}
             </p>
-            <h2 id="categories-rail-title" className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{t("title")}</h2>
+            <h2 id="categories-rail-title" className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">{t("title")}</h2>
           </div>
           <div className="flex items-center gap-3">
             <Link href={`/${locale}/categories`} className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-gold ps-5 pe-1.5 text-sm font-bold text-ink shadow-[0_14px_30px_-14px_rgba(242,183,5,0.75)] ring-1 ring-black/5 transition-[translate,box-shadow] duration-600 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(242,183,5,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background">
@@ -87,18 +87,18 @@ export function CategoriesRail() {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {[0, 1].map((row) => (
               <div key={row} className="flex gap-3 overflow-hidden">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-[76px] w-[230px] shrink-0 rounded-2xl" />
+                  <Skeleton key={i} className="h-[260px] w-[200px] shrink-0 rounded-3xl sm:h-[300px] sm:w-[240px]" />
                 ))}
               </div>
             ))}
           </div>
         ) : (
           <div
-            className="-mx-5 flex flex-col gap-3 sm:-mx-8 lg:mx-0"
+            className="-mx-5 flex flex-col gap-4 sm:-mx-8 lg:mx-0"
           >
             {rows.map((row, index) => (
               <MarqueeRow
@@ -106,20 +106,22 @@ export function CategoriesRail() {
                 label={t("rowLabel", { row: index + 1 })}
                 reverse={index === 1}
                 paused={paused}
-                secondsPerItem={5.5}
+                secondsPerItem={6}
                 itemDir={locale === "ar" ? "rtl" : "ltr"}
-                itemClassName="w-[220px] sm:w-[250px]"
+                itemClassName="w-[200px] pr-4 sm:w-[240px] lg:w-[270px]"
                 items={row.map((category) => {
                   const name = getLocalizedCategoryName(category as never, locale) || category.nom
                   return (
                     <Link
                       key={category.id}
                       href={shopCategoryHref(locale, category.id)}
-                      className="group flex h-[76px] items-center gap-3 rounded-2xl border border-border bg-card p-2.5 pe-4 transition-[border-color,box-shadow] duration-600 hover:border-primary/50 hover:shadow-[0_14px_30px_-24px_rgba(13,13,13,0.55)]"
+                      className="group flex h-[260px] flex-col overflow-hidden rounded-3xl border border-border bg-card transition-[border-color,box-shadow,translate] duration-600 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_24px_44px_-26px_rgba(13,13,13,0.6)] sm:h-[300px] lg:h-[330px]"
                     >
-                      <CategoryThumb category={category} label={name} cover={coverOf(category)} className="size-14" imgClassName="group-hover:scale-105" />
-                      <span className="line-clamp-2 min-w-0 flex-1 text-[13px] font-semibold leading-snug text-foreground/90 group-hover:text-accent-text">{name}</span>
+                      <CategoryThumb category={category} label={name} cover={coverOf(category)} displayWidth={270} className="!size-auto min-h-0 w-full flex-1 !rounded-none text-5xl" imgClassName="group-hover:scale-105" />
+                      <span className="flex items-center gap-2 p-4">
+                      <span className="line-clamp-2 min-w-0 flex-1 text-[15px] font-bold leading-snug text-foreground/90 group-hover:text-accent-text">{name}</span>
                       <ArrowRight className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-accent-text rtl:rotate-180 rtl:group-hover:-translate-x-0.5" aria-hidden="true" />
+                      </span>
                     </Link>
                   )
                 })}

@@ -2,10 +2,9 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { FlagshipBrands } from '@/components/home/flagship/flagship-brands'
 import { ConstructionSequence } from '@/components/home/flagship/construction-sequence'
-import { FlagshipPlanner } from '@/components/home/flagship/flagship-planner'
 import { FlagshipHero } from '@/components/home/flagship/flagship-hero'
 import { FlagshipJourneys } from '@/components/home/flagship/flagship-journeys'
-import { FlagshipNewArrivals, FlagshipPromotions } from '@/components/home/flagship/flagship-products'
+import { FlagshipNewArrivals } from '@/components/home/flagship/flagship-products'
 import { FlagshipServices } from '@/components/home/flagship/flagship-services'
 import { FlagshipStore } from '@/components/home/flagship/flagship-store'
 import { FlagshipUniverses, type Universe } from '@/components/home/flagship/flagship-universes'
@@ -122,12 +121,10 @@ export default async function HomePage({
         <FlagshipBrands locale={locale} />
         {/* Application mobile : App Store et Google Play */}
         <AppDownloadSection locale={locale} />
-        <FlagshipPromotions locale={locale} />
         {/* Univers matériaux */}<FlagshipUniverses locale={locale} universes={universes} />
-        {/* 5 */}<FlagshipNewArrivals locale={locale} />
+        {/* Nos promotions (les nouveautés tant qu'il n'y a pas de promotion) */}<FlagshipNewArrivals locale={locale} />
         <FlagshipJourneys locale={locale} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
-        {/* 8 */}<FlagshipPlanner locale={locale} />
         {/* Notre magasin : photos, vidéo, réseaux */}
         <StoreTeaser locale={locale} />
         <FlagshipStore />

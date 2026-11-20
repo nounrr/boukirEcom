@@ -159,7 +159,10 @@
       }
     },
     "journeys": {
-      "kicker": "按用途"
+      "kicker": "按用途",
+      "count": "{count} 件商品",
+      "explore": "浏览",
+      "picks": "精选商品"
     },
     "arrivals": {
       "kicker": "新品上架"

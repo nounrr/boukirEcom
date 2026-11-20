@@ -14,26 +14,54 @@ import { SectionHeading } from "./section-heading"
 
 const SLIDE = "basis-[74%] min-[480px]:basis-[46%] md:basis-[31%] lg:basis-[calc((100%-3rem)/4)] [&>div]:h-full"
 
-/** New arrivals — real catalog data, draggable, autoplay with pause. */
+/**
+ * « Nos promotions » — the promotional products in a random order (new order on every visit),
+ * each card with its -X % promo badge. While the catalogue has no promotion, it shows the
+ * new arrivals instead. Products without a price are left out. Draggable, fast autoplay.
+ */
 export function FlagshipNewArrivals({ locale }: { locale: string }) {
   const t = useTranslations("shop")
   const ta = useTranslations("xp.home.arrivals")
-  const { data, isLoading, isError } = useGetNewArrivalsQuery(12)
-  const products = useMemo(() => (data ?? []).slice(0, 12).map((p) => productModel(p, locale)), [data, locale])
+  const tr = useTranslations("xp.home.promoRail")
+  const promo = useGetFeaturedPromoQuery(16)
+  const arrivals = useGetNewArrivalsQuery(12)
+  const [seed] = useState(() => Math.random() * 1000)
+
+  const promoProducts = useMemo(
+    () => shuffled((promo.data ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0), seed).map((p) => productModel(p, locale)),
+    [promo.data, locale, seed]
+  )
+  const arrivalProducts = useMemo(
+    () => (arrivals.data ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0).slice(0, 12).map((p) => productModel(p, locale)),
+    [arrivals.data, locale]
+  )
+
+  const showPromos = promoProducts.length > 0
+  const products = showPromos ? promoProducts : arrivalProducts
+  const isLoading = promo.isLoading || (!showPromos && arrivals.isLoading)
+  const isError = showPromos ? false : arrivals.isError
+  const title = showPromos ? tr("title") : t("newArrivalsTitle")
 
   return (
     <section className="bg-surface-2/60 py-20 lg:py-28" aria-labelledby="arrivals-title" aria-busy={isLoading}>
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
         <SectionHeading
           id="arrivals-title"
-          kicker={ta("kicker")}
-          title={t("newArrivalsTitle")}
-          description={t("newArrivalsDesc")}
+          kicker={showPromos ? tr("kicker") : ta("kicker")}
+          title={title}
+          description={showPromos ? tr("desc") : t("newArrivalsDesc")}
           action={
-            <Link href={`/${locale}/shop`} className="group inline-flex items-center gap-2 text-sm font-semibold">
-              <span className="link-underline">{t("viewAll")}</span>
-              <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-            </Link>
+            showPromos ? (
+              <Link href={`/${locale}/shop?sort=promo`} className="inline-flex h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink">
+                <Tag className="size-4" aria-hidden="true" />
+                {t("viewAll")}
+              </Link>
+            ) : (
+              <Link href={`/${locale}/shop`} className="group inline-flex items-center gap-2 text-sm font-semibold">
+                <span className="link-underline">{t("viewAll")}</span>
+                <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+              </Link>
+            )
           }
         />
         <div className="mt-10" data-reveal>
@@ -53,7 +81,7 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
               <p className="mt-3 text-sm text-muted-foreground">{isError ? t("loadError") : t("noProducts")}</p>
             </div>
           ) : (
-            <DragCarousel label={t("newArrivalsTitle")} autoplay={4500} slideClassName={SLIDE}>
+            <DragCarousel label={title} autoplay={2200} slideClassName={SLIDE}>
               {products.map((product) => (
                 <ProductCardTile key={product.id} product={product} viewMode="grid" isWide />
               ))}
@@ -71,56 +99,4 @@ function shuffled<T extends { id: number }>(items: T[], seed: number) {
     return x - Math.floor(x)
   }
   return [...items].sort((a, b) => score(a.id) - score(b.id))
-}
-
-/**
- * Promotions right after the hero — real promotional products in a random
- * order (new order on every visit), draggable autoplay carousel.
- * Only rendered when promotional products exist.
- */
-export function FlagshipPromotions({ locale }: { locale: string }) {
-  const t = useTranslations("shop")
-  const tr = useTranslations("xp.home.promoRail")
-  const { data, isLoading, isError } = useGetFeaturedPromoQuery(16)
-  const [seed] = useState(() => Math.random() * 1000)
-  const products = useMemo(() => shuffled(data ?? [], seed).map((p) => productModel(p, locale)), [data, locale, seed])
-
-  if (!isLoading && (isError || products.length === 0)) return null
-
-  return (
-    <section className="relative overflow-hidden bg-ink py-16 text-white lg:py-24" aria-labelledby="promos-title">
-      <div className="absolute inset-0 bg-[radial-gradient(50%_70%_at_0%_0%,rgba(242,159,4,0.24),transparent_70%)]" aria-hidden="true" />
-      <div className="bd-grid absolute inset-0 opacity-50 [--grid-color:rgba(255,255,255,0.03)]" aria-hidden="true" />
-      <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
-        <SectionHeading
-          tone="dark"
-          id="promos-title"
-          kicker={tr("kicker")}
-          title={tr("title")}
-          description={tr("desc")}
-          action={
-            <Link href={`/${locale}/shop?sort=promo`} className="inline-flex h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink">
-              <Tag className="size-4" aria-hidden="true" />
-              {t("viewAll")}
-            </Link>
-          }
-        />
-        <div className="mt-10" data-reveal>
-          {isLoading ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[380px] rounded-2xl bg-white/5" />)}
-            </div>
-          ) : (
-            <DragCarousel label={tr("kicker")} autoplay={3800} tone="dark" slideClassName={SLIDE}>
-              {products.map((product) => (
-                <div key={product.id} className="h-full text-foreground [&>div]:h-full">
-                  <ProductCardTile product={product} viewMode="grid" isWide />
-                </div>
-              ))}
-            </DragCarousel>
-          )}
-        </div>
-      </div>
-    </section>
-  )
 }
