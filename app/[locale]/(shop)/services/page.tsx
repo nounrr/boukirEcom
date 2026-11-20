@@ -41,7 +41,11 @@ export async function generateMetadata({
   const locale = normalizeLocale(rawLocale)
   const t = await getTranslations({ locale, namespace: 'servicesPage' })
   const page = positiveInteger(first(query.page)) || 1
-  const indexable = !first(query.q)?.trim() && !first(query.category_id) && page === 1
+  // An empty catalogue page (« Aucun service trouvé ») is a soft 404 for search engines: index it
+  // only when it really lists services.
+  let hasServices = false
+  try { hasServices = (await getActiveServices({ page: 1, perPage: 12 })).services.length > 0 } catch { /* keep noindex */ }
+  const indexable = hasServices && !first(query.q)?.trim() && !first(query.category_id) && page === 1
   return buildPageMetadata({
     locale,
     title: t('metadata.title'),

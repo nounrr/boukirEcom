@@ -58,7 +58,9 @@ export function buildSitemap(data: SitemapData, site: URL): MetadataRoute.Sitema
     })
   }
   // No fabricated lastmod without a reliable content timestamp.
-  for (const path of STATIC_PATHS) add(path)
+  // /services is noindex while it lists no service (empty page): keep it out of the sitemap too.
+  const hasServices = Array.isArray(data.services) && data.services.length > 0
+  for (const path of STATIC_PATHS) if (path !== '/services' || hasServices) add(path)
   for (const row of records(data.products, 'products')) {
     const locales = productTranslationLocales(row)
     const languages = Object.fromEntries(locales.map(locale => [locale, new URL(`/${locale}${productPath(row, locale)}`, site).toString()]))
