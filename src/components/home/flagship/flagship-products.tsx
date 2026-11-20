@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 
 import { productModel } from "@/components/home/professional/professional-catalog"
+import { ProductCard } from "@/components/shop/product-card"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
 import { MarqueeRow } from "@/components/ui/marquee-row"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -88,7 +89,7 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
             <div className="flex flex-col gap-4">
               {[0, 1].map((row) => (
                 <div key={row} className="flex gap-4 overflow-hidden">
-                  {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[420px] w-[270px] shrink-0 rounded-2xl" />)}
+                  {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className={compact ? "h-[150px] w-[320px] shrink-0 rounded-2xl" : "h-[420px] w-[270px] shrink-0 rounded-2xl"} />)}
                 </div>
               ))}
             </div>
@@ -107,10 +108,15 @@ export function FlagshipNewArrivals({ locale, variant = "home" }: { locale: stri
                   paused={paused}
                   secondsPerItem={4}
                   itemDir={locale === "ar" ? "rtl" : "ltr"}
-                  itemClassName="w-[250px] pr-4 sm:w-[280px] [&>div]:h-full"
-                  items={row.map((product) => (
-                    <ProductCardTile key={product.id} product={product} viewMode="grid" isWide ribbon={tr("badge")} />
-                  ))}
+                  // /shop: small horizontal cards (photo beside the name), so the rows stay low.
+                  itemClassName={compact ? "w-[320px] pr-3 sm:w-[380px] [&>div]:h-full" : "w-[250px] pr-4 sm:w-[280px] [&>div]:h-full"}
+                  items={row.map((product) =>
+                    compact ? (
+                      <ProductCard key={product.id} product={product} layout="row" ribbon={tr("badge")} />
+                    ) : (
+                      <ProductCardTile key={product.id} product={product} viewMode="grid" isWide ribbon={tr("badge")} />
+                    )
+                  )}
                 />
               ))}
             </div>

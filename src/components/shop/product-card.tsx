@@ -450,6 +450,18 @@ export function ProductCard({
     </button>
   )
 
+  // Animated label (e.g. « Nos promotions »), on the photo of a tile and above the name of a row.
+  const ribbonBadge = ribbon ? (
+    <span className="relative inline-flex items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-full bg-gradient-to-r from-[#e0303a] via-[#f25c05] to-gold px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_8px_20px_-8px_rgba(224,48,58,0.9)]">
+      <span className="relative flex size-2" aria-hidden="true">
+        <span className="absolute inline-flex size-full rounded-full bg-white opacity-75 motion-safe:animate-ping" />
+        <span className="relative inline-flex size-2 rounded-full bg-white" />
+      </span>
+      {ribbon}
+      <span className="absolute inset-y-0 start-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent motion-safe:animate-[bd-sheen_2.2s_ease-in-out_infinite]" aria-hidden="true" />
+    </span>
+  ) : null
+
   // Badges catégorie et marque (une seule ligne : chacun se tronque si la place manque).
   const metaBadges = (className?: string) => localizedCategoryName || product.brand ? (
     <div className={cn('flex min-w-0 items-center gap-1 overflow-hidden', className)}>
@@ -491,6 +503,9 @@ export function ProductCard({
             ) : (
               <Image src={textureFor(product.id)} alt="" fill sizes="128px" className="object-cover" />
             )}
+            {ribbonBadge ? (
+              <div className="pointer-events-none absolute inset-x-1 bottom-1.5 flex justify-center [&>span]:gap-1 [&>span]:px-1.5 [&>span]:py-0.5 [&>span]:text-[8px] [&>span]:tracking-[0.06em]">{ribbonBadge}</div>
+            ) : null}
             {discountPercentage > 0 ? (
               <span className="absolute start-2 top-2 inline-flex items-center gap-0.5 rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-extrabold text-ink">
                 <Flame className="size-2.5" />-{discountPercentage}%
@@ -576,16 +591,7 @@ export function ProductCard({
 
         {/* Badges */}
         <div className="pointer-events-none absolute start-3 top-3 z-10 flex flex-col items-start gap-1.5">
-          {ribbon ? (
-            <span className="relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-gradient-to-r from-[#e0303a] via-[#f25c05] to-gold px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_8px_20px_-8px_rgba(224,48,58,0.9)]">
-              <span className="relative flex size-2" aria-hidden="true">
-                <span className="absolute inline-flex size-full rounded-full bg-white opacity-75 motion-safe:animate-ping" />
-                <span className="relative inline-flex size-2 rounded-full bg-white" />
-              </span>
-              {ribbon}
-              <span className="absolute inset-y-0 start-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent motion-safe:animate-[bd-sheen_2.2s_ease-in-out_infinite]" aria-hidden="true" />
-            </span>
-          ) : null}
+          {ribbonBadge}
           {discountPercentage > 0 ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-gold px-2.5 py-1 text-[11px] font-extrabold text-ink shadow-[0_8px_18px_-8px_rgba(242,159,4,0.9)]">
               <Flame className="size-3" strokeWidth={2.6} />-{discountPercentage}%
