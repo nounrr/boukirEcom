@@ -38,6 +38,8 @@ export default function NotFound() {
 
   return (
     <div className="h-screen bg-background flex flex-col">
+      {/* React 19 hoists these into <head>: the 404 page gets its own title (it had none). */}
+      <title>{`${title} | Boukir Diamond`}</title>
       <Header />
 
       <main className="flex-1 overflow-hidden flex items-start justify-center px-4 pt-4 sm:pt-8">
