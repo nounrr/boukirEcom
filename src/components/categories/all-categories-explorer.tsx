@@ -15,6 +15,7 @@ import { getLocalizedCategoryName } from '@/lib/localized-fields'
 import { useGetCategoriesQuery } from '@/state/api/categories-api-slice'
 import type { Category } from '@/types/category'
 import { CategoryThumb, useCategoryCovers, type CategoryCover } from '@/components/layout/category-thumb'
+import { SearchMediaButtons } from '@/components/layout/search-media-buttons'
 import { SubcategoryCard } from '@/components/layout/categories-mega-menu'
 
 type ChildrenMap = Map<number, Category[]>
@@ -142,13 +143,16 @@ export function AllCategoriesExplorer({ initialCategories }: { initialCategories
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={t('searchPlaceholder')}
-              className="h-12 w-full rounded-2xl border border-border bg-card ps-12 pe-12 text-[15px] outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
+              className="h-12 w-full rounded-2xl border border-border bg-card ps-12 pe-32 text-[15px] outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
             />
-            {query ? (
-              <button type="button" onClick={() => setQuery('')} aria-label={t('clearSearch')} className="absolute end-2.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground">
-                <X className="size-4" />
-              </button>
-            ) : null}
+            <span className="absolute end-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
+              {query ? (
+                <button type="button" onClick={() => setQuery('')} aria-label={t('clearSearch')} className="grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground">
+                  <X className="size-4" />
+                </button>
+              ) : null}
+              <SearchMediaButtons tone="panel" onInterim={setQuery} onQuery={setQuery} />
+            </span>
           </label>
           <p className="hidden text-sm text-muted-foreground sm:block lg:ms-auto" aria-live="polite">
             {t('resultsCount', { count: visibleRoots.length })}

@@ -1,6 +1,7 @@
 "use client"
 
 import { ProductFilters } from "@/components/shop/product-filters"
+import { SearchMediaButtons } from "@/components/layout/search-media-buttons"
 import { FlagshipNewArrivals } from "@/components/home/flagship/flagship-products"
 import { ProductsList } from "@/components/shop/products-list"
 import { Button } from "@/components/ui/button"
@@ -222,7 +223,10 @@ export default function ShopPageClient({ seed, initialData, initialFilters, head
   const listKey = `${baseKey}|${startPage}`
   type LoadState = { key: string; lastPage: number; pages: Record<number, ProductListItem[]>; pagination?: ProductsListResponse['pagination'] }
   const [loadState, setLoadState] = useState<LoadState>(() => ({ key: listKey, lastPage: startPage, pages: {} }))
-  const activeLoad: LoadState = loadState.key === listKey ? loadState : { key: listKey, lastPage: startPage, pages: {} }
+  const activeLoad: LoadState = useMemo(
+    () => (loadState.key === listKey ? loadState : { key: listKey, lastPage: startPage, pages: {} }),
+    [loadState, listKey, startPage]
+  )
 
   const queryArgs = useMemo(() => ({ ...apiFilters, page: activeLoad.lastPage }), [apiFilters, activeLoad.lastPage])
   const { currentData: queryData, isLoading: queryLoading, isFetching, error, refetch } = useGetProductsQuery(queryArgs)
@@ -276,8 +280,8 @@ export default function ShopPageClient({ seed, initialData, initialFilters, head
     if (data?.filters) setLastFilterMeta(data.filters)
   }, [data?.filters])
   const filterMeta = data?.filters ?? lastFilterMeta
-  const categories = filterMeta?.categories || []
-  const brands = filterMeta?.brands || []
+  const categories = useMemo(() => filterMeta?.categories || [], [filterMeta])
+  const brands = useMemo(() => filterMeta?.brands || [], [filterMeta])
   const availableColors = filterMeta?.colors || []
   const availableUnits = filterMeta?.units || []
   const availableUtilityTypes = filterMeta?.utility_types || []
@@ -346,7 +350,7 @@ export default function ShopPageClient({ seed, initialData, initialFilters, head
   }, [])
 
   const handleToggleWishlist = useCallback(
-    (productId: number) => {
+    (_productId: number) => {
       // Immediately refetch products to refresh is_wishlisted flags
       refetch()
     },
@@ -422,18 +426,22 @@ export default function ShopPageClient({ seed, initialData, initialFilters, head
               onChange={(event) => setSearchInput(event.target.value)}
               placeholder={t("searchBarPlaceholder")}
               enterKeyHint="search"
-              className="h-12 w-full rounded-full border border-border bg-card ps-12 pe-12 text-[15px] shadow-sm outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
+              className="h-12 w-full rounded-full border border-border bg-card ps-12 pe-32 text-[15px] shadow-sm outline-none transition-[border-color,box-shadow] duration-500 ease-hover placeholder:text-muted-foreground focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
             />
-            {searchInput ? (
-              <button
-                type="button"
-                onClick={() => setSearchInput("")}
-                aria-label={t("clearSearch")}
-                className="absolute end-2.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            ) : null}
+            {/* Clear, voice and photo search (paste or drop an image on the field works too). */}
+            <span className="absolute end-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
+              {searchInput ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchInput("")}
+                  aria-label={t("clearSearch")}
+                  className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : null}
+              <SearchMediaButtons tone="panel" onInterim={setSearchInput} onQuery={(text) => { setSearchInput(text); applySearch(text) }} />
+            </span>
           </form>
         </div>
 

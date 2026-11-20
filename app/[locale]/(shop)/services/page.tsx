@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
 import { ServiceCard } from '@/components/services/service-card'
+import { ServicesSearchInput } from '@/components/services/services-search-input'
 import { QuickRequestLink } from '@/components/service-requests/quick-request-link'
 import { Button } from '@/components/ui/button'
 import { normalizeLocale } from '@/i18n/locale'
@@ -135,18 +136,7 @@ export default async function ServicesPage({
           <form action={`/${locale}/services`} method="get" className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.45fr)_auto] lg:items-end">
             <label className="grid min-w-0 gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               {t('filters.searchLabel')}
-              <span className="relative">
-                <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-accent-text" aria-hidden="true" />
-                <input
-                  suppressHydrationWarning
-                  type="search"
-                  name="q"
-                  defaultValue={q}
-                  maxLength={100}
-                  placeholder={t('filters.searchPlaceholder')}
-                  className="h-12 w-full rounded-full border border-border bg-background ps-11 pe-4 text-sm font-normal normal-case tracking-normal text-foreground outline-none transition focus:border-brand-orange/70 focus:shadow-[0_0_0_4px_rgba(242,159,4,0.15)]"
-                />
-              </span>
+              <ServicesSearchInput defaultValue={q} placeholder={t('filters.searchPlaceholder')} />
             </label>
             <label className="grid min-w-0 gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               {t('filters.categoryLabel')}

@@ -90,10 +90,13 @@ export function SearchMediaButtons({
   onInterim,
   onQuery,
   tone = "header",
+  image = true,
 }: {
   onInterim: (text: string) => void
   onQuery: (query: string) => void
   tone?: "header" | "panel"
+  /** Photo search (the server names the product in the picture). Off for non-product fields. */
+  image?: boolean
 }) {
   const locale = useLocale()
   const t = useTranslations("headerSearch")
@@ -202,7 +205,7 @@ export function SearchMediaButtons({
   // Paste (Ctrl+V) or drop an image straight on the search field.
   useEffect(() => {
     const field = anchorRef.current?.parentElement?.parentElement
-    if (!field) return
+    if (!field || !image) return
     const onPaste = (event: ClipboardEvent) => {
       const file = imageFrom(event.clipboardData)
       if (!file) return
@@ -226,7 +229,7 @@ export function SearchMediaButtons({
       field.removeEventListener("dragover", onDragOver)
       field.removeEventListener("drop", onDrop)
     }
-  }, [searchPhoto])
+  }, [searchPhoto, image])
 
   const button = cn(
     "grid size-8 place-items-center rounded-full outline-none transition-colors disabled:opacity-60",
@@ -249,17 +252,21 @@ export function SearchMediaButtons({
           {listening ? <MicOff className="size-4 animate-pulse" aria-hidden="true" /> : <Mic className="size-4" aria-hidden="true" />}
         </button>
       ) : null}
-      <button
-        type="button"
-        onClick={() => setPhotoOpen(true)}
-        disabled={analyzing}
-        aria-label={t("image")}
-        title={t("image")}
-        className={button}
-      >
-        {analyzing ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Camera className="size-4" aria-hidden="true" />}
-      </button>
-      <PhotoSearchDialog open={photoOpen} onOpenChange={setPhotoOpen} analyzing={analyzing} onPicture={searchPhoto} />
+      {image ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setPhotoOpen(true)}
+            disabled={analyzing}
+            aria-label={t("image")}
+            title={t("image")}
+            className={button}
+          >
+            {analyzing ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Camera className="size-4" aria-hidden="true" />}
+          </button>
+          <PhotoSearchDialog open={photoOpen} onOpenChange={setPhotoOpen} analyzing={analyzing} onPicture={searchPhoto} />
+        </>
+      ) : null}
     </span>
   )
 }

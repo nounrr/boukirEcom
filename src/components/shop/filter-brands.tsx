@@ -3,6 +3,7 @@
 import { Check, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import { SearchMediaButtons } from '@/components/layout/search-media-buttons'
 import { toAbsoluteImageUrl } from '@/lib/image-url'
 import { optimizedImageProps } from '@/lib/image-optimize'
 import { cn } from '@/lib/utils'
@@ -51,8 +52,11 @@ export function FilterBrands({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={labels.search}
-            className="h-9 w-full rounded-full border border-border bg-background ps-9 pe-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60"
+            className="h-9 w-full rounded-full border border-border bg-background ps-9 pe-10 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60"
           />
+          <span className="absolute end-1 top-1/2 flex -translate-y-1/2 items-center">
+            <SearchMediaButtons tone="panel" image={false} onInterim={setQuery} onQuery={setQuery} />
+          </span>
         </label>
       ) : null}
 
