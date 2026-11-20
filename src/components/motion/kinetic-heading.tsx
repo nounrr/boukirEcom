@@ -25,9 +25,15 @@ export function KineticHeading({
 }) {
   const tokens = text.split(/(\s+)/)
   let index = 0
+  // An accent may cover several words: « *artisans qualifiés* » opens on the first word and
+  // closes on the word that ends with « * » (punctuation after it allowed).
+  let inAccent = false
   const children: ReactNode[] = tokens.map((token, i) => {
     if (/^\s+$/.test(token)) return " "
-    const accent = /^\*.*\*[.,!?:;»]*$/.test(token)
+    const opens = token.startsWith("*")
+    const accent = inAccent || opens
+    const closes = /\*[.,!?:;»]*$/.test(opens ? token.slice(1) : token)
+    inAccent = accent && !closes
     const clean = accent ? token.replace(/\*/g, "") : token
     const current = index++
     return (

@@ -3,6 +3,10 @@
 import Link from "next/link"
 import { ArrowRight, HardHat, ListChecks, MessageSquareText, Send } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useEffect, useMemo, useState } from "react"
+
+import { ServiceCard } from "@/components/services/service-card"
+import { MarqueeRow } from "@/components/ui/marquee-row"
 
 import { serviceDetailHref, quickServiceRequestHref, localizedServiceText } from "@/lib/service-catalog"
 import type { PublicService } from "@/types/service-request"
@@ -14,6 +18,18 @@ import { SectionHeading } from "./section-heading"
  */
 export function FlagshipServices({ locale, services }: { locale: string; services: PublicService[] }) {
   const t = useTranslations("xp.home.services")
+  const ts = useTranslations("servicesPage")
+  // Services in a new random order on every visit (drawn once mounted, so server and client HTML match).
+  const [seed, setSeed] = useState<number | null>(null)
+  useEffect(() => setSeed(Math.random()), [])
+  const ordered = useMemo(() => {
+    if (seed === null) return services
+    const score = (id: number) => {
+      const x = Math.sin(id * 12.9898 + seed * 7823.3) * 43758.5453
+      return x - Math.floor(x)
+    }
+    return [...services].sort((a, b) => score(a.id) - score(b.id))
+  }, [services, seed])
   const steps = [
     { key: "describe", icon: MessageSquareText },
     { key: "choose", icon: ListChecks },
@@ -48,11 +64,32 @@ export function FlagshipServices({ locale, services }: { locale: string; service
           ))}
         </ol>
 
-        {services.length ? (
+        {ordered.length >= 4 ? (
+          // 4 services or more: their cards scroll by themselves and can be dragged; fewer stay as links below.
+          <div className="-mx-5 mt-12 sm:-mx-8 lg:-mx-10">
+            <p className="mb-4 px-5 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:px-8 lg:px-10">{t("available")}</p>
+            <MarqueeRow
+              label={t("available")}
+              secondsPerItem={6}
+              itemDir={locale === "ar" ? "rtl" : "ltr"}
+              itemClassName="w-[280px] pr-5 sm:w-[320px] [&>div]:h-full"
+              items={ordered.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  locale={locale}
+                  viewLabel={ts("card.view")}
+                  requestLabel={ts("card.request")}
+                  moreCategoriesLabel={ts("card.moreCategories", { count: Math.max(0, service.categories.length - 2) })}
+                />
+              ))}
+            />
+          </div>
+        ) : ordered.length ? (
           <div className="mt-12" data-reveal>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{t("available")}</p>
             <ul className="flex flex-wrap gap-2">
-              {services.slice(0, 12).map((service) => {
+              {ordered.slice(0, 12).map((service) => {
                 const { name } = localizedServiceText(service, locale)
                 return (
                   <li key={service.id}>

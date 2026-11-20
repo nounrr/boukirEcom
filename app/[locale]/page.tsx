@@ -4,6 +4,7 @@ import { FlagshipBrands } from '@/components/home/flagship/flagship-brands'
 import { ConstructionSequence } from '@/components/home/flagship/construction-sequence'
 import { FlagshipHero } from '@/components/home/flagship/flagship-hero'
 import { FlagshipJourneys } from '@/components/home/flagship/flagship-journeys'
+import { FlagshipMaalems } from '@/components/home/flagship/flagship-maalems'
 import { FlagshipNewArrivals } from '@/components/home/flagship/flagship-products'
 import { FlagshipServices } from '@/components/home/flagship/flagship-services'
 import { FlagshipStore } from '@/components/home/flagship/flagship-store'
@@ -15,8 +16,8 @@ import { StoreTeaser } from '@/components/store/store-teaser'
 import { normalizeLocale } from '@/i18n/locale'
 import { API_CONFIG } from '@/lib/api-config'
 import { catalogHref, categories as catalogCategories } from '@/lib/catalog/registry'
-import { getActiveServices } from '@/lib/service-requests'
-import type { PublicService } from '@/types/service-request'
+import { getActiveServices, getPublicMaalems } from '@/lib/service-requests'
+import type { PublicMaalemsResponse, PublicService } from '@/types/service-request'
 import type { Metadata } from 'next'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import { constructionCopy } from '@/lib/seo/construction-copy'
@@ -68,6 +69,16 @@ async function categoryImages(categoryId: number): Promise<string[]> {
   }
 }
 
+/** Public Maalem profiles for the homepage row (empty if the directory cannot be reached). */
+async function loadMaalems(): Promise<PublicMaalemsResponse['maalems']> {
+  try {
+    const res = await getPublicMaalems({ sort: 'recommended', page: 1, per_page: 12 })
+    return res?.maalems ?? []
+  } catch {
+    return []
+  }
+}
+
 async function loadServices(): Promise<PublicService[]> {
   try {
     const res = await getActiveServices({ perPage: 12 })
@@ -85,8 +96,9 @@ export default async function HomePage({
   const { locale: localeParam } = await params
   const locale = normalizeLocale(localeParam)
 
-  const [services, images] = await Promise.all([
+  const [services, maalems, images] = await Promise.all([
     loadServices(),
+    loadMaalems(),
     Promise.all(
       UNIVERSES.map(async ({ slug }) => {
         const page = catalogCategories.find((c) => c.slug === slug)
@@ -124,6 +136,8 @@ export default async function HomePage({
         {/* Univers matériaux */}<FlagshipUniverses locale={locale} universes={universes} />
         {/* Nos promotions (les nouveautés tant qu'il n'y a pas de promotion) */}<FlagshipNewArrivals locale={locale} />
         <FlagshipJourneys locale={locale} />
+        {/* Nos Maalems : cartes qui défilent, juste après « Maison ou Professionnel ? » */}
+        <FlagshipMaalems locale={locale} maalems={maalems} />
         {/* 7 */}<FlagshipServices locale={locale} services={services} />
         {/* Notre magasin : photos, vidéo, réseaux */}
         <StoreTeaser locale={locale} />

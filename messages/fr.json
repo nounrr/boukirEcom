@@ -3,6 +3,8 @@
     "label": "Je ne sais pas quel service choisir · Décrire mon problème"
   },
   "maalemsPage": {
+    "pause": "Mettre en pause le défilement des Maalems",
+    "play": "Relancer le défilement des Maalems",
     "metadataTitle": "Maalems vérifiés",
     "metadataDescription": "Découvrez les Maalems publiés par Boukir Diamond.",
     "eyebrow": "Boukir · Le sens du savoir-faire",

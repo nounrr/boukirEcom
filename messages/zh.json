@@ -3,6 +3,8 @@
     "label": "不确定选择哪项服务？描述我的问题"
   },
   "maalemsPage": {
+    "pause": "暂停师傅滚动",
+    "play": "继续师傅滚动",
     "metadataTitle": "认证 Maalem",
     "metadataDescription": "浏览 Boukir Diamond 已发布的 Maalem。",
     "eyebrow": "Boukir · 匠心之美",

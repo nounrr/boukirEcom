@@ -3,6 +3,8 @@
     "label": "Not sure which service to choose? Describe my problem"
   },
   "maalemsPage": {
+    "pause": "Pause the Maalems",
+    "play": "Resume the Maalems",
     "metadataTitle": "Verified Maalems",
     "metadataDescription": "Discover Maalems published by Boukir Diamond.",
     "eyebrow": "Boukir · The art of craftsmanship",

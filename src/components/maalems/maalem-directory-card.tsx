@@ -12,12 +12,14 @@ import { localizedMaalemCategoryName } from '@/lib/service-catalog'
  * overlays, real statistics, and the two existing actions (profile, request).
  * Server rendered; hover is pure CSS.
  */
-export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0 }: {
+export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0, reveal = true }: {
   maalem: Maalem
   locale: string
   stats: { closed_interventions: number; average_rating: number | null; review_count: number }
   labels: Record<string, string>
   index?: number
+  /** Fade in on scroll (off inside a scrolling row, where cards come in sideways). */
+  reveal?: boolean
 }) {
   const photoUrl = resolvePublicMaalemPhoto(maalem.photo_url)
   const categoryName = localizedMaalemCategoryName(maalem.category, locale)
@@ -30,7 +32,7 @@ export function MaalemDirectoryCard({ maalem, locale, stats, labels, index = 0 }
   // Cadre fixe qui reçoit le survol ; seule la carte se soulève (pas de tremblement au bord).
   return <div className="group relative flex h-full min-w-0"><article
     className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden rounded-[1.4rem] border border-border bg-card transition-[transform,translate,scale,rotate,box-shadow,border-color] duration-[700ms] ease-hover will-change-transform focus-within:border-[rgba(242,159,4,0.6)] group-hover:-translate-y-1 group-hover:border-[rgba(242,159,4,0.6)] group-hover:shadow-[0_30px_60px_-34px_rgba(13,13,13,0.5)]"
-    data-reveal
+    {...(reveal ? { 'data-reveal': '' } : {})}
     style={{ ['--reveal-delay' as string]: `${(index % 4) * 80}ms` } as CSSProperties}
   >
     <Link href={profileHref} className="relative block aspect-[4/3.5] overflow-hidden bg-muted" aria-label={`${labels.profile} — ${maalem.public_name}`}>
