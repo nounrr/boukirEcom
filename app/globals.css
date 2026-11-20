@@ -433,7 +433,7 @@ html.theme-vt::view-transition-new(root) {
   opacity: 1;
   clip-path: inset(0 0 100% 0);
 }
-.motion-ready [data-reveal].is-visible {
+.motion-ready [data-reveal][data-visible] {
   opacity: 1;
   transform: none;
   clip-path: inset(0 0 0 0);
@@ -444,32 +444,32 @@ html.theme-vt::view-transition-new(root) {
     opacity 0.7s ease,
     transform 1s var(--ease-expo);
 }
-.motion-ready .kinetic.is-visible .kinetic-word > span {
+.motion-ready .kinetic[data-visible] .kinetic-word > span {
   opacity: 1;
   transform: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .motion-ready [data-reveal]:where(:not([data-reveal="kinetic"]):not([data-reveal="hero"])):not(.is-visible) {
+  .motion-ready [data-reveal]:where(:not([data-reveal="kinetic"]):not([data-reveal="hero"])):not([data-visible]) {
     transform: translate3d(0, 28px, 0);
   }
-  .motion-ready [data-reveal="fade"]:not(.is-visible) {
+  .motion-ready [data-reveal="fade"]:not([data-visible]) {
     transform: none;
   }
-  .motion-ready [data-reveal="scale"]:not(.is-visible) {
+  .motion-ready [data-reveal="scale"]:not([data-visible]) {
     transform: scale(0.96);
   }
-  .motion-ready [data-reveal="start"]:not(.is-visible) {
+  .motion-ready [data-reveal="start"]:not([data-visible]) {
     transform: translate3d(-32px, 0, 0);
   }
-  [dir="rtl"].motion-ready [data-reveal="start"]:not(.is-visible),
-  .motion-ready [dir="rtl"] [data-reveal="start"]:not(.is-visible) {
+  [dir="rtl"].motion-ready [data-reveal="start"]:not([data-visible]),
+  .motion-ready [dir="rtl"] [data-reveal="start"]:not([data-visible]) {
     transform: translate3d(32px, 0, 0);
   }
-  .motion-ready [data-reveal="clip"]:not(.is-visible) {
+  .motion-ready [data-reveal="clip"]:not([data-visible]) {
     transform: none;
   }
-  .motion-ready .kinetic:not(.is-visible) .kinetic-word > span {
+  .motion-ready .kinetic:not([data-visible]) .kinetic-word > span {
     transform: translate3d(0, 108%, 0);
   }
   /* SVG line drawing: paths need pathLength="1" */
@@ -479,15 +479,15 @@ html.theme-vt::view-transition-new(root) {
     stroke-dashoffset: 1;
     transition: stroke-dashoffset 1.6s var(--ease-premium) var(--draw-delay, 0ms);
   }
-  .motion-ready [data-draw].is-visible [data-draw-path],
-  .motion-ready [data-draw].is-visible .draw {
+  .motion-ready [data-draw][data-visible] [data-draw-path],
+  .motion-ready [data-draw][data-visible] .draw {
     stroke-dashoffset: 0;
   }
   .motion-ready [data-draw] .draw-fade {
     opacity: 0;
     transition: opacity 0.8s var(--ease-premium) var(--draw-delay, 600ms);
   }
-  .motion-ready [data-draw].is-visible .draw-fade {
+  .motion-ready [data-draw][data-visible] .draw-fade {
     opacity: 1;
   }
 }

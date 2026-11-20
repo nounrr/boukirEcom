@@ -97,13 +97,17 @@ export function FlagshipJourneys({ locale }: { locale: string }) {
                     ) : null}
                   </div>
 
-                  <div className="flex flex-col gap-7 xl:flex-row xl:items-end xl:justify-between">
+                  <div className="flex flex-col gap-7">
+                    {/* Photos above the text: they never squeeze it when the panel is narrow. */}
+                    {panel.picks.length > 0 ? (
+                      <ProductFan products={panel.picks} locale={locale} label={tx("picks")} />
+                    ) : null}
                     <div className="min-w-0">
                       <span className="mb-4 grid size-12 place-items-center rounded-2xl bg-brand-yellow text-ink shadow-[0_14px_30px_-12px_rgba(242,183,5,0.8)]">
                         <panel.Icon className="size-5" aria-hidden="true" />
                       </span>
                       <h3 className="text-4xl font-extrabold tracking-tight sm:text-5xl">{panel.title}</h3>
-                      <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-white/75">{panel.desc}</p>
+                      <p className="mt-3 max-w-sm min-w-[14rem] text-[15px] leading-relaxed text-white/75">{panel.desc}</p>
                       <span className="mt-6 inline-flex h-11 items-center gap-2.5 rounded-full bg-white/10 ps-5 pe-1.5 text-sm font-semibold backdrop-blur-md transition-colors duration-500 group-hover:bg-gold group-hover:text-ink">
                         {tx("explore")}
                         <span className="grid size-8 place-items-center rounded-full bg-white text-ink transition-transform duration-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
@@ -112,9 +116,6 @@ export function FlagshipJourneys({ locale }: { locale: string }) {
                       </span>
                     </div>
 
-                    {panel.picks.length > 0 ? (
-                      <ProductFan products={panel.picks} locale={locale} label={tx("picks")} />
-                    ) : null}
                   </div>
                 </div>
               </div>

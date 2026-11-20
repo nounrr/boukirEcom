@@ -30,7 +30,7 @@ const AUTO_SELECTOR = "main h2, main h3, main p, main li, main [data-auto-reveal
 
 /**
  * One IntersectionObserver for the whole site. Any element carrying
- * `data-reveal` (or `data-draw`) receives `.is-visible` when it enters the
+ * `data-reveal` (or `data-draw`) receives `data-visible` when it enters the
  * viewport; CSS in globals.css performs the transition. Server components can
  * therefore animate with zero client JS of their own.
  *
@@ -53,13 +53,15 @@ export function RevealObserver() {
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
-          entry.target.classList.add("is-visible")
+          // An attribute, not a class: React rewrites `className` when a component re-renders
+          // (hover state, etc.), which would hide the element again; it never touches this one.
+          entry.target.setAttribute("data-visible", "")
           io.unobserve(entry.target)
         }
       },
       { rootMargin: "0px 0px -6% 0px", threshold: 0.08 }
     )
-    const selector = "[data-reveal]:not(.is-visible),[data-draw]:not(.is-visible)"
+    const selector = "[data-reveal]:not([data-visible]),[data-draw]:not([data-visible])"
     const scan = (root: ParentNode) => root.querySelectorAll(selector).forEach((el) => io.observe(el))
 
     const autoTag = () => {
