@@ -311,6 +311,11 @@
     },
     "promoRail": {
       "kicker": "Promotions du moment",
+      "pause": "Mettre en pause le défilement des promotions",
+      "play": "Relancer le défilement des promotions",
+      "sectionTitle": "Nos promotions",
+      "badge": "Nos promotions",
+      "sectionDesc": "Nos meilleures offres du moment, qui défilent en continu.",
       "title": "Les *bonnes affaires* du chantier.",
       "desc": "Une sélection aléatoire de nos produits en promotion, renouvelée à chaque visite."
     }

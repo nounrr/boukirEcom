@@ -311,6 +311,11 @@
     },
     "promoRail": {
       "kicker": "Current promotions",
+      "pause": "Pause the promotions",
+      "play": "Resume the promotions",
+      "sectionTitle": "Our promotions",
+      "badge": "Our promotions",
+      "sectionDesc": "Our best offers of the moment, scrolling continuously.",
       "title": "This week's *best deals.*",
       "desc": "A random selection of our discounted products, refreshed on every visit."
     }

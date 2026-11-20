@@ -1,77 +1,78 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Package, Tag } from "lucide-react"
+import { Package, Pause, Play, Tag } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 
 import { productModel } from "@/components/home/professional/professional-catalog"
 import { ProductCardTile } from "@/components/shop/product-card-tile"
-import { DragCarousel } from "@/components/ui/drag-carousel"
+import { MarqueeRow } from "@/components/ui/marquee-row"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useGetFeaturedPromoQuery, useGetNewArrivalsQuery } from "@/state/api/products-api-slice"
+import type { ProductListItem } from "@/types/api/products"
 import { SectionHeading } from "./section-heading"
 
-const SLIDE = "basis-[74%] min-[480px]:basis-[46%] md:basis-[31%] lg:basis-[calc((100%-3rem)/4)] [&>div]:h-full"
-
 /**
- * « Nos promotions » — the promotional products in a random order (new order on every visit),
- * each card with its -X % promo badge. While the catalogue has no promotion, it shows the
- * new arrivals instead. Products without a price are left out. Draggable, fast autoplay.
+ * « Nos promotions » — two rows of product cards that scroll continuously (the first right to
+ * left, the second left to right), each card with an animated « Nos promotions » badge.
+ * Promotional products first; while the catalogue has few of them, the latest products fill
+ * the rows. Products without a price are left out. Pause button; rows can be dragged.
  */
 export function FlagshipNewArrivals({ locale }: { locale: string }) {
   const t = useTranslations("shop")
-  const ta = useTranslations("xp.home.arrivals")
   const tr = useTranslations("xp.home.promoRail")
-  const promo = useGetFeaturedPromoQuery(16)
-  const arrivals = useGetNewArrivalsQuery(12)
+  const promo = useGetFeaturedPromoQuery(24)
+  const arrivals = useGetNewArrivalsQuery(40)
   const [seed] = useState(() => Math.random() * 1000)
+  const [paused, setPaused] = useState(false)
 
-  const promoProducts = useMemo(
-    () => shuffled((promo.data ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0), seed).map((p) => productModel(p, locale)),
-    [promo.data, locale, seed]
-  )
-  const arrivalProducts = useMemo(
-    () => (arrivals.data ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0).slice(0, 12).map((p) => productModel(p, locale)),
-    [arrivals.data, locale]
-  )
+  const products = useMemo(() => {
+    const priced = (list: ProductListItem[] | undefined) => (list ?? []).filter((p) => Number(p.prix_promo || p.prix_vente) > 0)
+    const promos = shuffled(priced(promo.data), seed)
+    const seen = new Set(promos.map((p) => p.id))
+    // Fill up to two full rows with the latest products when there are few promotions.
+    const fill = promos.length >= 16 ? [] : priced(arrivals.data).filter((p) => !seen.has(p.id))
+    return [...promos, ...fill].slice(0, 32).map((p) => productModel(p, locale))
+  }, [promo.data, arrivals.data, locale, seed])
 
-  const showPromos = promoProducts.length > 0
-  const products = showPromos ? promoProducts : arrivalProducts
-  const isLoading = promo.isLoading || (!showPromos && arrivals.isLoading)
-  const isError = showPromos ? false : arrivals.isError
-  const title = showPromos ? tr("title") : t("newArrivalsTitle")
+  const rows = useMemo(() => [products.filter((_, i) => i % 2 === 0), products.filter((_, i) => i % 2 === 1)], [products])
+  const isLoading = promo.isLoading || arrivals.isLoading
+  const isError = promo.isError && arrivals.isError
+  const title = tr("sectionTitle")
 
   return (
-    <section className="bg-surface-2/60 py-20 lg:py-28" aria-labelledby="arrivals-title" aria-busy={isLoading}>
+    <section className="overflow-hidden bg-surface-2/60 py-20 lg:py-28" aria-labelledby="arrivals-title" aria-busy={isLoading}>
       <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-10">
         <SectionHeading
           id="arrivals-title"
-          kicker={showPromos ? tr("kicker") : ta("kicker")}
+          kicker={tr("kicker")}
           title={title}
-          description={showPromos ? tr("desc") : t("newArrivalsDesc")}
+          description={tr("sectionDesc")}
           action={
-            showPromos ? (
+            <div className="flex items-center gap-3">
               <Link href={`/${locale}/shop?sort=promo`} className="inline-flex h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink">
                 <Tag className="size-4" aria-hidden="true" />
                 {t("viewAll")}
               </Link>
-            ) : (
-              <Link href={`/${locale}/shop`} className="group inline-flex items-center gap-2 text-sm font-semibold">
-                <span className="link-underline">{t("viewAll")}</span>
-                <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-              </Link>
-            )
+              <button
+                type="button"
+                onClick={() => setPaused((value) => !value)}
+                aria-pressed={paused}
+                aria-label={paused ? tr("play") : tr("pause")}
+                className="grid size-11 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-primary/50 hover:text-accent-text motion-reduce:hidden"
+              >
+                {paused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
+              </button>
+            </div>
           }
         />
         <div className="mt-10" data-reveal>
           {isLoading ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="space-y-3">
-                  <Skeleton className="aspect-square rounded-2xl" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-5 w-1/2" />
+            <div className="flex flex-col gap-4">
+              {[0, 1].map((row) => (
+                <div key={row} className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[420px] w-[270px] shrink-0 rounded-2xl" />)}
                 </div>
               ))}
             </div>
@@ -81,11 +82,22 @@ export function FlagshipNewArrivals({ locale }: { locale: string }) {
               <p className="mt-3 text-sm text-muted-foreground">{isError ? t("loadError") : t("noProducts")}</p>
             </div>
           ) : (
-            <DragCarousel label={title} autoplay={2200} slideClassName={SLIDE}>
-              {products.map((product) => (
-                <ProductCardTile key={product.id} product={product} viewMode="grid" isWide />
+            <div className="-mx-5 flex flex-col gap-5 sm:-mx-8 lg:-mx-10">
+              {rows.map((row, index) => row.length === 0 ? null : (
+                <MarqueeRow
+                  key={index}
+                  label={`${title} ${index + 1}`}
+                  reverse={index === 1}
+                  paused={paused}
+                  secondsPerItem={4}
+                  itemDir={locale === "ar" ? "rtl" : "ltr"}
+                  itemClassName="w-[250px] pr-4 sm:w-[280px] [&>div]:h-full"
+                  items={row.map((product) => (
+                    <ProductCardTile key={product.id} product={product} viewMode="grid" isWide ribbon={tr("badge")} />
+                  ))}
+                />
               ))}
-            </DragCarousel>
+            </div>
           )}
         </div>
       </div>
