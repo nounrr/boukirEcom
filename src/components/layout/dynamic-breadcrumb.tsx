@@ -178,7 +178,12 @@ export function DynamicBreadcrumb() {
 
       // Handle product ID (skip it as a segment since it's part of product route)
       if (filteredParts[index - 1] === 'product' && productIdFromSegment(part)) {
-        const baseName = (productData && getLocalizedProductName(productData, locale)) || searchParams.get('name') || t('productNumber', { id: productIdFromSegment(part) ?? part })
+        // Until the product loads (and in the server HTML), the readable name in the URL slug
+        // (« 1356-disque-fibre-abrasif… » → « Disque fibre abrasif… ») rather than « Produit #1356 ».
+        let slugName = ''
+        try { slugName = decodeURIComponent(part).replace(/^\d+-?/, '').replace(/-/g, ' ').trim() } catch { /* malformed URL */ }
+        if (slugName) slugName = slugName.charAt(0).toLocaleUpperCase(locale) + slugName.slice(1)
+        const baseName = (productData && getLocalizedProductName(productData, locale)) || searchParams.get('name') || slugName || t('productNumber', { id: productIdFromSegment(part) ?? part })
         const firstVariantName = productData?.is_obligatoire_variant ? productData.variants?.[0]?.variant_name : null
         const productName = firstVariantName ? `${baseName} • ${firstVariantName}` : baseName
         const partIndex = parts.indexOf(part)

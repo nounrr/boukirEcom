@@ -6,6 +6,7 @@ import { catalogHref } from '@/lib/catalog/registry'
 
 import { normalizeLocale } from "@/i18n/locale"
 import { buildPageMetadata, localizedUrl, seoImageUrl } from "@/lib/seo/metadata"
+import { breadcrumbJsonLd, jsonLdScript } from '@/lib/seo/site-json-ld'
 import { getPublicProduct, buildProductSeoText } from "@/lib/seo/product"
 import { hasLocalizedProductContent, productTranslationLocales } from '@/lib/seo/product-languages'
 import { resolveProductOfferPrice } from '@/lib/product-price'
@@ -63,6 +64,9 @@ export async function generateMetadata({
   }
   return metadata
 }
+
+/** Breadcrumb labels (same words as messages/*.json « breadcrumb »), for the JSON-LD trail. */
+const BREADCRUMB: Record<string, { home: string; shop: string }> = {"fr": {"home": "Accueil", "shop": "Boutique"}, "ar": {"home": "الرئيسية", "shop": "المتجر"}, "en": {"home": "Home", "shop": "Shop"}, "zh": {"home": "首页", "shop": "商店"}}
 
 export default async function ProductDetailsRouteLayout({
   children,
@@ -139,6 +143,15 @@ export default async function ProductDetailsRouteLayout({
         // JSON-LD is required to be a raw JSON string.
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+      />
+      {/* Same trail as the visible breadcrumb: Accueil › Boutique › product. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbJsonLd(locale, [
+          { name: BREADCRUMB[locale].home, path: '/' },
+          { name: BREADCRUMB[locale].shop, path: '/shop' },
+          { name: seo.productName, path: productPath(product, locale) },
+        ])) }}
       />
     </>
   )

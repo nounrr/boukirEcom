@@ -14,7 +14,8 @@ export async function generateMetadata({
   const locale = normalizeLocale(localeParam)
   return buildPageMetadata({
     locale,
-    path: "/links",
+    // Same person as /p1 (the first team member): one canonical page, no duplicate in search.
+    path: `/${DEFAULT_MEMBER.slug}`,
     title: `${DEFAULT_MEMBER.firstName} ${DEFAULT_MEMBER.lastName} · ${DEFAULT_MEMBER.role}`,
     description: `${COMPANY.name} ${COMPANY.tagline} — ${COMPANY.city}. Google Maps, site web, Facebook, Instagram.`,
     openGraphType: "profile",
