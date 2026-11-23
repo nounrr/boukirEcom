@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, MapPin, Loader2, Navigation } from "lucide-react"
 import { cn } from "@/lib/utils"
+import GoogleLocationPicker, { GOOGLE_MAPS_KEY } from "./google-location-picker"
 
 // Interface for address results
 interface AddressResult {
@@ -60,7 +61,7 @@ function formatEssentialAddress(result: AddressResult) {
   }
 }
 
-interface LocationPickerProps {
+export interface LocationPickerProps {
   onLocationSelect: (location: {
     lat: number
     lng: number
@@ -110,7 +111,7 @@ function MapController({
   return null
 }
 
-export default function LocationPicker({
+function LeafletLocationPicker({
   onLocationSelect,
   initialLat,
   initialLng,
@@ -429,3 +430,9 @@ export default function LocationPicker({
   )
 }
 
+/** Google Maps when the site has a key (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY); OpenStreetMap otherwise, or if Google refuses it. */
+export default function LocationPicker(props: LocationPickerProps) {
+  const [google, setGoogle] = useState(Boolean(GOOGLE_MAPS_KEY))
+  if (google) return <GoogleLocationPicker {...props} onFail={() => setGoogle(false)} />
+  return <LeafletLocationPicker {...props} />
+}
