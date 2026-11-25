@@ -147,7 +147,7 @@ export default async function ContactPage({
 
   const siteUrl = getSiteUrl()
   const pageUrl = new URL(localizedPath(locale, '/contact'), siteUrl).toString()
-  const logoUrl = new URL('/logo.png', siteUrl).toString()
+  const logoUrl = new URL('/logo-black.png', siteUrl).toString()
 
   const ldJson = {
     '@context': 'https://schema.org',

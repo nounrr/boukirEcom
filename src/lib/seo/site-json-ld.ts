@@ -44,7 +44,7 @@ export function siteJsonLd(locale: AppLocale): JsonLd {
   const site = getSiteUrl()
   const origin = site.origin
   const home = localizedUrl(locale, "/")
-  const logo = new URL("/logo.png", site).toString()
+  const logo = new URL("/logo-black.png", site).toString()
   const digits = toWhatsappDigits(CONTACT.phoneDisplay)
   const telephone = digits ? `+${digits}` : undefined
   const sameAs = CONTACT.socials.map((link) => link.href).filter(Boolean)

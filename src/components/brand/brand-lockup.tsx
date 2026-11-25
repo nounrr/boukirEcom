@@ -2,17 +2,20 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 /**
- * Official logo (the gold column « B » monogram) + wordmark. The wordmark is set
- * typographically so it stays crisp in both themes.
+ * Official Boukir Diamond logo, as supplied: the gold version on dark backgrounds (tone "light", the default),
+ * the black version on light backgrounds (tone "dark").
  */
 export function BrandLockup({ compact = false, className, tone = "light" }: { compact?: boolean; className?: string; tone?: "light" | "dark" }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <Image src="/logo.png" alt="" width={36} height={43} priority className="h-9 w-auto object-contain drop-shadow-[0_6px_14px_rgba(233,172,91,0.35)] lg:h-10" />
-      <span className={cn("flex flex-col leading-none", compact ? "" : "hidden sm:flex")}>
-        <span className={cn("text-[15px] font-extrabold tracking-[0.14em]", tone === "light" ? "text-white" : "text-foreground")}>BOUKIR</span>
-        <span className="mt-1 text-[8.5px] font-semibold tracking-[0.3em] text-brand-yellow">DIAMOND</span>
-      </span>
+    <span className={cn("inline-flex items-center", className)}>
+      <Image
+        src={tone === "light" ? "/logo-gold.png" : "/logo-black.png"}
+        alt="Boukir Diamond"
+        width={1024}
+        height={422}
+        priority
+        className={cn("w-auto object-contain", compact ? "h-9" : "h-10 lg:h-11")}
+      />
     </span>
   )
 }

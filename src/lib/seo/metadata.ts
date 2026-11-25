@@ -44,7 +44,7 @@ export function buildPageMetadata(input: {
     ? input.keywords
     : constructionCopy[locale].keywords
 
-  const imageUrl = seoImageUrl(input.imageUrl) ?? new URL("/logo.png", getSiteUrl()).toString()
+  const imageUrl = seoImageUrl(input.imageUrl) ?? new URL("/og-default.png", getSiteUrl()).toString()
   const images = [{ url: imageUrl }]
 
   const OPEN_GRAPH_TYPES = [
