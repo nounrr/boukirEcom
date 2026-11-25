@@ -2,18 +2,16 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 /**
- * Official logo + wordmark. The logo file is unchanged; the wordmark is set
+ * Official logo (the gold column « B » monogram) + wordmark. The wordmark is set
  * typographically so it stays crisp in both themes.
  */
 export function BrandLockup({ compact = false, className, tone = "light" }: { compact?: boolean; className?: string; tone?: "light" | "dark" }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <span className="relative grid size-9 place-items-center overflow-hidden rounded-[10px] bg-white shadow-[0_0_0_1px_rgba(242,159,4,0.35),0_8px_20px_-8px_rgba(242,159,4,0.6)] lg:size-10">
-        <Image src="/logo.png" alt="" width={32} height={32} priority className="size-7 object-contain lg:size-8" />
-      </span>
+      <Image src="/logo.png" alt="" width={36} height={43} priority className="h-9 w-auto object-contain drop-shadow-[0_6px_14px_rgba(233,172,91,0.35)] lg:h-10" />
       <span className={cn("flex flex-col leading-none", compact ? "" : "hidden sm:flex")}>
         <span className={cn("text-[15px] font-extrabold tracking-[0.14em]", tone === "light" ? "text-white" : "text-foreground")}>BOUKIR</span>
-        <span className="mt-1 text-[8.5px] font-semibold tracking-[0.3em] text-brand-yellow">CONSTRUCTION</span>
+        <span className="mt-1 text-[8.5px] font-semibold tracking-[0.3em] text-brand-yellow">DIAMOND</span>
       </span>
     </span>
   )

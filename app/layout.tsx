@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   authors: [{ name: "2M Crafters" }],
   icons: {
     icon: "/logo.png",
-    apple: "/logo.png",
+    apple: "/apple-icon.png",
   },
 }
 

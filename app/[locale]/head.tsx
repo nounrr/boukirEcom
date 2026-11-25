@@ -3,7 +3,7 @@ export default function Head() {
     <>
       <link rel="icon" href="/favicon.ico" />
       <link rel="shortcut icon" href="/favicon.ico" />
-      <link rel="apple-touch-icon" href="/logo.png" />
+      <link rel="apple-touch-icon" href="/apple-icon.png" />
     </>
   )
 }

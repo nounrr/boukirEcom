@@ -30,9 +30,7 @@ export function AuthLayout({ children, title }: AuthLayoutProps) {
         <div className="w-full max-w-md text-center space-y-8 px-4 text-white relative z-10">
           {/* Logo Container - Centered with border radius */}
           <div className="flex justify-center">
-            <div className="w-40 h-40 bg-white rounded-4xl shadow-2xl p-5 flex items-center justify-center">
-              <Image src="/logo.png" alt="Logo" width={140} height={140} priority className="object-contain" />
-            </div>
+            <div className="rounded-4xl bg-[#0B0B0C] px-8 py-6 shadow-2xl ring-1 ring-white/10"><Image src="/logo-wordmark.png" alt="Boukir Diamond" width={260} height={110} priority className="h-auto w-[260px] object-contain" /></div>
           </div>
 
           {/* Brand Content */}
@@ -103,7 +101,7 @@ export function AuthLayout({ children, title }: AuthLayoutProps) {
           {/* Mobile/Tablet Logo */}
           <div className="lg:hidden flex justify-center mb-8">
             <div className="w-24 h-24 bg-white rounded-2xl shadow-lg p-3 flex items-center justify-center border-2 border-primary/10">
-              <Image src="/logo.png" alt="Logo" width={85} height={85} priority className="object-contain" />
+              <Image src="/logo.png" alt="Boukir Diamond" width={71} height={85} priority className="object-contain" />
             </div>
           </div>
           {children}
