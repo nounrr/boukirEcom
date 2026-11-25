@@ -11,8 +11,7 @@ export const seller = {
   ice: '003381011000082',
   address: 'IKAMAT REDOUAN 1, AZIB HAJ KADDOUR, LOCAL 1 ET N° 2, TANGER, MAROC',
   email: 'boukir.diamond23@gmail.com',
-  mobile: '06 50 81 28 94',
-  phone: '06 66 21 66 57',
+  mobile: '06 50 02 22 42',
 } as const
 
 type Section = readonly [title: string, body: string]

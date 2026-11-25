@@ -42,7 +42,7 @@ export default async function CgvPage({ params }: Props) {
     seller.ice,
     seller.address,
     seller.email,
-    `${seller.mobile} · ${seller.phone}`,
+    seller.mobile,
   ] as const
   const contentsList = (
     <ol className="mt-4 grid max-h-[min(70vh,38rem)] gap-0.5 overflow-y-auto pe-2 text-sm sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-1">
@@ -98,8 +98,6 @@ export default async function CgvPage({ params }: Props) {
                   ) : index === 8 ? (
                     <span className="flex flex-wrap gap-x-2" dir="ltr">
                       <a className="underline decoration-primary underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={`tel:${seller.mobile.replace(/\s/g, '')}`}>{seller.mobile}</a>
-                      <span aria-hidden="true">·</span>
-                      <a className="underline decoration-primary underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={`tel:${seller.phone.replace(/\s/g, '')}`}>{seller.phone}</a>
                     </span>
                   ) : (
                     <bdi dir="auto">{sellerValues[index]}</bdi>
