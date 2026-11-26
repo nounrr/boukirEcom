@@ -966,6 +966,21 @@
         "customer": "客户",
         "admin": "管理员"
       }
+    },
+    "tracking": {
+      "title": "您的订单正在配送中",
+      "subtitle": "实时查看配送车辆位置。",
+      "vehicle": "车辆：{name}",
+      "driver": "司机：{name}",
+      "updated": "位置更新于 {minutes} 分钟前",
+      "updatedNow": "位置刚刚更新",
+      "speed": "{speed} 公里/小时",
+      "noPosition": "司机已出发，位置可用后将显示在这里。",
+      "openMaps": "在 Google 地图中打开",
+      "mapLabel": "配送车辆位置",
+      "eta": "约 {min} 至 {max} 分钟后到达 · {km} 公里",
+      "nearby": "司机已非常接近",
+      "far": "司机在您之前还有其他配送，距离您 3 公里以内时将显示地图。"
     }
   },
   "invoice": {

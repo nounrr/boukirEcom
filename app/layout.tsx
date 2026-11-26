@@ -55,9 +55,15 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   authors: [{ name: "2M Crafters" }],
+  // New "B" monogram (white on black) everywhere: tab icon, home-screen icons and Android.
   icons: {
-    icon: "/logo.png",
-    apple: "/apple-icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: { url: "/apple-icon.png", sizes: "180x180" },
   },
 }
 

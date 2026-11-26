@@ -36,7 +36,7 @@ import { InvoiceDialog } from "@/components/invoice/invoice-dialog"
 import { useCart } from "@/components/layout/cart-context-provider"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { useGetOrderQuery } from "@/state/api/orders-api-slice"
+import { useGetOrderQuery, useGetOrderTrackingQuery } from "@/state/api/orders-api-slice"
 import { useAppSelector } from "@/state/hooks"
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order"
 
@@ -692,6 +692,76 @@ function HistoryTimeline({ order }: { order: Order }) {
   )
 }
 
+/**
+ * While the order is on its way, the delivery vehicle's position (GPS box or driver's phone), refreshed every 20 s.
+ * Nothing is shown before it leaves or once it is delivered.
+ */
+function OrderDeliveryTracking({ orderId }: { orderId: string }) {
+  const t = useTranslations("orderDetailsPage.tracking")
+  const locale = useLocale()
+  const { data } = useGetOrderTrackingQuery({ id: orderId }, { pollingInterval: 20000 })
+  if (!data || data.state !== "on_the_way") return null
+  const p = data.position
+  const minutes = p ? Math.max(0, Math.round((Date.now() - new Date(p.recorded_at).getTime()) / 60000)) : null
+  return (
+    <Card className="overflow-hidden border-primary/40 p-0">
+      <div className="flex items-start gap-3 p-4 sm:p-5">
+        <span className="relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <Truck className="h-5 w-5" />
+          <span className="absolute -right-0.5 -top-0.5 h-3 w-3 animate-pulse rounded-full bg-emerald-500 ring-2 ring-background" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">{t("title")}</p>
+          {data.arrival && (
+            <p className="text-sm font-bold text-primary">
+              {data.arrival.nearby
+                ? t("nearby")
+                : t("eta", {
+                    min: data.arrival.eta_range?.[0] ?? data.arrival.eta_minutes,
+                    max: data.arrival.eta_range?.[1] ?? data.arrival.eta_minutes,
+                    km: data.arrival.distance_km.toLocaleString(locale),
+                  })}
+            </p>
+          )}
+          {p && <p className="text-sm text-muted-foreground">{t("subtitle")}</p>}
+          <p className="mt-1 text-xs text-muted-foreground">
+            {[
+              data.vehicule ? t("vehicle", { name: data.vehicule }) : null,
+              data.chauffeur ? t("driver", { name: data.chauffeur }) : null,
+              p?.vitesse_kmh != null && p.vitesse_kmh >= 5 ? t("speed", { speed: Math.round(p.vitesse_kmh) }) : null,
+              minutes == null ? null : minutes < 1 ? t("updatedNow") : t("updated", { minutes }),
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </div>
+      </div>
+      {p ? (
+        <>
+          <iframe
+            title={t("mapLabel")}
+            className="h-64 w-full border-0 sm:h-80"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://maps.google.com/maps?q=${p.latitude},${p.longitude}&z=15&output=embed`}
+          />
+          <a
+            href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 p-4 text-sm font-semibold text-primary"
+          >
+            <MapPin className="h-4 w-4" />
+            {t("openMaps")}
+          </a>
+        </>
+      ) : (
+        <p className="px-4 pb-4 text-sm text-muted-foreground sm:px-5">{t(data.far ? "far" : "noPosition")}</p>
+      )}
+    </Card>
+  )
+}
+
 export default function OrderDetailsPage() {
   const locale = useLocale()
   const t = useTranslations("orderDetailsPage")
@@ -864,6 +934,8 @@ export default function OrderDetailsPage() {
         </div>
 
         <OrderProgressHeader order={order} />
+
+        {orderId && <OrderDeliveryTracking orderId={orderId} />}
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="w-full justify-start overflow-x-auto">

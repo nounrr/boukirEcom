@@ -307,6 +307,7 @@ export function Footer({
               </FooterColumn>
               <FooterColumn title={t('colCompany')}>
                 <FooterLink href={`/${locale}/cgv`}>{tf('termsAndConditions')}</FooterLink>
+                <FooterLink href={`/${locale}/confidentialite`}>{tf('privacyPolicy')}</FooterLink>
                 <FooterLink href={CONTACT.mapUrl} external>{t('findUs')}</FooterLink>
                 {CONTACT.reviewUrl ? <FooterLink href={CONTACT.reviewUrl} external>{t('review')}</FooterLink> : null}
                 <FooterLink href={`/${locale}/links`}>{t('team')}</FooterLink>

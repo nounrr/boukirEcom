@@ -6,7 +6,7 @@ import { ALL_TOOL_SLUGS } from '../calculators/registry'
 export type SitemapRecord = ProductUrlData & { id: number; updated_at: string | null }
 export type SitemapData = { products: SitemapRecord[]; services: SitemapRecord[]; maalems: SitemapRecord[] }
 const LOCALES = SEO_LOCALES
-const STATIC_PATHS = ['/', '/shop', '/categories', '/magasin', '/services', '/maalems', '/contact', '/cgv', '/calculateurs', ...ALL_TOOL_SLUGS.map(slug => `/calculateurs/${slug}`), '/projet', '/studio']
+const STATIC_PATHS = ['/', '/shop', '/categories', '/magasin', '/services', '/maalems', '/contact', '/cgv', '/confidentialite', '/calculateurs', ...ALL_TOOL_SLUGS.map(slug => `/calculateurs/${slug}`), '/projet', '/studio']
 
 function records(value: unknown, name: string): SitemapRecord[] {
   if (!Array.isArray(value)) throw new Error(`Sitemap: missing ${name} array`)

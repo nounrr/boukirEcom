@@ -827,6 +827,21 @@
         "customer": "Client",
         "admin": "Admin"
       }
+    },
+    "tracking": {
+      "title": "Votre commande est en route",
+      "subtitle": "Suivez le véhicule de livraison en direct.",
+      "vehicle": "Véhicule : {name}",
+      "driver": "Livreur : {name}",
+      "updated": "Position mise à jour il y a {minutes} min",
+      "updatedNow": "Position mise à jour à l’instant",
+      "speed": "{speed} km/h",
+      "noPosition": "Le livreur est parti. Sa position s’affichera ici dès qu’elle sera disponible.",
+      "openMaps": "Ouvrir dans Google Maps",
+      "mapLabel": "Position du véhicule de livraison",
+      "eta": "Arrivée dans {min} à {max} min · {km} km",
+      "nearby": "Le livreur est tout proche",
+      "far": "Le livreur a d’autres livraisons avant vous. La carte s’affichera quand il sera à moins de 3 km."
     }
   },
   "invoice": {

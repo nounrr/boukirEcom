@@ -966,6 +966,21 @@
         "customer": "Customer",
         "admin": "Admin"
       }
+    },
+    "tracking": {
+      "title": "Your order is on its way",
+      "subtitle": "Follow the delivery vehicle live.",
+      "vehicle": "Vehicle: {name}",
+      "driver": "Driver: {name}",
+      "updated": "Position updated {minutes} min ago",
+      "updatedNow": "Position updated just now",
+      "speed": "{speed} km/h",
+      "noPosition": "The driver has left. Their position will show here as soon as it is available.",
+      "openMaps": "Open in Google Maps",
+      "mapLabel": "Delivery vehicle position",
+      "eta": "Arriving in {min} to {max} min · {km} km",
+      "nearby": "The driver is very close",
+      "far": "The driver has other deliveries before yours. The map will show when they are within 3 km."
     }
   },
   "invoice": {

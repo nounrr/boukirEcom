@@ -171,6 +171,20 @@ const mapOrderFromApi = (order: any): Order => {
   };
 };
 
+export type OrderTracking =
+  | { state: 'none' | 'waiting' | 'delivered' }
+  | {
+      state: 'on_the_way';
+      started_at: string;
+      vehicule: string | null;
+      chauffeur: string | null;
+      position: { latitude: number; longitude: number; vitesse_kmh: number | null; cap: number | null; recorded_at: string } | null;
+      /** Estimated road distance and arrival time; null when the order has no delivery point. */
+      arrival?: { distance_km: number; eta_minutes: number; eta_range?: [number, number]; nearby: boolean } | null;
+      /** The vehicle is still far (other deliveries first): the map waits until it is within 3 km. */
+      far?: boolean;
+    };
+
 export const ordersApi = createApi({
   reducerPath: 'ordersApi',
   baseQuery: baseQueryWithAuth,
@@ -278,6 +292,12 @@ export const ordersApi = createApi({
         // Backend returns { order: {...} }
         return mapOrderFromApi(response.order || response);
       },
+    }),
+
+    // Delivery tracking: where the vehicle bringing the order is (only while it is on its way).
+    getOrderTracking: builder.query<OrderTracking, { id: number | string }>({
+      query: ({ id }) => `${API_CONFIG.ENDPOINTS.ORDERS}/${id}/tracking`,
+      keepUnusedDataFor: 0,
     }),
 
     // Create an order (checkout)
@@ -619,4 +639,5 @@ export const {
   useGetSoldePaymentBalanceQuery,
   useGetSoldeOrdersTimelineQuery,
   useGetSoldeOrdersHistoryQuery,
+  useGetOrderTrackingQuery,
 } = ordersApi;
