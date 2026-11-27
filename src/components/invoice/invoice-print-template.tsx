@@ -144,7 +144,7 @@ export function InvoicePrintTemplate({
     .inv-page{width:210mm;min-height:297mm;background:var(--inv-bg);color:var(--inv-text);font-family:var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";display:flex;flex-direction:column;}
     .inv-pad{padding:24px 28px;flex:1;}
     .inv-header{display:grid;grid-template-columns:160px 1fr 160px;align-items:center;gap:10px;}
-    .inv-logo{width:220px;height:auto;max-width:none;display:block;object-fit:contain;justify-self:start;}
+    .inv-logo{height:110px;width:auto;max-width:none;display:block;object-fit:contain;justify-self:start;}
     .inv-brandCenter{text-align:center;}
     .inv-brandName{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;}
     .inv-brandSub{font-size:16px;color:#111827;font-weight:400;text-transform:uppercase;letter-spacing:0.02em;margin-top:2px;}
@@ -199,7 +199,7 @@ export function InvoicePrintTemplate({
       <div className="inv-pad">
         {/* Header (match provided screenshot) */}
         <div className="inv-header">
-          <img src="/logo-black.png" alt="Boukir Diamond" className="inv-logo" />
+          <img src="/logo-gold.png" alt="Boukir Diamond" className="inv-logo" />
           <div className="inv-brandCenter">
             <div className="inv-brandName">{seller.name}</div>
             <div className="inv-brandSub">{seller.subtitle}</div>
