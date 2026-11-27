@@ -12,7 +12,7 @@ function extractFirstPhoneCandidate(input: string): string {
   // Match the first plausible phone chunk (keeps optional leading +).
   // Examples it can handle:
   // - "+212 6 50 02 22 42"
-  // - "GSM: 0650022242"
+  // - "GSM: +212 677 725 602"
   const match = text.match(/\+?\d[\d\s().\-]{6,}\d/)
   return (match?.[0] ?? "").trim()
 }

@@ -8,13 +8,13 @@
  */
 import { COMPANY, COMPANY_LINKS } from "@/lib/links/team"
 
-const DEFAULT_PHONE = "0650022242"
+const DEFAULT_PHONE = "+212 677 725 602"
 const DEFAULT_EMAIL = "boukir.diamond23@gmail.com"
 const DEFAULT_ADDRESS = "IKAMAT REDOUAN 1 AZIB HAJ KADDOUR LOCAL 1 ET N2 - TANGER"
 const DEFAULT_MAP_URL =
   "https://www.google.com/maps/place/BOUKIR+DIAMOND+CONSTUCTION+STORE/@35.7532036,-5.8421462,1453m/data=!3m2!1e3!4b1!4m6!3m5!1s0xd0b87005196739b:0xfa8dc0aeae136e27!8m2!3d35.7532036!4d-5.8421462!16s%2Fg%2F11y45mc9yr?entry=ttu"
 /** Confirmed business WhatsApp destination (master brief §11). */
-const DEFAULT_WHATSAPP = "+212650022242"
+const DEFAULT_WHATSAPP = "+212677725602"
 
 function firstPhone(raw: string): string {
   const match = raw.match(/\+?\d[\d\s().-]{6,}\d/)

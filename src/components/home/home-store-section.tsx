@@ -13,10 +13,10 @@ const DEFAULT_SELLER = {
   name: 'BOUKIR DIAMOND',
   subtitle: 'CONSTRUCTION STORE',
   activity: 'Vente de Matériaux de Construction céramique, et de Marbre',
-  phones: 'GSM / WhatsApp : 06 50 02 22 42',
+  phones: 'GSM / WhatsApp : +212 677 725 602',
   address: 'IKAMAT REDOUAN 1 AZIB HAJ KADDOUR LOCAL 1 ET N2 - TANGER',
   email: 'boukir.diamond23@gmail.com',
-  serviceCharge: '06.50.02.22.42',
+  serviceCharge: '+212 677 725 602',
 }
 
 function buildEmbedUrl(query: string) {
